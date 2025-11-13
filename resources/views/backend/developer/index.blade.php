@@ -6,35 +6,35 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="title">
-				<h2 class="h3 mb-0">Services</h2>
-			</div>
-			<div class="row pb-10">
-                @foreach ($services as $service)
-                    <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-                        <div class="main-card-box height-100-p widget-style3">
-                            <div class="d-flex flex-wrap h-100">
-                                <div class="widget-data">
-                                    <div class="weight-700 font-24 text-dark"> {{ $service->name }}</div>
-                                    @if ($service->name == "Hotels")
-                                        <div class="font-14 text-secondary weight-500">Active {{ count($hotels_active) }} ~ Draft {{ count($hotels_inactive) }}</div>
-                                    @elseif ($service->name == "Tours")
-                                        <div class="font-14 text-secondary weight-500">Active {{ count($tours_active) }} ~ Draft {{ count($tours_inactive) }}</div>
-                                    @elseif ($service->name == "Activities")
-                                        <div class="font-14 text-secondary weight-500">Active {{ count($activities_active) }} ~ Draft {{ count($activities_inactive) }}</div>
-                                    @elseif ($service->name == "Transports")
-                                        <div class="font-14 text-secondary weight-500">Active {{ count($transports_active) }} ~ Draft {{ count($transports_inactive) }}</div>
-                                    @elseif ($service->name == "Villas")
-                                        <div class="font-14 text-secondary weight-500">Active {{ count($villas_active) }} ~ Draft {{ count($villas_inactive) }}</div>
-                                    @endif
-                                </div>
-                                <div class="widget-icon">
-                                    <div class="icon" data-color="#00eccf"><i class="icon-copy {{ $service->icon }}"></i></div>
+                    <h2 class="h3 mb-0">Services</h2>
+                </div>
+                <div class="row pb-10">
+                    @foreach ($services as $service)
+                        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+                            <div class="main-card-box height-100-p widget-style3">
+                                <div class="d-flex flex-wrap h-100">
+                                    <div class="widget-data">
+                                        <div class="weight-700 font-24 text-dark"> {{ $service->name }}</div>
+                                        @if ($service->name == "Hotels")
+                                            <div class="font-14 text-secondary weight-500">Active {{ count($hotels_active) }} ~ Draft {{ count($hotels_inactive) }}</div>
+                                        @elseif ($service->name == "Tours")
+                                            <div class="font-14 text-secondary weight-500">Active {{ count($tours_active) }} ~ Draft {{ count($tours_inactive) }}</div>
+                                        @elseif ($service->name == "Activities")
+                                            <div class="font-14 text-secondary weight-500">Active {{ count($activities_active) }} ~ Draft {{ count($activities_inactive) }}</div>
+                                        @elseif ($service->name == "Transports")
+                                            <div class="font-14 text-secondary weight-500">Active {{ count($transports_active) }} ~ Draft {{ count($transports_inactive) }}</div>
+                                        @elseif ($service->name == "Villas")
+                                            <div class="font-14 text-secondary weight-500">Active {{ count($villas_active) }} ~ Draft {{ count($villas_inactive) }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="widget-icon">
+                                        <div class="icon" data-color="#00eccf"><i class="icon-copy {{ $service->icon }}"></i></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-			</div>
+                    @endforeach
+                </div>
                 <div class="info-action">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">

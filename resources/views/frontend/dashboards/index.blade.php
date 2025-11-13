@@ -3,8 +3,8 @@
 @section('content')
     <div class="mobile-menu-overlay"></div>
     <div class="main-container">
-        @include('partials.alerts')
         <div class="pd-ltr-20">
+            @include('partials.alerts')
             @if ($promotions->count() > 0)
                 <div class="promotion-bookingcode">
                     @foreach ($promotions as $promotion)
@@ -84,3 +84,4 @@
             @endif
         </div>
     </div>
+@endsection

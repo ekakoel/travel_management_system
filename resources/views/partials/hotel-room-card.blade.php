@@ -61,23 +61,61 @@
     
                         <!-- Room Details -->
                         <div class="card-content">
-                            @foreach ([
-                                'messages.Capacity' => $room->capacity . ' Guests',
-                                'messages.Include' => $room->include,
-                                'messages.Additional Information' => $room->additional_info
-                            ] as $label => $value)
-                                @if ($value)
-                                    <div class="card-text">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="card-subtitle">@lang($label)</div>
-                                                <p>{!! $value !!}</p>
+                            <hr class="form-hr">
+                            <div class="row">
+                                @foreach ([
+                                    'messages.Capacity' => $room->capacity_adult.' '.__('messages.Adult')." ~ ".$room->capacity_child.' '.__('messages.Child'),
+                                    'messages.View' => $room->view,
+                                    'messages.Beds' => $room->beds,
+                                    'messages.Area' => $room->size.' m²',
+                                    // 'messages.Additional Information' => $room->additional_info
+                                ] as $label => $value)
+                                    @if ($value != "")
+                                        <div class="col-md-4">
+                                            <div class="card-text">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="card-subtitle">@lang($label)</div>
+                                                        {!! $value !!}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                            <hr class="form-hr">
+                            <div class="card-text">
+                                <div class="card-subtitle">
+                                    @lang('messages.Amenities')
+                                </div>
+                                <p>
+                                    @if (app()->getLocale() == 'en')
+                                        {!! $room->include !!}
+                                    @elseif (app()->getLocale() == 'zh')
+                                        {!! $room->include_traditional !!}
+                                    @else
+                                        {!! $room->include_simplified !!}
+                                    @endif
+                                </p>
+                            </div>
+                            @if ($room->additional_info != "")
+                                <div class="card-text">
+                                    <div class="card-subtitle">
+                                        @lang('messages.Additional Information')
                                     </div>
-                                    <hr class="form-hr">
-                                @endif
-                            @endforeach
+                                    <p>
+                                        @if (app()->getLocale() == 'en')
+                                            {!! $room->additional_info !!}
+                                        @elseif (app()->getLocale() == 'zh')
+                                            {!! $room->additional_info_traditional !!}
+                                        @else
+                                            {!! $room->additional_info_simplified !!}
+                                        @endif
+                                    </p>
+                                </div>
+                            @endif
+                            <hr class="form-hr">
                         </div>
                     </div>
                     <!-- Footer -->
