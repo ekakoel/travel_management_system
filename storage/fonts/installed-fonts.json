@@ -1,0 +1,14 @@
+{
+    "chinese-font": {
+        "normal": "wt011",
+        "bold": "wt011",
+        "italic": "wt011",
+        "bold_italic": "wt011"
+    },
+    "notosans": {
+        "normal": "NotoSans-Light",
+        "bold": "NotoSans-Bold",
+        "italic": "NotoSans-Light",
+        "bold_italic": "NotoSans-Bold"
+    }
+}

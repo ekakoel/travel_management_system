@@ -1,0 +1,16 @@
+<?php
+// English
+return [
+    'title' => 'Recent Tour Package',
+    'Group' => 'Group',
+    'Private' => 'Private',
+    'Couple' => 'Couple',
+    'Bali' => 'Bali',
+    'Tour Package' => 'Tour Package',
+    'Hotels' => 'Hotels',
+    'Activities' => 'Activities',
+    'Activities' => 'Activities',
+    'Transports' =>'Transports',
+    'Wedding Packages' =>'Wedding Packages',
+    'All Tour Packages' => 'All Tour Packages'
+];
