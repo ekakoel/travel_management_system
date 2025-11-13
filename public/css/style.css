@@ -10,7 +10,7 @@
      */
     --main-color: #2b5893;
     --link-color: #0011ff;
-    --main-background: #f3f3f3 !important;
+    --main-background: #e1e1e1 !important;
     --united-nations-blue: hsl(214, 56%, 58%);
     --bright-navy-blue: hsl(214, 57%, 51%);
     --spanish-gray: hsl(0, 0%, 60%);
@@ -3459,11 +3459,11 @@ select {
 }
 .modal-image{
     width: 100%;
-    /* height: 370px; */
+    padding: 8px !important;
     overflow: hidden;
     border-radius: 8px;
     box-shadow: -3px 3px 7px -3px #000000;
-    border: 1px solid #5d5d5d;
+    border: 1px solid #dbdbdb;
     text-align: center;
     display: flex;
     align-items: center;
@@ -3471,6 +3471,7 @@ select {
 .modal-image img{
     object-fit: cover;
     width: 100%;
+    border-radius: 6px;
 }
 .card-content .image-caption-title{
     padding-bottom: 8px;
@@ -5221,7 +5222,7 @@ marquee{
 .card-box {
     position: relative;
     background-color: white !important;
-    box-shadow: 0px 0px 9px rgb(179 179 179);
+    box-shadow: 0px 2px 6px 1px rgb(0 0 0 / 28%);
     border: 1px solid #d5d5d5;
     border-radius: 10px;
     height: fit-content;
@@ -5368,14 +5369,15 @@ marquee{
 }
 
 .card-box-title{
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 700;
     margin: -20px -18px 18px -18px;
     padding: 18px;
     border-radius: 8px 8px 0 0;
     border-top: 1px solid #ffffff;
-    background-color: #e1e1e1;
+    background-color: #e3e3e3;
     border-bottom: 1px solid #d9d9d9;
+    text-transform: uppercase;
 }
 .card-box-title .title {
     font-size: 1rem;
@@ -5418,7 +5420,7 @@ marquee{
 .card-box-footer{
     display: grid;
     text-align: -webkit-right;
-    background-color: #e1e1e1;
+    background-color: #ededed;
     padding: 8px 18px;
     border-radius: 0 0 8px 8px;
     border-top: 1px solid #d3d3d3;
@@ -6137,7 +6139,7 @@ button span {
     width: 100%;
     place-content: flex-end;
     background-color: #17457f;
-    padding: 8px 8px 0 8px;
+    padding: 8px;
     border-radius: 6px;
     border: 1px solid #8080805c;
     margin-bottom: 18px;
@@ -9146,7 +9148,7 @@ table.dataTable>tbody>tr.child ul.dtr-details {
 /* card */
 
 .card {
-    /*overflow: hidden;*/
+    overflow: hidden;
     border-radius: 8px !important;
     box-shadow: 0px 2px 4px 0px #00000024 !important;
     border: 1px solid #dadada !important;
