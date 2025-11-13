@@ -1,15 +1,49 @@
-# Laravel specific
-/vendor/
+# Laravel 10 default ignores
 /node_modules/
-/.env
-/storage/*.key
+/vendor/
+
 /public/storage
+/storage/*.key
 /storage/logs/
-/storage/framework/
-/bootstrap/cache/
-/npm-debug.log
-/yarn-error.log
-/.idea/
-/.vscode/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/testing/
+/storage/framework/views/
+
+/.env
+.env.backup
+.env.local
+.env.*.backup
+.env.*.local
+
+# Composer & NPM
+composer.lock
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Laravel mix / vite
+/public/hot
+/public/build
+/public/js/*.map
+/public/css/*.map
+
+# IDE / Editor files
+.idea/
+.vscode/
+nbproject/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# PHPUnit / Testing
+.phpunit.result.cache
+
+# Docker / CI
+.docker/
+docker-compose.override.yml
