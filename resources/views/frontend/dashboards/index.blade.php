@@ -1,4 +1,4 @@
-@extends('frontend.layouts.header')
+@extends('layouts.head')
 @section('title', __('messages.Dashboard'))
 @section('content')
     <div class="mobile-menu-overlay"></div>
