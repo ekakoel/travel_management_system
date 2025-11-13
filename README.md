@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## Tech Specification
 
 - Laravel 8
@@ -71,7 +70,3 @@ A `reports` directory has been created for code coverage report. Open the dashbo
 
 ## Sistem Developer
 @eka_koel  Instagram Profile = https://www.instagram.com/ekakoel/
-=======
-# balikamitour_v20
-Project terupdate Mei 2025
->>>>>>> d0c2f3922d10a9a3576be7a64d277296382872dd
