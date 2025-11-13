@@ -12,7 +12,7 @@
                 @foreach ($services as $service)
                     <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
                         <div class="main-card-box height-100-p widget-style3">
-                            <div class="d-flex flex-wrap">
+                            <div class="d-flex flex-wrap h-100">
                                 <div class="widget-data">
                                     <div class="weight-700 font-24 text-dark"> {{ $service->name }}</div>
                                     @if ($service->name == "Hotels")

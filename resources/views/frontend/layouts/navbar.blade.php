@@ -65,7 +65,7 @@
                         @canany(['posDev','posAuthor','posRsv','weddingRsv','weddingSls','weddingAuthor','weddingDvl'])
                             <a class="dropdown-item" href="{{ route('view.admin-panel-main') }}"><i class="fas fa-user-tie"></i>@lang('messages.Admin Panel')</a>
                         @endcanany
-                        {{-- <a class="dropdown-item" href="{{ route('view.dashboard.dashboard') }}"><i class="fas fa-tachometer-alt"></i>@lang('messages.Dashboard')</a> --}}
+                        <a class="dropdown-item" href="{{ route('dashboard.index') }}"><i class="fas fa-tachometer-alt"></i>@lang('messages.Dashboard')</a>
                         <hr class="dropdown-divider">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
