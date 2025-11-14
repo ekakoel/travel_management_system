@@ -87,6 +87,15 @@
                                                 @enderror
                                             </div>
                                         </div>
+                                        <div class="col-12 col-sm-4">
+                                            <div class="form-group">
+                                                <label for="code" class="form-label">Tour Code</label>
+                                                <input type="text" id="code" name="code" class="form-control @error('code') is-invalid @enderror" placeholder="Insert tour code" value="{{ old('code') }}" required>
+                                                @error('code')
+                                                    <div class="alert-form alert-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                         <div class="col-12 col-sm-8">
                                             <div class="form-group">
                                                 <label for="name_traditional" class="form-label">Tour Name Traditional</label>

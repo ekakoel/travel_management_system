@@ -54,17 +54,17 @@
                                             <div class="subtitle">{{ $tour->name." - ".$tour->type?->type }}</div>
                                             <div class="status-card m-t-8">
                                                 @if ($tour->status == "Rejected")
-                                                    <div class="status-rejected"></div>
+                                                    <div class="status-rejected">{{ $tour->status }}</div>
                                                 @elseif ($tour->status == "Invalid")
-                                                    <div class="status-invalid"></div>
+                                                    <div class="status-invalid">{{ $tour->status }}</div>
                                                 @elseif ($tour->status == "Active")
-                                                    <div class="status-active"></div>
+                                                    <div class="status-active">{{ $tour->status }}</div>
                                                 @elseif ($tour->status == "Waiting")
-                                                    <div class="status-waiting"></div>
+                                                    <div class="status-waiting">{{ $tour->status }}</div>
                                                 @elseif ($tour->status == "Draft")
-                                                    <div class="status-draft"></div>
+                                                    <div class="status-draft">{{ $tour->status }}</div>
                                                 @elseif ($tour->status == "Archived")
-                                                    <div class="status-archived"></div>
+                                                    <div class="status-archived">{{ $tour->status }}</div>
                                                 @endif
                                             </div>
                                         </div>
@@ -170,9 +170,9 @@
                                                         <td>{{ currencyFormatUsd($price->calculated_price) }}</td>
                                                         <td>
                                                             @if ($price->status == "Draft")
-                                                                <div class="status-draft"></div>
+                                                                <div class="status-draft">{{ $price->status }}</div>
                                                             @else
-                                                                <div class="status-active"></div>
+                                                                <div class="status-active">{{ $price->status }}</div>
                                                             @endif
                                                         </td>
                                                         <td class="text-right">

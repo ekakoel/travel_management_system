@@ -20,6 +20,7 @@ class Tours extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'code',
         'name_traditional',
         'name_simplified',
         'slug',

@@ -80,7 +80,7 @@
                                                 <td>{{ $no + 1 }}</td>
                                                 <td>{{ $tour->name }}</td>
                                                 <td>{{ $tour->code }}</td>
-                                                <td>{{ $tour->duration }} {{ $tour->duration > 1 ? 'days':'day'; }}</td>
+                                                <td>{{ $tour->duration_days."D" }}{{ $tour->duration_nights ? '/'.$tour->duration_nights.'N':''; }}</td>
                                                 <td><div class="status-{{ strtolower($tour->status) }}">{{ $tour->status }}</div></td>
                                                 <td class="text-right">
                                                     <a href="/detail-tour-{{ $tour->id }}" class="btn-view"><i class="dw dw-eye"></i></a>

@@ -131,6 +131,7 @@ class ToursAdminController extends Controller
         $validated = $request->validate([
             'cover' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'name' => 'required|string|max:255',
+            'code' => 'required|string|max:125',
             'name_traditional' => 'required|string|max:255',
             'name_simplified' => 'required|string|max:255',
             'type' => 'required|integer',
@@ -160,13 +161,15 @@ class ToursAdminController extends Controller
         if ($request->hasFile('cover')) {
             $file = $request->file('cover');
             $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move('storage/tours/tours-cover', $filename, 'public');
-            $validated['cover'] = $filePath;
+            // $filePath = $file->move('storage/tours/tours-cover', $filename, 'public');
+            $file->storeAs('tours/tours-cover', $filename);
+            $validated['cover'] = $filename;
         }
 
         // 🔹 Simpan ke Database
         $tour = new Tours();
         $tour->cover = $validated['cover'];
+        $tour->code = $validated['code'];
         $tour->name = $validated['name'];
         $tour->name_traditional = $validated['name_traditional'];
         $tour->name_simplified = $validated['name_simplified'];
@@ -347,7 +350,6 @@ class ToursAdminController extends Controller
             }
             $file = $request->file('cover');
             $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
-            // $filePath = $file->move('storage/tours/tours-cover', $filename, 'public');
             $file->storeAs('tours/tours-cover', $filename);
             $validated['cover'] = $filename;
         
