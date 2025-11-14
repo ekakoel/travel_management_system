@@ -4349,7 +4349,53 @@ class OrderController extends Controller
         $attentions = Attention::where('page','orders')->get();
         $business = BusinessProfile::where('id','=',1)->first();
         $reservation = Reservation::find($order->rsv_id)??null;
-        
+        $promotion_discounts = json_decode($order->promotion_disc, true);
+        $total_promotion_disc = $promotion_discounts ? array_sum($promotion_discounts) : null;
+        $kickback = $order->kick_back ? $order->kick_back : null;
+        $decodedData = collect([
+            'number_of_guests_room' => json_decode($order->number_of_guests_room, true),
+            'guest_details' => json_decode($order->guest_detail, true),
+            'special_days' => json_decode($order->special_day, true),
+            'special_dates' => json_decode($order->special_date, true),
+            'extra_beds' => json_decode($order->extra_bed, true),
+            'extra_bed_prices' => json_decode($order->extra_bed_price, true),
+            'extra_bed_total_prices' => json_decode($order->extra_bed_total_price, true),
+            'additional_services' => json_decode($order->additional_service, true),
+            'additional_services_date' => json_decode($order->additional_service_date, true),
+            'additional_services_qty' => json_decode($order->additional_service_qty, true),
+            'additional_services_price' => json_decode($order->additional_service_price, true),
+            
+        ]);
+        $additional_services_data = collect($decodedData['additional_services'])->map(function ($service, $index) use ($decodedData) {
+            return [
+                'date' => $decodedData['additional_services_date'][$index] ?? null,
+                'service' => $service,
+                'qty' => $decodedData['additional_services_qty'][$index] ?? 0,
+                'price' => $decodedData['additional_services_price'][$index] ?? 0,
+            ];
+        });
+        $additionalServices = $additional_services_data->map(function ($service) {
+            return [
+                'date' => dateFormat($service['date']),
+                'service' => $service['service'],
+                'qty' => $service['qty'],
+                'price' => $service['price'],
+                'total' => $service['qty'] * $service['price'],
+            ];
+        });
+        $additional_service_total_price = $additionalServices->sum(fn($service) => str_replace(".", "", $service['total']));
+        $discounts = [
+            'Kick Back' => $kickback > 0 ? $kickback : null,
+            'Promotion' => $total_promotion_disc > 0 ? $total_promotion_disc : null,
+            'Booking Code' => $order->bookingcode_disc > 0 ? $order->bookingcode_disc : null,
+            'Discounts' => $order->discounts > 0 ? $order->discounts : null
+        ];
+        $filteredDiscounts = array_filter($discounts, fn($value) => !is_null($value));
+        $normal_price = $order->final_price + $total_promotion_disc + $order->bookingcode_disc + $order->discounts;
+        $total_price_idr = $order->final_price * $usdrates->rate;
+        $taxDoku = TaxDoku::find('1');
+        $tax_doku = floor($total_price_idr * $taxDoku->tax_rate);
+        $doku_total_price = $total_price_idr + $tax_doku;
         $invoice = InvoiceAdmin::firstWhere('rsv_id', $order->rsv_id);
         $receipts = $invoice ? $invoice->payment : null;
         if ($invoice) {
@@ -4436,6 +4482,11 @@ class OrderController extends Controller
             'langExclude'=>$langExclude,
             'langAdditionalInfo'=>$langAdditionalInfo,
             'langCancellationPolicy'=>$langCancellationPolicy,
+            'filteredDiscounts'=>$filteredDiscounts,
+            'additionalServices'=>$additionalServices,
+            'total_price_idr'=>$total_price_idr,
+            'tax_doku'=>$tax_doku,
+            'doku_total_price'=>$doku_total_price,
         ]);
         
         

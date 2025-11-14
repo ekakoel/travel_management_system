@@ -1,4 +1,4 @@
-<div class="col-md-12">
+<div class="col-md-12 m-b-18">
     <div class="card-box">
         <div class="card-box-title">
             <div class="subtitle"><i class="fa fa-briefcase"></i>@lang('messages.Tour Package Orders')</div>
@@ -59,13 +59,13 @@
                                 </div>
                             @endif
                             @if ($tourorder->discounts > 0)
-                                <div class="status-discounts inline-left p-r-8" data-toggle="tooltip" data-placement="top" title="@lang('messages.Discount') ${{ $tourorder->discounts }}"></div>
+                                <div class="status-discounts inline-left p-r-8" data-toggle="tooltip" data-placement="top" title="@lang('messages.Discount') ${{ $tourorder->discounts }}">${{ $tourorder->discounts }}</div>
                             @endif
                             @if ($tourorder->bookingcode_disc > 0)
-                                <div class="status-bcode inline-left p-r-8" data-toggle="tooltip" data-placement="top" title="{{ $tourorder->bookingcode." ($".$tourorder->bookingcode_disc.")" }}"></div>
+                                <div class="status-bcode inline-left p-r-8" data-toggle="tooltip" data-placement="top" title="{{ $tourorder->bookingcode." ($".$tourorder->bookingcode_disc.")" }}">${{ $tourorder->bookingcode_disc }}</div>
                             @endif
                                 @if ($total_promotion_disc > 0)
-                                <div class="status-promotion inline-left p-r-8" data-toggle="tooltip" data-placement="top" title="@lang('messages.Promotion'){{ ' $'.$total_promotion_disc }}"></div>
+                                <div class="status-promotion inline-left p-r-8" data-toggle="tooltip" data-placement="top" title="@lang('messages.Promotion'){{ ' $'.$total_promotion_disc }}">${{ $total_promotion_disc }}</div>
                             @endif
                         </td>
                         <td>

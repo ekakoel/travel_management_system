@@ -515,7 +515,7 @@
                                 Tour Package
                             </td>
                             <td style="width: 70%">
-                                {{ $order->subservice }}
+                                {{ $order->servicename }}
                             </td>
                         </tr>
                         <tr>
@@ -970,11 +970,11 @@
                         Subservice: -<br>
                     @endif
                 </table>
-                {{-- Additional Service --}}
-                @if(isset($optional_rate_orders))
+                {{-- Optional Service --}}
+                @if(count($optional_rate_orders) > 0)
                     <table class="table-order">
                         <tr>
-                            <th colspan="4">Additional Charge</th>
+                            <th colspan="4">Optional Services</th>
                         </tr>
                         @foreach ($optional_rate_orders as $optional_rate_order)
                             <tr>
@@ -989,64 +989,57 @@
                             </tr>
                         @endforeach
                     </table>
+                @endif
+                @if($order->additional_service_total_price > 0)
                     <table class="table-order">
-                        @if(isset($order->additional_service))
-                            @if ($order->additional_service != "null")
-                                @php
-                                    $additional_service = json_decode($order->additional_service);
-                                    $additional_service_date = json_decode($order->additional_service_date);
-                                    $additional_service_qty = json_decode($order->additional_service_qty);
-                                    $additional_service_price = json_decode($order->additional_service_price);
+                        @php
+                            $additional_service = json_decode($order->additional_service);
+                            $additional_service_date = json_decode($order->additional_service_date);
+                            $additional_service_qty = json_decode($order->additional_service_qty);
+                            $additional_service_price = json_decode($order->additional_service_price);
 
-                                    $elo_asd = is_array($additional_service);
-                                    if ($elo_asd == 1) {
-                                        
-                                        if (isset($additional_service)) {
-                                            $c_adser = count($additional_service);
-                                        }else{
-                                            $c_adser = 0;
-                                        }
-                                    }else{
-                                        $c_adser = 0;
-                                    }
-                                @endphp
-                                <tr style="margin-top: 8px">
-                                    <th colspan="4">Additional Service</th>
-                                </tr>
-                                @for ($adser = 0; $adser < $c_adser; $adser++)
-                                    <tr>
-                                        <td style="width:20%">{{ date('d M Y',strtotime($additional_service_date[$adser])) }}</td>
-                                        <td style="width:40%">{!! $additional_service[$adser] !!}</td>
-                                        <td style="width:20%">{!! $additional_service_qty[$adser]." pax" !!}</td>
-                                        <td style="width:20%">-</td>
-                                    </tr>
-                                @endfor
-                            @endif
-                        @endif
+                            $elo_asd = is_array($additional_service);
+                            if ($elo_asd == 1) {
+                                
+                                if (isset($additional_service)) {
+                                    $c_adser = count($additional_service);
+                                }else{
+                                    $c_adser = 0;
+                                }
+                            }else{
+                                $c_adser = 0;
+                            }
+                        @endphp
+                        <tr style="margin-top: 8px">
+                            <th colspan="4">Additional Service</th>
+                        </tr>
+                        @for ($adser = 0; $adser < $c_adser; $adser++)
+                            <tr>
+                                <td style="width:20%">{{ date('d M Y',strtotime($additional_service_date[$adser])) }}</td>
+                                <td style="width:40%">{!! $additional_service[$adser] !!}</td>
+                                <td style="width:20%">{!! $additional_service_qty[$adser]." pax" !!}</td>
+                                <td style="width:20%">-</td>
+                            </tr>
+                        @endfor
                     </table>
                 @endif
-                @if (isset($airport_shuttles))
-                    
-                        <table class="table-order">
+                @if (count($airport_shuttles)>0)
+                    <table class="table-order">
+                        <tr>
+                            <th colspan="4">Transport</th>
+                        </tr>
+                        @foreach ($airport_shuttles as $airport_shuttle)
                             <tr>
-                                <th colspan="4">Transport</th>
+                                <td style="width:20%">{{ date('d M Y',strtotime($airport_shuttle->date)) }}</td>
+                                <td style="width:30%">@lang('messages.Airport Shuttle'), {{ $airport_shuttle->transport?->brand." ".$airport_shuttle->transport?->name.", ".$airport_shuttle->duration." hours, ".$airport_shuttle->distance."KM" }}</td>
+                                <td style="width:20%">1 Unit</td>
+                                <td style="width:30%">{{ $airport_shuttle->src." - ".$airport_shuttle->dst }}</td>
                             </tr>
-                            @foreach ($airport_shuttles as $airport_shuttle)
-                                <tr>
-                                    <td style="width:20%">{{ date('d M Y',strtotime($airport_shuttle->date)) }}</td>
-                                    <td style="width:30%">@lang('messages.Airport Shuttle'), {{ $airport_shuttle->transport?->brand." ".$airport_shuttle->transport?->name.", ".$airport_shuttle->duration." hours, ".$airport_shuttle->distance."KM" }}</td>
-                                    <td style="width:20%">1 Unit</td>
-                                    <td style="width:30%">{{ $airport_shuttle->src." - ".$airport_shuttle->dst }}</td>
-                                </tr>
-                            @endforeach
-                        </table>
-                    
+                        @endforeach
+                    </table>
                 @endif
                 {{-- ADDITIONAL INFORMATION --}}
                 <table class="table-order">
-                    <tr>
-                        <th colspan="2">Additional Information</th>
-                    </tr>
                     @if (isset($order->benefits))
                         <tr>
                             <td style="width: 20%">Benefits</td>

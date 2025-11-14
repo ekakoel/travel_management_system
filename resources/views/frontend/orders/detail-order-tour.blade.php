@@ -245,6 +245,48 @@
                                             </table>
                                         </div>
                                     </div>
+                                    {{-- ADDITIONAL SERVICES --}}
+                                    @if ($order->additional_service_total_price>0)
+                                        <div id="optional_service" class="page-subtitle">
+                                            @lang('messages.Additional Services')
+                                        </div>
+                                        <div class="row" id="additionalServices">
+                                            <div class="col-md-12">
+                                                <table class="data-table table nowrap">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 30%;">@lang('messages.Date')</th>
+                                                            <th style="width: 40%;">@lang('messages.Service')</th>
+                                                            <th style="width: 10%;">@lang('messages.Quantity')</th>
+                                                            <th style="width: 10%;">@lang('messages.Price')</th>
+                                                            <th style="width: 10%;">@lang('messages.Total')</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($additionalServices as $service)
+                                                            <tr>
+                                                                <td>{{ $service['date'] }}</td>
+                                                                <td>{{ $service['service'] }}</td>
+                                                                <td>{{ $service['qty'] }}</td>
+                                                                <td>{{ "$ ".$service['price'] }}</td>
+                                                                <td>{{ "$ ".$service['total'] }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                                <div class="box-price-kicked m-b-8">
+                                                    <div class="row">
+                                                        <div class="col-6 col-md-6">
+                                                            <div class="subtotal-text"> @lang('messages.Additional Service')</div>
+                                                        </div>
+                                                        <div class="col-6 col-md-6 text-right">
+                                                            <div class="subtotal-price">{{ currencyFormatUsd($order->additional_service_total_price) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="page-subtitle">@lang('messages.Guest Details')</div>
                                     <div class="row">
                                         <div class="col-md-12 p-l-27">
@@ -283,7 +325,182 @@
                                             <p>{!! $tour->$langCancellationPolicy !!}</p>
                                         </div>
                                     @endif
-                                    
+                                    {{-- PRICES ======================================================================================================================================== --}}
+                                    <div class="page-subtitle">@lang('messages.Price')</div>
+                                    <div class="row">
+                                        <div class="col-md-12 m-b-8">
+                                            <div class="box-price-kicked">
+                                                <div class="row">
+                                                    @uiEnabled('doku-payment')
+                                                        @if ($doku_payment)
+                                                            <div class="col-12 col-md-12">
+                                                                <b>@lang('messages.Self Payment')</b>
+                                                                <hr class="form-hr">
+                                                            </div>
+                                                        @endif
+                                                    @endUiEnabled
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-6 col-md-6">
+                                                                <div class="normal-text">@lang('messages.Price/pax')</div>
+                                                                <div class="normal-text">@lang('messages.Number of Guests')</div>
+                                                                @if ($order->additional_service_total_price > 0)
+                                                                    <div class="normal-text">@lang('messages.Additional Service')</div>
+                                                                @endif
+                                                                <hr class="form-hr">
+                                                                @if (!empty($filteredDiscounts))
+                                                                    @foreach ($filteredDiscounts as $discountName => $value)
+                                                                        <div class="normal-text">@lang("messages.$discountName")</div>
+                                                                    @endforeach
+                                                                    <hr class="form-hr">
+                                                                @endif
+                                                                <div class="price-name">@lang('messages.Total Price')</div>
+                                                                {{-- @if ($optionalServiceTotalPrice > 0)
+                                                                    <div class="normal-text">@lang('messages.Additional Charge')</div>
+                                                                @endif --}}
+                                                                {{-- @if ($additional_service_total_price > 0)
+                                                                    <div class="normal-text">@lang('messages.Additional Service')</div>
+                                                                @endif --}}
+                                                                {{-- @if ($total_price_airport_shuttle > 0)
+                                                                    <div id="airportShuttle" class="normal-text">@lang('messages.Airport Shuttle')</div>
+                                                                @endif --}}
+                                                                {{-- <hr class="form-hr">
+                                                                @if (!empty($filteredDiscounts))
+                                                                    @foreach ($filteredDiscounts as $discountName => $value)
+                                                                        <div class="normal-text">@lang("messages.$discountName")</div>
+                                                                    @endforeach
+                                                                    <hr class="form-hr">
+                                                                @endif
+                                                                @if ($invoice)
+                                                                    @if ($invoice->currency_id == 1)
+                                                                        <div class="price-name">@lang('messages.Total Price') USD</div>
+                                                                    @elseif ($invoice->currency_id == 2)
+                                                                        <div class="normal-text">@lang('messages.Total Price') USD</div>
+                                                                        <div class="price-name">@lang('messages.Total Price') CNY</div>
+                                                                    @elseif ($invoice->currency_id == 3)
+                                                                        <div class="normal-text">@lang('messages.Total Price') USD</div>
+                                                                        <div class="price-name">@lang('messages.Total Price') TWD</div>
+                                                                    @else
+                                                                        <div class="price-name">@lang('messages.Total Price') IDR</div>
+                                                                    @endif
+                                                                @else
+                                                                    <div class="price-name">@lang('messages.Total Price') USD</div>
+                                                                @endif --}}
+                                                            </div>
+                                                            <div class="col-6 col-md-6 text-right">
+                                                                <div class="text-price">{{ currencyFormatUsd($order->price_pax) }}</div>
+                                                                <div class="text-price">{{ $order->number_of_guests }}</div>
+                                                                @if ($order->additional_service_total_price > 0)
+                                                                    <div class="text-price"><span>{{ currencyFormatUsd($order->additional_service_total_price) }}</span></div>
+                                                                @endif
+                                                                <hr class="form-hr">
+                                                                @if (!empty($filteredDiscounts))
+                                                                    @foreach ($filteredDiscounts as $label => $value)
+                                                                        <div class="normal-text">
+                                                                            @if ($value !== true)<div class="promo-text">{{ currencyFormatUsd($value) }}</div> @endif
+                                                                        </div>
+                                                                    @endforeach
+                                                                    <hr class="form-hr">
+                                                                @endif
+                                                                <div class="usd-rate">{{ currencyFormatUsd($order->final_price) }}</div>
+                                                                {{-- @if ($order->request_quotation == "Yes")
+                                                                    <div id="suitesAndVillasPrice" class="text-price"><span id="suitesAndVillasPriceLable">@lang('messages.To be advised')</span></div>
+                                                                @else
+                                                                    <div id="suitesAndVillasPrice" class="text-price"><span id="suitesAndVillasPriceLable">{{ currencyFormatUsd($order->price_total) }}</span></div>
+                                                                @endif --}}
+                                                                {{-- @if ($optionalServiceTotalPrice > 0)
+                                                                    <div class="text-price"><span id="additionalChargePriceLable">{{ currencyFormatUsd($optionalServiceTotalPrice) }}</span></div>
+                                                                @endif --}}
+                                                                {{-- @if ($additional_service_total_price > 0)
+                                                                    <div class="text-price"><span id="additionalServiceTotalPrice">{{ currencyFormatUsd($additional_service_total_price) }}</span></div>
+                                                                @endif
+                                                                @if ($total_price_airport_shuttle > 0)
+                                                                    <div id="airportShuttlePrice" class="text-price"><span id="airportShuttleText">{{ $airport_shuttle_any_zero?__('messages.To be advised'):currencyFormatUsd($total_price_airport_shuttle) }}</span></div>
+                                                                @endif
+                                                                <hr class="form-hr">
+                                                                @if (!empty($filteredDiscounts))
+                                                                    @foreach ($filteredDiscounts as $label => $value)
+                                                                        <div class="normal-text">
+                                                                            @if ($value !== true)<div class="promo-text">{{ currencyFormatUsd($value) }}</div> @endif
+                                                                        </div>
+                                                                    @endforeach
+                                                                    <hr class="form-hr">
+                                                                @endif
+                                                                <div class="total-price">
+                                                                    @if ($order->request_quotation == "Yes")
+                                                                        <span>@lang('messages.To be advised')</span>
+                                                                    @else
+                                                                        @if ($invoice)
+                                                                            @if ($invoice->currency_id == 1)
+                                                                                <div class="usd-rate">{{ $airport_shuttle_any_zero?__('messages.To be advised'):currencyFormatUsd($order->final_price); }}</div>
+                                                                            @elseif ($invoice->currency_id == 2)
+                                                                                <div class="normal-text">{{ currencyFormatUsd($order->final_price) }}</div>
+                                                                                <div class="usd-rate">{{ $airport_shuttle_any_zero?__('messages.To be advised'):currencyFormatCny($invoice->total_cny); }}</div>
+                                                                            @elseif ($invoice->currency_id == 3)
+                                                                                <div class="normal-text">{{ currencyFormatUsd($order->final_price) }}</div>
+                                                                                <div class="usd-rate">{{ $airport_shuttle_any_zero?__('messages.To be advised'):currencyFormatTwd($invoice->total_twd); }}</div>
+                                                                            @else
+                                                                                <div class="usd-rate">{{ $airport_shuttle_any_zero?__('messages.To be advised'):currencyFormatIdr($order->final_price); }}</div>
+                                                                            @endif
+                                                                        @else
+                                                                            <div class="usd-rate">{{ $airport_shuttle_any_zero?__('messages.To be advised'):currencyFormatUsd($order->final_price); }}</div>
+                                                                        @endif
+                                                                    @endif
+                                                                </div> --}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @uiEnabled('doku-payment')
+                                            @if ($doku_payment)
+                                                <div class="col-md-12">
+                                                    <div class="box-price-kicked">
+                                                        <div class="row">
+                                                            <div class="col-12 col-md-12">
+                                                                <b>@lang('messages.Pay with DOKU')</b>
+                                                                <hr class="form-hr">
+                                                            </div>
+                                                            <div class="col-6 col-md-6">
+                                                                <div class="normal-text">@lang('messages.Total') IDR</div>
+                                                                <div class="normal-text">@lang('messages.Payment Fee')</div>
+                                                                <hr class="form-hr">
+                                                                <div class="price-name">@lang('messages.Total Price') IDR</div>
+                                                            </div>
+                                                            <div class="col-6 col-md-6 text-right">
+                                                                <div class="normal-text">{{ currencyFormatIdr($total_price_idr) }}</div>
+                                                                <div class="normal-text">{{ currencyFormatIdr($tax_doku) }}</div>
+                                                                <hr class="form-hr">
+                                                                <div class="usd-rate">{{ currencyFormatIdr($doku_total_price) }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endUiEnabled
+                                        <div class="col-md-12 ">
+                                            <div class="notif-modal text-left">
+                                                @if ($order->status == "Draft")
+                                                    @if (Auth::user()->email == "" or Auth::user()->phone == "" or Auth::user()->office == "" or Auth::user()->address == "" or Auth::user()->country == "")
+                                                        @lang('messages.Please complete your profile data first to be able to submit orders, by clicking this link') -> <a href="/profile">@lang('messages.Edit Profile')</a>
+                                                    @else
+                                                        @if ($order->status == "Invalid")
+                                                            @lang('messages.This order is invalid, please make sure all data is correct!')
+                                                        @else
+                                                            @lang('messages.Please make sure all the data is correct before you submit the order!')
+                                                        @endif
+                                                    @endif
+                                                @elseif ($order->status == "Pending")
+                                                    @lang('messages.We have received your order, we will contact you as soon as possible to validate the order!')
+                                                @elseif ($order->status == "Rejected")
+                                                    {!! $order->msg !!}
+                                                @elseif ($order->status == "Invalid")
+                                                    {!! $order->msg !!}
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="card-box-footer">
                                         @if ($invoice && $order->status != "Paid")
                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}">

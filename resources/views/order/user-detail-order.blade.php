@@ -3,7 +3,7 @@
 @elseif($order->service == "Private Villa")
     @include('order.detail-order-villa')
 @elseif($order->service == "Tour Package")
-    @include('order.detail-order-tour')
+    @include('frontend.orders.detail-order-tour')
 @elseif($order->service == "Activity")
     @include('order.detail-order-activity')
 @elseif($order->service == "Transport")

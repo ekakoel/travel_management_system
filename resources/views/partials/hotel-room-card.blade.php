@@ -58,7 +58,6 @@
                                 </div>
                             @endif
                         @endif
-    
                         <!-- Room Details -->
                         <div class="card-content">
                             <hr class="form-hr">
@@ -67,8 +66,7 @@
                                     'messages.Capacity' => $room->capacity_adult.' '.__('messages.Adult')." ~ ".$room->capacity_child.' '.__('messages.Child'),
                                     'messages.View' => $room->view,
                                     'messages.Beds' => $room->beds,
-                                    'messages.Area' => $room->size.' m²',
-                                    // 'messages.Additional Information' => $room->additional_info
+                                    'messages.Size' => $room->size.' m²',
                                 ] as $label => $value)
                                     @if ($value != "")
                                         <div class="col-md-4">
@@ -86,7 +84,7 @@
                             </div>
                             <hr class="form-hr">
                             <div class="card-text">
-                                <div class="card-subtitle">
+                            <div class="card-subtitle">
                                     @lang('messages.Amenities')
                                 </div>
                                 <p>
