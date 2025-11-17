@@ -27,7 +27,7 @@ class Spks extends Model
         'number_of_guests',
         'spk_date',
         'send_report',
-        'status'
+        'status',
     ];
 
     public function reservation()

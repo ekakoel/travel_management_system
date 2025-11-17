@@ -233,7 +233,7 @@ class SpksController extends Controller
     
     public function store(Request $request)
     {
-        // Validasi input
+        \Log::info('Form submitted:', $request->all());
         $validator = Validator::make($request->all(), [
             'order_number'     => 'nullable|string|max:100',
             'operator_id'      => 'nullable|integer|min:1',
@@ -264,9 +264,7 @@ class SpksController extends Controller
         $countSpkDate = Spks::whereDate('spk_date', $spk_date)->count() + 1;
         $spkNumber = $prefix . "-" . str_pad($countSpkDate, 3, '0', STR_PAD_LEFT);
         try {
-            DB::beginTransaction();
-
-            $spk = Spks::create([
+            $spk = new Spks ([
                 'order_number'     => $request->order_number,
                 'operator_id'      => $request->operator_id,
                 'type'             => $request->type,
@@ -278,13 +276,10 @@ class SpksController extends Controller
                 'spk_date'         => $spk_date,
                 'status'           => 'Pending',
             ]);
-
-            DB::commit();
+            $spk->save();
             return redirect()->route('view.transport-management.index')->with('success','SPK berhasil ditambahkan');
-
         } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->route('view.transport-management.index')->with('success','SPK berhasil ditambahkan');
+            return redirect()->route('view.transport-management.index')->with('error','SPK gagal ditambahkan, silahkan coba kembali!');
         }
     }
 
