@@ -274,7 +274,6 @@ class SpksController extends Controller
                 'spk_number'       => $spkNumber,
                 'number_of_guests' => $request->number_of_guests,
                 'spk_date'         => $spk_date,
-                'status'           => 'Pending',
             ]);
             $spk->save();
             return redirect()->route('view.transport-management.index')->with('success','SPK berhasil ditambahkan');
