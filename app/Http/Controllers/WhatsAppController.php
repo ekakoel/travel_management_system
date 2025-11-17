@@ -199,23 +199,22 @@ class WhatsAppController extends Controller
         // tambahkan detail khusus jika type-nya "Airport Shuttle"
         if ($spk->type === 'Airport Shuttle') {
             $message_operator .=
-                "*Guest Name:*\n{$guestList}\n" .
-                "*Flight:*\n{$shuttleList}\n" .
+                "*Guest Name:*\n{$guestList}\n\n" .
+                "*Flight:*\n{$shuttleList}\n\n" .
                 "*Destination:*\n{$dstList}\n\n";
         }else{
             $message_operator .=
-                "*Guest Name:*\n{$guestList}\n" .
+                "*Guest Name:*\n{$guestList}\n\n" .
                 "*Destination:*\n{$dstList}\n\n";
         }
 
         $message_operator .=
             "*Driver:* _{$driver_name}_\n" .
-            "*Hp:* +_{$driver_phone}_\n" .
+            "*Hp:* +{$driver_phone}\n" .
             "*Vehicle:* _{$vehicle_brand} - {$vehicle_name}_\n" .
             "*Police Number:* _{$vehicle_no}_\n\n" .
             "Untuk melihat detail SPK, gunakan link berikut:\n" .
-            "{$spk_operator_link}\n\n" .
-            "Terima kasih,\n*online.balikamitour.com*";
+            "{$spk_operator_link}\n\n";
 
         $wa = new WhatsappService();
         $results = [];
