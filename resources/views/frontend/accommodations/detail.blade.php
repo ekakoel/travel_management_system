@@ -13,7 +13,7 @@
             <!-- Hotel Cover Image -->
             <div class="col-md-6 my-5">
                 <div class="cover-img">
-                    <img src="{{ $hotel->cover?asset('storage/hotels/hotels-cover/' . $hotel->cover):asset('images/default.webp') }}" loading="lazy">
+                    <img src="{{ $hotel->cover?asset('hotels/hotels-cover/' . $hotel->cover):asset('images/default.webp') }}" loading="lazy">
                 </div>
             </div>
             <!-- Hotel Information -->
