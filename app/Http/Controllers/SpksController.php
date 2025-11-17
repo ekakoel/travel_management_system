@@ -279,6 +279,7 @@ class SpksController extends Controller
             $spk->save();
             return redirect()->route('view.transport-management.index')->with('success','SPK berhasil ditambahkan');
         } catch (\Exception $e) {
+            \Log::error('SPK save failed: '.$e->getMessage());
             return redirect()->route('view.transport-management.index')->with('error','SPK gagal ditambahkan, silahkan coba kembali!');
         }
     }
