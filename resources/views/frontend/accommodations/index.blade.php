@@ -29,15 +29,15 @@
         @if($hotels->count() > 0)
         <div class="card-box-content">
             @foreach($hotels as $hotel)
-                <div class="card hotel-item" data-region="{{ strtolower($hotel->region) }}">
-                    <img src="{{ getThumbnail('/hotels/hotels-cover/' . $hotel->cover,380,200) }}" class="thumbnail-image" loading="lazy">
-                    <div class="card-body">
+                <a href="{{ route('view.accommodation-detail', $hotel->code) }}">
+                    <div class="card hotel-item" data-region="{{ strtolower($hotel->region) }}">
+                        <img src="{{ getThumbnail('/hotels/hotels-cover/' . $hotel->cover,380,200) }}" class="thumbnail-image" loading="lazy">
                         <div class="card-title">{{ $hotel->name }}</div>
+                        {{-- <div class="card-footer text-right">
+                            <a href="{{ route('view.accommodation-detail', $hotel->code) }}" class="btn btn-primary">@lang('messages.View Details')</a>
+                        </div> --}}
                     </div>
-                    <div class="card-footer text-right">
-                        <a href="{{ route('view.accommodation-detail', $hotel->code) }}" class="btn btn-primary">@lang('messages.View Details')</a>
-                    </div>
-                </div>
+                </a>
             @endforeach
         </div>
         @else

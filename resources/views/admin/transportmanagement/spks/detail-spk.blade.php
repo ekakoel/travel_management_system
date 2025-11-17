@@ -543,7 +543,7 @@
                                     <tbody>
                                         @foreach($spk->destinations as $dest)
                                             <tr>
-                                                <td>{{ date('l, d M Y (H:i)',strtotime($dest->date)) }}</td>
+                                                <td>{{ date('d M Y (H:i)',strtotime($dest->date)) }}</td>
                                                 <td>
                                                     <a href="{{ $dest->destination_address }}" target="__blank" data-toggle="tooltip" data-placement="top" title="{!! $dest->description !!}">
                                                         <i class="icon-copy fa fa-map-marker" aria-hidden="true"></i> {{ $dest->destination_name }}

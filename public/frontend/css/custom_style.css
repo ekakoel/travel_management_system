@@ -583,6 +583,7 @@ select option{
 .thumbnail-image:hover {
     transform: scale(1.05);
 }
+
 /* BREADCRUMB */
 /* Breadcrumb Navigation */
 .breadcrumb-nav {
@@ -763,6 +764,19 @@ textarea.form-control {
     box-shadow: -3px 3px 5px 0px #00000029 !important;
     border: 1px solid #c6c6c6;
 }
+.card .card-title{
+    padding: 8px 18px !important;
+    margin: 0 !important;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.card-body{
+    padding: 8px 18px !important;
+    align-self: center;
+    line-height: 1 !important;
+}
 .card img{
     width: 100%;
     height: auto;
@@ -819,6 +833,13 @@ textarea.form-control {
 
 .modal{
     z-index: 999999;
+}
+
+.modal .modal-body img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    aspect-ratio: 3 / 2;
 }
 .modal-header{
     background-color: #f3f3f3;
@@ -1589,6 +1610,9 @@ legend {
     grid-template-columns: repeat(4, 1fr);
     gap: 18px;
     border-radius: 0 0 8px 8px;
+}
+.card-box-content a{
+    color: var(--dark);
 }
 .card-box-content-half {
     display: grid;

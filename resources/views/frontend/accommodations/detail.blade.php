@@ -7,22 +7,22 @@
         <li class="breadcrumb-item active" aria-current="page">{{ $hotel->name }}</li>
     </ol>
 </nav>
-<div class="container-fluid my-5">
-    <div class="container">
+<div class="container-fluid my-5 py-5">
+    <div class="container m-b-27">
         <div class="row">
             <!-- Hotel Cover Image -->
             <div class="col-md-6 my-5">
                 <div class="cover-img">
-                    <img src="{{ $hotel->cover?asset('storage/hotels/hotels-cover/' . $hotel->cover):asset('images/default.webp') }}" class="thumbnail-image" loading="lazy">
+                    <img src="{{ $hotel->cover?asset('storage/hotels/hotels-cover/' . $hotel->cover):asset('images/default.webp') }}" loading="lazy">
                 </div>
             </div>
             <!-- Hotel Information -->
             <div class="col-md-6 my-5">
-                <h1 class="display-4">{{ $hotel->name }}</h1>
+                <h2>{{ $hotel->name }}</h2>
                 <p><strong>@lang('messages.Region'):</strong> {{ $hotel->region }}</p>
                 <p><strong>@lang('messages.Address'):</strong> {{ $hotel->address }}</p>
-                <p><strong>@lang('messages.Airport Duration'):</strong> {{ $hotel->airport_duration }} minutes</p>
-                <p><strong>@lang('messages.Airport Distance'):</strong> {{ $hotel->airport_distance }} km</p>
+                <p><strong>@lang('messages.Airport Duration'):</strong> {{ $hotel->airport_duration }} @lang('messages.Hours')</p>
+                <p><strong>@lang('messages.Airport Distance'):</strong> {{ $hotel->airport_distance }} @lang('messages.Km')</p>
             </div>
             <div class="col-md-12">
                 @if ($hotel->description)
@@ -58,12 +58,7 @@
                         data-image="{{ asset('storage/hotels/hotels-room/' . $room->cover) }}"
                         data-room-name="{{ $room->rooms }}">
                             <img src="{{ getThumbnail('/hotels/hotels-room/' . $room->cover,380,200) }}" class="card-img-top" alt="{{ $room->rooms }}" loading="lazy">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $room->rooms }}</h5>
-                                <p class="card-text">
-                                    <strong>@lang('messages.Capacity'):</strong> {{ $room->capacity }} @lang('messages.persons')<br>
-                                </p>
-                            </div>
+                            <div class="card-title">{{ $room->rooms }}</div>
                         </div>
                     </div>
                 @endforeach
