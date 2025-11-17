@@ -14,8 +14,7 @@ class WhatsAppController extends Controller
     {
         $request->validate([
             'phone' => 'required|string',
-            'spk' => 'required|string',
-            'url' => 'required|string',
+            'spk' => 'required|string'
         ]);
         
         $spk = Spks::with(['airport_shuttles','guests','operator','driver','transport','destinations'])
@@ -24,8 +23,6 @@ class WhatsAppController extends Controller
         if (!$spk) {
             return response()->json(['success' => false, 'message' => 'SPK tidak ditemukan.']);
         }
-
-        $url = $request->url;
         $operator_name = $spk->operator?->name;
         $spk_date = date('d M Y', strtotime($spk->spk_date));
         
@@ -34,7 +31,7 @@ class WhatsAppController extends Controller
         $vehicle_name = $spk->transport?->name;
         $driver_name = $spk->driver?->name;
         $driver_phone = $spk->driver?->phone;
-        $spk_driver_link = $url;
+        $spk_driver_link = 'https://online.balikamitour.com/spk/'.$spk->id.'/'.$spk->spk_number;
         $spk_operator_link = 'https://online.balikamitour.com/spk-report/'.$spk->id;
 
         // === Daftar tamu, shuttle, dan destinasi ===
@@ -160,8 +157,7 @@ class WhatsAppController extends Controller
     {
         $request->validate([
             'phone' => 'required|string',
-            'spk' => 'required|string',
-            'url' => 'required|string',
+            'spk' => 'required|string'
         ]);
         $spk = Spks::with(['airport_shuttles','guests','operator','driver','transport','destinations'])
             ->find($request->spk);
