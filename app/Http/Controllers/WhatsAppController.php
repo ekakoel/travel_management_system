@@ -147,6 +147,7 @@ class WhatsAppController extends Controller
             $results['driver'] = $wa->send($spk->driver->phone, $message_driver);
         }
         return response()->json([
+            'success' => "Terkirim",
             'message' => "Pesan berhasil dikirim ke driver",
             'data' => $results,
         ]);
@@ -222,6 +223,7 @@ class WhatsAppController extends Controller
             $results['driver'] = $wa->send($spk->operator->phone, $message_operator);
         }
         return response()->json([
+            'success' => "Terkirim",
             'message' => "Pesan berhasil dikirim ke operator",
             'data' => $results,
         ]);
