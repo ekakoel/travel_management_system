@@ -6,7 +6,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ route('home') }}">@lang('messages.Home')</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('transport-service') }}">@lang('messages.Transports')</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('view.transport-service') }}">@lang('messages.Transports')</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $transport->brand." - ".$transport->name }}</li>
     </ol>
 </nav>

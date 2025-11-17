@@ -28,6 +28,7 @@ class WhatsAppController extends Controller
         $url = $request->url;
         $operator_name = $spk->operator?->name;
         $spk_date = date('d M Y', strtotime($spk->spk_date));
+        
         $vehicle_brand = $spk->transport?->brand;
         $vehicle_no = $spk->plate_number ?? '-';
         $vehicle_name = $spk->transport?->name;
@@ -42,7 +43,8 @@ class WhatsAppController extends Controller
         })->implode("\n");
 
         $shuttleList = $spk->airport_shuttles->map(function ($shuttle) {
-            return "- ({date('d M Y H:i', strtotime($shuttle->date)}) {$shuttle->flight_number}";
+            $shuttle_date = date('d M Y (H:i)', strtotime($shuttle->date));
+            return "- ({$shuttle_date}) {$shuttle->flight_number}";
         })->implode("\n");
 
         $dstList = $spk->destinations->map(function ($dst) {
@@ -54,30 +56,26 @@ class WhatsAppController extends Controller
             "Halo {$operator_name},\n\n" .
             "*Your order*\n" .
             "*Order Number:* _{$spk->order_number}_\n" .
-            "*Date:* _{$spk_date}_\n" .
-            "-------------------------------------------------------------\n";
+            "*Date:* _{$spk_date}_\n".
+            "*Type:* _{$spk->type}_\n\n";
 
         // tambahkan detail khusus jika type-nya "Airport Shuttle"
         if ($spk->type === 'Airport Shuttle') {
             $message_operator .=
                 "*Guest Name:*\n{$guestList}\n" .
                 "*Flight:*\n{$shuttleList}\n" .
-                "*Destination:*\n{$dstList}\n" .
-                "-------------------------------------------------------------\n";
+                "*Destination:*\n{$dstList}\n\n";
         }else{
             $message_operator .=
                 "*Guest Name:*\n{$guestList}\n" .
-                "*Destination:*\n{$dstList}\n" .
-                "-------------------------------------------------------------\n";
+                "*Destination:*\n{$dstList}\n\n";
         }
 
-        // lanjutkan pesan operator
         $message_operator .=
             "*Driver:* _{$driver_name}_\n" .
             "*Hp:* +_{$driver_phone}_\n" .
             "*Vehicle:* _{$vehicle_brand} - {$vehicle_name}_\n" .
-            "*Police Number:* _{$vehicle_no}_\n" .
-            "-------------------------------------------------------------\n" .
+            "*Police Number:* _{$vehicle_no}_\n\n" .
             "Untuk melihat detail SPK, gunakan link berikut:\n" .
             "{$spk_operator_link}\n\n" .
             "Terima kasih,\n*online.balikamitour.com*";

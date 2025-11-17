@@ -72,70 +72,70 @@
                                             <div class="cover-image m-b-18">
                                                 <img src="{{ asset('storage/tours/tours-cover/'.$tour->cover) }}" alt="{{ $tour->name }}" loading="lazy">
                                             </div>
+                                            <div class="m-b-18">
+                                                <div class="card-subtitle">{{ $tour->name }} ({{ $tour->code }})</div>
+                                                <p>
+                                                    {!! $tour->short_description !!}
+                                                </p>
+                                            </div>
+                                            <div class="card-subtitle">Itinerary</div>
+                                            <div class="m-b-18">
+                                                {!! $tour->itinerary !!}
+                                            </div>
+                                            <div class="card-subtitle">Inclusions</div>
+                                            <div class="m-b-18">
+                                                {!! $tour->include !!}
+                                            </div>
+                                            <div class="card-subtitle">Exclusions</div>
+                                            <div class="m-b-18">
+                                                {!! $tour->exclude !!}
+                                            </div>
+                                            @if ($tour->additional_info)
+                                                <div class="card-subtitle">Additional Information</div>
+                                                <div class="m-b-18">
+                                                    {!! $tour->additional_info !!}
+                                                </div>
+                                            @endif
+                                            @if ($tour->cancellation_policy)
+                                                <div class="card-subtitle">Cancellation Policy</div>
+                                                <div class="m-b-18">
+                                                    {!! $tour->cancellation_policy !!}
+                                                </div>
+                                            @endif
+                                            <div class="card-subtitle">Tour Gallery</div>
+                                            <div class="modal-galery">
+                                                @if (count($tour->images)>0)
+                                                    @foreach ($tour->images as $tour_image)
+                                                        <div class="gallery-item" id="image-{{ $tour_image->id }}">
+                                                            {{-- <img src="{{ asset("storage/tours/tour-gallery/".$tour_image->image) }}" loading="lazy"> --}}
+                                                            <img src="{{ getThumbnail("storage/tours/tour-gallery/".$tour_image->image,380,200) }}" class="thumbnail-image" loading="lazy">
+                                                            @canany(['posDev','posAuthor'])
+                                                                <div class="action-container">
+                                                                    <button class="action-remove" onclick="deleteImage({{ $tour_image->id }})">
+                                                                        <i class="icon-copy dw dw-delete-3"></i>
+                                                                    </button>
+                                                                    <button class="action-update" onclick="updateImage({{ $tour_image->id }})">
+                                                                        <i class="icon-copy dw dw-pencil"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @endcanany
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    <p class="notification">No images available</p>
+                                                @endif
+                                            </div>
+                                            @canany(['posDev','posAuthor'])
+                                                @include('partials.modal-dropzone', compact("tour"))
+                                            @endcanany
+                                            <div class="card-box-footer">
+                                                @canany(['posDev','posAuthor'])
+                                                    <a href="/edit-tour-{{ $tour['id'] }}"><button class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
+                                                @endcanany
+                                                <a href="/tours-admin"><button class="btn btn-secondary" ><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
+                                            </div>
                                         </div>
                                         
-                                        <div class="m-b-18">
-                                            <div class="card-subtitle">{{ $tour->name }}</div>
-                                            <p>
-                                                {!! $tour->short_description !!}
-                                            </p>
-                                        </div>
-                                        <div class="card-subtitle">Itinerary</div>
-                                        <div class="m-b-18">
-                                            {!! $tour->itinerary !!}
-                                        </div>
-                                        <div class="card-subtitle">Inclusions</div>
-                                        <div class="m-b-18">
-                                            {!! $tour->include !!}
-                                        </div>
-                                        <div class="card-subtitle">Exclusions</div>
-                                        <div class="m-b-18">
-                                            {!! $tour->exclude !!}
-                                        </div>
-                                        @if ($tour->additional_info)
-                                            <div class="card-subtitle">Additional Information</div>
-                                            <div class="m-b-18">
-                                                {!! $tour->additional_info !!}
-                                            </div>
-                                        @endif
-                                        @if ($tour->cancellation_policy)
-                                            <div class="card-subtitle">Cancellation Policy</div>
-                                            <div class="m-b-18">
-                                                {!! $tour->cancellation_policy !!}
-                                            </div>
-                                        @endif
-                                        <div class="card-subtitle">Tour Gallery</div>
-                                        <div class="modal-galery">
-                                            @if (count($tour->images)>0)
-                                                @foreach ($tour->images as $tour_image)
-                                                    <div class="gallery-item" id="image-{{ $tour_image->id }}">
-                                                        {{-- <img src="{{ asset("storage/tours/tour-gallery/".$tour_image->image) }}" loading="lazy"> --}}
-                                                        <img src="{{ getThumbnail("storage/tours/tour-gallery/".$tour_image->image,380,200) }}" class="thumbnail-image" loading="lazy">
-                                                        @canany(['posDev','posAuthor'])
-                                                            <div class="action-container">
-                                                                <button class="action-remove" onclick="deleteImage({{ $tour_image->id }})">
-                                                                    <i class="icon-copy dw dw-delete-3"></i>
-                                                                </button>
-                                                                <button class="action-update" onclick="updateImage({{ $tour_image->id }})">
-                                                                    <i class="icon-copy dw dw-pencil"></i>
-                                                                </button>
-                                                            </div>
-                                                        @endcanany
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <p class="notification">No images available</p>
-                                            @endif
-                                        </div>
-                                        @canany(['posDev','posAuthor'])
-                                            @include('partials.modal-dropzone', compact("tour"))
-                                        @endcanany
-                                        <div class="card-box-footer">
-                                            @canany(['posDev','posAuthor'])
-                                                <a href="/edit-tour-{{ $tour['id'] }}"><button class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
-                                            @endcanany
-                                            <a href="/tours-admin"><button class="btn btn-secondary" ><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
-                                        </div>
                                     </div>
                                     <div id="prices" class="card-box">
                                         <div class="card-box-title">

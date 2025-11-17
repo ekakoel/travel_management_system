@@ -318,6 +318,7 @@ class ToursAdminController extends Controller
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'status' => 'required|string|max:255',
             'name' => 'required|string|max:255',
+            'code' => 'required|string|max:125',
             'name_traditional' => 'required|string|max:255',
             'name_simplified' => 'required|string|max:255',
             'type' => 'required|integer',
