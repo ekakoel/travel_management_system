@@ -139,7 +139,9 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     //                    WA SERVER
     // ---------------------------------------------------
     Route::post('/spk/{id}/send-whatsapp', [WhatsAppController::class, 'send'])->name('spk.send.whatsapp');
-    Route::post('/send-whatsapp', [WhatsAppController::class, 'send'])->name('send.whatsapp');
+    Route::post('/send-whatsapp-both', [WhatsAppController::class, 'send_wa_both'])->name('send.whatsapp-both');
+    Route::post('/send-whatsapp-driver', [WhatsAppController::class, 'send_wa_driver'])->name('send.whatsapp-driver');
+    Route::post('/send-whatsapp-operator', [WhatsAppController::class, 'send_wa_operator'])->name('send.whatsapp-operator');
     Route::get('/spk-report/{id}', [WhatsAppController::class, 'spk_report'])->name('view.spk-report');
     
     // ---------------------------------------------------

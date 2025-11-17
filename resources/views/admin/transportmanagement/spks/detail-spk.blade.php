@@ -21,6 +21,14 @@
                     </div>
                 </div>
             </div>
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
             <div class="row">
                 <div class="col-md-8">
                     <div class="card-box mb-4">
@@ -514,6 +522,9 @@
                                     </div>
                                 </div>
                             </div>
+                            <div>
+                                <hr>
+                            </div>
                             <h5>
                                 <strong>Destinations</strong>
                             </h5>
@@ -667,17 +678,56 @@
                             </div>
                         </div>
                         <div class="card-box-footer">
-                            <a href="https://api.whatsapp.com/send?text={{ urlencode('https://online.balikamitour.com/spk/'.$spk->id.'/'.$spk->spk_number) }}" 
+                            {{-- <a href="https://api.whatsapp.com/send?text={{ urlencode('https://online.balikamitour.com/spk/'.$spk->id.'/'.$spk->spk_number) }}" 
                                 target="_blank" 
                                 class="btn btn-success">
                                 <i class="bi bi-whatsapp"></i> Share SPK
-                            </a>
+                            </a> --}}
+                            {{-- @if($spk->send_report === 1 && isset($spk->operator->phone) )
+                                <button type="button" class="btn btn-success" id="btnSendWaToDriver"
+                                    data-phone="{{ $spk->driver?->phone }}"
+                                    data-spk="{{ $spk->id }}"
+                                    data-url="{{ route('view.spk', ['id' => $spk->id,'spkNumber'=>$spk->spk_number]) }}">
+                                    <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Driver
+                                </button>
+                                <button type="button" class="btn btn-success" id="btnSendWaToOperator"
+                                    data-phone="{{ $spk->operator?->phone }}"
+                                    data-spk="{{ $spk->id }}"
+                                    data-url="{{ route('view.spk', ['id' => $spk->id,'spkNumber'=>$spk->spk_number]) }}">
+                                    <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Operator
+                                </button>
+                            @endif
                             @if($spk->send_report === 0 && isset($spk->operator->phone) )
                                 <button type="button" class="btn btn-success" id="btnSendWa"
                                     data-phone="{{ $spk->operator?->phone }}"
                                     data-spk="{{ $spk->id }}"
                                     data-url="{{ route('view.spk', ['id' => $spk->id,'spkNumber'=>$spk->spk_number]) }}">
                                     <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Reservation
+                                </button>
+                            @endif --}}
+                            @if($spk->send_report === 1 && isset($spk->operator->phone) )
+                                <button id="btnSendWaToDriver"
+                                    class="btn btn-warning sendWA"
+                                    data-route="{{ route('send.whatsapp-driver') }}"
+                                    data-phone="{{ $spk->driver->phone }}"
+                                    data-spk="{{ $spk->id }}">
+                                    Share to Driver
+                                </button>
+                                <button id="btnSendWaToOperator"
+                                    class="btn btn-primary sendWA"
+                                    data-route="{{ route('send.whatsapp-operator') }}"
+                                    data-phone="{{ $spk->operator->phone }}"
+                                    data-spk="{{ $spk->id }}">
+                                    Share to Operator
+                                </button>
+                            @endif
+                            @if($spk->send_report === 0 && isset($spk->operator->phone) )
+                                <button id="btnSendWa"
+                                    class="btn btn-success sendWA"
+                                    data-route="{{ route('send.whatsapp-both') }}"
+                                    data-phone="{{ $spk->driver->phone }}"
+                                    data-spk="{{ $spk->id }}">
+                                    Share to Driver & Operator
                                 </button>
                             @endif
                             <a href="{{ route('spks.print',$spk->id) }}" target="__blank">
@@ -708,6 +758,20 @@
                                                 </div>
                                                 <hr class="form-hr">
                                                 <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>Reservation <span>*</span></label>
+                                                            <div class="btn-icon">
+                                                                <span><i class="icon-copy dw dw-user2"></i></span>
+                                                                <select name="operator_id" class="custom-select input-icon form-select" required>
+                                                                    <option disabled value="">Select Reservation</option>
+                                                                    @foreach ($operators as $operator)
+                                                                        <option {{ $operator->id == $spk->operator_id?"selected":"" }} value="Canceled">{{ $operator->name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label>Order Number <span>*</span></label>
@@ -1048,49 +1112,29 @@
     
     <script>
         $(document).ready(function () {
-            $('#btnSendWa').on('click', function () {
-                const phone = $(this).data('phone');
-                const spk = $(this).data('spk');
-                const url = $(this).data('url');
-                
-        
-                // format pesan WhatsApp (gunakan backtick agar multi-line)
-                // const message = `
-                //     Halo ${name},
-                //     SPK untuk layanan transportasi telah diterbitkan dengan detail sebagai berikut:
-                //         *Order Number:* _${orderNumber}_
-                //         *Date:* _${spkDate}_
-                //         *SPK Number:* _${spkNumber}_
-                //         *Number of Guests:* _${guests}_
-                //         *Vehicle:* _${vehicle}_
-                //         *Driver:* _${driver}_
-                //     Untuk melihat SPK gunakan link berikut:
-                //     ${url}
-                                        
-                //     Salam,
-                //     online.balikamitour.com
-                    // `;
-                // const message = `Halo ${name}, SPK Anda (#${spk}) telah berhasil dibuat. Terima kasih telah menggunakan layanan kami.`;
-        
+            $('.sendWA').on('click', function () {
+                const btn = $(this);
+                const route = btn.data('route');
+                const phone = btn.data('phone');
+                const spk   = btn.data('spk');
                 if (!phone) {
                     alert('Nomor telepon tidak ditemukan!');
                     return;
                 }
-        
                 $.ajax({
-                    url: "{{ route('send.whatsapp') }}",
+                    url: route,
                     type: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
                         phone: phone,
-                        spk: spk,
-                        url: url
+                        spk: spk
                     },
                     beforeSend: function () {
-                        $('#btnSendWa').prop('disabled', true).text('Sending...');
+                        btn.prop('disabled', true).text('Sending...');
                     },
                     success: function (res) {
-                        $('#btnSendWa').prop('disabled', true).text('Sent');
+                        btn.text('Sent');
+
                         if (res.success) {
                             alert('✅ ' + res.message);
                         } else {
@@ -1099,7 +1143,7 @@
                         }
                     },
                     error: function (xhr) {
-                        $('#btnSendWa').prop('disabled', false).text('Send WhatsApp');
+                        btn.prop('disabled', false).text('Send WhatsApp');
                         alert('❌ Terjadi kesalahan! Lihat console untuk detail.');
                         console.error(xhr.responseText);
                     }

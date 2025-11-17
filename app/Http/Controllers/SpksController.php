@@ -260,8 +260,8 @@ class SpksController extends Controller
         $spk_date = $request->spk_date ? Carbon::parse($request->spk_date)->format('Y-m-d') : null;
         $typeCode = $typeCodes[$request->type] ?? 'OT';
         $today = now()->toDateString();
-        $prefix = "SPK-".$request->order_number."-".$typeCode.Carbon::parse($today)->format('ymd');
-        $countSpkDate = Spks::whereDate('spk_date', $spk_date)->count() + 1;
+        $prefix = "SPK-".$request->order_number."-".$typeCode.Carbon::parse($spk_date)->format('ymd');
+        $countSpkDate = Spks::where('order_number', $request->order_number)->count() + 1;
         $spkNumber = $prefix . "-" . str_pad($countSpkDate, 3, '0', STR_PAD_LEFT);
         try {
             $spk = new Spks ([
@@ -310,7 +310,7 @@ class SpksController extends Controller
         ]);
         $spk_destination->save();
 
-        return redirect()->route('view.detail-spk',$id)->with('success', 'Spks created successfully.');
+        return redirect()->route('view.detail-spk',$id)->with('success', 'Destinasi berhasil ditambahkan kedalam SPK.');
     }
     
     public function func_update_spk(Request $request, $id)
@@ -340,7 +340,7 @@ class SpksController extends Controller
             'driver_id' => $validated['driver_id'],
         ]);
 
-        return redirect()->route('view.detail-spk',$id)->with('success', 'Spks has been updated.');
+        return redirect()->route('view.detail-spk',$id)->with('success', 'SPK Berhasil diupdate.');
     }
 
     public function func_update_spk_destination(Request $request, $id)
@@ -371,7 +371,7 @@ class SpksController extends Controller
             "latitude"=>$latitude,
             "description"=>$request->description,
         ]);
-        return redirect()->route('view.detail-spk',$spk->id)->with('success', 'Spks has been updated.');
+        return redirect()->route('view.detail-spk',$spk->id)->with('success', 'SPK berhasil diupdate.');
     }
 
     
@@ -385,9 +385,6 @@ class SpksController extends Controller
             'destinations',
             'guests'
         ])->findOrFail($id);
-        // if (date('Y-m-d',strtotime($spk->spk_date)) < $now) {
-        //     return redirect()->route('view.transport-management.index')->with('success', 'Spks tidak terdaftar atau tidak ditemukan!.');
-        // }
         $destinationsJson = $spk->destinations->map(function($d){
             return [
                 'lat' => (float)$d->latitude,
@@ -396,6 +393,7 @@ class SpksController extends Controller
                 'status' => $d->status ?? 'Pending'
             ];
         })->toJson();
+        $operators = User::where('type','admin')->where('Status','Active')->get();
         $vehicles = Transports::where('status','Active')->get();
         $drivers = Drivers::where('status','Active')->get();
         $guests = $spk->guests;
@@ -411,7 +409,8 @@ class SpksController extends Controller
             'guests',
             'airport_shuttles',
             'bgStatus',
-            'destinationsJson'
+            'destinationsJson',
+            'operators'
         ));
     }
 
@@ -553,22 +552,19 @@ class SpksController extends Controller
             'phone' => $request->phone
         ]);
         $guest->save();
-
-        return redirect()->back()->with('success', 'Guest berhasil ditambahkan ke SPK.');
+        return redirect()->back()->with('success', 'Daftar tamu berhasil ditambahkan.');
     }
 
     public function func_delete_guest($id)
     {
         $guest = Guests::findOrFail($id);
         $guest->delete();
-
         return redirect()->back()->with('success', 'Guest berhasil dihapus dari SPK.');
     }
     public function func_delete_airport_shuttle($id)
     {
         $airport_shuttle = AirportShuttle::findOrFail($id);
         $airport_shuttle->delete();
-
         return redirect()->back()->with('success', 'Airport Shuttle berhasil dihapus dari SPK');
     }
 

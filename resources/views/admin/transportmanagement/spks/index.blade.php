@@ -66,9 +66,12 @@
                                                         <p><i>{{ $spk->type }} ({{ $spk->number_of_guests }} pax)</i></p>
                                                     </td>
                                                     <td>
-                                                        {{ $spk->transport ? $spk->transport->brand." ".$spk->transport->name : 'N/A' }} - 
-                                                        {{ $spk->driver ? $spk->driver->name : 'N/A' }}<br>
-                                                        {{ $spk->plate_number ? $spk->plate_number : '-' }}
+                                                        <i>
+                                                            {{ $spk->spk_number }}<br>
+                                                            {{ $spk->transport ? $spk->transport->brand." ".$spk->transport->name : 'N/A' }} - 
+                                                            {{ $spk->driver ? $spk->driver->name : 'N/A' }}<br>
+                                                            {{ $spk->plate_number ? $spk->plate_number : '-' }}
+                                                        </i>
                                                     </td>
                                                     <td>
                                                         <span class="badge {{ $statusColors[$spk->status] ?? 'bg-secondary' }}">{{ $spk->status }}</span>
