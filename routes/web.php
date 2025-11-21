@@ -144,9 +144,12 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::post('/send-whatsapp-operator', [WhatsAppController::class, 'send_wa_operator'])->name('send.whatsapp-operator');
     Route::get('/spk-report/{id}', [WhatsAppController::class, 'spk_report'])->name('view.spk-report');
 
-    Route::get('/whatsapp/status', [WhatsAppController::class, 'status'])->name('whatsapp.status');
-    Route::post('/whatsapp/connect', [WhatsAppController::class, 'connect'])->name('whatsapp.connect');
-    Route::post('/whatsapp/disconnect', [WhatsAppController::class, 'disconnect'])->name('whatsapp.disconnect');
+    Route::prefix('whatsapp')->group(function () {
+        Route::get('/status', [WhatsappController::class, 'status'])->name('wa.status');
+        Route::post('/connect', [WhatsAppController::class, 'connect'])->name('wa.connect');
+        Route::get('/qr', [WhatsappController::class, 'qr'])->name('wa.qr');
+        Route::post('/disconnect', [WhatsappController::class, 'disconnect'])->name('wa.disconnect');
+    });
     Route::post('/wa/status/update', [WhatsAppController::class, 'updateStatus']);
 
 

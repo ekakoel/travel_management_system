@@ -984,11 +984,15 @@
                         <div class="card-box-title">
                             <strong>WhatsApp Connection Status</strong>
                         </div>
+
                         <div class="card-box-body">
+
                             <!-- Status -->
                             <div id="wa-status" class="mb-3">
                                 <span class="badge badge-secondary">Checking status...</span>
                             </div>
+
+                            <div id="wa-status-box"></div>
 
                             <!-- Actions -->
                             <div id="wa-actions">
@@ -998,22 +1002,26 @@
                             </div>
 
                             <!-- Modal QR Code -->
-                            <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal fade" id="waModal" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
+
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="waModalLabel">Scan QR Code WhatsApp</h5>
-                                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
+                                            <h5 class="modal-title">Scan QR Code WhatsApp</h5>
+                                            <button type="button" class="close" data-bs-dismiss="modal">
+                                                <span>&times;</span>
                                             </button>
                                         </div>
+
                                         <div class="modal-body text-center">
                                             <div id="wa-qrcode"></div>
-                                            <p class="mt-2">Gunakan WhatsApp pada ponsel Anda untuk memindai QR code ini.</p>
+                                            <p class="mt-2">Gunakan WhatsApp di HP Anda untuk scan QR ini.</p>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -1268,76 +1276,73 @@
         window.initMap = initMap;
     </script>
     <script>
-        $(document).ready(function () {
+        function loadStatus() {
+            $("#wa-status").html(`<span class="badge badge-info">Checking...</span>`);
 
-            const updateWAStatus = () => {
-                $.ajax({
-                    url: "{{ route('whatsapp.status') }}",
-                    type: "GET",
-                    success: function(res) {
-                        const statusEl = $('#wa-status');
-                        if(res.connected){
-                            statusEl.html('<span class="badge bg-success">Terhubung: '+res.phone+'</span>');
-                            $('#btnConnectWA').hide();
-                            $('#btnDisconnectWA').show();
-                        } else {
-                            statusEl.html('<span class="badge bg-danger">Tidak terhubung</span>');
-                            $('#btnConnectWA').show();
-                            $('#btnDisconnectWA').hide();
-                        }
-                    },
-                    error: function() {
-                        $('#wa-status').html('<span class="badge bg-warning">Status tidak dapat diambil</span>');
-                    }
-                });
-            };
+            $.get("{{ route('wa.status') }}", function(res) {
+                let html = "";
 
-            // Load status awal
-            updateWAStatus();
+                if (res.connected) {
+                    $("#wa-status").html(`<span class="badge badge-success">Connected</span>`);
 
-            // Polling setiap 5 detik
-            setInterval(updateWAStatus, 5000);
+                    html = `
+                        <div class="alert alert-success">
+                            ✔ Terhubung<br>
+                            Status: ${res.status || 'OK'}<br>
+                            Nomor: ${res.number || '-'}<br>
+                            Pesan: ${res.message || ''}
+                        </div>
+                    `;
 
-            // Refresh manual
-            $('#btnRefreshWA').click(updateWAStatus);
+                    $("#btnConnectWA").hide();
+                    $("#btnDisconnectWA").show();
 
-            // Connect WhatsApp
-            $('#btnConnectWA').click(function() {
-                $.ajax({
-                    url: "{{ route('whatsapp.connect') }}",
-                    type: "POST",
-                    data: {_token: "{{ csrf_token() }}"},
-                    success: function(res) {
-                        if(res.qrcode){
-                            $('#wa-qrcode').html('<img src="data:image/png;base64,'+res.qrcode+'" />');
-                            $('#waModal').modal('show');
-                        }
-                    },
-                    error: function() {
-                        alert('Gagal membuat koneksi. Silahkan coba lagi.');
-                    }
-                });
+                } else {
+                    $("#wa-status").html(`<span class="badge badge-danger">Not Connected</span>`);
+
+                    html = `
+                        <div class="alert alert-danger">
+                            ✖ Tidak Terhubung<br>
+                            Pesan: ${res.message || 'Unknown Error'}
+                        </div>
+                    `;
+
+                    $("#btnConnectWA").show();
+                    $("#btnDisconnectWA").hide();
+                }
+
+                $("#wa-status-box").html(html);
             });
+        }
 
-            // Disconnect WhatsApp
-            $('#btnDisconnectWA').click(function() {
-                if(confirm("Yakin ingin memutus koneksi WhatsApp?")){
-                    $.ajax({
-                        url: "{{ route('whatsapp.disconnect') }}",
-                        type: "POST",
-                        data: {_token: "{{ csrf_token() }}"},
-                        success: function(res){
-                            alert(res.message);
-                            updateWAStatus();
-                        },
-                        error: function(){
-                            alert('Gagal memutus koneksi.');
-                        }
-                    });
+        // Klik tombol connect (tampilkan QR)
+        $("#btnConnectWA").click(function () {
+            $("#wa-qrcode").html("Loading QR...");
+            $("#waModal").modal("show");
+
+            $.get("{{ route('wa.qr') }}", function(res) {
+                if (res.qr) {
+                    $("#wa-qrcode").html(`<img src="${res.qr}" style="width: 260px;">`);
+                } else {
+                    $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
                 }
             });
-
         });
+
+        // Klik tombol disconnect
+        $("#btnDisconnectWA").click(function () {
+            $.post("{{ route('wa.disconnect') }}", {_token: '{{ csrf_token() }}' }, function() {
+                loadStatus();
+            });
+        });
+
+        // Klik Refresh
+        $("#btnRefreshWA").click(function() {
+            loadStatus();
+        });
+
+        // Auto load on open
+        loadStatus();
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap" async defer></script>

@@ -9,7 +9,7 @@ class WhatsappService
 {
     protected $base;
 
-    public function __construct()
+   public function __construct()
     {
         $this->endpoint = env('WHATSAPP_BOT_URL');
     }
@@ -20,20 +20,28 @@ class WhatsappService
     public function send(string $phone, string $message)
     {
         try {
-            $response = Http::timeout(10)
-                ->post($this->endpoint, [
-                    'phone' => $phone,
-                    'message' => $message,
-                ]);
+            $payload = [
+                'phone' => $this->formatPhone($phone),
+                'message' => $message,
+            ];
+
+            $response = Http::timeout(10)->post($this->base . '/send', $payload);
+
+            Log::info('WA Send Response', [
+                'endpoint' => $this->base . '/send',
+                'payload' => $payload,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
 
             return $response->json();
         } catch (\Exception $e) {
-            \Log::error('WA send failed', [
+            Log::error('WA Send Failed', [
+                'error' => $e->getMessage(),
                 'phone' => $phone,
                 'message' => $message,
-                'error' => $e->getMessage(),
             ]);
-            return null;
+            return ['ok' => false, 'error' => $e->getMessage()];
         }
     }
 

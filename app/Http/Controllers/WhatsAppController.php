@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Http;
 
 class WhatsAppController extends Controller
 {
+    protected $base;
+
+    public function __construct()
+    {
+        $this->base = "https://online.balikamitour.com";
+    }
+
     public function send_wa_both(Request $request)
     {
         $request->validate([
@@ -157,7 +164,6 @@ class WhatsAppController extends Controller
         ]);
     }
 
-
     public function send_wa_operator(Request $request)
     {
         $request->validate([
@@ -280,30 +286,30 @@ class WhatsAppController extends Controller
     }
 
 
-    // public function status()
-    // {
-    //     // using static helper
-    //     $connected = WhatsappService::isConnected();
-    //     $phone = $connected ? WhatsappService::getPhone() : null;
-
-    //     return response()->json([
-    //         'connected' => $connected,
-    //         'phone' => $phone
-    //     ]);
-    // }
-
     public function status()
     {
-        $file = storage_path('app/wa_status.json');
-
-        if (!file_exists($file)) {
+        try {
+            $res = Http::timeout(5)->get($this->base . "/status");
+            return response()->json($res->json());
+        } catch (\Exception $e) {
             return response()->json([
                 'connected' => false,
-                'phone' => null
+                'status' => 'ERROR',
+                'message' => $e->getMessage()
             ]);
         }
-
-        return response()->json(json_decode(file_get_contents($file), true));
+    }
+    public function qr()
+    {
+        try {
+            $res = Http::timeout(5)->get($this->base . "/qr");
+            return response()->json($res->json());
+        } catch (\Exception $e) {
+            return response()->json([
+                'qr' => null,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function connect()
@@ -319,8 +325,15 @@ class WhatsAppController extends Controller
 
     public function disconnect()
     {
-        $ok = WhatsappService::disconnect();
-        return response()->json(['ok' => $ok, 'message' => $ok ? 'Disconnected' : 'Failed to disconnect']);
+        try {
+            $res = Http::timeout(5)->post($this->base . "/logout");
+            return response()->json($res->json());
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
 }
