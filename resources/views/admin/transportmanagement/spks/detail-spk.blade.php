@@ -1289,10 +1289,8 @@
 
                     html = `
                         <div class="alert alert-success">
-                            ✔ Terhubung<br>
-                            Status: ${res.message || ''}<br>
-                            Nomor: ${res.number || '-'}<br>
-                            Pesan: ${res.message || ''}
+                            Status: ${res.status || ''}<br>
+                            Nomor: +${res.number || '-'}
                         </div>
                     `;
 
