@@ -143,8 +143,9 @@ class WhatsAppController extends Controller
             "Terima kasih,\n*Bali Kami Tour*";
         $wa = new WhatsappService();
         $results = [];
+        $phone = formatPhone($spk->driver->phone);
         if ($spk->driver?->phone) {
-            $results['driver'] = $wa->send($spk->driver->phone, $message_driver);
+            $results['driver'] = $wa->send($phone, $message_driver);
         }
         return response()->json([
             'success' => "Terkirim",
@@ -218,8 +219,9 @@ class WhatsAppController extends Controller
 
         $wa = new WhatsappService();
         $results = [];
+        $phone = formatPhone($spk->operator->phone);
         if ($spk->operator?->phone) {
-            $results['driver'] = $wa->send($spk->operator->phone, $message_operator);
+            $results['driver'] = $wa->send($phone, $message_operator);
             return response()->json([
                 'success' => "Terkirim",
                 'message' => "Pesan berhasil dikirim ke operator",
@@ -234,6 +236,16 @@ class WhatsAppController extends Controller
         }
     }
 
+    function formatPhone($number)
+    {
+        $number = preg_replace('/[^0-9]/', '', $number); // hapus spasi, +, -, dsb
+
+        if (substr($number, 0, 1) === '0') {
+            $number = '62' . substr($number, 1);
+        }
+
+        return $number . '@c.us';
+    }
     
     // Print SPK dengan QR Code
     public function spk_report($id)
