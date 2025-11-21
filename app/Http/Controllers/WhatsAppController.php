@@ -15,7 +15,7 @@ class WhatsAppController extends Controller
     public function __construct()
     {
         // Node bot internal URL (localhost)
-        $this->base = "https://online.balikamitour.com/whatsapp";
+        $this->base = "http://127.0.0.1:3000";
     }
 
     public function send_wa_both(Request $request)
