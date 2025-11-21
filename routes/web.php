@@ -147,6 +147,8 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::get('/whatsapp/status', [WhatsAppController::class, 'status'])->name('whatsapp.status');
     Route::post('/whatsapp/connect', [WhatsAppController::class, 'connect'])->name('whatsapp.connect');
     Route::post('/whatsapp/disconnect', [WhatsAppController::class, 'disconnect'])->name('whatsapp.disconnect');
+    Route::post('/wa/status/update', [WhatsAppController::class, 'updateStatus']);
+
 
     
     // ---------------------------------------------------

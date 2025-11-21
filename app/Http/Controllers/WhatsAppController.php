@@ -266,17 +266,42 @@ class WhatsAppController extends Controller
         return view('admin.transportmanagement.spks.report_spk', compact('spk','now','expired_date'));
     }
 
+    public function updateStatus(Request $request)
+    {
+        file_put_contents(
+            storage_path('app/wa_status.json'),
+            json_encode([
+                'connected' => $request->connected,
+                'phone' => $request->phone
+            ])
+        );
+
+        return response()->json(['saved' => true]);
+    }
     public function status()
     {
-        // using static helper
-        $connected = WhatsappService::isConnected();
-        $phone = $connected ? WhatsappService::getPhone() : null;
+        $file = storage_path('app/wa_status.json');
 
-        return response()->json([
-            'connected' => $connected,
-            'phone' => $phone
-        ]);
+        if (!file_exists($file)) {
+            return response()->json(['connected' => false, 'phone' => null]);
+        }
+
+        $data = json_decode(file_get_contents($file), true);
+
+        return response()->json($data);
     }
+
+    // public function status()
+    // {
+    //     // using static helper
+    //     $connected = WhatsappService::isConnected();
+    //     $phone = $connected ? WhatsappService::getPhone() : null;
+
+    //     return response()->json([
+    //         'connected' => $connected,
+    //         'phone' => $phone
+    //     ]);
+    // }
 
     public function connect()
     {
