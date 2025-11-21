@@ -11,7 +11,7 @@ class WhatsappService
 
     public function __construct()
     {
-        $this->base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1'), '/');
+        $this->base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
     }
 
     /**
@@ -54,7 +54,7 @@ class WhatsappService
     public static function isConnected()
     {
         try {
-            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1'), '/');
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
             $res = Http::timeout(5)->get($base . '/status');
             if ($res->failed()) return false;
             return $res->json()['connected'] ?? false;
@@ -66,7 +66,7 @@ class WhatsappService
     public static function getPhone()
     {
         try {
-            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1'), '/');
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
             $res = Http::timeout(5)->get($base . '/status');
             if ($res->failed()) return null;
             return $res->json()['phone'] ?? null;
@@ -78,7 +78,7 @@ class WhatsappService
     public static function generateQRCode()
     {
         try {
-            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1'), '/');
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
             $res = Http::timeout(10)->get($base . '/qr');
             if ($res->failed()) return null;
             return $res->json()['qr'] ?? null;
@@ -90,7 +90,7 @@ class WhatsappService
     public static function disconnect()
     {
         try {
-            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1'), '/');
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
             $res = Http::timeout(10)->post($base . '/disconnect');
             return ($res->ok() && ($res->json()['ok'] ?? false));
         } catch (\Exception $e) {
