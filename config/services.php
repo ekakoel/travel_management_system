@@ -38,7 +38,7 @@ return [
     ],
     
     'whatsapp' => [
-        'url' => env('WA_SERVER_URL', 'http://127.0.0.1:3000/send-message'),
+        'url' => env('WA_SERVER_URL', 'http://127.0.0.1/send-message'),
     ],
     // 'doku' => [
     //     'client_id' => env('DOKU_CLIENT_ID', 'BRN-0224-1653983386996'),
