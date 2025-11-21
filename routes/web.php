@@ -143,6 +143,11 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::post('/send-whatsapp-driver', [WhatsAppController::class, 'send_wa_driver'])->name('send.whatsapp-driver');
     Route::post('/send-whatsapp-operator', [WhatsAppController::class, 'send_wa_operator'])->name('send.whatsapp-operator');
     Route::get('/spk-report/{id}', [WhatsAppController::class, 'spk_report'])->name('view.spk-report');
+
+    Route::get('/whatsapp/status', [WhatsAppController::class, 'status'])->name('whatsapp.status');
+    Route::post('/whatsapp/connect', [WhatsAppController::class, 'connect'])->name('whatsapp.connect');
+    Route::post('/whatsapp/disconnect', [WhatsAppController::class, 'disconnect'])->name('whatsapp.disconnect');
+
     
     // ---------------------------------------------------
     //                    TEST SYSTEM

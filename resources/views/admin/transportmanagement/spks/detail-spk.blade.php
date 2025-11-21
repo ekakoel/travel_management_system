@@ -705,7 +705,7 @@
                                     <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Reservation
                                 </button>
                             @endif --}}
-                            {{-- @if($spk->send_report === 1 && isset($spk->operator->phone) ) --}}
+                            @if($spk->send_report === 1 && isset($spk->operator->phone) )
                                 <button id="btnSendWaToDriver"
                                     class="btn btn-warning sendWA"
                                     data-route="{{ route('send.whatsapp-driver') }}"
@@ -720,8 +720,8 @@
                                     data-spk="{{ $spk->id }}">
                                     Share to Operator
                                 </button>
-                            {{-- @endif --}}
-                            {{-- @if($spk->send_report === 0 && isset($spk->operator->phone) )
+                            @endif
+                            @if($spk->send_report === 0 && isset($spk->operator->phone) )
                                 <button id="btnSendWa"
                                     class="btn btn-success sendWA"
                                     data-route="{{ route('send.whatsapp-both') }}"
@@ -729,7 +729,7 @@
                                     data-spk="{{ $spk->id }}">
                                     Share to Driver & Operator
                                 </button>
-                            @endif --}}
+                            @endif
                             <a href="{{ route('spks.print',$spk->id) }}" target="__blank">
                                 <button class="btn btn-sm btn-light" data-toggle="modal" data-target="#changeDate"><i class="fa fa-print"></i> Print</button>
                             </a>
@@ -980,6 +980,44 @@
                     </div>
                 </div>
                 <div class="col-md-4">
+                    <div class="card-box m-b-18">
+                        <div class="card-box-title">
+                            <strong>WhatsApp Connection Status</strong>
+                        </div>
+                        <div class="card-box-body">
+                            <!-- Status -->
+                            <div id="wa-status" class="mb-3">
+                                <span class="badge badge-secondary">Checking status...</span>
+                            </div>
+
+                            <!-- Actions -->
+                            <div id="wa-actions">
+                                <button id="btnConnectWA" class="btn btn-success mb-2" style="display:none;">Hubungkan Akun</button>
+                                <button id="btnDisconnectWA" class="btn btn-danger mb-2" style="display:none;">Putuskan Koneksi</button>
+                                <button id="btnRefreshWA" class="btn btn-primary mb-2">Refresh Status</button>
+                            </div>
+
+                            <!-- Modal QR Code -->
+                            <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="waModalLabel">Scan QR Code WhatsApp</h5>
+                                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <div id="wa-qrcode"></div>
+                                            <p class="mt-2">Gunakan WhatsApp pada ponsel Anda untuk memindai QR code ini.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="card-box">
                         <div class="card-box-title">
                             <strong>Route on Map</strong>
@@ -1229,6 +1267,79 @@
 
         window.initMap = initMap;
     </script>
+    <script>
+        $(document).ready(function () {
+
+            const updateWAStatus = () => {
+                $.ajax({
+                    url: "{{ route('whatsapp.status') }}",
+                    type: "GET",
+                    success: function(res) {
+                        const statusEl = $('#wa-status');
+                        if(res.connected){
+                            statusEl.html('<span class="badge bg-success">Terhubung: '+res.phone+'</span>');
+                            $('#btnConnectWA').hide();
+                            $('#btnDisconnectWA').show();
+                        } else {
+                            statusEl.html('<span class="badge bg-danger">Tidak terhubung</span>');
+                            $('#btnConnectWA').show();
+                            $('#btnDisconnectWA').hide();
+                        }
+                    },
+                    error: function() {
+                        $('#wa-status').html('<span class="badge bg-warning">Status tidak dapat diambil</span>');
+                    }
+                });
+            };
+
+            // Load status awal
+            updateWAStatus();
+
+            // Polling setiap 5 detik
+            setInterval(updateWAStatus, 5000);
+
+            // Refresh manual
+            $('#btnRefreshWA').click(updateWAStatus);
+
+            // Connect WhatsApp
+            $('#btnConnectWA').click(function() {
+                $.ajax({
+                    url: "{{ route('whatsapp.connect') }}",
+                    type: "POST",
+                    data: {_token: "{{ csrf_token() }}"},
+                    success: function(res) {
+                        if(res.qrcode){
+                            $('#wa-qrcode').html('<img src="data:image/png;base64,'+res.qrcode+'" />');
+                            $('#waModal').modal('show');
+                        }
+                    },
+                    error: function() {
+                        alert('Gagal membuat koneksi. Silahkan coba lagi.');
+                    }
+                });
+            });
+
+            // Disconnect WhatsApp
+            $('#btnDisconnectWA').click(function() {
+                if(confirm("Yakin ingin memutus koneksi WhatsApp?")){
+                    $.ajax({
+                        url: "{{ route('whatsapp.disconnect') }}",
+                        type: "POST",
+                        data: {_token: "{{ csrf_token() }}"},
+                        success: function(res){
+                            alert(res.message);
+                            updateWAStatus();
+                        },
+                        error: function(){
+                            alert('Gagal memutus koneksi.');
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap" async defer></script>
     @endcan
 @endsection

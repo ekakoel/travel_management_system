@@ -27,7 +27,7 @@
 										</span>
 									@enderror
 								</div>
-								<div class="form-group login-register" id="password">
+								<div class="form-group login-register m-b-8" id="password">
 									<label for="password">@lang('messages.Password')</label>
 									<input id="password" type="password" class="input-icon form-control" name="password" required>
 									<a href="" ><i class="fa fa-eye-slash" aria-hidden="true"></i></a>

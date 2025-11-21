@@ -129,7 +129,6 @@ class WhatsAppController extends Controller
         $spk_date = date('d M Y', strtotime($spk->spk_date));
         $driver_name = $spk->driver?->name;
         $spk_driver_link = 'https://online.balikamitour.com/spk/'.$spk->id.'/'.$spk->spk_number;
-        // $spk_operator_link = 'https://online.balikamitour.com/spk-report/'.$spk->id;
         $message_driver = 
             "Halo {$driver_name},\n\n" .
             "SPK untuk tanggal {$spk_date} telah diterbitkan pada link berikut:\n\n" .
@@ -266,5 +265,29 @@ class WhatsAppController extends Controller
 
         return view('admin.transportmanagement.spks.report_spk', compact('spk','now','expired_date'));
     }
+
+    public function status()
+    {
+        // cek status koneksi WA
+        $connected = WhatsappService::isConnected();
+        $phone = $connected ? WhatsappService::getPhone() : null;
+        return response()->json([
+            'connected' => $connected,
+            'phone' => $phone
+        ]);
+    }
+
+    public function connect()
+    {
+        $qrcode = WhatsappService::generateQRCode(); // return base64 QR
+        return response()->json(['qrcode' => $qrcode]);
+    }
+
+    public function disconnect()
+    {
+        $result = WhatsappService::disconnect();
+        return response()->json(['message' => $result ? 'Berhasil diputus' : 'Gagal memutus koneksi']);
+    }
+
 }
 

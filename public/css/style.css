@@ -1191,7 +1191,7 @@ input[type="checkbox"]:checked + .label-checkbox {
 input[type=checkbox]{
     position: absolute;
     right: 8px;
-    top: 8px;
+    top: 11px !important;
     width: 18px;
     height: 18px;
 }
@@ -2584,7 +2584,7 @@ select {
 .login-register a i{
     position: absolute;
     right: 8px;
-    top: 35px;
+    top: 44px;
 }
 .form-group {
     position: relative;
