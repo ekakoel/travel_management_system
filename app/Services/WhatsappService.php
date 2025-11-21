@@ -48,7 +48,7 @@ class WhatsappService
     public static function isConnected()
     {
         try {
-            $response = Http::timeout(5)->get("https://online.balikamitour.com/status");
+            $response = Http::timeout(5)->get("https://online.balikamitour.com/whatsapp/status");
 
             if ($response->failed()) {
                 return false;
@@ -64,7 +64,7 @@ class WhatsappService
     public static function getPhone()
     {
         try {
-            $response = Http::timeout(5)->get("https://online.balikamitour.com/status");
+            $response = Http::timeout(5)->get("https://online.balikamitour.com/whatsapp/status");
 
             if ($response->failed()) {
                 return null;
