@@ -7,55 +7,57 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsappService
 {
-    protected $endpoint;
+    protected $base;
 
     public function __construct()
     {
-        $this->endpoint = env('WHATSAPP_BOT_URL');
+        $this->base = rtrim(env('WHATSAPP_BOT_URL', 'https://online.balikamitour.com'), '/');
     }
 
+    /**
+     * Send message via Node bot.
+     * phone: any format (will be normalized)
+     */
     public function send(string $phone, string $message)
     {
         try {
-            $response = Http::timeout(10)->post($this->endpoint, [
-                'phone' => $phone,
-                'message' => $message
-            ]);
-            
+            $payload = [
+                'phone' => $this->formatPhone($phone),
+                'message' => $message,
+            ];
+
+            $response = Http::timeout(10)->post($this->base . '/send', $payload);
+
             Log::info('WA Send Response', [
+                'endpoint' => $this->base . '/send',
+                'payload' => $payload,
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
 
-            if ($response->successful()) {
-                return $response->json();
-            }
-
-            return [
-                'ok' => false,
-                'error' => $response->body(),
-            ];
-            // return $response->json();
+            return $response->json();
         } catch (\Exception $e) {
             Log::error('WA Send Failed', [
                 'error' => $e->getMessage(),
-                'endpoint' => $this->endpoint,
+                'phone' => $phone,
+                'message' => $message,
             ]);
-            return null;
+            return ['ok' => false, 'error' => $e->getMessage()];
         }
     }
+
+    /* -------------------------
+       Static helpers for controller or blade usage
+       Keep these static so existing Calls (WhatsappService::isConnected()) keep working
+       ------------------------- */
 
     public static function isConnected()
     {
         try {
-            $response = Http::timeout(5)->get("https://online.balikamitour.com/whatsapp/status");
-
-            if ($response->failed()) {
-                return false;
-            }
-
-            return $response->json()['connected'] ?? false;
-
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'https://online.balikamitour.com'), '/');
+            $res = Http::timeout(5)->get($base . '/status');
+            if ($res->failed()) return false;
+            return $res->json()['connected'] ?? false;
         } catch (\Exception $e) {
             return false;
         }
@@ -64,17 +66,50 @@ class WhatsappService
     public static function getPhone()
     {
         try {
-            $response = Http::timeout(5)->get("https://online.balikamitour.com/whatsapp/status");
-
-            if ($response->failed()) {
-                return null;
-            }
-
-            return $response->json()['phone'] ?? null;
-
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'https://online.balikamitour.com'), '/');
+            $res = Http::timeout(5)->get($base . '/status');
+            if ($res->failed()) return null;
+            return $res->json()['phone'] ?? null;
         } catch (\Exception $e) {
             return null;
         }
     }
 
+    public static function generateQRCode()
+    {
+        try {
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'https://online.balikamitour.com'), '/');
+            $res = Http::timeout(10)->get($base . '/qr');
+            if ($res->failed()) return null;
+            return $res->json()['qr'] ?? null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public static function disconnect()
+    {
+        try {
+            $base = rtrim(env('WHATSAPP_BOT_URL', 'https://online.balikamitour.com'), '/');
+            $res = Http::timeout(10)->post($base . '/disconnect');
+            return ($res->ok() && ($res->json()['ok'] ?? false));
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /* normalize phone to digits only and ensure country code for Indonesia (62) if leading 0 */
+    private function formatPhone(string $phone): string
+    {
+        $p = preg_replace('/[^0-9]/', '', $phone);
+
+        if ($p === '') return $phone; // fallback raw
+
+        // if starts with 0 -> replace with 62
+        if (substr($p, 0, 1) === '0') {
+            $p = '62' . substr($p, 1);
+        }
+
+        return $p;
+    }
 }
