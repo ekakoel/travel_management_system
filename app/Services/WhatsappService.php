@@ -44,4 +44,37 @@ class WhatsappService
             return null;
         }
     }
+
+    public static function isConnected()
+    {
+        try {
+            $response = Http::timeout(5)->get("https://online.balikamitour.com/status");
+
+            if ($response->failed()) {
+                return false;
+            }
+
+            return $response->json()['connected'] ?? false;
+
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function getPhone()
+    {
+        try {
+            $response = Http::timeout(5)->get("https://online.balikamitour.com/status");
+
+            if ($response->failed()) {
+                return null;
+            }
+
+            return $response->json()['phone'] ?? null;
+
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
 }

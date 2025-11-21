@@ -268,9 +268,9 @@ class WhatsAppController extends Controller
 
     public function status()
     {
-        // cek status koneksi WA
-        $connected = WhatsappService::isConnected();
+        $connected = WhatsappService::isConnected(); // true/false
         $phone = $connected ? WhatsappService::getPhone() : null;
+
         return response()->json([
             'connected' => $connected,
             'phone' => $phone
@@ -279,14 +279,16 @@ class WhatsAppController extends Controller
 
     public function connect()
     {
-        $qrcode = WhatsappService::generateQRCode(); // return base64 QR
+        $qrcode = WhatsappService::generateQRCode(); // base64 QR code
         return response()->json(['qrcode' => $qrcode]);
     }
 
     public function disconnect()
     {
         $result = WhatsappService::disconnect();
-        return response()->json(['message' => $result ? 'Berhasil diputus' : 'Gagal memutus koneksi']);
+        return response()->json([
+            'message' => $result ? 'Berhasil diputus' : 'Gagal memutus koneksi'
+        ]);
     }
 
 }
