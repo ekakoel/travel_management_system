@@ -705,7 +705,7 @@
                                     <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Reservation
                                 </button>
                             @endif --}}
-                            @if($spk->send_report === 1 && isset($spk->operator->phone) )
+                            {{-- @if($spk->send_report === 1 && isset($spk->operator->phone) ) --}}
                                 <button id="btnSendWaToDriver"
                                     class="btn btn-warning sendWA"
                                     data-route="{{ route('send.whatsapp-driver') }}"
@@ -720,8 +720,8 @@
                                     data-spk="{{ $spk->id }}">
                                     Share to Operator
                                 </button>
-                            @endif
-                            @if($spk->send_report === 0 && isset($spk->operator->phone) )
+                            {{-- @endif --}}
+                            {{-- @if($spk->send_report === 0 && isset($spk->operator->phone) )
                                 <button id="btnSendWa"
                                     class="btn btn-success sendWA"
                                     data-route="{{ route('send.whatsapp-both') }}"
@@ -729,7 +729,7 @@
                                     data-spk="{{ $spk->id }}">
                                     Share to Driver & Operator
                                 </button>
-                            @endif
+                            @endif --}}
                             <a href="{{ route('spks.print',$spk->id) }}" target="__blank">
                                 <button class="btn btn-sm btn-light" data-toggle="modal" data-target="#changeDate"><i class="fa fa-print"></i> Print</button>
                             </a>
