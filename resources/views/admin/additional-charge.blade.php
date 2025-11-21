@@ -57,36 +57,34 @@
                                         @endcanany
                                     </tr>
                                 @else
-                                    @if ($additional_charge->mandatory == 0)
-                                        <tr>
-                                            <td>
-                                                <p>{{ $additional_charge->type }}</p>
+                                    <tr>
+                                        <td>
+                                            <p>{{ $additional_charge->type }} {{ count($additional_charges) }}</p>
+                                        </td>
+                                        <td>
+                                            <p>{{ $additional_charge->name }}</p>
+                                        </td>
+                                        <td>
+                                            <p>-</p>
+                                        </td>
+                                        <td>
+                                            <div class="rate-usd"> {!! currencyFormatUsd($additional_charge->calculatePrice($usdrates,$tax)) !!}</div>
+                                        </td>
+                                        @canany(['posDev','posAuthor'])
+                                            <td class="text-right">
+                                                <div class="table-action">
+                                                    <a href="#" data-toggle="modal" data-target="#edit-optionalrate-{{ $additional_charge->id }}">
+                                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-edit"></i></button>
+                                                    </a>
+                                                    <form action="{{ route('func.additional_charge.delete',$additional_charge->id) }}" method="post">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                    </form>
+                                                </div>
                                             </td>
-                                            <td>
-                                                <p>{{ $additional_charge->name }}</p>
-                                            </td>
-                                            <td>
-                                                <p>-</p>
-                                            </td>
-                                            <td>
-                                                <div class="rate-usd"> {!! currencyFormatUsd($additional_charge->calculatePrice($usdrates,$tax)) !!}</div>
-                                            </td>
-                                            @canany(['posDev','posAuthor'])
-                                                <td class="text-right">
-                                                    <div class="table-action">
-                                                        <a href="#" data-toggle="modal" data-target="#edit-optionalrate-{{ $additional_charge->id }}">
-                                                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-edit"></i></button>
-                                                        </a>
-                                                        <form action="{{ route('func.additional_charge.delete',$additional_charge->id) }}" method="post">
-                                                            @csrf
-                                                            @method('delete')
-                                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            @endcanany
-                                        </tr>
-                                    @endif
+                                        @endcanany
+                                    </tr>
                                 @endif
                                 @canany(['posDev','posAuthor'])
                                     {{-- MODAL ADDITIONAL CHARGE EDIT --}}
@@ -330,7 +328,6 @@
                                             </div>
                                             <input name="hotel_id" value="{{ $hotel->id }}" type="hidden">
                                             <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                            <input id="service_id" name="service_id" value="{{ $hotel->id }}" type="hidden">
                                         </div>
                                     </form>
                                 </div>

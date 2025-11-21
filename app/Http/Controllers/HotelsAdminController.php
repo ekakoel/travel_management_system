@@ -567,10 +567,10 @@ public function func_add_contract(Request $request){
             $mandatory_end = date('Y-m-d', strtotime($request->mandatory_end));
             $optional_rate =new OptionalRate([
                 "type"=>$request->type,
-                "hotel_id"=>$request->hotel_id,
+                "hotels_id"=>$request->hotel_id,
                 "name"=>$request->name,
                 "service"=>$service,
-                "service_id"=>$request->service_id,
+                "service_id"=>$request->hotel_id,
                 "markup" =>$request->markup, 
                 "mandatory" =>$request->mandatory, 
                 "mandatory_start" =>$mandatory_start, 
