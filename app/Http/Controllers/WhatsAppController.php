@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Http;
 
 class WhatsAppController extends Controller
 {
-    protected $base;
+     protected $base;
 
     public function __construct()
     {
-        $this->base = "https://online.balikamitour.com";
+        // Node bot internal URL (localhost)
+        $this->base = "http://127.0.0.1:3000";
     }
 
     public function send_wa_both(Request $request)
@@ -299,6 +300,7 @@ class WhatsAppController extends Controller
             ]);
         }
     }
+
     public function qr()
     {
         try {
@@ -307,7 +309,20 @@ class WhatsAppController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'qr' => null,
-                'message' => $e->getMessage(),
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function disconnect()
+    {
+        try {
+            $res = Http::timeout(5)->post($this->base . "/logout");
+            return response()->json($res->json());
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
             ]);
         }
     }
@@ -323,18 +338,6 @@ class WhatsAppController extends Controller
         return response()->json(['ok' => true, 'qrcode' => $qrcode]);
     }
 
-    public function disconnect()
-    {
-        try {
-            $res = Http::timeout(5)->post($this->base . "/logout");
-            return response()->json($res->json());
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
 
 }
 
