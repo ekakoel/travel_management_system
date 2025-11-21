@@ -219,7 +219,13 @@ class WhatsAppController extends Controller
 
         $wa = new WhatsappService();
         $results = [];
-        $phone = formatPhone($spk->operator->phone);
+        $phone = preg_replace('/[^0-9]/', '', $spk->operator->phone);
+        if (substr($phone, 0, 1) === '0') {
+            $phone = '62' . substr($phone, 1);
+        }
+        $phone = $phone . '@c.us';
+
+        // $phone = formatPhone($spk->operator->phone);
         if ($spk->operator?->phone) {
             $results['driver'] = $wa->send($phone, $message_operator);
             return response()->json([
