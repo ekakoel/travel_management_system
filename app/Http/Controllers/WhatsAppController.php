@@ -143,7 +143,11 @@ class WhatsAppController extends Controller
             "Terima kasih,\n*Bali Kami Tour*";
         $wa = new WhatsappService();
         $results = [];
-        $phone = formatPhone($spk->driver->phone);
+        $phone = preg_replace('/[^0-9]/', '', $spk->operator->phone);
+        if (substr($phone, 0, 1) === '0') {
+            $phone = '62' . substr($phone, 1);
+        }
+        $phone = $phone . '@c.us';
         if ($spk->driver?->phone) {
             $results['driver'] = $wa->send($phone, $message_driver);
         }

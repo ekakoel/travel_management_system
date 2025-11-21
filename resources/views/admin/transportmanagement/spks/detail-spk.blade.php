@@ -766,7 +766,7 @@
                                                                 <select name="operator_id" class="custom-select input-icon form-select" required>
                                                                     <option disabled value="">Select Reservation</option>
                                                                     @foreach ($operators as $operator)
-                                                                        <option {{ $operator->id == $spk->operator_id?"selected":"" }} value="Canceled">{{ $operator->name }}</option>
+                                                                        <option {{ $operator->id == $spk->operator_id?"selected":"" }} value="{{ $operator->id }}">{{ $operator->name }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
