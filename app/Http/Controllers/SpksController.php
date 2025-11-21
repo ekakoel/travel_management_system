@@ -319,6 +319,7 @@ class SpksController extends Controller
         // dd($request->all());
         $validated = $request->validate([
             'status' => 'required|string|max:255',
+            'operator_id' => 'required|integer|min:1',
             'order_number' => 'required|string|max:255',
             'spk_type' => 'required|string|max:255',
             'spk_date' => 'required|date',
@@ -331,6 +332,7 @@ class SpksController extends Controller
 
         $spk->update([
             'status' => $request->status,
+            'operator_id' => $validated['operator_id'],
             'order_number' => $validated['order_number'],
             'type' => $validated['spk_type'],
             'spk_date' => $spk_date,
