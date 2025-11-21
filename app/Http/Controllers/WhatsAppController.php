@@ -220,12 +220,18 @@ class WhatsAppController extends Controller
         $results = [];
         if ($spk->operator?->phone) {
             $results['driver'] = $wa->send($spk->operator->phone, $message_operator);
+            return response()->json([
+                'success' => "Terkirim",
+                'message' => "Pesan berhasil dikirim ke operator",
+                'data' => $results,
+            ]);
+        }else {
+            return response()->json([
+                'error' => "Gagal",
+                'message' => "Pesan berhasil gagal dikirim ke operator",
+                'data' => $results,
+            ]);
         }
-        return response()->json([
-            'success' => "Terkirim",
-            'message' => "Pesan berhasil dikirim ke operator",
-            'data' => $results,
-        ]);
     }
 
     
