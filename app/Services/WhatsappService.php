@@ -11,9 +11,8 @@ class WhatsappService
 
     public function __construct()
     {
-        $this->base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
+        $this->endpoint = env('WHATSAPP_BOT_URL');
     }
-
     /**
      * Send message via Node bot.
      * phone: any format (will be normalized)
@@ -21,28 +20,20 @@ class WhatsappService
     public function send(string $phone, string $message)
     {
         try {
-            $payload = [
-                'phone' => $this->formatPhone($phone),
-                'message' => $message,
-            ];
-
-            $response = Http::timeout(10)->post($this->base . '/send', $payload);
-
-            Log::info('WA Send Response', [
-                'endpoint' => $this->base . '/send',
-                'payload' => $payload,
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
+            $response = Http::timeout(10)
+                ->post($this->endpoint, [
+                    'phone' => $phone,
+                    'message' => $message,
+                ]);
 
             return $response->json();
         } catch (\Exception $e) {
-            Log::error('WA Send Failed', [
-                'error' => $e->getMessage(),
+            \Log::error('WA send failed', [
                 'phone' => $phone,
                 'message' => $message,
+                'error' => $e->getMessage(),
             ]);
-            return ['ok' => false, 'error' => $e->getMessage()];
+            return null;
         }
     }
 
