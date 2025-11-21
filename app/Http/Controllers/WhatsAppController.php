@@ -278,18 +278,7 @@ class WhatsAppController extends Controller
 
         return response()->json(['saved' => true]);
     }
-    public function status()
-    {
-        $file = storage_path('app/wa_status.json');
 
-        if (!file_exists($file)) {
-            return response()->json(['connected' => false, 'phone' => null]);
-        }
-
-        $data = json_decode(file_get_contents($file), true);
-
-        return response()->json($data);
-    }
 
     // public function status()
     // {
@@ -302,6 +291,20 @@ class WhatsAppController extends Controller
     //         'phone' => $phone
     //     ]);
     // }
+
+    public function status()
+    {
+        $file = storage_path('app/wa_status.json');
+
+        if (!file_exists($file)) {
+            return response()->json([
+                'connected' => false,
+                'phone' => null
+            ]);
+        }
+
+        return response()->json(json_decode(file_get_contents($file), true));
+    }
 
     public function connect()
     {
