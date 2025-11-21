@@ -996,8 +996,10 @@
 
                             <!-- Actions -->
                             <div id="wa-actions">
-                                <button id="btnConnectWA" class="btn btn-success mb-2" style="display:none;">Hubungkan Akun</button>
-                                <button id="btnDisconnectWA" class="btn btn-danger mb-2" style="display:none;">Putuskan Koneksi</button>
+                                @can('posDev')
+                                    <button id="btnConnectWA" class="btn btn-success mb-2" style="display:none;">Hubungkan Akun</button>
+                                    <button id="btnDisconnectWA" class="btn btn-danger mb-2" style="display:none;">Putuskan Koneksi</button>
+                                @endcan
                                 <button id="btnRefreshWA" class="btn btn-primary mb-2">Refresh Status</button>
                             </div>
 
@@ -1288,7 +1290,7 @@
                     html = `
                         <div class="alert alert-success">
                             ✔ Terhubung<br>
-                            Status: ${res.status || 'OK'}<br>
+                            Status: ${res.message || ''}<br>
                             Nomor: ${res.number || '-'}<br>
                             Pesan: ${res.message || ''}
                         </div>
