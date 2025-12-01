@@ -151,6 +151,53 @@ class TransportsController extends Controller
                 
         ]);
     }
+    // Detail Transport =========================================================================================>
+    public function detail_transport(Request $request, $code){   
+        $tax = Tax::where('id',1)->first();
+        $usdrates = UsdRates::where('name','USD')->first();
+        $transport = Transports::where('code',$code)->first();
+        if (!$transport) {
+            return redirect("/transports")->with('error','The transport was not found!');
+        }
+        $regions = Hotels::where('location', 'Bali')
+            ->whereNotNull('region')
+            ->selectRaw('MIN(id) as id, region, MIN(airport_duration) as airport_duration')
+            ->groupBy('region')
+            ->get();
+        $attentions = Attention::where('page','transport')->get();
+        $defaultType = 'Daily Rent';
+        $transportType = Transports::select('type')->distinct()->get();
+        $selectedType = $request->query('type');
+        $destinations = TransportPrice::select('duration', 'dst')
+            ->where('type', 'Airport Shuttle')
+            ->orderBy('dst', 'asc')
+            ->get()
+            ->unique('dst')
+            ->values();
+
+        $transports = Transports::whereHas('prices', function ($q) use ($defaultType) {
+                $q->where('type', $defaultType);
+            })
+            ->with(['prices' => function ($q) use ($defaultType) {
+                $q->where('type', $defaultType)
+                ->orderBy('duration', 'asc')
+                ->limit(1);
+            }])
+            ->where('type',$transport->type)
+            ->where('id','!=',$transport->id)
+            ->get();
+
+        $promotions = Promotion::where('status',"Active")->get();
+        return view('frontend.transports.detail', compact('transports','transport'),[
+            'transportType'=> $transportType,
+            "promotions" => $promotions,
+            "regions" => $regions,
+            "destinations" => $destinations,
+            "usdrates" => $usdrates,
+            "tax" => $tax,
+            "attentions" => $attentions,
+        ]);
+    }
 // View Detail Transport =========================================================================================>
     public function transport_detail($code)
     {

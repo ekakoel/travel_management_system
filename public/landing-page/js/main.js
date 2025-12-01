@@ -1,3 +1,6 @@
+
+
+
     // document.addEventListener("submit", function(e) {
     //     const form = e.target.closest("form");
     //     if (!form) return;
@@ -18,7 +21,33 @@
     //         });
     //     }
     // }, true);
-    
+    // sidebar.querySelectorAll('a.dropdown-toggle').forEach(function (a) {
+    //     a.addEventListener('click', function (e) {
+    //         const submenu = getSubmenuFromAnchor(this);
+    //         // Jika tidak ada submenu, jangan lakukan toggle (biarkan link normal)
+    //         if (!submenu) return;
+
+    //         // Prevent default hanya untuk anchors yang memang tidak bernavigasi
+    //         // (href="javascript:;" atau href="#" atau tanpa href)
+    //         const href = this.getAttribute('href') || '';
+    //         const isDummyHref = href.trim() === '' || href.trim() === 'javascript:;' || href.trim() === '#';
+
+    //         if (isDummyHref) e.preventDefault();
+
+    //         // Jika kamu menginginkan eksklusif open, tutup lainnya
+    //         closeAllSubmenus(submenu);
+
+    //         // Toggle current
+    //         const willShow = !submenu.classList.contains('show');
+    //         if (willShow) {
+    //             submenu.classList.add('show');
+    //             if (submenu.parentElement) submenu.parentElement.classList.add('open');
+    //         } else {
+    //             submenu.classList.remove('show');
+    //             if (submenu.parentElement) submenu.parentElement.classList.remove('open');
+    //         }
+    //     });
+    // });
     document.addEventListener("submit", function(e) {
         const form = e.target.closest("form");
         if (!form) return;
@@ -103,6 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // NAVBAR
     const navbar = document.getElementById("mainNavbar");
+
     window.addEventListener("scroll", function() {
         if (window.scrollY > 0) {
             navbar.classList.add("scrolled");
@@ -112,15 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
             $('.sticky-top').removeClass('shadow-sm').css('top', '-100px');
         }
     });
-
-    // Sticky Navbar
-    // $(window).scroll(function () {
-    //     if ($(this).scrollTop() > 300) {
-    //         $('.sticky-top').addClass('shadow-sm').css('top', '0px');
-    //     } else {
-    //         $('.sticky-top').removeClass('shadow-sm').css('top', '-100px');
-    //     }
-    // });
     
     
     // Back to top button

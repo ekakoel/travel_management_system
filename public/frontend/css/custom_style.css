@@ -34,6 +34,9 @@
 .m-t-9{
     margin-top: 9px;
 }
+.m-t-8{
+    margin-top: 8px;
+}
 .m-t-0{
     margin-top: 0px;
 }
@@ -250,8 +253,7 @@
     border-radius: 8px;
     overflow: hidden;
     align-content: center;
-    padding: 63px 0 80px 0;
-    margin-bottom: 13px;
+    padding: 45px 0;
 }
 
 /* .heading-page-hotels::after {
@@ -292,11 +294,11 @@
     text-align: center;
 }
 .heading-page-content h1{
-    font-family: system-ui;
     color: #434343;
     font-size: 3.5rem;
+    font-weight: 400;
     text-transform: uppercase;
-    text-shadow: -1px 4px 4px #0000005c;
+    text-shadow: -2px 4px 2px #00000042;
 }
 .heading-page-content p{
     color: black;
@@ -351,9 +353,9 @@ select option{
     top: 50%;
     transform: translateY(-50%);
     color: #888;
+    z-index: 9;
 }
 .filter-container{
-    position: absolute;
     place-items: center;
     width: 100%;
     bottom: 0;
@@ -457,7 +459,7 @@ select option{
     top: 0 !important;
     left: 0 !important;
     width: 40px;
-    height: 33px;
+    height: 38px;
     background-color: #d1d1d1 !important;
     padding: 8px !important;
     border-radius: 4px 0 0 4px !important;
@@ -468,6 +470,8 @@ select option{
     font-size: 1rem !important;
     font-style: normal !important;
     color: #434343 !important;
+    z-index: 99999;
+    align-content: center;
 }
 .btn-icon input {
     padding-left: 53px;
@@ -573,6 +577,12 @@ select option{
     padding: 4px 0;
 }
 
+.small-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
 .thumbnail-image {
     width: 100%;
     height: 100%;
@@ -738,6 +748,201 @@ textarea.form-control {
     border-color: #0051a8;
     box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
 }
+.service-header{
+    padding: 18px 19%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    background-color: #2b2b2b;
+}
+.service-header .service-detail .name{
+    font-size: 1.3rem;
+    line-height: 1.5;
+}
+.service-header .service-detail .name a{
+    color: #dfdfdf;
+}
+.service-header .service-detail .name a:is(:hover, :active){
+    color: #ffffff;
+}
+.service-header .service-detail i{
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding-right: 8px;
+    line-height: 1;
+    color: #a9a9a9;
+}
+.service-header .service-detail p{
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding: 0;
+    line-height: 1;
+}
+.service-header i{
+    font-size: 3rem;
+    padding-right: 18px;
+    color: #dfdfdf;
+}
+
+.condition-fixed {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999999; 
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.condition-placeholder {
+    transition: transform 0.3s ease;
+}
+#childAges {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-top: 10px;
+}
+
+.child-card {
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: #fafafa;
+}
+
+.navbar-hide {
+    opacity: 0;
+}
+
+/* FORM CHECK HOTEL PRICE */
+.condition-container {
+    position: relative;
+    justify-content: space-between;
+    background-color: #ffffff;
+    align-items: center;
+    margin-bottom: 17px;
+    box-shadow: 0px 3px 10px #0000001f;
+    border-bottom: 1px solid #c9c9c9;
+    transition: all 0.25s ease;
+}
+.condition-container .detail-condition{
+    position: relative;
+    display: flex;
+    padding: 18px 19%;
+    justify-content: space-between;
+    align-items: center;
+}
+.form-title{
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: grey;
+    font-weight: 500;
+}
+.rooms-guests-box {
+    position: relative;
+    display: flex;
+    gap: 18px;
+}
+
+.summary {
+    padding-right: 36px;
+    cursor: pointer;
+    font-size: 15px;
+    align-items: center;
+    gap: 6px;
+}
+
+.summary .arrow {
+    font-size: 12px;
+    opacity: .7;
+}
+.date-box {
+    /* PENTING! Agar Litepicker yang diposisikan 'absolute' 
+       bisa diposisikan relatif terhadap date-box */
+    position: relative; 
+    /* Tambahkan tinggi/lebar/margin sesuai kebutuhan */
+}
+.litepicker{
+    padding: 8px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    top: 60px !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+}
+/* POPUP */
+.popup-container {
+    position: absolute;
+    top: 60px;
+    width: 320px;
+    left: 0;
+    background: #f1f1f1;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 8px;
+    display: none;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.2);
+    z-index: 99;
+} 
+.popup-guests {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 5px;
+}
+
+.popup-guests h4 {
+    margin-top: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.line-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.counter button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    background: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 18px;
+}
+
+.counter span {
+    width: 28px;
+    text-align: center;
+}
+
+.child-card {
+    background: #f8f8f8;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e3e3e3;
+    margin-bottom: 14px;
+}
+
+.child-card label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.child-card input[type=range] {
+    width: 100%;
+    margin-top: 8px;
+}
 
 
 
@@ -746,7 +951,7 @@ textarea.form-control {
     padding-right: 0 !important;
 }
 .content-title{
-    line-height: 1;
+    line-height: 1.5;
     color: #464646;
     font-size: 1.5rem !important;
     font-weight: 500;
@@ -832,13 +1037,10 @@ textarea.form-control {
 }
 
 .modal{
-    z-index: 999999;
+    z-index: 9999999;
 }
 
 .modal .modal-body img{
-    width: 100%;
-    height: auto;
-    object-fit: cover;
     aspect-ratio: 3 / 2;
 }
 .modal-header{
@@ -967,7 +1169,6 @@ textarea.form-control {
 .absolute-form-container form {
     display: flex;
     gap: 8px;
-    align-items: flex-end;
     flex-wrap: wrap;
     position: absolute;
     place-items: center;
@@ -977,11 +1178,12 @@ textarea.form-control {
     left: 50%;
     transform: translate(-50%, 0px);
     padding: 18px;
+    justify-content: center;
 }
 
 .absolute-form-container .form-group {
     text-align: left;
-    min-width: 200px; /* bisa disesuaikan */
+    min-width: 200px;
 }
 .form-container{
     max-width: 50%;
@@ -1099,16 +1301,16 @@ textarea.form-control {
 }
 .card-grid-container .card-services .image-container .service-card-title{
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     left: 50%;
-    width: 107%;
+    width: 110%;
     text-align: center;
     backdrop-filter: blur(3px);
     transform: translate(-50%, 0);
     background-color: #ffffffc9;
     color: #1c1c1c;
-    font-size: 0.8rem;
-    padding: 4px 8px;
+    font-size: 0.75rem;
+    padding: 4px 18px;
     font-weight: 400;
     text-transform: uppercase;
 }
@@ -1484,6 +1686,25 @@ legend {
     list-style: disc;
     margin-left: 18px;
 }
+.notif-container{
+    width: 100%;
+    padding: 0 19%;
+    opacity: 1;
+    max-height: 200px;
+    overflow: hidden;
+    transition: opacity 0.4s ease, max-height 0.4s ease;
+}
+.notif-hide {
+    opacity: 0;
+    max-height: 0;
+}
+.notif-container p{
+    background-color: #ffe2e2;
+    font-size: 0.8rem;
+    padding: 8px;
+    color: red;
+    border-radius: 8px;
+}
 .notification-container{
     border: 1px solid #cbcbcb;
     background-color: #f1eeff;
@@ -1668,10 +1889,10 @@ legend {
     padding-bottom: 8px;
 }
 .card-hotel-pricelist-container .item-description .description-detail .description-title{
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #2b2b2b;
-    line-height: 1;
+    line-height: 1.5;
 }
 .card-hotel-pricelist-container .item-description .description-detail .description-date{
     font-size: 0.85rem;
@@ -1683,7 +1904,7 @@ legend {
     margin: 8px 0;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    /* gap: 6.3px; */
+    gap: 2px;
 }
 .card-hotel-pricelist-container .item-description .description-price .price{
     font-size: 1rem !important;
@@ -1924,7 +2145,15 @@ legend {
     transition: opacity 0.3s ease-in;
 }
 
-
+.form-action {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.form-action .btn{
+    text-align-last: center;
+}
 /*-----------------------------------*\
  * #BACK TO TOP BUTTON
 \*-----------------------------------*/
@@ -1949,6 +2178,43 @@ legend {
 
 /* DESKTOP (≥ 1024px) */
 @media (max-width: 579px) {
+    #checkPrice{
+        width: 100% !important;
+    }
+    #checkPrice .btn-primary{
+        width: 100% !important;
+    }
+    .service-header{
+        padding: 18px;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: flex-end;
+        background-color: #2b2b2b;
+    }
+    .service-header .service-detail .name {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    .condition-container .detail-condition {
+        position: relative;
+        display: flex;
+        padding: 18px;
+        justify-content: flex-end;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .litepicker .container__months.columns-2 {
+        width: calc((var(--litepicker-month-width) * 1) + 20px) !important;
+    }
+    .litepicker {
+        right: 0;
+        left: unset !important;
+    }
+    .rooms-guests-box {
+        width: 100%;
+        margin-bottom: 18px;
+    }
+    
     .pricelist-container {
         grid-template-columns: repeat(1, 1fr);
     }
@@ -2003,7 +2269,7 @@ legend {
     .absolute-form-container form {
         width: 100%;
         bottom: 0;
-        border-radius: 0 0 18px 18px;
+        border-radius: 0 0 8px 8px;
         place-content: center;
     }
     .container{
@@ -2060,7 +2326,13 @@ legend {
         max-width: 100%;
         margin: 0 0 27px 0;
     }
+    .filter-container .filter-box {
+        width: 100%;
+    }
     .filter-container .filter-box .form-filter{
+        width: 100%;
+    }
+    .form-search {
         width: 100%;
     }
     .content-container {
@@ -2104,11 +2376,11 @@ legend {
     }
     
     .search-container {
-        display: flex;
         gap: 8px;
         width: 100%;
-        text-wrap-mode: nowrap;
-        flex-direction: column;
+    }
+    .search-container .form-action{
+        width: 100%;
     }
    
     .heading-page-content h1{
@@ -2156,6 +2428,16 @@ legend {
 }
 
 @media (min-width: 580px) and (max-width: 767px) {
+    .service-header{
+        padding: 18px;
+        align-items: flex-end;
+    }
+    .condition-container .detail-condition {
+        padding: 18px;
+        justify-content: space-between;
+    }
+
+
     .main-container {
         margin:75px 0 0 0;
     }
@@ -2316,6 +2598,15 @@ legend {
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
+    .service-header{
+        padding: 18px;
+        align-items: flex-end;
+    }
+    .condition-container .detail-condition {
+        padding: 18px;
+        justify-content: space-between;
+    }
+
     .main-container {
         margin:75px 0 0 0;
     }
@@ -2405,7 +2696,9 @@ legend {
         max-width: 90%;
         margin: 0 0 27px 0;
     }
-
+    .filter-container .filter-box {
+        width: 100%;
+    }
 
     .car-card {
         display: flex;
@@ -2462,6 +2755,7 @@ legend {
 }
 
 @media (min-width: 992px) and (max-width: 1024px) {
+    
     .main-container {
         padding: 0 18px;
     }
@@ -2522,7 +2816,14 @@ legend {
 }
 
 @media (min-width: 1025px) and (max-width: 1300px) {
-
+    .service-header{
+        padding: 18px;
+        align-items: flex-end;
+    }
+    .condition-container .detail-condition {
+        padding: 18px;
+        justify-content: space-between;
+    }
     .content-container {
         margin: 0 !important;
     }

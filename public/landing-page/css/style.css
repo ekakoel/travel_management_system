@@ -1,6 +1,6 @@
 /********** Template CSS **********/
 :root {
-    --primary: #004a99 ;
+    --primary: #122b99 ;
     --light-primary: #007bff ;
     --dark-primary: #023d7c ;
     --secondary: #606060;
@@ -38,6 +38,7 @@ h6 {
 
 p{
     font-size: 1rem;
+    padding-bottom: 13px;
 }
 .decimal {
     font-size: 0.7em;
@@ -166,33 +167,54 @@ p{
 
 
 /*** Navbar ***/
+.navbar-expand-lg .navbar-nav .dropdown-menu {
+        width: fit-content;
+        right: 0 !important;
+        left: auto !important;
+    }
+
 .navbar.sticky-top {
-    background-color: #ffffffa1;
-    backdrop-filter: blur(3px);
-    top: 0px;
+    top: -100px;
     transition: .3s;
+    border-bottom: 3px solid #dddddd;
 }
 .navbar-toggler{
-    border: 1px solid var(--light-grey);
+    border: 2px solid rgba(128, 128, 128, 0) !important;
 }
 .navbar-toggler:is(:hover,:active){
-    border: 1px solid grey;
+    border: 1px solid var(--light-grey);
+    box-shadow: none !important;
 }
 .navbar-toggler-icon{
     color: grey;
     align-content: center !important;
 }
+
+#navIcon {
+    color: grey;
+    transition: all 0.25s ease;
+    display: inline-block;
+}
+
+/* Tambahkan efek rotasi kecil saat berubah */
+.icon-anim {
+    transform: rotate(180deg);
+    opacity: 0;
+}
+
 .navbar .navbar-brand {
     height: 75px;
 }
 
 .navbar .navbar-nav .nav-link {
     margin: 0 8px;
-    /* padding: 25px 0; */
-    color: #454545;
-    font-weight: 700;
+    font-weight: 500;
     outline: none;
-    
+    color: #393939 !important
+}
+
+.nav-link:hover, .nav-link:focus, .nav-link:active {
+    color: var(--primary) !important;
 }
 
 .navbar .navbar-nav .nav-link:hover,
@@ -201,20 +223,26 @@ p{
 }
 
 .navbar .dropdown-toggle::after {
-    position: relative;
-    top: 4px;
     border: none;
     content: "\f0da";
-    font-family: "Font Awesome 5 Free";
+    font-family: 'FontAwesome';
     font-weight: 900;
-    line-height: 1;
-    margin-left: 5px;
-    color: rgb(177, 177, 177);
+    /* margin-left: 5px; */
+    /* color: rgb(177, 177, 177); */
 }
 .navbar .dropdown:hover .dropdown-toggle::after {
-    top: 5px;
     transform: rotate(90deg);
     color: var(--primary);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    color: #ffffff !important;
+    background-color: #1d359b;
+}
+
+.navbar .nav-item .dropdown-menu .dropdown-item i:active {
+    color: #e3e3e3;
+    padding-right: 8px;
 }
 
 .social-icon-menu{
@@ -228,12 +256,14 @@ p{
 .navbar .navbar-nav .nav-link i{
     height: 100%;
     align-content: center;
+    padding-right: 2px;
 }
 .navbar .navbar-nav .nav-link:is(:hover,:active), .navbar .navbar-nav .nav-link i:is(:hover,:active){
     color: var(--primary) !important;
 }
 .footer{
-    background-color: var(--light-white);
+    background-color: rgb(207 207 207);
+    border-top: 1px solid rgba(17, 17, 17, .1);
 }
 
 /* SWIPER */
@@ -561,23 +591,7 @@ p{
 }
 
 @media (min-width: 992px) {
-    .navbar .nav-item .dropdown-menu {
-        display: block;
-        border: none;
-        margin-top: 0;
-        top: 150%;
-        opacity: 0;
-        visibility: hidden;
-        transition: .5s;
-        width: max-content;
-    }
 
-    .navbar .nav-item:hover .dropdown-menu {
-        top: 100%;
-        visibility: visible;
-        transition: .5s;
-        opacity: 1;
-    }
 }
 
 .navbar .btn:hover {
@@ -844,13 +858,11 @@ p{
 }
 
 .footer .copyright {
-    /* background-color: var(--dark-blue); */
     padding: 25px 0;
-    border-top: 1px solid rgba(17, 17, 17, .1);
     text-align: center;
 }
 .footer .copyright p{
-    color: #9b9b9b;
+    color: #5b5b5b;
     font-size: 0.8rem;
 }
 

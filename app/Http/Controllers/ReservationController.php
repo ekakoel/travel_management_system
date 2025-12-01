@@ -13,6 +13,7 @@ use App\Models\LogData;
 use App\Models\UserLog;
 use App\Models\ExtraBed;
 use App\Models\Partners;
+use App\Models\Services;
 use App\Models\UsdRates;
 use App\Models\Weddings;
 use App\Models\ActionLog;
@@ -95,6 +96,95 @@ class ReservationController extends Controller
             'guests'=>$guests,
             'extrabed'=>$extrabed,
         ]);
+    }
+
+    public function store_reservation(Request $request)
+    {
+        $service = $request->service;
+        $service_id = $request->service_id;
+        $checkin = $request->checkin;
+        $checkout = $request->checkout;
+        $services = Services::all();
+        function numberToLetters($number) {
+            $letters = '';
+            while ($number > 0) {
+                $number--;
+                $letters = chr(65 + ($number % 26)) . $letters; // 65 = huruf 'A'
+                $number = intval($number / 26);
+            }
+            return $letters;
+        }
+        $now = Carbon::now();
+        $user = Auth::user();
+        $crsv = Reservation::count();
+        $totalReservations = $crsv + 1;
+        $dateCode = $now->format('ymd');
+        $userCode = strtoupper($user->code);
+
+        $userReservationToday = Reservation::where('user_id', $user->id)
+            ->whereDate('created_at', $now->toDateString())
+            ->count() + 1;
+        $sequenceLetter = numberToLetters($userReservationToday);
+        $reservation_code = "RSV-{$userCode}{$dateCode}{$sequenceLetter}";
+        return view('frontend.reservations.store', compact('services'), [
+            'reservation_code' => $reservation_code,
+            'now'=>$now,
+            'service'=>$service,
+            'service_id'=>$service_id,
+            'checkin'=>$checkin,
+            'checkout'=>$checkout,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'service_type'   => 'required|in:hotel,tour,transport,package',
+            'service_id'     => 'required|integer',
+            'check_in'       => 'required|date',
+            'check_out'      => 'nullable|date|after_or_equal:check_in',
+            'guests_count'   => 'required|integer|min:1',
+            'total_price'    => 'required|numeric|min:0',
+            'currency'       => 'nullable|string|max:3'
+        ]);
+
+        // Generate kode reservasi unik
+        $reservationCode = "RSV-" . now()->format('Ymd') . "-" . strtoupper(Str::random(5));
+
+        // Hitung durasi (jika check_out ada)
+        $duration = $validated['check_out'] 
+            ? Carbon::parse($validated['check_in'])->diffInDays(Carbon::parse($validated['check_out']))
+            : 1;
+
+        // Buat reservation
+        $reservation = Reservation::create([
+            'user_id'           => Auth::id(),
+            'reservation_code'  => $reservationCode,
+            'service_type'      => $validated['service_type'],
+            'service_id'        => $validated['service_id'],
+            'check_in'          => $validated['check_in'],
+            'check_out'         => $validated['check_out'],
+            'duration'          => $duration,
+            'guests_count'      => $validated['guests_count'],
+            'status'            => 'Pending',
+            'total_price'       => $validated['total_price'],
+            'currency'          => $validated['currency'] ?? 'USD',
+        ]);
+
+        // Buat pesanan ke tabel Orders (Contoh: default 1 order item)
+        Order::create([
+            'reservation_id' => $reservation->id,
+            'service_type'   => $validated['service_type'],
+            'service_id'     => $validated['service_id'],
+            'price'          => $validated['total_price'],
+            'quantity'       => 1,
+            'total'          => $validated['total_price'],
+            'status'         => 'Pending',
+        ]);
+
+        return redirect()->route('user.reservations.show', $reservation->id)
+            ->with('success', 'Reservation successfully created.');
     }
 
 

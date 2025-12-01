@@ -45,6 +45,26 @@ class HotelsController extends Controller
     public function index(Request $request)
     {
         $now = Carbon::now();
+        $query = Hotels::query();
+
+        // filter by name
+        if ($request->filled('hotel_name')) {
+            $query->where('name', 'LIKE', '%' . $request->hotel_name . '%');
+        }
+
+        // filter by region
+        if ($request->filled('hotel_region')) {
+            $query->where('region', 'LIKE', '%' . $request->hotel_region . '%');
+        }
+
+        $hotels = $query->paginate(18); // 8 per page
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('frontend.hotels.partials.list', compact('hotels'))->render(),
+                'hasMore' => $hotels->hasMorePages(),
+            ]);
+        }
 
         $promotions = Promotion::select('name', 'discounts', 'periode_start', 'periode_end')
             ->where('status', "Active")
@@ -53,6 +73,83 @@ class HotelsController extends Controller
             ->get();
 
         $hotels = $this->getHotelsQuery($request)->paginate(12);
+        return view('frontend.hotels.index', compact('hotels', 'promotions'));
+        // return view('main.hotels', compact('hotels', 'promotions'));
+    }
+    public function hotel_promotions(Request $request)
+    {
+        $now = now();
+
+        // Query hanya hotel yang punya promo aktif dan valid booking
+        $query = Hotels::whereHas('promos', function ($q) use ($now) {
+            $q->active($now)->validForBooking($now);
+        });
+        // $hotelPromotions = HotelPromo::all();
+        // Filter by name
+        if ($request->filled('hotel_name')) {
+            $query->where('name', 'LIKE', '%' . $request->hotel_name . '%');
+        }
+
+        // Filter by region
+        if ($request->filled('hotel_region')) {
+            $query->where('region', 'LIKE', '%' . $request->hotel_region . '%');
+        }
+
+        // Ambil data hotel dengan relasi promos (hanya promos aktif & valid)
+        $hotels = $query->with(['promos' => function ($q) use ($now) {
+            $q->active($now)->validForBooking($now);
+        }])
+        ->paginate(12);
+
+        $promoImages = [
+            'Hot Deal' => 'hot_deal_promo.png',
+            'Best Choice' => 'best_choice_promo.png',
+            'Best Price' => 'best_price_promo.png',
+            'Special Offer' => 'special_offer_promo.png',
+        ];
+        // Jika request AJAX (load more / search)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('frontend.hotels.partials.hotel-promo-list', compact(['hotels', 'promoImages']))->render(),
+                'hasMore' => $hotels->hasMorePages(),
+            ]);
+        }
+
+        return view('frontend.hotels.hotel-promotions', compact('hotels','promoImages'));
+    }
+    
+    public function index_two(Request $request)
+    {
+        $now = Carbon::now();
+        $query = Hotels::query();
+
+        // filter by name
+        if ($request->filled('hotel_name')) {
+            $query->where('name', 'LIKE', '%' . $request->hotel_name . '%');
+        }
+
+        // filter by region
+        if ($request->filled('hotel_region')) {
+            $query->where('region', 'LIKE', '%' . $request->hotel_region . '%');
+        }
+
+        $hotels = $query->paginate(8); // 8 per page
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('frontend.hotels.partials.list', compact('hotels'))->render(),
+                'hasMore' => $hotels->hasMorePages(),
+            ]);
+        }
+
+        $promotions = Promotion::select('name', 'discounts', 'periode_start', 'periode_end')
+            ->where('status', "Active")
+            ->where('periode_start', '<=', $now)
+            ->where('periode_end', '>=', $now)
+            ->get();
+
+        $hotels = $this->getHotelsQuery($request)->paginate(12);
+        // return view('frontend.hotels.index', compact('hotels', 'promotions'));
         return view('main.hotels', compact('hotels', 'promotions'));
     }
 
@@ -66,6 +163,8 @@ class HotelsController extends Controller
     
         return response()->json(['hotels' => $hotels]);
     }
+
+
     public function autocompleteRegion(Request $request)
     {
         $query = $request->input('query');
@@ -78,11 +177,49 @@ class HotelsController extends Controller
 
         return response()->json(['regions' => $regions]);
     }
+
     
     public function loadMore(Request $request)
     {
         $hotels = $this->getHotelsQuery($request)->paginate(12);
         $html = view('partials.hotel-list', compact('hotels'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'hasMore' => $hotels->hasMorePages()
+        ]);
+    }
+    public function hotelPromoLoadMore(Request $request)
+    {
+        $hotels = $this->getHotelsQuery($request)->paginate(12);
+        $html = view('frontend.hotels.partials.hotel-promo-list', compact('hotels'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'hasMore' => $hotels->hasMorePages()
+        ]);
+    }
+
+    public function front_end_load_more(Request $request)
+    {
+        $hotels = $this->getHotelsQuery($request)->paginate(12);
+        $html = view('frontend.partials.hotel-list', compact('hotels'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'hasMore' => $hotels->hasMorePages()
+        ]);
+    }
+    public function hotel_promo_load_more(Request $request)
+    {
+        $promoImages = [
+            'Hot Deal' => 'hot_deal_promo.png',
+            'Best Choice' => 'best_choice_promo.png',
+            'Best Price' => 'best_price_promo.png',
+            'Special Offer' => 'special_offer_promo.png',
+        ];
+        $hotels = $this->getHotelPromotionsQuery($request)->paginate(12);
+        $html = view('frontend.hotels.partials.hotel-promo-list', compact(['hotels', 'promoImages']))->render();
 
         return response()->json([
             'html' => $html,
@@ -97,7 +234,7 @@ class HotelsController extends Controller
             ->where('status', 'active')
             ->with(['promos' => function ($query) use ($now) {
                 $query->select('promotion_type', 'hotels_id')
-                    ->where('status', 'Active')
+                    ->active($now)
                     ->where('book_periode_start', '<=', $now)
                     ->where('book_periode_end', '>=', $now)
                     ->latest();
@@ -112,6 +249,25 @@ class HotelsController extends Controller
 
         return $hotelsQuery;
     }
+    private function getHotelPromotionsQuery(Request $request)
+    {
+        $now = Carbon::now();
+        $hotelsQuery = Hotels::where('status', 'Active')
+            ->whereHas('promos', function ($q) use ($now) {
+                $q->active($now)->validForBooking($now);
+            }
+        );
+
+        if ($request->filled('hotel_name')) {
+            $hotelsQuery->where('name', 'like', '%' . $request->input('hotel_name') . '%');
+        }
+        if ($request->filled('hotel_region')) {
+            $hotelsQuery->where('region', 'like', '%' . $request->input('hotel_region') . '%');
+        }
+
+        return $hotelsQuery;
+    }
+    
 
     // HOTEL SEARCH ====================================================================================> OK
     public function search_hotel(Request $request)
@@ -149,6 +305,19 @@ class HotelsController extends Controller
     public function hoteldetail(Request $request, $code)
     {
         $now = Carbon::now();
+        $ages = session('booking_dates.children_ages', []);
+        if ($ages) {
+            $childAges = json_decode($ages, true) ?: [];
+        }else{
+            $childAges = [];
+        }
+        $duration = session('booking_dates.duration') ?? 0;
+        $checkin = session('booking_dates.checkin') ?? $now;
+        $checkout = date('Y-m-d', strtotime($checkin . " +{$duration} days"));
+        $number_of_rooms = session('booking_dates.nor') ?? 0;
+        $number_of_guests = session('booking_dates.nog') ?? 0;
+        $number_of_adults = session('booking_dates.noa') ?? 0;
+        $number_of_childs = session('booking_dates.noc') ?? 0;
         $hotel = Hotels::with([
             'rooms'=> function ($rm){
                 $rm->where('status','Active');
@@ -158,11 +327,13 @@ class HotelsController extends Controller
                 ->where('book_periode_start', '<=', $now)
                 ->where('book_periode_end', '>=', $now)
                 ->latest();
-        }])->where('code', $code)->firstOrFail();
-
+        }])->where('code', $code)->first();
+        if (!$hotel) {
+            return redirect("/hotels")->with('error','The hotel was not found!');
+        }
         $business = BusinessProfile::findOrFail(1);
         $usdrates = UsdRates::where('name', 'USD')->first();
-        $nearhotels = Hotels::select('code','name','region','cover','id')
+        $hotels = Hotels::select('code','name','region','cover','id')
             ->with([
                 'promos' => function ($query) use ($now) {
                     $query->where('status', 'Active')
@@ -185,8 +356,146 @@ class HotelsController extends Controller
             'Best Price' => 'best_price_promo.png',
             'Special Offer' => 'special_offer_promo.png',
         ];
-        return view('main.hoteldetail', compact('hotel', 'business', 'usdrates', 'now', 'nearhotels','promotions','bookingcode','promoImages'));
+        // dd(session('booking_dates'));
+        return view('frontend.hotels.detail', compact(
+            'hotel',
+            'business',
+            'usdrates',
+            'now',
+            'hotels',
+            'promotions',
+            'bookingcode',
+            'promoImages',
+            'childAges',
+            'checkin',
+            'checkout',
+            'duration',
+            'number_of_rooms',
+            'number_of_guests',
+            'number_of_adults',
+            'number_of_childs',
+        ));
+        // return view('main.hoteldetail', compact('hotel', 'business', 'usdrates', 'now', 'nearhotels','promotions','bookingcode','promoImages'));
     }
+
+    public function updateDate(Request $request){
+        // Validasi input (opsional tapi direkomendasikan)
+        $request->validate([
+            'checkin' => 'required|date',
+            'checkout' => 'required|date|after_or_equal:checkin',
+        ]);
+
+        // Ambil data dari request
+        $checkin = $request->input('checkin');
+        $checkout = $request->input('checkout');
+        $nog = session('booking_dates.nog') ?? 0;
+        $nor = session('booking_dates.nor') ?? 0;
+        $noa = session('booking_dates.noa') ?? 0;
+        $noc = session('booking_dates.noc') ?? 0;
+        $children_ages = session('booking_dates.children_ages') ?? [];
+        // Hitung durasi (jumlah malam)
+        $checkInDate = \Carbon\Carbon::parse($checkin);
+        $checkOutDate = \Carbon\Carbon::parse($checkout);
+        $duration = $checkOutDate->diffInDays($checkInDate);
+
+        // Simpan ke session
+        session([
+            'booking_dates' => [
+                'checkin' => $checkin,
+                'checkout' => $checkout,
+                'duration' => $duration,
+                'nog' => $nog,
+                'nor' => $nor,
+                'noa' => $noa,
+                'noc' => $noc,
+                'children_ages' => $children_ages,
+            ]
+        ]);
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Tanggal berhasil diperbarui.',
+            'data' => session('booking_dates')
+        ]);
+    }
+    public function updateGuesRoom(Request $request){
+        // Validasi input (opsional tapi direkomendasikan)
+        $request->validate([
+            'nor' => 'required',
+            'nog' => 'required',
+            'noa' => 'required',
+            'noc' => 'required',
+        ]);
+
+        // Ambil data dari request
+        $checkin = session('booking_dates.checkin') ?? 0;
+        $checkout = session('booking_dates.checkout') ?? 0;
+        $duration = session('booking_dates.duration') ?? 0;
+        $children_ages = session('booking_dates.children_ages') ?? [];
+        $number_of_rooms = $request->input('nor');
+        $number_of_guests = $request->input('nog');
+        $number_of_adults = $request->input('noa');
+        $number_of_childrens = $request->input('noc');
+
+        // Simpan ke session
+        session([
+            'booking_dates' => [
+                'checkin' => $checkin,
+                'checkout' => $checkout,
+                'duration' => $duration,
+                'nor' => $number_of_rooms,
+                'nog' => $number_of_guests,
+                'noa' => $number_of_adults,
+                'noc' => $number_of_childrens,
+                'children_ages' => $children_ages,
+            ]
+        ]);
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Berhasil menyimpan data kamar dan tamu',
+            'data' => session('booking_dates')
+        ]);
+    }
+    public function updateChildrenAges(Request $request){
+        // Validasi input (opsional tapi direkomendasikan)
+        $request->validate([
+            'children_ages' => 'required',
+        ]);
+        $childrenAges = json_encode($request->input('children_ages'))??null;
+        // Ambil data dari request
+        $checkin = session('booking_dates.checkin') ?? 0;
+        $checkout = session('booking_dates.checkout') ?? 0;
+        $duration = session('booking_dates.duration') ?? 0;
+        $children_ages = $childrenAges;
+        $number_of_rooms = session('booking_dates.nor') ?? 0;
+        $number_of_guests = session('booking_dates.nog') ?? 0;
+        $number_of_adults = session('booking_dates.noa') ?? 0;
+        $number_of_childrens = session('booking_dates.noc') ?? 0;
+
+        // Simpan ke session
+        session([
+            'booking_dates' => [
+                'checkin' => $checkin,
+                'checkout' => $checkout,
+                'duration' => $duration,
+                'nor' => $number_of_rooms,
+                'nog' => $number_of_guests,
+                'noa' => $number_of_adults,
+                'noc' => $number_of_childrens,
+                'children_ages' => $children_ages,
+            ]
+        ]);
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Berhasil menyimpan data umur anak',
+            'data' => session('booking_dates')
+        ]);
+    }
+    
+
+
     // Detail Hotel BOOKING CODE ===========================================================================>
     public function hoteldetail_bookingcode($code,$bcode){
         $promotions = Promotion::where('status',"Active")->get();
@@ -382,15 +691,6 @@ class HotelsController extends Controller
 // Hotel Price =========================================================================================>
     public function hotel_price(Request $request, $code)
     {
-        session(['previous_url' => url()->previous()]);
-        $checkincout = $request->checkincout;
-        [$checkin, $checkout] = $this->parseCheckInOut($request->checkincout);
-        $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
-        Session::put('booking_dates', [
-            'checkin' => $checkin,
-            'checkout' => $checkout,
-            'duration' => $duration,
-        ]);
         $now = now()->format('Y-m-d');
         $tax = Cache::remember('tax', 3600, function () {
             return Tax::select('name', 'tax')->where('name', 'tax')->first();
@@ -402,20 +702,51 @@ class HotelsController extends Controller
             return UsdRates::select('name', 'rate')->where('name', 'USD')->first();
         });
         $hotel = Hotels::with(['rooms' => function ($query) {
-            $query->select('id', 'hotels_id', 'rooms', 'status','cover','include')
-                  ->where('status', 'Active');
+            $query->where('status', 'Active');
         }])->where('code', $code)->first();
+
+        $ages = session('booking_dates.children_ages', []);
+        if ($ages) {
+            $childAges = json_decode($ages, true) ?: [];
+        }else{
+            $childAges = [];
+        }
+        $duration = session('booking_dates.duration') ?? 0;
+
         
-        $nearhotels = Hotels::with([
-            'promos' => function ($query) use ($now) {
-                $query->where('status', 'Active')
-                    ->where('book_periode_start', '<=', $now)
-                    ->where('book_periode_end', '>=', $now);
-                }])->where('status', 'Active')
-            ->where('region', $hotel->region)
-            ->where('id', '!=', $hotel->id)
-            ->take(8)
-            ->get(['id','code','cover', 'name', 'region']);
+        $childrenAges = $request->children_ages;
+        $children_ages = $childrenAges;
+        $number_of_rooms = session('booking_dates.nor') ?? 0;
+        $number_of_guests = session('booking_dates.nog') ?? 0;
+        $number_of_adults = session('booking_dates.noa') ?? 0;
+        $number_of_childs = session('booking_dates.noc') ?? 0;
+        $checkin = session('booking_dates.checkin') ?? 0;
+        $checkout = session('booking_dates.checkout') ?? 0;
+        if ($duration < $hotel->min_stay) {
+            return back()->with('error',__('messages.This hotel requires a minimum stay of').$hotel->min_stay." ".__('messages.nights'));
+        }elseif ($number_of_rooms < 1) {
+            return back()->with('error',__('messages.Please enter the number of rooms and guests before checking the room rates!'));
+        }
+        
+        $adult_guests = $request->adult_guests;
+        $children_guests = $request->children_guests;
+        $number_of_room = $request->number_of_room;
+
+        
+
+        // dd(session('booking_dates'));
+        
+        
+        // $nearhotels = Hotels::with([
+        //     'promos' => function ($query) use ($now) {
+        //         $query->where('status', 'Active')
+        //             ->where('book_periode_start', '<=', $now)
+        //             ->where('book_periode_end', '>=', $now);
+        //         }])->where('status', 'Active')
+        //     ->where('region', $hotel->region)
+        //     ->where('id', '!=', $hotel->id)
+        //     ->take(8)
+        //     ->get(['id','code','cover', 'name', 'region']);
 
         $promotions = Promotion::where('status', 'Active')
             ->where('periode_start','<=',$now)
@@ -423,11 +754,28 @@ class HotelsController extends Controller
             ->get();
         $promotion_name = $promotions->pluck('name')->implode(', ');
         $promotion_price = $promotions->sum('discounts');
-        if ($duration < $hotel->min_stay) {
-            return view('main.hoteldetail', compact('hotel', 'business', 'usdrates', 'now', 'nearhotels','promotions'))
-            ->with('error', [
-                __('messages.Minimum stay') . " " . $hotel->min_stay . " " . __('messages.nights')
-            ]);
+        $promoImages = [
+            'Hot Deal' => 'hot_deal_promo.png',
+            'Best Choice' => 'best_choice_promo.png',
+            'Best Price' => 'best_price_promo.png',
+            'Special Offer' => 'special_offer_promo.png',
+        ];
+        $hotels = Hotels::select('code','name','region','cover','id')
+            ->with([
+                'promos' => function ($query) use ($now) {
+                    $query->where('status', 'Active')
+                    ->where('book_periode_start', '<=', $now)
+                    ->where('book_periode_end', '>=', $now);
+            }])->where('status', 'Active')
+                ->where('region', $hotel->region)
+                ->where('id', '!=', $hotel->id)
+                ->take(4)
+                ->get();
+
+        if ($duration < $hotel->min_stay && $number_of_room < 1 && $adult_guests < 1) {
+            return view('frontend.hotels.detail', compact('hotel','hotels', 'business', 'usdrates', 'now', 'promotions','promoImages'))
+            ->with('error', __('messages.Minimum stay') . " {$hotel->min_stay} " . __('messages.nights')
+            );
         }
         $promo_colors = [
             "Special Offer" => "bg-blue",
@@ -443,15 +791,6 @@ class HotelsController extends Controller
                         $query->where('status', 'Active'); 
                     },
                 'hotels',
-            ])
-            ->where('hotels_id', $hotel->id)
-            ->get();
-        
-        $roomPrices = HotelPrice::with([
-            'rooms'=> function ($query) {
-                    $query->where('status', 'Active'); 
-                },
-            'hotels',
             ])
             ->where('hotels_id', $hotel->id)
             ->get();
@@ -476,7 +815,7 @@ class HotelsController extends Controller
         $orders = Orders::where('user_id', $user_id)->get(['id', 'final_price']);
         $orderno = Orders::count() + 1;
         
-        $hotel_promotions = HotelPromo::active()
+        $hotel_promotions = HotelPromo::active($now)
             ->validForBooking($now)
             ->where('hotels_id', $hotel->id)
             ->get();
@@ -484,15 +823,17 @@ class HotelsController extends Controller
         $processedPromos = [];
         $normalPriceData = [];
         foreach ($hotel->rooms as $room) {
+            $totalKickBack = 0;
+            $totalNormalRoomPrice = 0;
             $promoDetails = $this->processPromo($room, $room_prices, $hotel_promotions, $checkin, $duration, $usdrates, $tax);
             if ($promoDetails) {
                 $processedPromos[] = $promoDetails;
             }
-            $totalNormalRoomPrice = 0;
-            $totalKickBack = 0;
+
             $normalPricePerDate = [];
             $has_normal = [];
             for ($k=0; $k < $duration; $k++) { 
+                $normal_price_temporary = 0;
                 $normal_temp_date = date('Y-m-d',strtotime('+'.$k.'days',strtotime($checkin)));
                 $roomPrice = $room_prices->where('rooms_id',$room->id)
                     ->where('start_date','<=',$normal_temp_date)
@@ -521,6 +862,7 @@ class HotelsController extends Controller
             }
             if (!in_array(0,$has_normal)) {
                 $normalPriceData[] = [
+                    'cover' => $room->cover,
                     'normal_room_id' => $room->id,
                     'normal_prices' => $normalPricePerDate,
                     'normal_room' => $room,
@@ -531,16 +873,21 @@ class HotelsController extends Controller
             }
         }
         $transports = Transports::select('id','name','brand','capacity')->where('status',"Active")->orderBy('capacity', 'DESC')->get();
-        $countOrder = Orders::count();
-
-        // dd($request->checkincout);
-        return view('main.hotelavailability', [
+        
+        return view('frontend.hotels.price', [
             'tax' => $tax,
             'usdrates' => $usdrates,
             'business' => $business,
             'now' => $now,
             'hotel' => $hotel,
-            'nearhotels' => $nearhotels,
+            'hotels' => $hotels,
+            'number_of_rooms' => $number_of_rooms,
+            'number_of_guests' => $number_of_guests,
+            'number_of_adults' => $number_of_adults,
+            'number_of_childs' => $number_of_childs,
+            'childAges' => $childAges,
+            
+            // 'nearhotels' => $nearhotels,
             'room_prices' => $room_prices,
             'packages' => $packages,
             'order_select' => $order_select,
@@ -557,11 +904,10 @@ class HotelsController extends Controller
             'normalPriceData' => $normalPriceData,
             'totalNormalRoomPrice' => $totalNormalRoomPrice,
             'totalKickBack' => $totalKickBack,
-            'roomPrices' => $roomPrices,
             'promo_colors' => $promo_colors,
             'displayedPromos' => $displayedPromos,
             'transports' => $transports,
-            'countOrder' => $countOrder,
+            'promoImages' => $promoImages,
         ]);
     }
 
@@ -816,7 +1162,7 @@ class HotelsController extends Controller
 
 
 // Function add optional rate to Order ======================================================================================= ==>
-    public function func_add_optional_rate_order(Request $request){
+    public function func_add_optional_service_order(Request $request){
         $service_date = date("Y-m-d", strtotime($request->service_date));
         $hotels_id= $request->hotels_id;
         $code = $request->code;

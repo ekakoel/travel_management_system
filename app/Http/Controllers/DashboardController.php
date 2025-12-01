@@ -7,6 +7,7 @@ use App\Models\Tours;
 use App\Models\Hotels;
 use App\Models\Services;
 use App\Models\Weddings;
+use App\Models\Attention;
 use App\Models\Dashboard;
 use App\Models\HotelRoom;
 use App\Models\Promotion;
@@ -88,6 +89,46 @@ class DashboardController extends Controller
             'menu_wedding',
             'menu_hotel',
             'menu_transport'
+        ));
+    }
+
+    public function dashboard(){
+        $now = Carbon::now();
+        $attentions = Attention::where('page','dashboard')->get();
+        $hotels = Hotels::with(['promos' => function ($query) use ($now) {
+                $query->select('promotion_type', 'hotels_id')
+                    ->where('status', 'Active')
+                    ->where('book_periode_start', '<=', $now)
+                    ->where('book_periode_end', '>=', $now)
+                    ->latest();
+            }])
+            ->select('name', 'cover', 'map', 'code', 'region', 'id')
+            ->whereHas('promos', function ($query) use ($now) {
+                $query->where('status', 'Active')
+                    ->where('book_periode_start', '<=', $now)
+                    ->where('book_periode_end', '>=', $now);
+            })
+            ->latest()
+            ->take(8)
+            ->get();
+        $promoImages = [
+            'Hot Deal' => 'hot_deal_promo.png',
+            'Best Choice' => 'best_choice_promo.png',
+            'Best Price' => 'best_price_promo.png',
+            'Special Offer' => 'special_offer_promo.png',
+        ];
+        $transports = DB::table('transports')
+            ->select('cover', 'capacity', 'name', 'code')
+            ->where('status', 'Active')
+            ->latest()
+            ->limit(4)
+            ->get();
+        return view('frontend.dashboards.index',compact(
+            'now',
+            'attentions',
+            'hotels',
+            'promoImages',
+            'transports',
         ));
     }
 }

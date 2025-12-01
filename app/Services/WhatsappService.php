@@ -9,9 +9,9 @@ class WhatsappService
 {
     protected $base;
 
-   public function __construct()
+    public function __construct()
     {
-        $this->endpoint = env('WHATSAPP_BOT_URL');
+        $this->base = rtrim(env('WHATSAPP_BOT_URL'), '/');
     }
     /**
      * Send message via Node bot.

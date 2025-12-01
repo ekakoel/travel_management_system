@@ -767,6 +767,7 @@ public function func_add_contract(Request $request){
                 "additional_info_simplified"=>$request->additional_info_simplified,
                 "status"=>$request->status,
                 "web"=>$request->web,
+                "map"=>$request->map,
                 "contract"=>$hotel->contract,
                 "cover" =>$hotel->cover,
                 "cancellation_policy"=>$request->cancellation_policy,

@@ -190,7 +190,8 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
         Route::put('/fupdate-password',[UsersController::class,'updatePassword'])->name('update-password');
     });
     Route::middleware(['auth','profile.complete'])->group(function () {
-        Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index');
+        // Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index');
+        Route::get('/dashboard',[DashboardController::class,'dashboard'])->name('dashboard.index');
         Route::middleware(['approve'])->group(function () {
             // ========================================================================================================================================> (DEVELOPER)
             Route::middleware(['checkPosition:developer'])->group(function () {
@@ -859,18 +860,30 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
                 //                      HOTELS 
                 // ---------------------------------------------------
                 Route::get('/hotels',[HotelsController::class,'index'])->name('view.hotels');
+                Route::get('/hotel-promotions',[HotelsController::class,'hotel_promotions'])->name('view.hotel-promotions');
+                Route::get('/hotels/promotions/autocomplete', [HotelsController::class, 'autocomplete'])->name('hotel-promotions.autocomplete');
+                Route::get('/hotels/promotions/autocomplete-region', [HotelsController::class, 'autocompleteRegion'])->name('hotel-promotions.autocompleteRegion');
+                Route::get('/hotels/promotions/front-end-load-more', [HotelsController::class, 'hotel_promo_load_more'])->name('frontend.hotels.promo-load-more');
+                Route::get('/hotels/promotions/load-more', [HotelsController::class, 'hotelPromoLoadMore'])->name('hotel-promotions.load-more');
+
+                Route::get('/hotel-{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail-flyer');
+                Route::get('/hotel/{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail');
+                Route::get('/hotels/front-end-load-more', [HotelsController::class, 'front_end_load_more'])->name('frontend.hotels.load-more');
                 Route::get('/hotels/autocomplete', [HotelsController::class, 'autocomplete'])->name('hotels.autocomplete');
                 Route::get('/hotels/autocomplete-region', [HotelsController::class, 'autocompleteRegion'])->name('hotels.autocompleteRegion');
                 Route::get('/hotels/load-more', [HotelsController::class, 'loadMore'])->name('hotels.load-more');
+
                 Route::post('/search-hotels',[HotelsController::class,'search_hotel'])->name('view.hotels-search');
-                // Route::get('/hotel-{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail');
-                Route::get('/hotel/{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail');
                 Route::post('/hotel-price-{code}',[HotelsController::class,'hotel_price'])->name('view.hotel-prices');
                 Route::post('/order-room-{id}',[HotelsController::class,'order_room'])->name('view.order-room');
                 Route::post('/fcheck-code',[HotelsController::class,'fcheck_code'])->name('func.hotel-check-code');
                 Route::get('/hotel-{code}-{bcode}',[HotelsController::class,'hoteldetail_bookingcode'])->name('hotel-bookingcode');
                 Route::post('/hotel-price-{code}-{bcode}',[HotelsController::class,'hotel_price_bookingcode'])->name('view.hotel-prices-bcode');
                 Route::post('/fadd-optional-rate-order',[HotelsController::class,'func_add_optional_rate_order'])->name('fadd.optional-rate-order');
+
+                Route::post('/booking/update-date', [HotelsController::class, 'updateDate'])->name('update.booking.date');
+                Route::post('/booking/update-rooms-guests', [HotelsController::class, 'updateGuesRoom'])->name('update.booking.room-guests');
+                Route::post('/booking/update-child-ages', [HotelsController::class, 'updateChildrenAges'])->name('update.booking.children-ages');
                 // ---------------------------------------------------
                 //                           VILLAS
                 // ---------------------------------------------------
@@ -920,10 +933,25 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
                 //                      TRANSPORT
                 // ---------------------------------------------------
                 Route::get('/transports',[transportsController::class,'index'])->name('view.transports');
-                Route::get('/transport-{code}',[transportsController::class,'transport_detail'])->name('view.transport-detail');
+                Route::get('/transport-{code}',[transportsController::class,'detail_transport'])->name('view.transport.detail');
+                // Route::get('/transport-{code}',[transportsController::class,'transport_detail'])->name('view.transport-detail');
                 Route::get('/transport/{code}/{bcode}',[transportsController::class,'transport_detail_bookingcode'])->name('view.transport-detail-booking-code');
                 Route::post('/transport-detail',[transportsController::class,'transport_check_code'])->name('view.transport-detail-check-code');
                 Route::post('/search-transports',[transportsController::class,'search_transports'])->name('view.search-transport');
+
+
+                // ---------------------------------------------------
+                //           AGENT ACCOMMODATION RESERVATION
+                // ---------------------------------------------------
+                Route::get('/my-reservations', [ReservationController::class, 'index_reservation'])->name('view.index-reservation');
+                Route::get('/my-reservations/store', [ReservationController::class, 'store_reservation'])->name('view.reservation.store');
+                Route::post('/my-reservations/create', [ReservationController::class, 'store'])->name('func.reservations.store');
+
+                // ---------------------------------------------------
+                //                        CART
+                // ---------------------------------------------------
+                Route::post('/cart/store', [CartsController::class, 'store'])->name('cart.store');
+                
                 // ---------------------------------------------------
                 //                        ORDER
                 // ---------------------------------------------------
