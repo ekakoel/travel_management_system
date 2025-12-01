@@ -9,9 +9,9 @@ class WhatsappService
 {
     protected $base;
 
-   public function __construct()
+    public function __construct()
     {
-        $this->endpoint = env('WHATSAPP_BOT_URL');
+       $this->endpoint = rtrim(env('WHATSAPP_BOT_URL'), '/');
     }
     /**
      * Send message via Node bot.
@@ -25,10 +25,11 @@ class WhatsappService
                 'message' => $message,
             ];
 
-            $response = Http::timeout(10)->post($this->base . '/send', $payload);
+            // Kirim ke /send
+            $response = Http::timeout(10)->post($this->endpoint . '/send', $payload);
 
             Log::info('WA Send Response', [
-                'endpoint' => $this->base . '/send',
+                'endpoint' => $this->base.'/send',
                 'payload' => $payload,
                 'status' => $response->status(),
                 'body' => $response->body(),
@@ -45,22 +46,43 @@ class WhatsappService
         }
     }
 
-    /* -------------------------
-       Static helpers for controller or blade usage
-       Keep these static so existing Calls (WhatsappService::isConnected()) keep working
-       ------------------------- */
-
     public static function isConnected()
     {
         try {
-            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
-            $res = Http::timeout(5)->get($base . '/status');
+            $base = rtrim(env('WHATSAPP_BOT_URL'), '/');
+            $res = Http::timeout(5)->get($base.'/status');
             if ($res->failed()) return false;
             return $res->json()['connected'] ?? false;
         } catch (\Exception $e) {
             return false;
         }
     }
+
+    public static function generateQRCode()
+    {
+        try {
+            $base = rtrim(env('WHATSAPP_BOT_URL'), '/');
+            $res = Http::timeout(10)->get($base.'/qr');
+            if ($res->failed()) return null;
+            return $res->json()['qr'] ?? null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function formatPhone(string $phone): string
+    {
+        $p = preg_replace('/[^0-9]/', '', $phone);
+        if ($p === '') return $phone;
+        if (substr($p,0,1) === '0') $p = '62'.substr($p,1);
+        return $p.'@c.us';
+    }
+
+    /* -------------------------
+       Static helpers for controller or blade usage
+       Keep these static so existing Calls (WhatsappService::isConnected()) keep working
+       ------------------------- */
+
 
     public static function getPhone()
     {
@@ -74,17 +96,7 @@ class WhatsappService
         }
     }
 
-    public static function generateQRCode()
-    {
-        try {
-            $base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1/whatsapp'), '/');
-            $res = Http::timeout(10)->get($base . '/qr');
-            if ($res->failed()) return null;
-            return $res->json()['qr'] ?? null;
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
+
 
     public static function disconnect()
     {
@@ -97,18 +109,4 @@ class WhatsappService
         }
     }
 
-    /* normalize phone to digits only and ensure country code for Indonesia (62) if leading 0 */
-    private function formatPhone(string $phone): string
-    {
-        $p = preg_replace('/[^0-9]/', '', $phone);
-
-        if ($p === '') return $phone; // fallback raw
-
-        // if starts with 0 -> replace with 62
-        if (substr($p, 0, 1) === '0') {
-            $p = '62' . substr($p, 1);
-        }
-
-        return $p;
-    }
 }

@@ -863,7 +863,7 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
                 Route::get('/hotels/autocomplete-region', [HotelsController::class, 'autocompleteRegion'])->name('hotels.autocompleteRegion');
                 Route::get('/hotels/load-more', [HotelsController::class, 'loadMore'])->name('hotels.load-more');
                 Route::post('/search-hotels',[HotelsController::class,'search_hotel'])->name('view.hotels-search');
-                // Route::get('/hotel-{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail');
+                Route::get('/hotel-{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail-flyer');
                 Route::get('/hotel/{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail');
                 Route::post('/hotel-price-{code}',[HotelsController::class,'hotel_price'])->name('view.hotel-prices');
                 Route::post('/order-room-{id}',[HotelsController::class,'order_room'])->name('view.order-room');
