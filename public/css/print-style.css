@@ -1,0 +1,39 @@
+@media print {
+    .noPrint{
+      display:none;
+    }
+  }
+.print-container{
+    width: 21cm;
+    min-height: 29.7cm;
+    margin: 1cm auto;
+    background: white;
+}
+.logo-head img{
+    max-width: 200px;
+    margin-bottom: 18px;
+}
+.title-head{
+    margin-top: 18px;
+    font-size: 4rem;
+    font-weight: 600;
+}
+.title-head span{
+   font-weight: 400;
+}
+
+.date-label{
+    width: 100%;
+        background-color: rgb(255, 0, 0);
+        padding: 2px 8px;
+        color: white;
+        font-weight: 600;
+}
+.bussines-title{
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+.bussines-subtitle{
+    font-weight: 600;
+    font-style: italic;
+}

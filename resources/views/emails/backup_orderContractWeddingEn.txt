@@ -1,0 +1,700 @@
+@if ($invoice)
+            <div class="card-box">
+                <div class="heading">
+                    <table class="table">
+                        <tr>
+                            <td> 
+                                <div class="heading-left">
+                                    <div class="business-name">{{ $business->name }}</div>
+                                    <div class="business-sub">{{ __('messages.'.$business->caption) }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="heading-right" style="text-align: right;">
+                                    <div class="title">INVOICE</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tb-heading" style="width: 100%">
+                            <td>
+                            
+                            </td>
+                            <td>
+                                <div class="order-date" style="text-align: right">{{ date('D, d M y',strtotime($order->updated_at)) }}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="content">
+                    <table class="table tb-head">
+                        <tr>
+                            <td style="width: 20%;">
+                                Invoice No.
+                            </td>
+                            <td style="width: 30%;">
+                                : {{ $invoice->inv_no }}
+                            </td>
+                            <td style="width: 20%;">
+                                Invoice Date
+                            </td>
+                            <td style="width: 30%;">
+                                : {{ date('m/d/Y',strtotime($invoice->inv_date)) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%;">
+                                Reservation No.
+                            </td>
+                            <td style="width: 30%;">
+                                : {{ $reservation->rsv_no }}
+                            </td>
+                            <td style="width: 20%;">
+                                Payment Dateline
+                            </td>
+                            <td  style="width: 30%;">
+                                : {{ date('m/d/Y',strtotime($invoice->due_date)) }}
+                            </td>
+                            
+                        </tr>
+                        <tr>
+                            <td style="width: 20%;">
+                                Order No.
+                            </td>
+                            <td style="width: 30%;">
+                                : {{  $order->orderno }}
+                            </td>
+                            <td style="width: 20%;">
+                                Sales / Agent
+                            </td>
+                            <td  style="width: 30%;">
+                                : {{  $agent->name }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%;">
+                                Customer Name
+                            </td>
+                            <td style="width: 30%;">
+                                    @php
+                                        $guestName = $bride->where('id',$order->pickup_name)->first();
+                                    @endphp
+                                @if (isset($guestName))
+                                    : {{ $guestName->groom." & ".$guestName->bride }}
+                                @else
+                                    : - 
+                                @endif
+                            </td>
+                            <td style="width: 20%;">
+                                Company / Office
+                            </td>
+                            <td  style="width: 30%;">
+                                : {{ $agent->office }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%;">
+                                Customer Phone
+                                </td>
+                                <td style="width: 30%;">
+                                    @if (isset($guestName->groom_contact))
+                                        : {{ $guestName->groom_contact }}
+                                    @else
+                                        : - 
+                                    @endif
+                                </td>
+                            <td style="width: 20%;">
+                                Contact Number
+                            </td>
+                            <td  style="width: 30%;">
+                                : {{ $agent->phone }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%;">
+                                @if ($invoice->bank_id == 1)
+                                    <b>Rate USD</b>
+                                @elseif ($invoice->bank_id == 2)
+                                    <b>Rate CNY</b>
+                                @elseif ($invoice->bank_id == 3)
+                                    <b>Rate TWD</b>
+                                @elseif ($invoice->bank_id == 4)
+                                    <b>Rate IDR</b>
+                                @endif
+                            </td>
+                            <td style="width: 30%;">
+                                @if ($invoice->bank_id == 1)
+                                    <b>{{ ': Rp ' . number_format($order->usd_rate, 0, ',', '.') }}</b>
+                                @elseif ($invoice->bank_id == 2)
+                                    <b>{{ ': Rp ' . number_format($order->cny_rate, 0, ',', '.') }}</b>
+                                @elseif ($invoice->bank_id == 3)
+                                    <b>{{ ': Rp ' . number_format($order->twd_rate, 0, ',', '.') }}</b>
+                                @elseif ($invoice->bank_id == 4)
+                                    <b>Rate IDR</b>
+                                @endif
+                            </td>
+                            <td style="width: 20%;">
+                                
+                            </td>
+                            <td  style="width: 30%;">
+                                
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table class="table-order" >
+                        <tr>
+                            <th style="width: 5%;">No</th>
+                            <th style="width: 5%;">Date</th>
+                            <th style="width: 60%;">Description</th>
+                            
+                            <th style="width: 10%; text-align: center;">Unit/Pax</th>
+                            <th style="width: 20%; text-align: center;">Amount</th>
+                        </tr>
+                        
+                        @php
+                            $order_suite_and_villa_ids = json_decode($order_wedding->wedding_room_id);
+                        @endphp
+                        {{-- FIXED SERVICES ------------------------------------------------------------------------ --}}
+                        @if ($w_fixed_services_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order_wedding->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td><div class="table-service-name">Wedding Package / Include</div></td>
+                                <td style="text-align: center;">
+                                    1
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->fixed_service_price + $order_wedding->markup, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- SUITES AND VILLAS ------------------------------------------------------------------------ --}}
+                        @if ($order_suite_and_villa_ids)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->checkin)).' - '.date("m/d/y",strtotime($order->checkout)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @foreach ($order_suite_and_villa_ids as $order_suite_and_villa_id)
+                                            @php
+                                                $wedding_site_and_villa = $rooms->where('id',$order_suite_and_villa_id)->first();
+                                            @endphp
+                                            @if (count($order_suite_and_villa_ids)>1)
+                                                {{ "- ".$wedding_hotel->name.", ".date('F d',strtotime($order->checkin))."th - ".date('F d',strtotime($order->checkout)).'th, '.$order->duration." nights, ".$wedding_site_and_villa->rooms }}<br>
+                                            @else
+                                                {{ $wedding_hotel->name.", ".date('F d',strtotime($order->checkin))."th - ".date('F d',strtotime($order->checkout)).'th, '.$order->duration." nights, ".$wedding_site_and_villa->rooms }}
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </td>
+                                
+                                <td style="text-align: center;">
+                                    {{ $order->duration }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->room_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- WEDDING VENUE ------------------------------------------------------------------------ --}}
+                        @if ($w_venues_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @foreach ($w_venues_id as $w_venue_id)
+                                            @php
+                                                $wedding_venue = $weddingVenues->where('id',$w_venue_id)->first();
+                                            @endphp
+                                            @if (count($w_venues_id)>1)
+                                                • {{ $wedding_venue->service.", capacity ".$wedding_venue->capacity." guests" }}<br>
+                                            @else
+                                                {{ $wedding_venue->service.", capacity ".$wedding_venue->capacity." guests" }}
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </td>
+                                
+                                <td style="text-align: center;">
+                                    {{ count($w_venues_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->venue_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- MAKEUP ----------------------------------------------------------------------------}}
+                        @if ($w_makeups_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @if ($w_makeups_id)
+                                            @foreach ($w_makeups_id as $w_makeup_id)
+                                                @php
+                                                    $wedding_makeup = $weddingMakeups->where('id',$w_makeup_id)->first();
+                                                @endphp
+                                                @if (count($w_makeups_id)>1)
+                                                    • {{ $wedding_makeup->service." (".$wedding_makeup->duration." ".$wedding_makeup->time.")" }}<br>
+                                                @else
+                                                    {{ $wedding_makeup->service." (".$wedding_makeup->duration." ".$wedding_makeup->time.")" }}
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </td>
+                                
+                                <td style="text-align: center;">
+                                    {{ count($w_makeups_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->makeup_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- DECORATION ----------------------------------------------------------------------------}}
+                        @if ($w_decorations_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @if ($w_decorations_id)
+                                            @foreach ($w_decorations_id as $w_decoration_id)
+                                                @php
+                                                    $wedding_decoration = $weddingDecorations->where('id',$w_decoration_id)->first();
+                                                @endphp
+                                                @if (count($w_decorations_id)>1)
+                                                    • {{ $wedding_decoration->service." (".$wedding_decoration->duration." ".$wedding_decoration->time.")" }}<br>
+                                                @else
+                                                    {{ $wedding_decoration->service." (".$wedding_decoration->duration." ".$wedding_decoration->time.")" }}
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </td>
+                                
+                                <td style="text-align: center;">
+                                    {{ count($w_decorations_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->decoration_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- DINNER VENUE ----------------------------------------------------------------------------}}
+                        @if ($w_dinner_venues_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @if ($w_dinner_venues_id)
+                                            @foreach ($w_dinner_venues_id as $w_dinner_venue_id)
+                                                @php
+                                                    $wedding_dinner_venue = $weddingDinnerVenues->where('id',$w_dinner_venue_id)->first();
+                                                @endphp
+                                                @if (count($w_dinner_venues_id)>1)
+                                                    • {{ $wedding_dinner_venue->service." (".$wedding_dinner_venue->duration." ".$wedding_dinner_venue->time.")" }}<br>
+                                                @else
+                                                    {{ $wedding_dinner_venue->service." (".$wedding_dinner_venue->duration." ".$wedding_dinner_venue->time.")" }}
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    {{ count($w_dinner_venues_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->dinner_venue_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- ENTERTAINMENT ----------------------------------------------------------------------------}}
+                        @if ($w_entertainments_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @if ($w_entertainments_id)
+                                            @foreach ($w_entertainments_id as $w_entertainment_id)
+                                                @php
+                                                    $wedding_entertainment = $weddingEntertainments->where('id',$w_entertainment_id)->first();
+                                                @endphp
+                                                @if (count($w_entertainments_id)>1)
+                                                    • {{ $wedding_entertainment->service." (".$wedding_entertainment->duration." ".$wedding_entertainment->time.")" }}<br>
+                                                @else
+                                                    {{ $wedding_entertainment->service." (".$wedding_entertainment->duration." ".$wedding_entertainment->time.")" }}
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    {{ count($w_entertainments_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->entertainment_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- DOCUMENTATION ----------------------------------------------------------------------------}}
+                        @if ($w_documentations_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @if ($w_documentations_id)
+                                            @foreach ($w_documentations_id as $w_documentation_id)
+                                                @php
+                                                    $wedding_documentation = $weddingDocumentations->where('id',$w_documentation_id)->first();
+                                                @endphp
+                                                @if (count($w_documentations_id)>1)
+                                                    • {{ $wedding_documentation->service." (".$wedding_documentation->duration." ".$wedding_documentation->time.")" }}<br>
+                                                @else
+                                                    {{ $wedding_documentation->service." (".$wedding_documentation->duration." ".$wedding_documentation->time.")" }}
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    {{ count($w_documentations_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->documentation_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- TRANSPORTATION ----------------------------------------------------------------------------}}
+                        @if ($w_transportations_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->checkin)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @if ($w_transportations_id)
+                                            @foreach ($w_transportations_id as $w_transportation_id)
+                                                @php
+                                                    $wedding_transportation = $weddingTransportations->where('id',$w_transportation_id)->first();
+                                                @endphp
+                                                @if (count($w_transportations_id)>1)
+                                                    • {{ $wedding_transportation->brand." ".$wedding_transportation->name." (Airport Shuttle)" }}<br>
+                                                @else
+                                                    {{ $wedding_transportation->brand." ".$wedding_transportation->name." (Airport Shuttle)" }}
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    {{ count($w_transportations_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->transport_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- OTHER SERVICE ----------------------------------------------------------------------------}}
+                        @if ($w_others_id)
+                            <tr>
+                                <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                <td>
+                                    <div class="table-service-name">
+                                        {{ date("m/d/y",strtotime($order->wedding_date)) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-service-name">
+                                        @if ($w_others_id)
+                                            @foreach ($w_others_id as $w_other_id)
+                                                @php
+                                                    $wedding_other = $weddingOthers->where('id',$w_other_id)->first();
+                                                @endphp
+                                                @if (count($w_others_id)>1)
+                                                    • {{ $wedding_other->service." (".$wedding_other->duration." ".$wedding_other->time.")" }}<br>
+                                                @else
+                                                    {{ $wedding_other->service." (".$wedding_other->duration." ".$wedding_other->time.")" }}
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    {{ count($w_others_id) }}
+                                </td>
+                                <td style="text-align: right;">
+                                    {{ '$ ' . number_format($order_wedding->other_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                        {{-- ADDITIONAL SERVICE --}}
+                        @if (isset($order->additional_service))
+                            @if ($order->additional_service != "null")
+                                @php
+                                    $adser = json_decode($order->additional_service);
+                                    $adser_date = json_decode($order->additional_service_date);
+                                    $adser_qty = json_decode($order->additional_service_qty);
+                                    $adser_price = json_decode($order->additional_service_price);
+                                    if (isset($adser)) {
+                                        $cad = count($adser);
+                                    }else{
+                                        $cad = 0;
+                                    }
+                                    $adser_total_price = 0;
+                                @endphp
+                                @for ($v = 0; $v < $cad; $v++)
+                                    @php
+                                        $adser_tp = $adser_price[$v]*$adser_qty[$v];
+                                        $adser_total_price = $adser_total_price + $adser_tp;
+                                    @endphp
+                                    <tr>
+                                        <td><div class="table-service-name">{{ $i++ }}</div></td>
+                                        <td>
+                                            <div class="table-service-name">
+                                                {{ date("m/d/y",strtotime($adser_date[$v])) }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="table-service-name">
+                                                {{ date('l, m/d/Y ',strtotime($adser_date[$v])).", ".$adser[$v] }}
+                                            </div>
+                                        </td>
+                                        
+                                        <td style="text-align: center;">
+                                            {{ $adser_qty[$v] }}
+                                        </td>
+                                        <td style="text-align: right;">
+                                            {{ currencyFormatUsd($adser_price[$v]*$adser_qty[$v]) }}
+                                        </td>
+                                    </tr>
+                                @endfor
+                            @else
+                                @php
+                                    $adser_total_price = 0;
+                                @endphp
+                            @endif
+                        @else
+                            @php
+                                $adser_total_price = 0;
+                            @endphp
+                        @endif
+                        <tr>
+                            <td colspan="4" style="text-align: center; font-size:0.9rem; font-weight:600;">Total</td>
+                            <td style="text-align: right; font-size:0.9rem; font-weight:600;">
+                                {{ currencyFormatUsd($order->final_price + $order->kick_back +$order->bookingcode_disc + $order->discounts + $promotion_disc) }}
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table-list m-t-18 m-b-18">
+                        <tbody>
+                            <tr style="text-align: right;">
+                                <td colspan="2" style="width:40%;"></td>
+                                <td style="width:20%;">Services</td>
+                                <td style="width: 20%">USD</td>
+                                <td style="width: 20%">{{ currencyFormatUsd($order->final_price + $order->kick_back +$order->bookingcode_disc + $order->discounts + $promotion_disc) }}</td>
+                            </tr>
+                            <tr style="text-align: right;">
+                                <td colspan="2" style="width:40%;"></td>
+                                <td style="width:20%;">Tax</td>
+                                <td >USD</td>
+                                <td style="width: 20%">$ 0</td>
+                            </tr>
+                            @if ($order->kick_back > 0)
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%;">Kick Back</td>
+                                    <td >USD</td>
+                                    <td style="width: 20%">{{ "-$ ". number_format($order->kick_back) }}</td>
+                                </tr>
+                            @endif
+                            @if ($order->bookingcode_disc > 0)
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%;">Booking Code</td>
+                                    <td>USD</td>
+                                    <td style="width: 20%">{{ "-$ ". number_format($order->bookingcode_disc) }}</td>
+                                </tr>
+                            @endif
+                            @if ($order->discounts > 0)
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%;">Discounts</td>
+                                    <td>USD</td>
+                                    <td style="width: 20%">{{ "-$ ". number_format($order->discounts) }}</td>
+                                </tr>
+                            @endif
+                            @if ($promotion_disc > 0)
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%;">Promotions</td>
+                                    <td>USD</td>
+                                    <td style="width: 20%">{{ "-$ ". number_format($promotion_disc) }}</td>
+                                </tr>
+                            @endif
+                            @if($invoice->bank_id == 2)
+                                <tr style="text-align: right; color:gray !important;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
+                                </tr>
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%;" class="final-price"><b>CNY</b></td>
+                                    <td style="width: 20%" class="final-price"><b>{{ "¥ ". number_format($invoice->total_cny) }}</b></td>
+                                </tr>
+                            @elseif($invoice->bank_id == 3)
+                                <tr style="text-align: right; color:gray !important;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
+                                </tr>
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%;" class="final-price"><b>TWD</b></td>
+                                    <td style="width: 20%" class="final-price"><b>{{ currencyFormatUsd($invoice->total_twd) }}</b></td>
+                                </tr>
+                            @elseif($invoice->bank_id == 4)
+                                <tr style="text-align: right; color:gray !important;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
+                                </tr>
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%;" class="final-price"><b>IDR</b></td>
+                                    <td style="width: 20%" class="final-price"><b>{{ currencyFormatIdr($invoice->total_idr) }}</b></td>
+                                </tr>
+                            @else
+                                <tr style="text-align: right;">
+                                    <td colspan="2" style="width:40%;"></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                    @if ($bankAccount)
+                        <div class="bank-account">
+                            <div class="tb-container">
+                                <table class="table tb-list">
+                                    <tr>
+                                        <td style="width: 15%;">
+                                            Bank
+                                        </td>
+                                        <td style="width: 35%;">
+                                            {{ $bankAccount->bank }}
+                                        </td>
+                                        <td style="width:15%;">
+                                            Swift Code
+                                        </td>
+                                        <td style="width: 35%;">
+                                            {{ $bankAccount->swift_code }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:15%;">
+                                            Name
+                                        </td>
+                                        <td style="width: 35%;">
+                                            {{ $bankAccount->name }}
+                                        </td>
+                                        <td style="width:15%;">
+                                            Telephone
+                                        </td>
+                                        <td style="width: 35%;">
+                                            {{ $bankAccount->telephone }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:15%;">
+                                            Account IDR
+                                        </td>
+                                        <td style="width: 35%;">
+                                            {{ $bankAccount->account_idr }}
+                                        </td>
+                                        <td style="width: 15%;">
+                                            Address
+                                        </td>
+                                        <td style="width: 35%;">
+                                            {{ $bankAccount->address }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:15%;">
+                                            Account USD
+                                        </td>
+                                        <td colspan="2" style="width: 35%;">
+                                            {{ $bankAccount->account_usd }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <br>
+                                        <i>* The transfer fees and administrative costs will be charged to the sender.</i>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="additional-info">
+                        <br>
+                        <p>We would like to remind you to follow the following steps in the payment process:<br>
+                        1. After receiving our confirmation letter, please review the details of the reservation in the invoice sent.<br>
+                        2. If the invoice received is accurate, kindly proceed with the payment before the 'Payment Dateline' mentioned in the invoice.<br>
+                        3. If the payment has been completed, please upload the 'proof of payment' in our system.<br>
+                        Thank you for your attention and cooperation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
