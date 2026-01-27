@@ -27,7 +27,7 @@ if (!function_exists('set_ui_config')) {
     function set_ui_config($name, $status, $message = '')
     {
         $config = UiConfig::updateOrCreate(['name' => $name], ['status' => $status, 'message' => $message]);
-        Cache::forget("ui_config_{$name}"); // Hapus cache agar data terbaru diambil
+        Cache::forget("ui_config_{$name}");
         return $config;
     }
 }
@@ -58,79 +58,37 @@ function renderStars($score, $max = 5) {
     };
 
     $html = '';
-
-    // Full stars (all yellow)
     for ($i = 0; $i < $fullStars; $i++) {
         $html .= $starSvg('#ffbf00', '#ffbf00');
     }
-
-    // Half star (left yellow, right gray)
     if ($halfStar) {
         $html .= $starSvg('#ffbf00', '#C0C0C0');
     }
-
-    // Empty stars (all gray)
     for ($i = 0; $i < $emptyStars; $i++) {
         $html .= $starSvg('#C0C0C0', '#C0C0C0');
     }
 
     return $html;
 }
-// if (!function_exists('getThumbnail')) {
-//     function getThumbnail($path, $width = 380, $height = 200)
-//     {
-//         $fileName  = pathinfo($path, PATHINFO_FILENAME);
-//         $extension = pathinfo($path, PATHINFO_EXTENSION);
-
-//         $thumbnailPath = "thumbnails/{$fileName}-{$width}x{$height}.{$extension}";
-//         $disk = Storage::disk('public');
-
-//         try {
-//             // ✅ Cek file asli pakai Storage, bukan file_exists
-//             if (!$disk->exists($path)) {
-//                 return asset('images/default.webp');
-//             }
-
-//             // ✅ Generate thumbnail kalau belum ada
-//             if (!$disk->exists($thumbnailPath)) {
-//                 $manager = new ImageManager(new Driver());
-//                 $fullPath = $disk->path($path);
-
-//                 $image = $manager->read($fullPath)->cover($width, $height);
-//                 $image->save($disk->path($thumbnailPath));
-//             }
-
-//             return $disk->url($thumbnailPath);
-
-//         } catch (\Exception $e) {
-//             // ✅ Kalau error lain (misal corrupt file)
-//             return asset('storage/images/default.webp');
-//         }
-//     }
-// }
 if (!function_exists('getThumbnail')) {
     function getThumbnail($path, $width = 380, $height = 200)
     {
-        // Hilangkan prefix 'storage/' agar cocok dengan disk('public')
         $path = preg_replace('/^storage\//', '', $path);
 
         $fileName  = pathinfo($path, PATHINFO_FILENAME);
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $thumbnailPath = "thumbnails/{$fileName}-{$width}x{$height}.{$extension}";
         $disk = Storage::disk('public');
-
         try {
             if (!$disk->exists($path)) {
                 return asset('/storage/images/default.webp');
             }
-
             if (!$disk->exists($thumbnailPath)) {
                 $manager = new ImageManager(new Driver());
                 $fullPath = $disk->path($path);
                 $image = $manager->read($fullPath)->cover($width, $height);
                 $image->save($disk->path($thumbnailPath));
             }
-
             return asset('storage/' . $thumbnailPath);
         } catch (\Exception $e) {
             return asset('/storage/images/default.webp');
@@ -142,7 +100,7 @@ if (!function_exists('getThumbnail')) {
 if (!function_exists('getThumbnails')) {
     function getThumbnails($path, array $sizes = [[200,200],[400,300],[800,600]])
     {
-        ini_set('memory_limit', '2058M'); // atau lebih tinggi
+        ini_set('memory_limit', '2058M');
         $urls = [];
         foreach ($sizes as $size) {
             [$w, $h] = $size;
