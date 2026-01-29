@@ -4,7 +4,7 @@
             <div class="card-box-title">
                 <div class="subtitle"><i class="icon-copy fa fa-search" aria-hidden="true"></i>@lang('messages.Check Price')</div>
             </div>
-            <div class="detail-item p-b-18">
+            <div class="detail-item">
                 <div class="row">
                     <div class="col-md-12">
                         <form action="{{ route('view.hotel-prices',$hotel->code) }}" method="POST" role="search">
@@ -19,7 +19,7 @@
                             </div>
                             <input type="hidden" name="hotel_id" value="{{ $hotel->id }}">
                             <input type="hidden" name="hotelcode" value="{{ $hotel->code }}">
-                            <div class="row">
+                            <div class="row m-t-8">
                                 <div class="col-6">
                                     @if (session('booking_dates.duration') < $hotel->min_stay)
                                         <p class="error-notification"> @lang('messages.Minimum stay') {{ $hotel->min_stay }} @lang('messages.nights')</p>

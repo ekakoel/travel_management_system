@@ -1369,4 +1369,5 @@ return [
     'Tour Gallery' => 'Tour Gallery',
     'Tour Area' => 'Tour Area',
     'The order has been successfully updated' => 'The order has been successfully updated',
+    'Data' => 'Data',
 ];

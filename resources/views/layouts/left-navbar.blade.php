@@ -110,6 +110,7 @@
                         @endforeach
                         
 
+                        
                         {{-- <li class="dropdown">
                             <a href="javascript:;" class="dropdown-toggle">
                                 <span class="micon fi-wrench"></span><span class="mtext">@lang("messages.Tools")</span>
@@ -196,6 +197,18 @@
                                     </ul>
                                 </li>
                             @endcan
+                            <li class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle">
+                                    <span class="micon dw dw-file2"></span><span class="mtext">@lang("messages.Data")</span>
+                                </a>
+                                <ul class="submenu">
+                                    <li>
+                                        <a href="{{ route('itineraries.index') }}" class="dropdown-toggle no-arrow">
+                                            <span class="icon-copy dw dw-map-6" aria-hidden="true"></span> @lang('messages.Itinerary')
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                             @canany(['posDev','posAuthor','posRsv','weddingDvl','weddingSls','weddingAuthor','weddingRsv'])
                                 <li class="dropdown">
                                     <a href="javascript:;" class="dropdown-toggle">

@@ -76,6 +76,7 @@ use App\Http\Controllers\WeddingVenuesController;
 use App\Http\Controllers\FlyerGeneratorController;
 use App\Http\Controllers\WeddingPlannerController;
 use App\Http\Controllers\ActivitiesAdminController;
+use App\Http\Controllers\DataItinerariesController;
 use App\Http\Controllers\TransportsAdminController;
 use App\Http\Controllers\SpksDestinationsController;
 use App\Http\Controllers\TermAndConditionController;
@@ -628,6 +629,10 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
                 Route::put('/admin-fupdate-transport-invitation/{id}',[OrdersAdminController::class,'admin_func_update_transport_invitation']);
                 Route::post('/fadmin-update-lunch-venue-order-wedding/{id}',[OrdersAdminController::class,'admin_func_update_lunch_venue']);
                 Route::post('/fadmin-delete-lunch-venue/{id}',[OrdersAdminController::class,'admin_func_delete_lunch_venue']);
+                // ---------------------------------------------------
+                //                    ITINERARIES
+                // ---------------------------------------------------
+                Route::resource('itineraries', DataItinerariesController::class);
                 // ---------------------------------------------------
                 //                    RESERVATION (RSV)
                 // ---------------------------------------------------

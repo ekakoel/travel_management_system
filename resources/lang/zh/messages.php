@@ -1373,4 +1373,5 @@ return[
     'Tour Gallery' => '旅遊畫廊',
     'Tour Area' => '旅遊區域',
     'The order has been successfully updated' => '旅遊區域',
+    'Data' => '資料',
 ];

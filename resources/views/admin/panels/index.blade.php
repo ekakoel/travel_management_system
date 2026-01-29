@@ -1,6 +1,6 @@
+@extends('layouts.head')
 @section('title', __('messages.Admin Panel'))
 @section('content')
-    @extends('layouts.head')
     <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
         <div class="main-container">

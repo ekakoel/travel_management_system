@@ -1,34 +1,26 @@
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="/panel/jquery/jquery.min.js"></script>
-<script src="/panel/jquery/jquery.validate.min.js"></script>
-<script src="/panel/script/core.js"></script>
-<script src="/panel/script/script.min.js"></script>
-<script src="/panel/script/process.js"></script>
-{{-- <script src="/panel/dropzone/dropzone.js"></script> --}}
-<script src="/panel/script/layout-settings.js"></script>
-<script src="/panel/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-<script src="/panel/fullcalendar/fullcalendar.min.js"></script>
-<script src="/vendors/scripts/calendar-setting.js"></script>
-<script src="/assets/dist/pdfreader/pspdfkit.js"></script>
-<script src="/panel/slick/slick.min.js"></script>
-<script src="/panel/datatables/js/jquery.dataTables.min.js"></script>
-<script src="/panel/datatables/js/dataTables.bootstrap4.min.js"></script>
-<script src="/panel/datatables/js/dataTables.responsive.min.js"></script>
-<script src="/panel/datatables/js/responsive.bootstrap4.min.js"></script>
-<script src="/panel/datatables/js/datatable-setting.js"></script>
+<script src="{{ asset('panel/jquery/jquery.validate.min.js') }}"></script>
+<script src="{{ asset('panel/script/core.js') }}"></script>
+<script src="{{ asset('panel/script/script.min.js') }}"></script>
+<script src="{{ asset('panel/script/process.js') }}"></script>
+<script src="{{ asset('panel/script/layout-settings.js') }}"></script>
+<script src="{{ asset('panel/bootstrap-touchspin/jquery.bootstrap-touchspin.js') }}"></script>
+<script src="{{ asset('panel/fullcalendar/fullcalendar.min.js') }}"></script>
+<script src="{{ asset('vendors/scripts/calendar-setting.js') }}"></script>
+<script src="{{ asset('assets/dist/pdfreader/pspdfkit.js') }}"></script>
+<script src="{{ asset('panel/slick/slick.min.js') }}"></script>
+<script src="{{ asset('panel/datatables/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('panel/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('panel/datatables/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('panel/datatables/js/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('panel/datatables/js/datatable-setting.js') }}"></script>
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<!-- CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
 
 <!-- JS -->
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 
 <script>
@@ -351,6 +343,26 @@
 			previewImages(this, targetDiv);
 		});
 	});
+</script>
+<script>
+    window.addEventListener('load', function () {
+        const loader = document.getElementById('page-loader');
+        loader.style.opacity = '0';
+        loader.style.transition = 'opacity 0.4s ease';
+
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 400);
+    });
+</script>
+
+
+<script>
+$(document).ready(function(){
+  $(".nav-tabs a").click(function(){
+    $(this).tab('show');
+  });
+});
 </script>
 <script>
 	jQuery(document).ready(function() {

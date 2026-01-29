@@ -82,9 +82,8 @@
     z-index: 9999; /* Ensure the overlay is on top of other content */
 }
 body{
-    background-color: var(--main-background) ;
-    /* margin-top: 70px; */
-    -webkit-touch-callout: none; /* iOS Safari */
+    background-color: #f9f9f9 ;
+    -webkit-touch-callout: none; 
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
@@ -92,9 +91,7 @@ body{
     user-select: none; /* Non-prefixed version, supported by newer browsers */
     color: #282828 !important;
 }
-table{
-    font-size: 0.8rem !important;
-}
+
 td{
     vertical-align: text-top;
 }
@@ -102,9 +99,6 @@ td{
     border: 1px solid rgb(43, 43, 43);
 }
 
-/* .doc-print{
-    margin: 0 10% 0 10%;
-} */
 .bg-reject{
     background: #ffecce !important;
 }
@@ -112,7 +106,6 @@ td{
     background-color: #c0121a;
 }
 .bg-error{
-    /* background-color: #ffc9c9; */
     border-radius: 4px;
     color: red;
 }
@@ -178,18 +171,13 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(16px);
 }
-.spn{
-    font-size: 0.8rem !important;
-}
 .feed-in{
-    /* animation: opac ease 3s; */
     animation: fading 3s linear;
 }
 .feed-in-from-top{
     animation: feedInFromTop 1s ease forwards;
 }
 
-/* ===== Reservation Detail: clean label:value list ===== */
 .reservation-detail-card {
     background: #ffffff;
     border: 1px solid #e6e9ee;
@@ -202,7 +190,6 @@ input:checked + .slider:before {
 
 .rd-title {
     margin: 0 0 12px 0;
-    font-size: 16px;
     font-weight: 700;
     color: #111827;
 }
@@ -217,6 +204,13 @@ input:checked + .slider:before {
 }
 
 /* ===========================
+   NAV TABS
+=========================== */
+.nav-tabs>li {
+    float: left;
+    margin-left: 0 !important;
+}
+/* ===========================
    Summernote - Flat Minimalist Theme
 =========================== */
 
@@ -224,13 +218,14 @@ input:checked + .slider:before {
 .note-toolbar .note-btn svg,
 .note-toolbar .note-btn .fa,
 .note-toolbar .note-btn .note-icon {
-    font-size: 0.9rem !important;
     width: 0.9rem !important;
     height: 0.9rem !important;
     line-height: 0.9rem !important;
 }
+button{
+    font-size: 0.8rem !important;;
+}
 button span {
-    font-size: 0.9rem !important;
     color: black;
 }
 /* Hilangkan border dan background editor */
@@ -245,7 +240,6 @@ button span {
     background: #ffffff !important; /* Sesuaikan jika mau transparan */
     border-radius: 6px;
     padding: 12px;
-    font-size: 0.9rem;
     border: 1px solid #e6e6e6 !important; /* Bisa dihapus jika mau no-border total */
 }
 
@@ -341,7 +335,6 @@ button span {
 
 /* label (left) */
 .rd-label {
-    font-size: 0.8rem;
     color: #1c1c1c;
     font-weight: 600;
     padding-top: 2px;
@@ -349,7 +342,6 @@ button span {
 
 /* value (right) */
 .rd-value {
-    font-size: 0.8rem;
     color: #2c2c2c; /* gray-900 */
     word-break: break-word;
 }
@@ -363,7 +355,6 @@ button span {
     display: inline-block;
     padding: 4px 8px;
     border-radius: 999px;
-    font-size: 12px;
     font-weight: 700;
     color: #fff;
 }
@@ -743,7 +734,6 @@ figure {
 .bootstrap-select .dropdown-toggle {
     height: 45px;
     padding-right: 30px;
-    font-size: 14px;
     font-weight: 400;
     background-color: blue;
 }
@@ -761,7 +751,6 @@ figure {
     background-position: 10px 10px;
     background-repeat: no-repeat;
     width: 50%;
-    font-size: 16px;
     padding: 12px 8px;
     border: 1px solid #ddd;
     margin-bottom: 12px;
@@ -788,7 +777,6 @@ figure {
     letter-spacing: 1px;
     font-weight: 500;
     border: none;
-    font-size: 0.8rem;
     height: fit-content;
     width: max-content;
 }
@@ -859,7 +847,6 @@ input[type="radio"][id^="d_cv"] {
     border: 1px solid grey;
 }
 .label-radio.empty i{
-    font-size: 5rem !important;
     color: #b1b1b1 !important;
 }
 .label-radio img{
@@ -876,7 +863,6 @@ input[type="radio"][id^="d_cv"] {
     align-content: center;
     text-align: -webkit-center;
     border-radius: 8px;
-    font-size: 1rem;
     padding: 18px;
     color: #e74587;
     font-weight: 800;
@@ -1019,7 +1005,6 @@ input[type="checkbox"]:checked + .label-checkbox {
     border-radius: 4px;
 }
 .front-image-title p{
-    font-size: 0.8rem !important;
     color: #373737;
     font-weight: 600;
 }
@@ -1041,7 +1026,6 @@ input[type="checkbox"]:checked + .label-checkbox {
     height: 100%;
     font-family: system-ui;
     text-align: center;
-    font-size: 1.5rem !important;
     line-height: 1;
     text-transform: uppercase;
     font-weight: bolder;
@@ -1093,13 +1077,11 @@ input[type="checkbox"]:checked + .label-checkbox {
     background-color: #ffffffd4;
 }
 .left-lable i{
-    font-size: small;
     color: blue;
     line-height: 1;
     align-self: center;
 }
 .left-lable p{
-    font-size: small;
     color: rgb(2, 2, 2);
     line-height: 1;
     align-self: center;
@@ -1118,6 +1100,7 @@ input[type="checkbox"]:checked + .label-checkbox {
     bottom: 18px !important;
 }
 .top-lable{
+    font-size: 0.8rem !important;
     position: absolute;
     display: flex;
     flex-wrap: wrap;
@@ -1132,19 +1115,16 @@ input[type="checkbox"]:checked + .label-checkbox {
     background-color: #ffffff;
 }
 .top-lable i{
-    font-size: 0.8rem;
     color: #919191;
     align-self: center;
     /* padding-right: 4px; */
 }
 .top-lable a{
-    font-size: 0.7rem;
     color: rgb(91 91 91);
     align-self: center;
     padding: 0 !important;
 }
 .top-lable p{
-    font-size: 0.7rem !important;
     color: rgb(91 91 91);
     align-self: center;
     padding: 0 !important;
@@ -1215,7 +1195,6 @@ input[type=checkbox]{
     padding: 0 0px 0 8px;
     font-weight: 500;
     color: #2d2d2d;
-    font-size: 0.8rem;
     width: 80%;
 }
 .input-with-input:focus{
@@ -1226,7 +1205,6 @@ input[type=checkbox]{
     color: white;
     padding: 0 8px;
     border-radius: 3px;
-    font-size: 0.8rem;
     background: hsl(209.77deg 100% 25.29%);
     border-color: hsl(209.68deg 97.15% 8.06%);
     background-image: linear-gradient(184deg, #207cf200, #00000063);
@@ -1236,7 +1214,6 @@ input[type=checkbox]{
 }
 .input-with-btn i{
     color: #d7d7d7;
-    font-size: 0.8rem;
 }
 .btn-off{
     background-color: #b9b9b9;
@@ -1269,7 +1246,7 @@ input[type=checkbox]{
 .card-hotel-pricelist-container .item-description .description-price{
     background-color: white;
     margin-bottom: 8px;
-    padding: 18px 8px;
+    padding: 4px 8px;
     border-radius: 4px;
     height: auto;
     align-content: center;
@@ -1277,38 +1254,34 @@ input[type=checkbox]{
 }
 .card-hotel-pricelist-container .item-description .description-detail{
     display: grid;
-    width: 75%;
-    /*padding-right: 18px;*/
+    width: 60%;
     gap: 11px;
     margin: 10px 0;
 }
 .card-hotel-pricelist-container .item-description .description-detail span{
-    font-size: 0.8rem;
     color: #323232;
     line-height: 1;
 }
 .card-hotel-pricelist-container .item-description .description-detail .description-title{
-    font-size: 1rem;
     font-weight: 600;
     color: #2b2b2b;
     line-height: 1;
 }
 .card-hotel-pricelist-container .item-description .description-price .price{
-    font-size: 1rem !important;
     color: #2b2b2b;
 }
 .card-hotel-pricelist-container .item-description .description-action{
     height: 100%;
-    width: 25%;
-    border-radius: 8px;
+    width: 40%;
+    border-radius: 0 3px 3px 0;
     text-align: center;
     align-content: end;
     padding: 18px;
+    background-color: #e5e5e5;
 }
 .card-button{
     background-image: linear-gradient(184deg, #207cf200, #00000063);
     background-color: #3b78c7;
-    font-size: x-small;
     color: white;
     width: 100%;
 }
@@ -1349,7 +1322,6 @@ input[type=checkbox]{
     width: 23px;
 }
 .btn-img-doku span{
-    font-size: 0.9rem;
     line-height: 1;
     color: rgb(71, 71, 71);
     font-weight: 600;
@@ -1365,7 +1337,6 @@ input[type=checkbox]{
 }
 .btn-download{
     margin: 4px 0;
-    font-size: 0.8rem;
     background-color: #ffffff;
     color: #4d4d4d;
 }
@@ -1386,7 +1357,6 @@ input[type=checkbox]{
     right: 35px;
 }
 .btn-action-right a i {
-    font-size: 1rem !important;
     color: gray;
 }
 .btn-action-right a i:is(:hover, :focus) {
@@ -1427,7 +1397,6 @@ input[type=checkbox]{
 }
 
 .container-print .heading{
-    font-size: 1.5rem;
     font-weight: 600;
 }
 .float-container{
@@ -1450,7 +1419,6 @@ input[type=checkbox]{
     border-bottom: 1px solid #cdcdcd;
     padding: 2px 8px;
     margin: 0;
-    font-size: 0.8rem;
 }
 .download-tabel-box-date{
     width: 65%;
@@ -1458,7 +1426,6 @@ input[type=checkbox]{
     border-bottom: 1px solid #cdcdcd;
     padding: 2px 8px;
     margin: 0;
-    font-size: 0.8rem;
 }
 .download-tabel-box-price{
     width: 35%;
@@ -1466,13 +1433,11 @@ input[type=checkbox]{
     border-bottom: 1px solid #cdcdcd;
     padding: 2px 8px;
     margin: 0;
-    font-size: 0.8rem;
 }
 
 .btn-search {
     padding: 6px 18px;
     border-radius: 4px;
-    font-size: 0.8rem;
 }
 
 .op-07{
@@ -1488,7 +1453,6 @@ input[type=checkbox]{
     margin-bottom: 18px;
 }
 .footer .inline-link a{
-    font-size: 0.8rem;
     color: #70838d;
     font-weight: 700;
 }
@@ -1496,7 +1460,6 @@ input[type=checkbox]{
     color: #356cb3;
 }
 .footer p{
-    font-size: 0.8rem;
     color: #70838d;
 }
 .footer a{
@@ -1509,22 +1472,18 @@ input[type=checkbox]{
 }
 .btn-edit{
     color: rgb(71, 71, 71);
-    font-size: 0.8rem;
 }
 .btn-view {
     color: #005be7 !important;
-    font-size: 0.8rem;
 }
 .btn-delete {
     color: #993f3f !important;
-    font-size: 0.8rem;
 }
 .btn-delete:is(:hover, :focus){
     color: #d10000 !important;
 }
 .btn-update {
     color: #303030 !important;
-    font-size: 0.8rem;
 }
 .btn-update:is(:hover, :focus){
     color: #001dff !important;
@@ -1750,7 +1709,6 @@ input[type=checkbox]{
     text-align: -webkit-center;
     font-weight: 700;
     line-height: 1;
-    font-size: 1rem !important;
     font-style: normal !important;
     color: #434343;
 }
@@ -1779,20 +1737,17 @@ input[type=checkbox]{
     align-content: flex-end;
     border: 1px solid #c1c1c1;
     border-radius: 100%;
-    font-size: 0.8rem !important;
     align-self: center;
     background-color: #eaeeff;
     color: #a7a7a7 !important;
 }
 .btn-icon-disable{
-    font-size: 1rem;
     color: rgb(53, 53, 53);
     position: absolute;
     top: 0;
     right: 0;
 }
 .btn-icon-remove{
-    font-size: 1rem;
     color: rgb(223 0 0);
     position: absolute;
     top: 0;
@@ -1802,23 +1757,18 @@ input[type=checkbox]{
     color: red;
 }
 .btn-icon-disable:is(:hover, :focus){
-    font-size: 1rem;
     color: red;
 }
 .btn-icon-activate{
-    font-size: 1rem;
     color: rgb(53, 53, 53);
 }
 .btn-icon-activate:is(:hover, :focus){
-    font-size: 1rem;
     color: rgb(0, 81, 255);
 }
 .btn-icon-edit{
-    font-size: 1rem;
     color: rgb(53, 53, 53);
 }
 .btn-icon-edit:is(:hover, :focus){
-    font-size: 1rem;
     color: rgb(0, 81, 255);
 }
 .btn-cancelation-policy i:hover{
@@ -1826,7 +1776,6 @@ input[type=checkbox]{
 }
 
 p {
-    font-size: 0.8rem !important;
     padding-bottom: 4px !important;
     margin: 0;
 }
@@ -1837,25 +1786,10 @@ h3,
 h4,
 h5,
 h6 {
-    padding-bottom: 8px;
     color: #272727;
     padding-left: 0 !important;
 }
 
-h4 {
-    font-size: 20px;
-    font-family: inherit;
-    color: #343434;
-}
-
-h5 {
-    color: #343434;
-    font-size: 18px;
-}
-
-h6 {
-    font-size: 14px;
-}
 
 /* LANGUAGE */
 .language{
@@ -1901,11 +1835,13 @@ label:has(+ input[required])::after{
     height: 100vh;
 }
 p span{
-    line-height: 1;
+    color: grey !important;
+    font-size: 0.9rem !important;
 }
 p span i{
-    line-height: 1;
-    font-size: 0.8rem;
+    color: grey !important;
+    font-size: 0.9rem !important;
+    font-style: italic;
 }
 .qrcode-container{
     border: 3px dashed #e3e3e3;
@@ -1919,12 +1855,10 @@ p span i{
     box-shadow: 0px 1px 6px 1px #00000045;
 }
 .peper-title{
-    font-size: 3rem;
     font-weight: 600;
     line-height: 1;
 }
 .peper-title span{
-    font-size: 2.8rem;
     font-weight: 500;
     line-height: 1;
 }
@@ -1941,7 +1875,6 @@ p span i{
 }
 .notification-action-container p{
     padding: 0 !important;
-    font-size: 0.9rem !important;
 }
 .notification-action-container p::before{
     content: "* ";
@@ -1951,17 +1884,14 @@ p span i{
 }
 .notif-cover {
     margin-bottom: 30px;
-    font-size: 1rem;
     color: rgb(54, 54, 54);
 }
 .notifikasi-menu{
     padding: 18px;
-    font-size: 0.8rem;
     font-style: italic;
     color: #8d8d8d;
 }
 .card-notification{
-    font-size: 0.9rem;
     font-weight: 600;
     color: #6b6b6b;
 }
@@ -2070,7 +2000,6 @@ p span i{
 
 .pre-loader .loading-text {
     text-align: center;
-    font-size: 0.8rem;
     font-weight: 500;
     padding-top: 15px;
     color: #a5a5a5;
@@ -2099,7 +2028,6 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
     transform: translate(-50%, -50%);
     color: black;
     font-family: fantasy;
-    font-size: 2rem;
     text-align: center;
 }
 /* TOLLTIP ======================================================= */
@@ -2119,13 +2047,11 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
   .tooltip-qm {
     float: left;
     margin: -2px 0px 3px 4px;
-    font-size: 12px;
   }
   
   .tooltip-inner {
     max-width: 236px !important;
     height: auto;
-    font-size: 12px;
     padding: 8px 17px 8px 17px;
     background: #1b1b1b;
     color: rgba(255, 255, 255, 0.7);
@@ -2176,18 +2102,15 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
 }
 /* WELCOME CARD */
 .welcome-title {
-    font-size: 1.5rem;
     font-weight: 600;
     color: #1d82dc;
 }
 
 .welcome-subtitle {
-    font-size: 1.2rem;
     font-weight: 600;
     color: #000000;
 }
 .welcome-subtitle {
-    font-size: 1.2rem;
     font-weight: 600;
     color: #000000;
 }
@@ -2207,7 +2130,6 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
     position: relative;
     top: -14px;
     display: inline-block;
-    font-size: 0.9rem;
     color: #121981;
     font-weight: 500;
 }
@@ -2221,7 +2143,6 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
     padding-bottom: 18px !important;
 }
 .list-item{
-    font-size: 0.8rem;
     width: fit-content;
     padding: 8px 18px;
 }
@@ -2237,22 +2158,16 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
     text-align: center;
 }
 .content-title{
-    background-color: #e3e3e3;
-    padding: 8px;
+    padding: 8px 0;
     line-height: 1;
     color: #464646;
-    font-size: 1.5rem !important;
-    font-weight: 500;
+    font-weight: 600;
 }
 .content .content-header {
     border-bottom: 3px dotted #c3c3c3;
     margin-bottom: 18px;
 }
-.content-body{
-    font-size: 0.8rem;
-}
 .content-body .c-b-title{
-    font-size: 1.2rem;
     font-weight: 700;
 }
 .content-body .c-b-content{
@@ -2279,7 +2194,6 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
 .links>a {
     color: #636b6f;
     padding: 0 8px;
-    font-size: 13px;
     font-weight: 600;
     letter-spacing: .1rem;
     text-decoration: none;
@@ -2344,7 +2258,6 @@ select {
 }
 .lang-dropdown .dropdown .lang-icon i{
     color: white !important;
-    font-size: 1.1rem;
     line-height: 1;
     padding-right: 5px;
 }
@@ -2358,7 +2271,6 @@ select {
     min-width: 10rem;
     padding: 0.5rem 0;
     margin: 0.125rem 0 0;
-    font-size: 1rem;
     color: #212529;
     text-align: left;
     list-style: none;
@@ -2379,19 +2291,13 @@ select {
 .heading-form{
     background-color: #2f5f9e;
     padding: 4px 18px;
-    font-size: 1rem;
     color: white;
     font-weight: 600;
     margin-bottom: 8px;
     height: 44px;
     align-content: center;
 }
-.card-name-float{
-    font-size: 0.8rem;
-
-}
 .card-name-float span{
-    font-size: 0.8rem;
     font-style: italic;
 }
 .form-check-left{
@@ -2432,7 +2338,6 @@ select {
     top: 15px;
     right: 3px;
     border-radius: 100px;
-    font-size: 1rem;
 }
 
 .modal-open .modal {
@@ -2458,28 +2363,17 @@ select {
 }
 .form-control .file{
     width: 100%;
-    font-size: 11px;
     padding: 4px;
 }
 /* =========================== */
 /* FORM */
 /* =========================== */
-/* .alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    font-size: 0.8rem;
-    padding: 4px 8px;
-    font-style: italic;
-    margin: 0 !important;
-} */
 .alert-container{
     text-align: -webkit-right;
     width: 100%;
     z-index: 9;
     right: 18px;
     top: 90px;
-    /* animation: 3s feedOut linear; */
     position: absolute;
 }
 .alert-error-code{
@@ -2496,8 +2390,6 @@ select {
     padding-top: 3px;
   }
   .alert-text-code .alert-icon-code{
-    font-size: 1.3rem;
-    /* position: absolute; */
     top: 13px;
     left: 28px;
     opacity: 0.6;
@@ -2505,7 +2397,6 @@ select {
   }
 
   .alert-icon{
-    font-size: 1.3rem;
     position: absolute;
     top: 22px;
     left: 28px;
@@ -2516,7 +2407,6 @@ select {
     color: #636363;
     font-weight: bold;
     float: right;
-    font-size: 22px;
     line-height: 20px;
     cursor: pointer;
     transition: 0.3s;
@@ -2533,7 +2423,6 @@ select {
     width: 300px;
 }
 .alert-form{
-    font-size: 0.8rem;
     color: #960000cc;
     padding: 4px 18px;
     font-style: italic;
@@ -2551,21 +2440,14 @@ select {
     float: left;
 }
 .form-title {
-    font-size: 20px;
     font-weight: 900;
 }
 
-.form-region {
-    font-size: 14px;
-}
 
 .form-region i {
     color: red;
 }
 
-.form-text {
-    font-size: 0.8rem;
-}
 
 .form-control:disabled,
 .form-control[readonly] {
@@ -2603,7 +2485,6 @@ select {
 }
 
 .form-group label {
-    font-size: 0.9rem;
     font-weight: 500;
     margin: 9px 0 0 0;
     padding-top: 0;
@@ -2618,13 +2499,11 @@ select {
     color: red;
 }
 .form-heading {
-    font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 18px;
 }
 
 .form-label {
-    font-size: 0.9rem;
     font-weight: 600;
     color: #454545;
     margin-bottom: 0px;
@@ -2644,12 +2523,10 @@ select {
 
 .form-notif {
     color: red;
-    font-size: 0.8rem;
     font-style: italic;
 }
 .form-notif span {
     color: red;
-    font-size: 0.8rem;
     font-style: italic;
 }
 
@@ -3026,8 +2903,8 @@ select {
 }
 
 .title {
+    font-size: 1.5rem;
     color: #0058a7;
-    font-size: 1.2rem;
     font-weight: 700;
     display: inline-flex;
     text-anchor: middle;
@@ -3042,7 +2919,6 @@ select {
     height: 35px;
     width: 35px;
     color: #ebebeb;
-    font-size: 1rem;
     background-color: #3b79c9;
     border-radius: 100%;
     margin-right: 8px;
@@ -3057,7 +2933,6 @@ select {
 
 .title h4 {
     padding-bottom: 0 !important;
-    font-size: 1.2rem;
 }
 .indikator-service .service{
     color: #afafaf !important;
@@ -3073,11 +2948,9 @@ select {
     margin: 8px 0;
     font-weight: 600;
     color: ghostwhite;
-    font-size: 0.9rem;
 }
 
 .subtitle {
-    font-size: 1rem;
     font-weight: 600;
     color: #424242;
 }
@@ -3088,12 +2961,10 @@ select {
     margin-top: 18px;
     background-color: #dfdfdf;
     padding: 4px 18px;
-    font-size: 0.9rem !important;
     font-weight: 600;
 }
 
 .subtitle span {
-    font-size: 0.9rem;
     font-weight: 500;
     color: red;
 }
@@ -3108,7 +2979,6 @@ select {
 
 .notif-modal {
     color: #ce0000;
-    font-size: 0.8rem;
     letter-spacing: .1rem;
     text-decoration: none;
     font-style: italic;
@@ -3122,7 +2992,7 @@ select {
     top: 50%;
     right: 16px;
     transform: translate(0, -50%);
-    background: #d7d7d7;
+    background: #ffffff;
     border-radius: 15px;
     padding: 0 8px !important;
     display: flex;
@@ -3131,6 +3001,7 @@ select {
 .order-pending-text p{
     color: gray;
     padding: 0 !important;
+    margin: 0 !important;
 }
 .order-pending-text p span{
     color:blue;
@@ -3140,7 +3011,6 @@ select {
     gap: 8px;
 }
 .order-status-container .not-send-email,.not-approved-order{
-    font-size: 0.8rem;
     align-self: center;
     font-style: italic;
     color: #c9c9c9;
@@ -3149,13 +3019,11 @@ select {
 .order-status-container .not-send-email i, .not-approved-order i{
     color: #c5c5c5;
     padding-left: 4px;
-    font-size: 1rem;
 }
 
 .order-status-container .send-email, .ongoing-order, .approved-order{
     display: flex;
     flex-flow: nowrap;
-    font-size: 0.8rem;
     align-self: center;
     font-style: italic;
     color: #696969;
@@ -3165,7 +3033,6 @@ select {
     background-color: green;
     padding: 0px 10px 0px 8px;
     border-radius: 100px;
-    font-size: 0.8rem;
     align-self: center;
     font-style: italic;
     color: white;
@@ -3174,22 +3041,18 @@ select {
 .order-status-container .send-email i, .approved-order i{
     color: green;
     padding-left: 4px;
-    font-size: 1rem;
 }
 .order-status-container .standby-order{
     color: #555555;
-    font-size: 1rem;
 }
 .order-status-container .standby-order i{
     color: green;
-    font-size: 1rem;
 }
 
 
 .order-status-container .ongoing-order i{
     color: green;
     padding-left: 4px;
-    font-size: 1rem;
 }
 .status-order-container{
     text-align: right;
@@ -3197,12 +3060,9 @@ select {
     align-content: center;
 }
 .status-order-container .status-order-lable{
-    font-size: 0.9rem;
     line-height: 1;
 }
-.status-order-container .status-order{
-    font-size: 1.5rem;
-}
+
 .order-status-active{
     color: #298700;
 }
@@ -3238,7 +3098,6 @@ select {
 .order-status-invalid::before{
     font-family: 'FontAwesome';
     content: "\f12a";
-    font-size: 0.9rem;
     background-color: #ff8080;
     padding: 4px 8px;
     border-radius: 20px;
@@ -3248,7 +3107,6 @@ select {
 .order-status-pending::before{
     font-family: 'FontAwesome';
     content: "\f017";
-    font-size: 0.9rem;
     background-color: #ffa900;
     padding: 4px 5px;
     border-radius: 20px;
@@ -3258,7 +3116,6 @@ select {
 .order-status-approved::before{
     font-family: 'FontAwesome';
     content: "\f05d";
-    font-size: 0.9rem;
     background-color: #005cd3;
     padding: 4px 5px;
     border-radius: 20px;
@@ -3268,7 +3125,6 @@ select {
 .order-status-paid::before{
     font-family: 'FontAwesome';
     content: "\f00c";
-    font-size: 0.9rem;
     background-color: #008000;
     padding: 4px;
     border-radius: 20px;
@@ -3278,7 +3134,6 @@ select {
 .order-status-draft::before{
     font-family: 'FontAwesome';
     content: "\f040";
-    font-size: 0.9rem;
     background-color: gray;
     padding: 4px 5px;
     border-radius: 20px;
@@ -3288,7 +3143,6 @@ select {
 .order-status-canceled::before{
     font-family: 'FontAwesome';
     content: "\f00d";
-    font-size: 0.9rem;
     background-color: gray;
     padding: 4px 5px;
     border-radius: 20px;
@@ -3309,13 +3163,9 @@ select {
     width: 200px;
     align-self: self-end;
 }
-.orderno {
-    font-size: 0.8rem;
-}
 
 .date {
     color: black;
-    font-size: 14px;
 }
 
 .dropzone{
@@ -3332,7 +3182,6 @@ select {
     text-decoration-line: line-through;
     text-decoration-color: red;
     color: #7c7c7c;
-    font-size: 0.9rem;
     font-weight: 500;
 }
 .table-box{
@@ -3346,7 +3195,6 @@ select {
     text-align: right;
 }
 .table-service-name {
-    font-size: 0.8rem;
     font-weight: 500;
     word-wrap: break-word;
     white-space: normal;
@@ -3360,34 +3208,29 @@ select {
 }
 
 .title-table {
-    padding-left: 0.8rem;
-    font-size: 1rem;
+    padding-left: 1rem;
     font-weight: 600;
     color: #4e4e4e;
 }
 
 .title-table span {
-    padding-left: 0.8rem;
-    font-size: 1rem;
+    padding-left: 1rem;
     font-weight: 600;
     color: red;
 }
 
 .notif-table {
-    font-size: 12px;
     color: #828282;
 }
 
 .subtext {
     color: #006bcd;
     font-style: italic;
-    font-size: 0.8rem;
 }
 
 .subtext span {
     color: #8b8b8b;
     font-style: italic;
-    font-size: 0.8rem;
 }
 
 .booking-bil img{
@@ -3395,12 +3238,10 @@ select {
 }
 
 .booking-period-title {
-    font-size: 14px;
     font-weight: 600;
 }
 
 .booking-period-title span {
-    font-size: 12px;
     font-weight: 400;
 }
 
@@ -3410,7 +3251,6 @@ select {
     gap: 8px;
 }
 .btn-print{
-    font-size: 14px;
     padding: 6px 18px 6px 15px;
     background-color: #274f83;
     color: white;
@@ -3450,7 +3290,6 @@ select {
     position: absolute;
     top: 8px;
     left: 28px;
-    font-size: 0.8rem;
     font-style: italic;
     background-color: #00000087;
     padding: 4px 18px;
@@ -3480,13 +3319,11 @@ select {
 }
 .card-content .image-caption-title a{
     color: var(--link-color) ;
-    font-size: 0.9rem;
 }
 .modal-img-container .modal-img-caption{
     position: absolute;
     top: 26px;
     left: 28px;
-    font-size: 0.8rem;
     font-style: italic;
     background-color: #000000c4;
     padding: 4px 18px;
@@ -3499,13 +3336,11 @@ select {
     border-radius: 4px;
 }
 .modal-show-price{
-    font-size: 1rem;
     font-weight: 400;
     color: #4d4d4d;
 }
 .modal-show-price span{
     float: inline-end;
-    font-size: 1rem;
     font-weight: 900;
     color: #007ad3;
 }
@@ -3533,9 +3368,7 @@ select {
     line-height: 1;
     align-items: center;
 }
-.receipt-container .receipt-status i{
-    font-size: 1.5rem;
-}
+
 .receipt-container .receipt-action{
     position: absolute;
     top: 4px;
@@ -3545,9 +3378,6 @@ select {
     display: grid;
     line-height: 1.2;
     padding: 8px 0;
-}
-.receipt-container .receipt-description i{
-    font-size: 0.9rem;
 }
 
 
@@ -3562,7 +3392,6 @@ select {
     margin-bottom: 18px;
 }
 .modal-receipt-container .info-label{
-    font-size: 3rem;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -3595,7 +3424,6 @@ select {
     left: 50%;
     transform: translate(-50%);
     border-radius: 4px;
-    font-size: 0.9rem;
     font-weight: 800;
     color: #004985;
     text-transform: uppercase;
@@ -3609,7 +3437,6 @@ select {
     margin-right: auto;
 }
 .modal-title {
-    font-size: 1rem;
     font-weight: 700;
     line-height: normal;
     padding-bottom: 8px;
@@ -3622,7 +3449,6 @@ select {
 }
 
 .modal-date {
-    font-size: 0.8rem;
     font-style: italic;
 }
 .modal-dialog{
@@ -3637,7 +3463,6 @@ select {
     transform: translate(-50%, 0px);
 }
 .modal-admin-name {
-    font-size: 0.8rem;
     font-style: italic;
 }
 
@@ -3659,9 +3484,6 @@ select {
     border-radius: 8px;
     outline: 0;
     padding: 0 !important;
-}
-.modal-content p {
-    font-size: 0.8rem;
 }
 
 .modal-foot {
@@ -3698,19 +3520,12 @@ select {
 }
 
 .img-title{
-        /* position: absolute; */
         bottom: 15px;
         left: 50%;
-        font-size: small !important;
-        /* transform: translate(-50%, -40px); */
         width: 100%;
         text-align: center;
         background: azure;
         padding: 3px 4px 0px 4px;
-        /* padding-bottom: 0 !important; */
-        /* padding-left: 4px; */
-        /* padding-right: 4px; */
-        /* padding-top: 4px; */
         line-height: normal;
 }
 .img-fluid {
@@ -3750,7 +3565,6 @@ select {
 }
 
 .description{
-    font-size: 0.9rem;
     padding: 0 8px;
 }
 .edit-button{
@@ -3794,7 +3608,6 @@ select {
     position: absolute;
     top: 6px;
     right: 9px;
-    font-size: 1rem !important;
     line-height: 1;
     color: #9f0000;
     cursor: pointer;
@@ -3824,7 +3637,6 @@ select {
     position: absolute;
     top: 6px;
     right: 9px;
-    font-size: 1rem !important;
     line-height: 1;
     color: #002556;
     cursor: pointer;
@@ -3862,7 +3674,6 @@ select {
 
 .alert-text {
     color: red;
-    font-size: 12px;
 }
 
 .pmt-container{
@@ -3872,7 +3683,6 @@ select {
     margin-bottom: 8px;
 }
 .pmt-container i{
-   font-size: 2rem !important;
    color: #008000;
 }
 .payment-container{
@@ -3900,24 +3710,19 @@ select {
     text-transform: uppercase !important;
 }
 .unpaid i{
-   font-size: 1.5rem;
    color: #a03333;
 }
 .paid i{
-   font-size: 1.5rem;
    color: #008000;
 }
 .pending i{
-   font-size: 1.5rem;
    color: #ababab;
 }
 
 .pmt-container .pmt-status{
    font-weight: 700;
 }
-.pmt-des{
-   font-size: 0.8rem;
-}
+
 .view-receipt{
     position: absolute;
     right: 9px;
@@ -3938,31 +3743,29 @@ select {
 .pagination-desk{
     place-self: center;
     padding: 4px 18px;
-    font-size: 0.8rem;
     font-weight: 700;
     color: gray;
 }
 .pagination-desk span{
-    font-size: 0.8rem;
     font-weight: 300;
 }
 .page-header {
-    background-color: #fff;
+    background-color: #e3e3e3;
     border-radius: 8px;
-    box-shadow: -2px 2px 2px rgb(0 0 0 / 36%);
     padding: 8px 20px 20px 20px;
-    margin-bottom: 18px;
+    margin: 0 0 18px 0 !important;
+    border: 1px solid #d9d9d9  !important;
 }
 .page-header .breadcrumb {
     padding: 4px 0 6px 18px;
-    margin: 8px -20px -20px;
+    margin: 8px -20px -20px -20px;
     border-radius: 0 0 8px 8px;
-    border-top: 1px solid #dfdfdf;
+    background-color: white;
+    font-size: 0.8rem;
 }
 
 .breadcrumb-item {
     color: #5a5a5a;
-    font-size: 0.8rem;
 }
 .breadcrumb-item a {
     color: #5a5a5a;
@@ -3974,12 +3777,10 @@ select {
 
 .breadcrumb-item.active {
     color: #1d82dc;
-    font-size: 0.8rem;
 }
 
 .profile-info ul li span {
     display: block;
-    font-size: 14px;
     color: #1b00ff;
     font-weight: 500;
     padding-bottom: 5px;
@@ -4006,12 +3807,10 @@ select {
     border-radius: 4px;
 }
 .icon-card .service-icon{
-    font-size: xx-large;
     line-height: 1;
     color: #00313b;
 }
 .icon-card .service-number{
-    font-size: 0.8rem;
     font-weight: 900;
     background-color: #ffffff6e;
     border-radius: 100px;
@@ -4063,14 +3862,12 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, table.dataTable.dtr-inli
 }
 .tb-list td{
     border: none !important;
-    font-size: 0.8rem;
     padding: 0 8px !important;
     /* border: 1px solid #dddddd !important; */
 }
 
 .ftb-list td{
     border: none !important;
-    font-size: 1rem !important;
     padding: 0 8px !important;
 }
 .v-align-mid{
@@ -4122,9 +3919,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, table.dataTable.dtr-inli
 .email-table{
     border: none !important;
 }
-.email-table td{
-    font-size: 0.9rem !important;
-}
 .email-table td, .email-table th{
     padding: 0 !important;
     border: none !important;
@@ -4156,42 +3950,34 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, table.dataTable.dtr-inli
 /* STATUS */
 .status-confirmed-color{
     color: #177e81;
-    font-size: 1rem;
     font-weight: 700;
 }
 .status-active-color{
     color: #008000;
-    font-size: 1rem;
     font-weight: 700;
 }
 .status-pending-color{
     color: #bd7a00;
-    font-size: 1rem;
     font-weight: 700;
 }
 .status-reject-color{
     color:  #800080;
-    font-size: 1rem;
     font-weight: 700;
 }
 .status-draf-color{
     color: #808080;
-    font-size: 1rem;
     font-weight: 700;
 }
 .status-archive-color{
     color: rgb(110, 110, 110);
-    font-size: 1rem;
     font-weight: 700;
 }
 .status-approved-color{
     color: rgb(15 74 151);
-    font-size: 1rem;
     font-weight: 700;
 }
 .status-paid-color{
     color: rgb(6, 131, 6);
-    font-size: 1rem;
     font-weight: 700;
 }
 
@@ -4213,23 +3999,17 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, table.dataTable.dtr-inli
 
 .table td {
     padding: 8px;
-    font-size: 0.8rem !important;
     vertical-align: top;
 }
 
-.table td p {
-    font-size: 0.8rem;
-}
 
 .table td .title {
-    font-size: 0.9rem;
     font-weight: 800;
 }
 
 .table tr th {
     font-weight: normal;
     color: #000000;
-    font-size: 0.9rem;
 }
 .table-action{
     display: inline-flex;
@@ -4265,7 +4045,7 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting:after, tab
     background-color: #ededed;
     color: #414141;
     font-weight: 700;
-    padding: 6px 8px;
+    padding: 10px 8px !important;
     font-weight: 600 !important;
 }
 .table thead th:is(:hover, :focus) {
@@ -4275,7 +4055,7 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting:after, tab
 
 .table.dataTable tr td{
     vertical-align: top;
-    padding: 4px 8px !important;
+    padding: 10px 8px !important;
 }
 
 .table.dataTable{
@@ -4298,7 +4078,6 @@ table.dataTable thead .sorting_desc:before,
 table.dataTable thead .sorting_desc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:before {
     font-family: 'dropways';
-    font-size: 0.6rem;
     font-weight: 100;
     color: #142127;
 }
@@ -4313,7 +4092,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 }
 .tbody {
     color: #343434;
-    font-size: 0.8rem !important;
 }
 
 .tbody tr:nth-child(odd) {
@@ -4334,9 +4112,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     margin-bottom: 8px;
 }
 
-.note-box p {
-    font-size: 0.8rem;
-}
 .action-bar{
     position: absolute;
     top: 26px;
@@ -4348,7 +4123,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     top: -30%;
 }
 .action-btn i{
-    font-size: 0.8rem;
     height: 18px;
     width: 18px;
     background-color: #cbcbcb;
@@ -4383,7 +4157,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 
 
 .widget-data-title {
-    font-size: 0.8rem;
     line-height: 1.35;
     font-weight: 700;
     color: #1b3133;
@@ -4391,12 +4164,10 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 }
 
 .widget-data-subtitle {
-    font-size: 0.8rem;
     font-weight: 400;
     color: #2f2f27;
 }
 .widget-data-title-active {
-    font-size: 0.8rem;
     line-height: 1.35;
     font-weight: 700;
     color: #1b3133;
@@ -4404,7 +4175,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 }
 
 .widget-data-subtitle-active {
-    font-size: 0.8rem;
     font-weight: 300;
     color: #777777;
 }
@@ -4508,7 +4278,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 
 .grid-3-container .grid-box .grid-box-title{
     position: relative;
-    font-size: 1rem;
     font-weight: 900;
     color: #3b3b3b;
     border-bottom: 1px solid #818181;
@@ -4518,19 +4287,16 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     position: absolute;
     right: 5px;
     top: 2px;
-    font-size: 0.8rem;
     font-style: italic;
 }
 .grid-3-container .grid-box .grid-box-content{
     position: relative;
-    font-size: 0.8rem;
 }
 .grid-3-container .grid-box .grid-box-content span{
     color: grey;
     position: absolute;
     right: 5px;
     top: 1px;
-    font-size: 0.7rem;
     font-style: italic;
 }
 
@@ -4607,57 +4373,47 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     width: 30%;
 }
 .chart-icon {
-    font-size: 2rem;
     color: #1d82dc;
     padding-right: 8px;
 }
 
 .chart-icon-active {
-    font-size: 2rem;
     padding-right: 8px;
     color:  #008000 ;
 }
 
 .chart-icon-pending {
-    font-size: 2rem;
     padding-right: 8px;
     color: #3770bb ;
 }
 
 .chart-icon-rejected {
-    font-size: 2rem;
     padding-right: 8px;
     color: #c0121a ;
 }
 
 .chart-icon-invalid {
-    font-size: 2rem;
     padding-right: 8px;
     color: #FF6666 ;
 }
 
 .chart-icon-expired {
-    font-size: 2rem;
     padding-right: 8px;
     color: #FF0000;
 }
 .chart-icon-draft {
-    font-size: 2rem;
     padding-right: 8px;
     color: #808080 ;
 }
 .chart-icon-usedup {
-    font-size: 2rem;
     padding-right: 8px;
     color: #bd7a00 ;
 }
 .chart-icon-confirmed {
-    font-size: 2rem;
     padding-right: 8px;
     color: #bd7a00 ;
 }
 .chart-icon-approved {
-    font-size: 2rem;
     padding-right: 8px;
     color: #006975 ;
 }
@@ -4704,7 +4460,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     height: 100%;
 }
 .final-price{
-    font-size: 0.8rem !important;
     font-weight: 600;
     color: #292929;
 }
@@ -4723,6 +4478,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     box-shadow: -2px 2px 2px 0px #00000033;
 }
 .p-card-date{
+    font-size: 0.7rem;
     max-width: 100%;
     padding: 2px 0px 0px 0px;
     background-color: #f0f0f0;
@@ -4730,15 +4486,14 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     font-weight: 500;
     color: #686868;
     border-radius: 4px 4px 0 0;
-    font-size: 0.6rem;
 }
 .p-card-month{
-    font-size: 0.5rem;
+    font-size: 0.7rem;
     background-color: #dedede;
     border: 1px solid #c1c1c1;
     }
 .p-card-price-normal{
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     background-color: #7d7d7d;
     color: white;
     border-radius: 0 0 4px 4px;
@@ -4753,10 +4508,8 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     padding: 2px 0px 0px 0px;
     font-weight: 500;
     border-radius: 4px 4px 0 0;
-    font-size: 0.6rem;
 }
 .p-card-price-normal-null{
-    font-size: 0.6rem;
     background-color: #ff9292;
     /* border: 1px solid #8b2c2c; */
     color: #181818;
@@ -4764,14 +4517,13 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     padding: 4px 0;
 }
 .p-card-price-promo{
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     background-color: #3974c1;
     color: white;
     border-radius: 0 0 4px 4px;
     padding: 4px 0;
 }
 .price-card{
-    font-size: 0.8rem;
     font-weight: 700;
     position: absolute;
     right: 0px;
@@ -4783,7 +4535,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     color: #ffffff;
 }
 .price-card-usd{
-    font-size: 0.8rem;
     font-weight: 700;
     position: absolute;
     right: 0px;
@@ -4795,12 +4546,10 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     color: #ffffff;
 }
 .price-card span{
-    font-size: 0.8rem;
     font-weight: 500;
     color: #5a5a5a;
 }
 .price-card-normal{
-    font-size: 0.8rem;
     font-weight: 900;
     position: absolute;
     right: 0px;
@@ -4815,7 +4564,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     text-decoration-style: inherit;
 }
 .price-card-normal span{
-    font-size: 0.8rem;
     font-weight: 500;
     color: #5a5a5a;
 }
@@ -4855,9 +4603,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     position: relative;
 }
 
-.code-title {
-    font-size: 0.8rem;
-}
 
 .code {
     font-weight: 700;
@@ -4890,7 +4635,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     margin-bottom: 18px;
 }
 .trans-box-title{
-    font-size: 1.1rem;
     margin-bottom: 18px;
     line-height: 1;
     font-weight: 600;
@@ -4950,7 +4694,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     border-radius: 4px 4px 0 0;
     line-height: 1.2;
     padding: 4px 10px;
-    font-size: 0.8rem;
     color: #272727;
     font-weight: 700;
     font-stretch: unset;
@@ -4966,7 +4709,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     border-radius: 4px 4px 0 0;
     line-height: 1.2;
     padding: 4px 18px 10px 18px;
-    font-size: 0.8rem;
     color: #272727;
     font-weight: 700;
     font-stretch: unset;
@@ -5001,12 +4743,10 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     box-shadow: 0px 0px 3px 1px #5555554a;
 }
 .trans-lable-container .trans-lable{
-    font-size: 0.9rem;
     display: flex;
 }
 .trans-lable-container i{
     padding: 0 4px 0 0;
-    font-size: 0.8rem;
     display: flex;
     line-height: 1;
     color: #2d5d9a;
@@ -5014,7 +4754,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 .trans-lable-container p{
     display: flex;
     padding: 0 !important;
-    font-size: 0.8rem;
     line-height: 1;
 }
 .bg-gray{
@@ -5081,7 +4820,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     color: purple !important;
 }
 .promotion-text{
-    font-size: 0.8rem;
     font-style: italic;
     color: #3061a1;
     font-weight: 600;
@@ -5094,7 +4832,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     padding: 1px 8px;
     border-radius: 0 4px 4px;
     color: white;
-    font-size: 0.8rem;
     margin-bottom: 4px;
     width: fit-content;
 }
@@ -5110,7 +4847,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     border-radius: 0 100px 100px 0;
     color: white;
     margin-bottom: 2px;
-    font-size: small;
 }
 .service-promotion-container{
     display: grid;
@@ -5133,7 +4869,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 }
 .promotion-card .promotion-title{
     color: white;
-    font-size: 0.9rem;
     text-transform: uppercase;
     font-weight: 600;
     padding-bottom: 4px;
@@ -5141,7 +4876,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 }
 .promotion-card .promotion-subtitle{
     color: white;
-    font-size: 0.8rem;
     font-weight: 500;
     padding-bottom: 4px;
     line-height: 1;
@@ -5149,7 +4883,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 .promotion-card p{
     line-height: 1;
     color: #e9e9e9;
-    font-size: 0.8rem !important;
 }
 .persen-promo{
     position: absolute;
@@ -5183,19 +4916,16 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
 }
 .trans-card-overlay p{
     line-height: 1;
-    font-size: 0.8rem;
     font-weight: 200;
     font-style: italic;
 }
 .trans-card-overlay .overlay-title{
-    font-size: 0.8rem;
     font-weight: 600;
 }
 marquee{
     padding: 6px 0 0 0;
     margin: 0 8px;
     line-height: 1;
-    font-size: 0.8rem;
     color: #8f8f8f;
 }
 .info-box-container {
@@ -5211,7 +4941,6 @@ marquee{
     color: #a1a1a1;
     font-weight: 400;
     text-align: center;
-    font-size: 0.8rem;
 }
 .tox:not([dir=rtl]) .tox-statusbar__branding {
     display: none !important;
@@ -5222,7 +4951,6 @@ marquee{
 .card-box {
     position: relative;
     background-color: white !important;
-    box-shadow: 0px 2px 6px 1px rgb(0 0 0 / 28%);
     border: 1px solid #d5d5d5;
     border-radius: 10px;
     height: fit-content;
@@ -5231,23 +4959,19 @@ marquee{
 }
 
 .card-box ol li{
-    font-size: 0.8rem !important;
     list-style: decimal;
     margin-left: 18px;
 }
-.card-box ul li{
+.card-box ul li {
     list-style: disc;
     margin-left: 18px;
-}
-.mce-content-body {
-    font-size: 0.9rem !important;
+    margin-bottom: -7px;
 }
 .card-box .content{
     text-align: left;
     text-wrap-mode: wrap;
 }
 .card-box .content ol li, .card-box .content ul li{
-    font-size: 1rem !important;
     list-style: disc;
     margin-left: 18px;
 }
@@ -5283,7 +5007,6 @@ marquee{
     border-bottom: 1px solid #d3d3d3;
 }
 .card-box-form-title .form-title {
-    font-size: 0.9rem;
     color: white;
     font-weight: 500;
 }
@@ -5297,12 +5020,8 @@ marquee{
     list-style: none;
 }
 
-.card-box .title {
-    font-size: 1.1rem;
-}
 
 .card-box-title .subtitle {
-    font-size: 1rem !important;
     font-weight: 700;
     line-height: 1;
     text-transform: uppercase;
@@ -5317,7 +5036,6 @@ marquee{
 }
 
 .card-box .card-subtitle {
-    font-size: 1rem;
     font-weight: 700;
     color: #1a1a1a;
     margin-top: 8px;
@@ -5331,7 +5049,6 @@ marquee{
 }
 
 .modal-title {
-    font-size: 1.1rem;
     font-weight: 700;
     line-height: normal;
     padding-bottom: 8px;
@@ -5345,7 +5062,6 @@ marquee{
 .modal-information p{
     position: relative;
     line-height: 1.5;
-    font-size: 0.8rem !important;
     padding: 0 0 0 18px !important;
 }
 .modal-information p::before{
@@ -5355,37 +5071,36 @@ marquee{
 }
 .modal-subtitle{
     font-weight: 700;
-    font-size: 0.8rem;
 }
 
 .card-box .subtitle span {
-    font-size: 1rem;
     font-weight: 500;
     color: red;
 }
 
-.card-box p {
-    font-size: 0.8rem;
-}
 
 .card-box-title{
     position: relative;
-    font-size: 1rem;
     font-weight: 700;
     margin: -20px -18px 18px -18px;
-    padding: 18px;
+    padding: 8px 18px;
     border-radius: 8px 8px 0 0;
-    border-top: 1px solid #ffffff;
-    background-color: #e3e3e3;
+    background-color: #ededed;
     border-bottom: 1px solid #d9d9d9;
     text-transform: uppercase;
 }
 .card-box-title .title {
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: normal;
-    color: #595959;
-    text-transform: uppercase;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: normal;
+  color: #595959;
+  text-transform: none;
+}
+
+.card-box .subtitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: normal;
 }
 .card-box-title span {
     position: absolute;
@@ -5396,27 +5111,12 @@ marquee{
     padding: 0px 6px;
     border-radius: 20px;
     font-weight: 400;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
 }
-.card-box-title span i {
-    font-size: 0.8rem !important;
-}
-/* White */
-/* .card-box-title{
-    margin: -19px -18px 8px -18px;
-    padding: 8px 18px 8px 18px;
-    border-radius: 8px 8px 0 0;
-    border-top: 1px solid #ffffff;
-    background-image: linear-gradient(to top, #e8e8e8 , #d5d5d5);
-    border-bottom: 1px solid #d3d3d3;
-} */
 .card-box-subtitle{
     border-radius: 3px;
     margin-top: 18px;
-    /* background-color: #e9e9e900; */
-    /* padding: 4px 18px; */
     margin-bottom: 8px;
-    /* border: 1px solid #cfcfcf; */
 }
 .card-box-footer{
     display: grid;
@@ -5494,35 +5194,29 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     margin-bottom: 44px;
 }
 .rate-text{
-    font-size: 0.9rem;
     font-weight: 600;
     color: #555555;
 }
 .rate-idr {
     color: #161616c4;
-    font-size: 0.8rem;
     font-weight: 500;
 }
 .rate-usd {
     color: #000e74c4;
-    font-size: 0.8rem;
     font-weight: 700;
 }
 
 .rate-kick-back {
     color: rgb(155, 0, 0);
-    font-size: 0.8rem;
     font-weight: 500;
 }
 .kick-back {
     color: rgb(155, 0, 0);
-    font-size: 0.8rem;
     font-weight: 500;
 }
 
 .kick-back p{
     color: rgb(155, 0, 0);
-    font-size: 0.8rem;
     font-weight: 500;
     float: right;
     margin-left: 4px;
@@ -5530,18 +5224,15 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 
 .rate-usd span {
     color: #2c2c2c;
-    font-size: 0.8rem;
     font-weight: 500;
 }
 
 .usd-rate {
     color: #0068c5;
-    font-size: 1rem;
     font-weight: 800;
 }
 .usd-rate p{
     color: #0068c5;
-    font-size: 1rem;
     font-weight: 800;
     float: right;
     margin-left: 4px;
@@ -5549,24 +5240,20 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 
 .usd-rate span {
     color: #303030;
-    font-size: 1rem;
     font-weight: 500;
 }
 
 .usd-rate-kicked {
     color: #2c2c2c;
-    font-size: 0.8rem;
     font-weight: 500;
 }
 .usd-rate-promo {
     color: #9e0000;
-    font-size: 0.8rem;
     font-weight: 500;
 }
 
 .usd-rate-kicked p{
     color: #2c2c2c;
-    font-size: 0.8rem;
     font-weight: 500;
     float: right;
     margin-left: 4px;
@@ -5575,19 +5262,13 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 
 .usd-rate-kicked span {
     color: #2c2c2c;
-    font-size: 0.8rem;
     font-weight: 500;
     text-decoration-line: line-through;
 }
 .no-data{
-    font-size: medium;
     color: gray;
     font-weight: 200;
     font-style: italic;
-}
-
-.normal-text-07 {
-    font-size: 0.8rem;
 }
 
 .normal-text-07 span::before {
@@ -5604,7 +5285,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     color: grey !important;
 }
 .modal-text-price{
-    font-size: 0.8rem;
     color: #4d4d4d;
     font-weight: 500;
 }
@@ -5615,7 +5295,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     padding: 8px 18px 12px 18px !important;
 }
 .modal-num-price{
-    font-size: 0.8rem;
     color: #4d4d4d;
     font-weight: 500;
 }
@@ -5626,7 +5305,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 }
 .bcode-sticker{
     width: fit-content;
-    font-size: 0.8rem;
     background-color: #008deb;
     color: white;
     padding: 0px 8px;
@@ -5638,7 +5316,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     background-color: red;
     color: white;
     top: 0;
-    font-size: 0.8rem;
     padding: 4px 18px 4px 8px;
     margin-top: 14px;
     border-radius: 0px 18px 18px 0px;
@@ -5650,7 +5327,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     background-color: #43d4ef;
     color: #154750;
     top: 18px;
-    font-size: 0.8rem;
     padding: 4px 18px 4px 8px;
     border-radius: 0px 18px 18px 0px;
     box-shadow: 2px 3px 7px 0px #00000042;
@@ -5661,7 +5337,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     background-color: #008deb;
     color: white;
     top: 0;
-    font-size: 0.8rem;
     padding: 4px 18px 4px 8px;
     margin-top: 14px;
     border-radius: 0px 18px 18px 0px;
@@ -5670,19 +5345,16 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 
 .rate-idr-kicked {
     color: #2c2c2c;
-    font-size: 0.8rem;
     text-decoration-line: line-through;
 }
 
 .rate-usd-kicked {
     color: #0068c5;
-    font-size: 0.8rem;
     font-weight: 500;
     text-decoration-line: line-through;
 }
 .rate-usd-panel {
     color: #0068c5;
-    font-size: 1.2rem;
     font-weight: 700;
 }
 
@@ -5700,7 +5372,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     position:relative;
 }
 .modal-galery .gallery-item .action-container{
-    font-size:0.9rem;
     color:grey;
     position: absolute;
     top: 0;
@@ -5739,7 +5410,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 
 .modal-price {
     display: flex;
-    font-size: 2rem;
     color: #1d82dc;
     align-items: baseline;
     line-height: initial;
@@ -5751,7 +5421,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     top: 58px;
     background-color: #003aff;
     padding: 4px 18px;
-    font-size: 1rem;
     color: white;
     font-weight: 600;
     border-radius: 88px 0 0 88px;
@@ -5764,12 +5433,10 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 }
 
 .service-no{
-    font-size: 0.8rem;
     color: #007d9a;
     font-weight: 700;
 }
 .service-no span{
-    font-size: 0.8rem;
     color: grey;
     font-weight: 400;
 }
@@ -5809,7 +5476,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 }
 .card-btn-container .btn-update {
     color: #303030 !important;
-    font-size: 0.8rem;
 }
 .card-btn-container .btn-update:is(:hover, :focus){
     color: #001dff !important;
@@ -5817,7 +5483,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 
 .card-btn-container .btn-delete {
     color: #303030 !important;
-    font-size: 0.8rem;
 }
 .card-btn-container .btn-delete:is(:hover, :focus){
     color: #d70000 !important;
@@ -5857,7 +5522,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 .notification-order {
     vertical-align: text-bottom;
     display: inline-flex;
-    font-size: 0.8rem;
     color: #416baf;
     margin-right: 18px;
     line-height: 1.2;
@@ -5872,12 +5536,10 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     color: red;
 }
 .notification-text {
-    font-size: 0.8rem;
     font-style: italic;
     color: #c10000;
 }
 .notification-error {
-    font-size: 0.8rem;
     font-style: italic;
     font-weight: 700;
     color: #cb0000;
@@ -5899,7 +5561,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 .title-invalid,
 .title-usedup,
 .title-expired {
-    font-size: 1.3rem;
     font-weight: 600;
 }
 
@@ -5953,16 +5614,12 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     gap: 5px;
     padding-inline: 9px;
     color: var(--black-coral);
-    font-size: var(--fs-8);
 }
 
 .card-detail-container {
     padding: 0;
 }
 
-.card-detail-container .card-desc {
-    font-size: 0.8rem;
-}
 .room-list ol li{
     list-style: none;
     margin-left: 0px;
@@ -5980,7 +5637,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     color: white;
     padding: 4px 8px;
     border-radius: 4px;
-    font-size: 0.9rem;
     font-weight: 500;
     margin-bottom: 8px;
 }
@@ -6015,7 +5671,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 .room-container .subtitle{
     color: #575757;
     padding: 4px 8px;
-    font-size: 0.9rem;
     font-weight: 600;
     margin-bottom: 8px;
     border-bottom: 1px solid #c7c7c7;
@@ -6024,7 +5679,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     color: #bfbfbf;
 }
 .card-title-room {
-    font-size: 18px;
     font-weight: 600;
 }
 
@@ -6036,12 +5690,7 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 }
 
 .card-body-room p {
-    font-size: 0.8rem;
     padding-bottom: 8px !important;
-}
-
-.mention {
-    font-size: 12px;
 }
 
 .card-img-room {
@@ -6053,7 +5702,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 
 .card-title-room {
     padding-top: 8px;
-    font-size: 18px;
     font-weight: 600;
     margin: 0;
 }
@@ -6088,14 +5736,12 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
     border-radius: 3px;
 }
 .price-container .price-text{
-    font-size: 1rem;
     position: relative;
     line-height: 2;
     color: #b5b5b5;
     font-weight: 600;
 }
 .price-container .price-rate{
-    font-size: 1rem;
     position: relative;
     line-height: 2;
     color: #00c2ff;
@@ -6103,7 +5749,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 }
 
 .price-room {
-    font-size: 24px;
     font-weight: 900;
     color: darkcyan;
 }
@@ -6129,7 +5774,6 @@ table.dataTable.break-spaces th, table.dataTable.break-spaces td {
 }
 
 button span {
-    font-size: x-large;
     color: black;
 }
 
@@ -6146,7 +5790,6 @@ button span {
     margin-bottom: 18px;
   }
 .search-title {
-    font-size: 1rem;
     font-weight: 600;
     color: whitesmoke;
     padding-bottom: 8px;
@@ -6187,18 +5830,15 @@ button {
 .rsv-no-input {
     text-transform: uppercase;
     height: 28px;
-    font-size: 14px;
 }
 
 /*  */
 
 td span{
-    font-size: 0.8rem;
     font-style: italic;
 }
 
 .online-status{
-    font-size: 0.8rem;
     font-style: italic;
     color: blue;
 }
@@ -6266,7 +5906,6 @@ td span{
     z-index: 9;
     border-radius: 8px 0 0 8px;
     color: #b5b5b5;
-    font-size: 0.8rem;
 }
 .input-group-right span {
     width: 44px;
@@ -6277,7 +5916,6 @@ td span{
     z-index: 9;
     border-radius: 8px 0 0 8px;
     color: #b5b5b5;
-    font-size: 0.8rem;
 }
 
 .input-search {
@@ -6338,6 +5976,7 @@ td span{
 }
 .main-container {
     padding-top: 70px;
+    background-color: #f9f9f9;
 }
 
 .pd-0 {
@@ -6385,13 +6024,11 @@ td span{
 
 
 .notif {
-    font-size: 0.8rem;
     color: #d10000;
     font-style: italic;
 }
 
 .notification-boxed {
-    font-size: 14px;
     color: #ff0000;
     font-style: italic;
     padding: 8px 8px 8px 8px;
@@ -6401,13 +6038,11 @@ td span{
     line-height: 1.2;
 }
 .notification {
-    font-size: 14px;
     color: #ff0000;
     font-style: italic;
 }
 
 .notification i {
-    font-size: 1.2rem;
     color: #ff0000;
     padding-left: 18px;
     background-color: #ffdfdf;
@@ -6422,7 +6057,6 @@ td span{
 .info-title {
     color: #7d7d7d;
     font-style: italic;
-    font-size: 0.8rem;
     margin: 4px 0px;
 }
 
@@ -6435,20 +6069,17 @@ td span{
 }
 .info-status p{
 
-    font-size: 0.8rem !important;
     color: red;
     font-style: italic;
 }
 
 .info-notif {
-    font-size: 14px;
     color: #7d7d7d;
     font-style: italic;
     padding-left: 18px;
 }
 
 .info-title span{
-    font-size: 14px;
     color: #7d7d7d;
     font-style: italic;
     padding-left: 8px;
@@ -6467,7 +6098,6 @@ td span{
 
 .facility i {
     display: inline-flex;
-    font-size: 12px;
 
 
 }
@@ -6475,7 +6105,6 @@ td span{
 .facility {
     line-height: 1;
     display: inline-flex;
-    font-size: 12px;
     color: #3b79c9;
     border: 1px solid #dddddd;
     border-radius: 100px;
@@ -6489,7 +6118,6 @@ td span{
 
 .price-idr {
     display: flex;
-    font-size: 1rem;
     color: #202020;
     align-items: baseline;
     line-height: initial;
@@ -6497,7 +6125,6 @@ td span{
 
 .price-usd {
     display: flex;
-    font-size: 1.8rem;
     color: #1d82dc;
     align-items: baseline;
     line-height: 1;
@@ -6507,21 +6134,18 @@ td span{
     /* height: 100%; */
     padding-left: 18px;
     padding-top: 4px;
-    font-size: 1rem !important;
     color: #868686;
     text-decoration-line: line-through;
     text-decoration-color: #ff030387;
     font-weight: 700;
 }
 .price-usd-normal span {
-    font-size: 0.8rem;
     color: #868686;
     text-decoration-line: none !important;
 }
 
 .price-usd span {
     display: flex;
-    font-size: 1rem;
     color: #2c2c2c;
     align-items: baseline;
     line-height: initial;
@@ -6530,7 +6154,6 @@ td span{
 
 .price-idr-kicked {
     display: flex;
-    font-size: 1rem;
     color: #202020;
     align-items: baseline;
     line-height: initial;
@@ -6538,7 +6161,6 @@ td span{
 
 .price-usd-kicked {
     display: flex;
-    font-size: 3rem;
     color: #1d82dc;
     align-items: baseline;
     line-height: initial;
@@ -6546,7 +6168,6 @@ td span{
 
 .price span {
     display: flex;
-    font-size: 1rem;
     color: #000000;
     align-items: baseline;
 }
@@ -6555,7 +6176,6 @@ td span{
     text-decoration: none;
     display: inline-block;
     color: #009d6f;
-    font-size: 27px;
 }
 
 .box-price {
@@ -6584,14 +6204,12 @@ td span{
 }
 
 .price-name {
-    font-size: 1rem;
     font-weight: 700;
     color: #003c89;
     text-align: left;
 }
 .price-name-price span{
     width: 100%;
-    font-size: 1rem !important;
     font-weight: 600;
     color: #003c89;
     text-align: end !important;
@@ -6602,23 +6220,19 @@ td span{
 }
 
 .price-tag {
-    font-size: 20px;
     font-weight: 900;
     color: #1962c0;
 }
 
 .price-tag span {
-    font-size: 20px !important;
     font-weight: 900;
     color: #1962c0;
 }
 .total-price{
-    font-size: 1.3rem;
     font-weight: 900;
     color: #0067ab;
 }
 .total-price span{
-    font-size: 1.3rem;
     font-weight: 900;
     color: #0067ab;
 }
@@ -6628,7 +6242,6 @@ td span{
     line-height: 2;
 }
 .text-price {
-    font-size: 0.8rem;
     font-weight: 400;
 }
 .text-price span {
@@ -6644,7 +6257,6 @@ td span{
 }
 
 .price-currency {
-    font-size: 0.8rem;
     font-weight: 600;
     color: #353535;
 }
@@ -6653,7 +6265,6 @@ td span{
     margin-right: 35px;
     text-decoration: none;
     color: #009d6f;
-    font-size: 30px;
 }
 
 .price .notif-box {
@@ -6665,7 +6276,6 @@ td span{
     color: #9f9f9f !important;
     font-style: italic;
     font-weight: 100;
-    font-size: 0.8rem;
 }
 .info-action {
     position: fixed;
@@ -6694,7 +6304,6 @@ td span{
     font-weight: 500;
     padding: 4px 18px;
     border-radius: 4px 4px 0 0;
-    font-size: 1rem;
 }
 .box-paragraf{
     border: 1px solid lightgrey;
@@ -6703,11 +6312,9 @@ td span{
     margin: 0px 0 8px 0;
 }
 .box-paragraf p{
-    font-size: 0.9rem !important;
     color: #1e1e1e !important;
 }
 .card-ptext-margin{
-    font-size: 0.9rem !important;
     color: #2d2d2d !important;
     border: 1px solid #d1d1d1;
     border-radius: 5px;
@@ -6719,13 +6326,9 @@ td span{
 .card-ptext-margin span{
     color: #1c6fb9;
 }
-.card-ptext-margin i{
-    font-size: 0.9rem;
-}
 .card-ptext-margin p{
     padding: 4px 0 0 0;
     list-style: none;
-    font-size: 0.8rem !important;
     padding-bottom: 0px !important;
     color: #000000 !important;
 }
@@ -6786,7 +6389,6 @@ td span{
 }
 .tab-inner-title {
     position: relative;
-    font-size: 0.9rem;
     font-weight: 700;
     background-color: #dfdfdf;
     color: #494949;
@@ -6796,7 +6398,6 @@ td span{
     margin-bottom: 4px;
 }
 .tab-inner-title-light {
-    font-size: 1rem;
     font-weight: 700;
     background-color: #dddddd;
     color: #232323;
@@ -6822,36 +6423,19 @@ td span{
     font-weight: 600;
     float: right;
     cursor: pointer;
-    font-size: 0.9rem;
 }
 
 .tab-inner-title::before {
-    /* font-family: 'FontAwesome'; */
-    /* content: "\f10c"; */
     content: "❖";
-    font-size: 1rem;
     line-height: 1;
     padding-right: 8px;
 }
 .tab-inner-title-light::before {
-    /* font-family: 'FontAwesome'; */
-    /* content: "\f10c"; */
     content: "❖";
-    font-size: 1rem;
     line-height: 1;
     padding-right: 8px;
 }
 
-.nav-tabs .nav-item.show .nav-link,
-.nav-tabs .nav-link.active {
-    color: #ffffff;
-    background-color: #356cb4;
-    border-color: #dee2e6 #dee2e6 #fff;
-    font-weight: 500;
-    font-size: 0.8rem;
-    /* padding: 8px 17px !important; */
-    /* border-bottom: 2px solid #356cb4; */
-}
 
 .tab{
     margin-right: 0;
@@ -6862,7 +6446,6 @@ td span{
     color: #e3e3e3;
     padding: 4px 8px;
     margin-bottom: 8px;
-    font-size: 0.8rem;
     font-weight: 600;
 }
 .tab .tab-subtitle span{
@@ -6888,28 +6471,7 @@ td span{
     margin: 0;
 }
 
-.nav-tabs {
-    padding: 8px 0px 0px 0px !important;
-    gap: 4px;
-}
-.nav-tabs .nav-item {
-    background-color: #e3e3e3;
-    border-radius: 4px !important;
-}
-.nav-tabs .nav-link {
-    color: #747474;
-    background-color: #e3e3e3;
-    font-weight: 500;
-    font-size: 0.8rem;
-    padding: 8px 17px !important;
-   
-}
 
-.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
-    background-color: #004985;
-    color: white !important;
-    animation: fading 50ms ease;
-}
 .nav-link.active{
     background-color: #004985 !important;
 }
@@ -6925,23 +6487,17 @@ td span{
  * #INVOICE
 \*-----------------------------------*/
 .det-price{
-    font-size: 0.8rem;
     font-weight: 700;
 }
 .det-list{
-    font-size: 0.8rem;
     font-weight: 500;
 }
 /*-----------------------------------*\
  * #RESERVATION / CONTRACT
 \*-----------------------------------*/
-.reservation-guest{
-    font-size: 0.8rem;
-}
 .reservation-guest span{
     display: flex;
     float: right;
-    font-size: 0.8rem;
 }
 .reservation-guest span .btn-update{
     padding: 0 4px;
@@ -6954,11 +6510,9 @@ td span{
 
 .reservation-guest span .btn-delete:is(:hover, :focus) {
     color: #9b2525cc !important;
-    font-size: 0.8rem !important;
 }
 .reservation-guest span .btn-update:is(:hover, :focus) {
     color: #2a771d !important;
-    font-size: 0.8rem !important;
 }
 .tb-container{
     display: inline-flex;
@@ -6967,7 +6521,6 @@ td span{
 }
 .tb-head{
     width: 100%;
-    font-size: 0.8rem;
     font-weight: 600;
     background-color: #e8e8e8;
     text-align: left;
@@ -6977,7 +6530,6 @@ td span{
 }
 .tb-body{
     width: 100%;
-    font-size: 0.8rem;
     
     text-align: left;
     padding: 4px;
@@ -6987,12 +6539,10 @@ td span{
  * #INVOICE / ORDER
 \*-----------------------------------*/
 .recommended-price{
-    font-size: 0.9rem;
     font-weight: 700;
     color:rgb(0 0 255);
 }
 .recommended-text{
-    font-size: 0.9rem;
     font-weight: 700;
     color:rgb(0 0 255);
 }
@@ -7000,7 +6550,6 @@ td span{
     content: "$ ";
 }
 .inv-head-con p {
-    font-size: 0.8rem;
     color: grey;
     font-style: italic;
 }
@@ -7015,7 +6564,6 @@ td span{
 }
 
 .business-name {
-    font-size: 1.2rem;
     color: black;
     margin-bottom: -8px;
     font-weight: 900;
@@ -7023,18 +6571,11 @@ td span{
 }
 
 .bussines-sub {
-    font-size: 14px;
     color: black;
     font-style: italic;
 }
-.label-active{
-    font-size: 0.8rem;
-}
 .label-active i{
     color: green;
-}
-.label-danger{
-    font-size: 0.8rem;
 }
 .label-danger i{
     color: red;
@@ -7045,7 +6586,6 @@ td span{
     left: 8px;
     background-color: white;
     padding: 3px 8px;
-    font-size: 0.8rem;
     font-weight: 600;
     border-radius: 80px;
     line-height: 1;
@@ -7053,7 +6593,6 @@ td span{
 }
 .label-title {
     text-align: right !important;
-    font-size: 2.3rem;
     font-weight: 900;
     font-family: none;
     color: #1962c0;
@@ -7063,7 +6602,6 @@ td span{
 
 .label-title-2 {
     text-align: right !important;
-    font-size: 2rem;
     font-weight: 900;
     font-family: none;
     color: #1962c0;
@@ -7074,37 +6612,31 @@ td span{
 .label-date {
     background-color: #dfdfdf;
     color: #535353;
-    font-size: 14px;
     padding: 4px 8px;
     margin-top: 8px;
 }
 .label-date-wedding {
     background-color: red;
     color: white;
-    font-size: 14px;
     padding: 4px 8px;
     margin-top: 8px;
 }
 
 .page-title {
-    font-size: 0.9rem;
     color: #000000;
     font-weight: 500;
 }
 
 .page-list {
-    font-size: 0.8rem;
     padding-left: 18px;
     color: #000000;
 }
 
 .page-list span {
-    font-size: 14px;
     font-weight: 400;
 }
 
 .page-list-value {
-    font-size: 0.8rem !important;
     font-weight: 400;
     color: black;
 }
@@ -7113,27 +6645,23 @@ td span{
 }
 
 .page-list-optional {
-    font-size: 0.8rem;
     font-weight: 400;
     color: black;
 }
 
 .page-list-value span {
     font-style: italic;
-    font-size: 0.8rem;
     color: red;
 }
 
 .page-list-optional span {
     font-style: italic;
-    font-size: 12px;
     color: rgb(0 20 255);
 }
 
 .page-head {
     text-transform: uppercase;
     font-weight: 900;
-    font-size: 22px;
     color: black;
     padding-bottom: 8px;
 }
@@ -7146,7 +6674,6 @@ td span{
     margin-bottom: 30px;
     text-align: -webkit-center;
     font-weight: 900;
-    font-size: 18px;
     color: #686868;
 }
 .urgent-box{
@@ -7155,15 +6682,16 @@ td span{
     padding: 8px;
 }
 .pages-subtitle{
+    font-size: 1.2rem;
     position: relative;
-    font-size: x-large;
     text-transform: uppercase;
-    font-weight: 500;
     width: 100%;
     color: #2b2b2b;
+    font-weight: 700;
+    margin-bottom: 8px;
 }
 .pages-subtitle span{
-    font-size: small;
+    font-size: 0.8rem;
     text-transform: capitalize;
     font-weight: 500;
     color: #555555;
@@ -7174,7 +6702,6 @@ td span{
 }
 .pages-description{
     line-height: 1;
-    font-size: smaller;
     color: #555555;
 }
 /* Blue */
@@ -7186,7 +6713,6 @@ td span{
     padding: 4px 8px;
     margin-top: 18px;
     margin-bottom: 8px;
-    font-size: 0.8rem;
     font-weight: 600;
     border-radius: 4px;
     text-transform: uppercase;
@@ -7199,7 +6725,6 @@ td span{
     padding: 4px 8px;
     margin-top: 18px;
     margin-bottom: 8px;
-    font-size: 1rem;
     font-weight: 500;
     border-radius: 4px;
     text-transform: uppercase;
@@ -7223,7 +6748,6 @@ td span{
     padding: 4px 8px;
     margin-top: 18px;
     margin-bottom: 8px;
-    font-size: 0.8rem;
     font-weight: 1000;
     border-radius: 4px;
     text-transform: uppercase;
@@ -7244,7 +6768,6 @@ td span{
 
 .page-subtitle::before {
     content: "❖";
-    font-size: 0.8rem;
     line-height: 1;
     padding-right: 2px;
 }
@@ -7255,7 +6778,6 @@ td span{
     padding: 4px 8px;
     margin-top: 8px;
     margin-bottom: 8px;
-    font-size: 0.8rem;
     font-weight: 600;
 }
 
@@ -7277,7 +6799,6 @@ td span{
     right: 11px;
     top: 7px;
     color: #5b5b5b;
-    font-size: 1rem;
     line-height: 1;
 }
 .page-subtitle span i:is(:hover, :focus) {
@@ -7294,17 +6815,14 @@ td span{
 
 .page-text {
     padding: 0 8px;
-    font-size: 0.8rem;
     margin-top: 8px;
     color: black;
     border-radius: 4px;
 }
 .page-text p{
-    font-size: 0.8rem !important;
     color: #000000 !important;
 }
 .page-text-subtitle {
-    font-size: 0.8rem;
     font-weight: 500;
     margin: 0px 8px;
 }
@@ -7316,38 +6834,32 @@ td span{
 .page-note {
     border: 1px solid #dddbdb;
     padding: 8px;
-    font-size: 0.8rem;
     margin-top: 8px;
     color: black;
     border-radius: 4px;
 }
 
 .page-note .title {
-    font-size: 0.8rem;
     font-weight: 700;
     color: #3d3d3d;
 }
 
 .page-note .title span {
     font-weight: 600;
-    font-size: 1rem;
     color: red;
 }
 
 .page-note p {
-    font-size: 0.8rem;
     color: #202020;
 }
 .page-note p strong{
     font-weight: 600;
-    font-size: 0.8rem;
     line-height: 1;
 }
 
 .page-note-rejected {
     border: 1px solid #910000;
     padding: 8px;
-    font-size: 14px;
     margin-top: 8px;
     margin-bottom: 18px;
     color: #c0121a;
@@ -7386,14 +6898,12 @@ td span{
 }
 
 .text {
-    font-size: 16px;
     font-weight: bold;
     color: #333;
 }
 
 .icon-active {
     width: max-content;
-    font-size: 0.8rem;
     padding: 3px 12px;
     background-color: green;
     color: white;
@@ -7402,7 +6912,6 @@ td span{
 
 .icon-waiting {
     width: max-content;
-    font-size: 0.8rem;
     padding: 3px 12px;
     background-color: rgb(255, 145, 0);
     color: rgb(32, 32, 32);
@@ -7411,7 +6920,6 @@ td span{
 
 .icon-rejected {
     width: max-content;
-    font-size: 0.8rem;
     padding: 3px 12px;
     background-color: #c0121a;
     color: white;
@@ -7420,7 +6928,6 @@ td span{
 
 .icon-invalid {
     width: max-content;
-    font-size: 0.8rem;
     padding: 3px 12px;
     background-color: #ff8080;
     color: white;
@@ -7429,7 +6936,6 @@ td span{
 
 .icon-draft {
     width: max-content;
-    font-size: 0.8rem;
     padding: 3px 12px;
     background-color: #000000;
     color: #ffffff;
@@ -7438,7 +6944,6 @@ td span{
 }
 
 .icon-expired {
-    font-size: 0.8rem;
     padding: 3px 8px;
     background-color: #e7e7e7;
     color: #161616;
@@ -7448,30 +6953,25 @@ td span{
 
 .page-incomplete {
     color: #ffbb00;
-    font-size: large;
 }
 
 .page-accepted {
     color: green;
-    font-size: large;
 }
 
 .page-rejected {
     color: #c0121a;
-    font-size: large;
 }
 
 .page-status {
     width: 100%;
     padding-top: 18px;
-    font-size: 26px;
     text-align: -webkit-right;
     font-weight: 700;
     float: right;
 
 }
 .page-status span {
-    font-size: 14px;
     font-weight: 600;
     position: absolute;
     right: 18px;
@@ -7481,7 +6981,6 @@ td span{
 
 
 .page-status-incomplete {
-    font-size: 14px;
     font-weight: 400;
     position: absolute;
     left: 28px;
@@ -7490,7 +6989,6 @@ td span{
 }
 
 .page-status-incomplete span {
-    font-size: 14px;
     font-weight: 400;
     position: absolute;
     left: 28px;
@@ -7503,7 +7001,6 @@ td span{
     padding: 2px 6px;
     background-color: green;
     color: white;
-    font-size: 12px;
 }
 
 .page-draft-count {
@@ -7512,7 +7009,6 @@ td span{
     padding: 2px 6px;
     background-color: rgb(169, 172, 0);
     color: rgb(0, 0, 0);
-    font-size: 12px;
 }
 
 .page-expied-count {
@@ -7521,15 +7017,12 @@ td span{
     padding: 2px 6px;
     background-color: rgb(121, 121, 121);
     color: rgb(0, 0, 0);
-    font-size: 12px;
 }
 
 .author b{
     color: #3b3b3b;
-    font-size: 0.8rem;
 }
 .author p{
-    font-size: 0.8rem;
     color: #0000e9;
     font-weight: 700;
     line-height: 1;
@@ -7538,14 +7031,12 @@ td span{
 .author i{
     color: #717171;
     font-weight: 400;
-    font-size: 0.8rem;
     line-height: 1;
     padding: 0 !important;
 }
 
 
 .action-hiostory {
-    font-size: 0.8rem;
     font-style: italic;
     color: grey;
     padding-left: 18px !important;
@@ -7553,25 +7044,21 @@ td span{
 
 .action-history .author {
     font-weight: 600;
-    font-size: 0.8rem;
     color: #202020;
 }
 
 .action-history .author span {
-    font-size: 0.8rem;
     font-style: italic;
     color: gray;
 }
 
 .action-history .status {
-    font-size: 0.8rem;
     color: #000000;
     font-style: italic;
     padding-left: 18px;
 }
 
 .action-history .note {
-    font-size: 0.8rem;
     color: #000000;
     font-style: italic;
     padding-left: 18px;
@@ -7594,7 +7081,6 @@ td span{
 }
 .status-order i {
     color: #6464ca;
-    font-size: 0.6rem;
     padding-left: 18px;
 }
 
@@ -7607,12 +7093,12 @@ td span{
     background-color: gray;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     font-style: italic;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 .status-approved {
@@ -7620,13 +7106,13 @@ td span{
     color: rgb(255 255 255);
     background-color: #006975;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     margin-top: 4px !important;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     font-style: italic;
     width: fit-content;
+    font-size: 0.6rem;
 }
 .status-canceled {
     width: max-content;
@@ -7634,12 +7120,12 @@ td span{
     background-color: grey;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     font-style: italic;
     width: fit-content;
+    font-size: 0.6rem;
 }
 .status-rejected {
     width: max-content;
@@ -7647,12 +7133,12 @@ td span{
     background-color: #c0121a;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     font-style: italic;
     width: fit-content;
+    font-size: 0.6rem;
 }
 .status-confirmed {
     width: max-content;
@@ -7660,12 +7146,12 @@ td span{
     background-color: yellow;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     font-style: italic;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 
@@ -7674,11 +7160,11 @@ td span{
     color: white;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 
@@ -7688,11 +7174,11 @@ td span{
     background-color: #FF0000;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 .status-active {
@@ -7701,11 +7187,11 @@ td span{
     background-color: #2c5993;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 
@@ -7715,11 +7201,11 @@ td span{
     background-color: #ff8080;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 .status-pending {
     width: max-content;
@@ -7727,11 +7213,11 @@ td span{
     background-color: #3770bb;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 .status-waiting {
@@ -7740,11 +7226,11 @@ td span{
     background-color: #3770bb;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 .status-progress {
@@ -7753,11 +7239,11 @@ td span{
     background-color: #d7d7d7;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 
 .status-nonactive {
@@ -7766,11 +7252,11 @@ td span{
     background-color: #808080;
     margin-top: 4px !important;
     padding: 5px 10px 5px 10px;
-    font-size: 0.6rem;
     border-radius: 20px;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
+    font-size: 0.6rem;
 }
 .status-badge {
     position: absolute;
@@ -7778,17 +7264,18 @@ td span{
     transform: translate(0, -50%);
     right: 18px;
     text-align-last: right;
+    font-size: 0.6rem;
 }
 .status-kick-back {
     color: white;
     margin-top: 4px !important;
     padding: 5px 6px 5px 6px;
     border-radius: 20px;
-    font-size: 0.6rem;
     font-weight: 400;
     width: fit-content;
     background-color: red;
     line-height: 1;
+    font-size: 0.6rem;
 }
 
 
@@ -7797,11 +7284,11 @@ td span{
     margin-top: 4px !important;
     padding: 5px 6px 5px 6px;
     border-radius: 20px;
-    font-size: 0.6rem;
     font-weight: 400;
     width: fit-content;
     background-color: #26ad97;
     line-height: 1;
+    font-size: 0.6rem;
 }
 
 .status-bcode {
@@ -7809,11 +7296,11 @@ td span{
     margin-top: 4px !important;
     padding: 5px 6px 5px 6px;
     border-radius: 20px;
-    font-size: 0.6rem;
     font-weight: 400;
     line-height: 1;
     width: fit-content;
     background-color: #ffd100;
+    font-size: 0.6rem;
 }
 
 .status-promotion {
@@ -7821,11 +7308,11 @@ td span{
     margin-top: 4px !important;
     padding: 5px 6px 5px 6px;
     border-radius: 20px;
-    font-size: 0.6rem;
     font-weight: 400;
     width: fit-content;
     line-height: 1;
     background-color: #26a8bb;
+    font-size: 0.6rem;
 }
 
 .status-archived {
@@ -7833,11 +7320,11 @@ td span{
     margin-top: 4px !important;
     padding: 2px 10px 2px 10px;
     border-radius: 20px;
-    font-size: 0.8rem;
     box-shadow: inset 0px 3px 4px 2px #0000006b;
     font-weight: 400;
     width: fit-content;
     background-color: white;
+    font-size: 0.6rem;
 }
 
 .sidebar-light .sidebar-menu .dropdown-toggle, .sidebar-light .sidebar-menu .submenu li a {
@@ -7872,20 +7359,17 @@ td span{
     width: 30%;
     align-self: center;
     text-align: center;
-    font-size: 1.3rem;
     font-weight: 900;
     color: #195a66;
     
 }
 .promotion-box .promotion-item b{
-    font-size: 0.8rem;
     color: white;
     text-shadow: 1px 1px 1px black;
     font-family: inherit;
     text-transform: uppercase;
 }
 .promotion-box .promotion-item p{
-    font-size: 0.6rem !important;
     font-weight: 500;
     color: #404040;
 }
@@ -7896,12 +7380,10 @@ td span{
 
 
 .normal-text{
-    font-size: 0.8rem;
     font-weight: 500;
     color: rgb(67 67 67);
 }
 .promo-text{
-    font-size: 0.8rem;
     font-weight: 500;
     color: rgb(221 0 0);
 }
@@ -7909,19 +7391,16 @@ td span{
     content: "- ";
 }
 .promo-text span{
-    font-size: 0.8rem;
     text-decoration: line-through;
     text-decoration-color: #ff74745c;
     font-weight: 700;
 }
 .promo-price{
-    font-size: 0.8rem;
     font-weight: 700;
     color: rgb(0 0 255);
 }
 
 .subtotal-text, .subtotal-price{
-    font-size: 0.8rem;
     font-weight: 600;
     color: #474747;
 }
@@ -7941,7 +7420,6 @@ td span{
 .user-info-dropdown .dropdown-toggle .user-icon {
     width: 52px;
     height: 52px;
-    font-size: 24px;
     background: #ffffff;
     color: #00000087;
     line-height: 52px;
@@ -7956,7 +7434,6 @@ td span{
     z-index: 99;
     background-color: #dc3545;
     color: rgb(255, 255, 255);
-    font-size: 0.8rem;
     line-height: 1.3;
     width: 19px;
     height: 18px;
@@ -7971,7 +7448,6 @@ td span{
 .notification-list ul li a .draft {
     background-color: gray;
     color: rgb(255, 255, 255);
-    font-size: 2rem;
     width: 50px;
     height: 50px;
     padding: 8px;
@@ -7986,7 +7462,6 @@ td span{
 .notification-list ul li a .active {
     background-color: #5ca75c;
     color: rgb(255, 255, 255);
-    font-size: 2rem;
     width: 50px;
     height: 50px;
     padding: 8px;
@@ -8000,7 +7475,6 @@ td span{
 .notification-list ul li a .confirmed {
     background-color: #5ca75c;
     color: rgb(255, 255, 255);
-    font-size: 2rem;
     width: 50px;
     height: 50px;
     padding: 8px;
@@ -8014,7 +7488,6 @@ td span{
 .notification-list ul li a .approved {
     background-color: #006975;
     color: rgb(255, 255, 255);
-    font-size: 2rem;
     width: 50px;
     height: 50px;
     padding: 8px;
@@ -8029,7 +7502,6 @@ td span{
 .notification-list ul li a .rejected {
     background-color: #f5678a;
     color: rgb(255, 255, 255);
-    font-size: 2rem;
     width: 50px;
     height: 50px;
     padding: 8px;
@@ -8044,7 +7516,6 @@ td span{
 .notification-list ul li a .invalid {
     background-color: #6565ff;
     color: rgb(255, 255, 255);
-    font-size: 2rem;
     width: 50px;
     height: 50px;
     padding: 8px;
@@ -8060,7 +7531,6 @@ td span{
     z-index: 99;
     background-color: #dc3545;
     color: rgb(255, 255, 255);
-    font-size: 0.8rem;
     line-height: 1.3;
     width: 19px;
     height: 18px;
@@ -8075,10 +7545,6 @@ td span{
 
 .description-notif {
     font-style: italic;
-    font-size: 0.8rem;
-}
-.description-item {
-    font-size: 0.8rem;
 }
 
 /*-----------------------------------*\
@@ -8111,7 +7577,6 @@ td span{
 }
 
 .page-form .title {
-    font-size: 1rem;
     padding-bottom: 2px;
     padding-left: 0;
     color: darkblue;
@@ -8120,7 +7585,6 @@ td span{
 .page-form .value {
     padding-left: 8px;
     color: #181818;
-    font-size: 14px;
     padding-bottom: 8px;
     font-weight: 500;
 }
@@ -8138,7 +7602,6 @@ textarea.form-control {
     right: 3px;
 }
 .cancelation-policy {
-    font-size: 0.8rem;
     padding: 8px;
     border: 1px solid lightgrey;
     border-radius: 4px;
@@ -8148,7 +7611,6 @@ textarea.form-control {
 }
 
 .cancelation-policy-view {
-    font-size: 0.8rem;
     list-style: auto !important;
     padding-bottom: 8px;
 }
@@ -8180,7 +7642,6 @@ webkit-scrollbar-track {
 }
 
 .data-title {
-    font-size: 24px;
     font-weight: 900;
     margin: 0;
     background-color: #eeeeee;
@@ -8188,7 +7649,6 @@ webkit-scrollbar-track {
 }
 
 .data-subtitle {
-    font-size: 16px;
     font-weight: 600;
     margin: 0;
     background-color: #eeeeee;
@@ -8196,19 +7656,16 @@ webkit-scrollbar-track {
 }
 
 .data p {
-    font-size: 0.8rem;
     margin-left: 8px;
     margin-left: 8px;
     margin-bottom: 8px;
 }
 
 .data-desc {
-    font-size: 13px;
     padding-left: 8px;
 }
 
 .data-web {
-    font-size: 0.8rem;
     color: #4f4f4f;
     margin-bottom: 8px;
     width: 100%;
@@ -8216,30 +7673,25 @@ webkit-scrollbar-track {
     padding-top: 8px;
 }
 .data-web-text-area {
-    font-size: 0.8rem;
     color: #4f4f4f;
     padding:0 18px;
     margin-bottom: 8px;
 }
 .data-web-text-area b {
-    font-size: 0.8rem;
     color: #2d2d2d;
 }
 .data-web-text-area p {
-    font-size: 0.8rem;
     color: #2d2d2d;
 }
 
 
 .banner-right .title {
-    font-size: 1rem;
     font-weight: 600;
     color: #464646;
     padding-bottom: 9px !important;
 }
 
 .banner-right p {
-    font-size: 0.8rem;
     font-style: italic;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
@@ -8253,7 +7705,6 @@ webkit-scrollbar-track {
 }
 
 .product-detail-desc {
-    font-size: 16px;
     line-height: 1.5;
 }
 
@@ -8273,9 +7724,6 @@ webkit-scrollbar-track {
  * #ACTIVITY
 \*-----------------------------------*/
 
-.detail-item {
-    padding: 0 0 18px 0;
-}
 .form-alert {
     box-shadow: 0px 0px 5px 1px red !important;
     -webkit-text-decorations-in-effect: blink;
@@ -8286,13 +7734,6 @@ webkit-scrollbar-track {
     color: #db1e1e;
 }
 
-.detail-item p {
-    font-size: 0.8rem;
-}
-
-.detail-item b {
-    font-size: 0.9rem;
-}
 
 /*-----------------------------------*\
  * #PROMOTION AND BOOKING CODE
@@ -8308,11 +7749,6 @@ webkit-scrollbar-track {
 /*-----------------------------------*\
  * #HOTEL
 \*-----------------------------------*/
-/* .hotel-card {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-} */
 .fade-up {
     opacity: 0;
     transform: translateY(20px);
@@ -8368,7 +7804,6 @@ webkit-scrollbar-track {
     padding: 4px 8px;
     cursor: pointer;
     border-bottom: 1px dotted #d3d3d3;
-    font-size: 0.9rem;
     color: #595959;
 }
 
@@ -8443,7 +7878,6 @@ webkit-scrollbar-track {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2rem;
     padding: 8px 18px;
 }
 
@@ -8453,13 +7887,11 @@ webkit-scrollbar-track {
     padding: 8px;
 }
 .bookingcode-card .content-card .code{
-    font-size: medium;
     color: #064854;
     font-family: inherit;
     text-transform: uppercase;
 }
 .bookingcode-card .content-card .text-card{
-    font-size: 0.8rem;
     color: #153a40;
     line-height: 1.1;
 }
@@ -8475,7 +7907,6 @@ webkit-scrollbar-track {
 }
 
 .bookingcode-card .content-card-price .price {
-    font-size: 2rem;
     position: relative;
     left: 50%;
     top: 50%;
@@ -8491,7 +7922,6 @@ webkit-scrollbar-track {
     position: relative;
     right: -75%;
     top: -60%;
-    font-size: 0.8rem;
     background-color: rgb(78 78 78);
     padding: 1px 3px;
     border-radius: 100px;
@@ -8519,7 +7949,6 @@ webkit-scrollbar-track {
     align-content: inherit;
     top: 50%;
     transform: translate(-15%, -50%);
-    font-size: 1rem;
     font-weight: 400;
 }
 .bookingcode-card .content-card-promo {
@@ -8532,7 +7961,6 @@ webkit-scrollbar-track {
 }
 
 .bookingcode-card .content-card-promo .price {
-    font-size: 2rem;
     position: relative;
     left: 50%;
     top: 50%;
@@ -8548,7 +7976,6 @@ webkit-scrollbar-track {
     position: relative;
     right: -76%;
     top: -61%;
-    font-size: 0.8rem;
     background-color: rgb(78 78 78);
     padding: 1px 3px;
     border-radius: 100px;
@@ -8576,7 +8003,6 @@ webkit-scrollbar-track {
     align-content: inherit;
     top: 50%;
     transform: translate(-15%, -50%);
-    font-size: 1rem;
     font-weight: 400;
 }
 
@@ -8650,14 +8076,12 @@ webkit-scrollbar-track {
 }
 .card-content .tab ul li{
     list-style: none;
-    font-size: 0.8rem;
     padding: 0;
     margin: 0;
     cursor: pointer;
 }
 
 .card-content p{
-    font-size: 0.9rem !important;
     margin-bottom: 4px;
     color: #333333;
     margin-left: 12px;
@@ -8667,7 +8091,6 @@ webkit-scrollbar-track {
     margin-left: 30px;
 }
 .card-content ul li p{
-    font-size: 0.9rem !important;
     margin-bottom: 0px !important;
     margin-left: 0px !important;
     padding-bottom: 0px !important;
@@ -8692,27 +8115,20 @@ webkit-scrollbar-track {
 }
 .page-card .card-content .title {
     margin-bottom: 0 !important;
-    font-size: 1rem;
     font-weight: 800;
     line-height: normal;
 }
 
-.page-card .card-content span {
-    font-size: 0.8rem;
-}
-
 .page-card .card-content a {
-    font-weight: 700;
-    font-size: 0.8rem;
+    font-weight: 600;
     color: #194e95;
     cursor: pointer;
 }
 .page-card .card-content a:is(:hover, :focus) {
-    color: #0069f3;
+    color: grey;
 }
 
 .page-card .prices {
-    font-size: 2rem;
     font-weight: 800;
     margin-bottom: 18px;
     margin-top: 18px;
@@ -8729,7 +8145,6 @@ webkit-scrollbar-track {
 }
 
 .page-card .prices span {
-    font-size: 1rem;
     font-weight: 100;
     padding-left: 8px;
     padding-bottom: 7px;
@@ -8751,16 +8166,11 @@ webkit-scrollbar-track {
     margin-bottom: 10px;
 }
 
-.page-card .card-price .reviews {
-    font-size: var(--fs-5);
-}
-
 .page-card .card-rating {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 1px;
-    font-size: 14px;
 }
 
 .page-card .card-rating ion-icon:last-child {
@@ -8783,7 +8193,6 @@ webkit-scrollbar-track {
 .card-title {
     text-transform: uppercase;
     margin-bottom: 0 !important;
-    font-size: 1.1rem;
     font-weight: 700;
     color: #515151;
 }
@@ -8795,7 +8204,6 @@ webkit-scrollbar-track {
 
 .card-grid-title {
     margin-bottom: 0 !important;
-    font-size: 0.8rem;
     font-weight: 700;
     color: #515151;
 }
@@ -8809,12 +8217,8 @@ webkit-scrollbar-track {
     margin-bottom: 18px !important;
 }
 
-.card-text-room {
-    font-size: 14px;
-}
 
 .card-text p {
-    font-size: 0.9rem !important;
     margin-left: 18px;
     line-height: normal !important;
     padding: 0px !important;
@@ -8824,7 +8228,6 @@ webkit-scrollbar-track {
 }
 
 .card-text b {
-    font-size: 0.9rem;
     margin-bottom: 8px;
 }
 .card-text ul, .card-text ol, .tab-pane ul, .tab-pane ol {
@@ -8833,23 +8236,19 @@ webkit-scrollbar-track {
 
 .card-text ul li {
     list-style: disc;
-    font-size: 0.9rem;
     margin-left:18px
 }
 .card-text ol li {
     list-style: auto;
-    font-size: 0.9rem;
     margin-left:18px
 }
 
 .tab-pane ul li{
     list-style: disc;
-    font-size: 0.9rem;
     margin-left:18px
 }
 .tab-pane ol li{
     list-style: auto;
-    font-size: 0.9rem;
     margin-left:18px
 }
 
@@ -8875,7 +8274,6 @@ nav ol li {
 .card-text h5 {
     padding-bottom: 4px;
     margin-bottom: 0 !important;
-    font-size: 0.9rem;
     font-weight: 900;
     line-height: normal;
 }
@@ -8886,7 +8284,6 @@ nav ol li {
 
 .hotel-list-item p {
     margin-bottom: 8px;
-    font-size: 0.8rem;
     color: black;
 }
 
@@ -8939,18 +8336,15 @@ nav ol li {
     gap: 5px;
     padding: 0 8px;
     color: var(--black-coral);
-    font-size: 0.8rem;
 }
 
 .meta-box p {
-    font-size: 0.7rem !important;
     color: #2c2c2c;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
 }
 
 .meta-box a {
-    font-size: 0.8rem;
     color: #2c2c2c;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
@@ -8958,11 +8352,11 @@ nav ol li {
 
 .meta-box i {
     color: #0077ff;
-    /* font-size: 0.8rem; */
     line-height: 1.4;
 }
 
 .card-detail-title {
+    font-size: 0.8rem !important;
     position: absolute;
     left: 50%;
     bottom: 0px;
@@ -8973,7 +8367,6 @@ nav ol li {
     width: 100%;
     text-align: center;
     font-family: inherit;
-    font-size: 0.8rem;
     background-color: #ffffff;
     line-height: 1.2;
     font-weight: 400;
@@ -9001,7 +8394,6 @@ nav ol li {
     border-radius: 100px;
     text-align: center;
     align-content: center;
-    font-size: 1.5rem;
     padding: 18px 27px;
 }
 
@@ -9009,11 +8401,6 @@ nav ol li {
     margin-inline: auto;
 }
 
-
-/* Price */
-.room-name {
-    font-size: 12px;
-}
 
 .price-box {
 
@@ -9036,7 +8423,6 @@ nav ol li {
 
 .date-price {
     padding: 4px 8px 0 8px;
-    font-size: 14px;
     font-weight: bold;
 }
 
@@ -9044,7 +8430,6 @@ nav ol li {
     border-radius: 18px;
     background-color: #cdcdcdba;
     color: #727272;
-    font-size: 0.9rem;
     font-weight: 500;
     font-variant-east-asian: proportional-width;
     margin-left: 8px;
@@ -9070,7 +8455,6 @@ nav ol li {
 }
 .tabs-nav .tab-item a{
     color: white;
-    font-size: 0.9rem;
 }
 
 .tablink {
@@ -9082,7 +8466,6 @@ nav ol li {
     border: none;
     outline: none;
     cursor: pointer;
-    font-size: 17px;
     width: max-content;
     padding: 3px 26px;
 }
@@ -9108,7 +8491,6 @@ nav ol li {
     background-color: white;
 }
 .title-verify{
-    font-size: 1.5rem;
     font-weight: 600;
     color: #474747;
 }
@@ -9116,7 +8498,6 @@ nav ol li {
     margin-top: 28px;
 }
 .countdown{
-    font-size: 1rem;
     font-weight: 900;
     color: gray;
 }
@@ -9176,7 +8557,8 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     top: 8px;
 }
 .card .card-action{
-    padding: 8px;
+    font-size: 0.8rem;
+    padding: 4px 8px;
     text-align: center;
 }
 .card-price-container{
@@ -9184,7 +8566,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     background-color: #121212;
 }
 .card-period-full{
-    font-size: 0.7rem;
     line-height: 1;
     color: #a5a5a5;
     background-color: #121212;
@@ -9193,7 +8574,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     width: 100%;
 }
 .card-price-full{
-    font-size: 0.8rem;
     color: #ffffff;
     background-color: #178ca5;
     text-align: center;
@@ -9202,7 +8582,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     margin-top: -3px;
 }
 .card-price-br{
-    font-size: 0.8rem;
     color: #ffffff;
     font-weight: 600;
     background-color: #178ca5;
@@ -9213,7 +8592,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
 }
 .card-price-bl{
     /* margin-top: -3px; */
-    font-size: 0.8rem;
     color: #999999;
     font-weight: unset;
     background-color: #121212;
@@ -9222,7 +8600,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     width: 50%;
 }
 .card-price-bl i, .card-price-br i{
-    font-size:0.8rem;
     line-height: 1;
     vertical-align: middle;
 }
@@ -9244,7 +8621,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     background-image: linear-gradient(to top, #d5d5d5, #e8e8e8);
     margin-top: 8px;
     margin-bottom: 8px;
-    font-size: 0.9rem;
     font-weight: 600;
     padding: 6px 13px;
     /* text-transform: uppercase; */
@@ -9255,7 +8631,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
 .card-inner-title span{
     color: #878787;
     font-weight: 600;
-    font-size: 0.9rem;
     line-height: 1;
 }
 .card-inner-title span:is(:hover, :focus){
@@ -9317,7 +8692,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     padding-bottom: 4px;
     padding-left: 8px;
     padding-right: 8px;
-    font-size: 10px;
     border-radius: 0 6px 6px 0;
     color: #fff;
     box-shadow: 1px 2px 3px #1c1c1c75;
@@ -9328,7 +8702,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     padding-bottom: 4px;
     padding-left: 8px;
     padding-right: 8px;
-    font-size: 10px;
     border-radius: 0 6px 6px 0;
     color: rgb(76 76 76);
     box-shadow: 1px 2px 1px #343434;
@@ -9340,7 +8713,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     padding-bottom: 4px;
     padding-left: 8px;
     padding-right: 8px;
-    font-size: 10px;
     border-radius: 0 6px 6px 0;
     color: rgb(76 76 76);
     box-shadow: 1px 2px 1px #343434;
@@ -9365,6 +8737,7 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     left: 6px;
     display: flex;
     flex-flow: wrap;
+    font-size: 0.7rem;
 }
 .first ul li {
     list-style: none !important;
@@ -9386,27 +8759,23 @@ table.dataTable>tbody>tr.child ul.dtr-details {
 }
 
 .name-card p{
-    font-size: 0.8rem !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
     color: white !important;
 }
 .name-card b{
     color: white !important;
-    font-size: 0.8rem;
     display: inline-block;
     text-transform: uppercase;
 }
 
 .card-name {
-    font-size: 0.8rem;
     font-weight: 900;
     width: 75%;
     color: #1b3133;
 }
 
 .card-desc {
-    font-size: 13px;
     width: 100%;
 }
 
@@ -9415,14 +8784,12 @@ table.dataTable>tbody>tr.child ul.dtr-details {
 }
 
 .new-price {
-    font-size: 14px;
     font-weight: bold;
     color: red;
 
 }
 
 .old-price {
-    font-size: 12px;
     font-weight: bold;
     color: grey;
     text-decoration: line-through;
@@ -9515,7 +8882,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     background: #fff;
     border: 1px solid grey;
     color: grey;
-    font-size: 10px;
     text-align: center;
     align-items: center;
     display: flex;
@@ -9523,26 +8889,18 @@ table.dataTable>tbody>tr.child ul.dtr-details {
 }
 
 
-.rating-star {
-    font-size: 10px !important;
-}
 
 .rating-number {
-    font-size: 10px;
     color: grey;
 
 }
 
 .buy {
-    font-size: 12px;
     color: purple;
     font-weight: 500;
 }
-.table-print{
-    font-size: 1.3rem;
-}
+
 .table-print tr th{
-    font-size: 1.4rem;
     font-weight: 600;
 }
 .table-print tr td{
@@ -9561,7 +8919,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     font-weight: 500;
     transition: 0.4s;
     border: 1px solid #ffffff;
-    font-size: 0.8rem;
     padding: 8px 18px;
     border-radius: 4px;
 }
@@ -9611,7 +8968,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
-    font-size: 0.8rem !important;
     margin-bottom: 18px;
 }
 
@@ -9643,7 +8999,6 @@ table.dataTable>tbody>tr.child ul.dtr-details {
 }
 .ck-rounded-corners .ck.ck-editor__main>.ck-editor__editable, .ck.ck-editor__main>.ck-editor__editable.ck-rounded-corners {
     padding-left: 26px;
-    font-size: 0.8rem !important;
 }
 figure.table{
     width: max-content;
@@ -9659,7 +9014,6 @@ figure.table{
     margin-left: 14px;
 }
 .isi-term ol li{
-    font-size: 0.8rem;
     list-style: number;
     padding-left: 4px;
     padding-bottom: 8px;
@@ -9668,19 +9022,16 @@ figure.table{
     margin-left: 18px;
 }
 .term-value{
-    font-size: 0.8rem;
     text-align: justify;
     margin-bottom: 8px;
 }
 .isi-term p{
-    font-size: 0.8rem !important;
     padding-bottom: 0 !important;
     margin-bottom: 18px;
 }
 .term-subtitle{
     text-align: center;
     position: relative;
-    font-size: 1rem;
     font-weight: 500;
     margin-bottom: 8px;
     margin-top: 18px;
@@ -9702,9 +9053,6 @@ figure.table{
     color: white;
     font-weight: 700;
 }
-.heading-policy p{
-    font-size: 0.9rem !important;
-}
 .act-btn{
     display: -webkit-inline-box;
     position: absolute;
@@ -9714,7 +9062,6 @@ figure.table{
 .act-btn .btn-destroy{
     margin-top: 0 !important;
     padding: 0 !important;
-    font-size: 0.8rem;
     color: #525252;
 }
 .act-btn .btn-destroy:hover{
@@ -9723,7 +9070,6 @@ figure.table{
 .act-btn a{
     margin-top: 0 !important;
     padding: 0 10px;
-    font-size: 0.8rem;
 }
 
 .absolute-bottom-right{
@@ -9748,7 +9094,6 @@ figure.table{
     }
     
     .fa-spinner {
-        font-size: 40px;
         color: #007bff;
     }
     .adaptive-position{
@@ -9784,7 +9129,7 @@ figure.table{
         animation: spin 3s ease-in-out infinite;
     }
     .spinner-text {
-        font-size: 0.8rem;
+
         position: absolute;
         left: 50%;
         top: 50%;
@@ -9871,12 +9216,7 @@ figure.table{
         margin: 8px 0 0 0;
         border-radius: 4px;
     }
-    .total-price{
-        font-size: 1rem;
-    }
-    .total-price span{
-        font-size: 1rem;
-    }
+
     .card-hotel-pricelist-container .item-img{
         width: 100%;
     }
@@ -9930,16 +9270,6 @@ figure.table{
         grid-template-columns: repeat(1, 1fr);
     }
 
-    .nav-tabs .nav-item.show .nav-link,
-    .nav-tabs .nav-link.active {
-        padding: 4px 8px !important;
-    }
-    .nav-tabs .nav-link {
-        padding: 4px 8px !important;
-    }
-    .tab{
-        margin-left: 0px;
-    }
     .alert-container {
         width: -webkit-fill-available;
         right: 18px;
@@ -9996,9 +9326,6 @@ figure.table{
         margin-top: 18px;
     }
 
-    .title {
-        font-size: 1rem;
-    }
 
     .page-header .breadcrumb {
         padding: 4px 18px;
@@ -10012,16 +9339,8 @@ figure.table{
         border-top: 1px solid #dddddd;
     }
 
-    .card-box .subtitle {
-        font-size: 0.9rem;
-    }
-
-    .card-box .subtitle span {
-        font-size: 0.9rem;
-    }
 
     .card-detail-title {
-        font-size: 0.6rem;
         font-weight: 400 !important;
     }
 
@@ -10029,57 +9348,17 @@ figure.table{
         margin-bottom: 8px;
     }
 
-    .label-title {
-        font-size: 1.7rem;
-    }
-    
-    .widget-data-title {
-        font-size: 0.8rem;
-    }
-    
-    .widget-data-subtitle {
-        font-size: 0.8rem;
-    }
-    .widget-data-title-active {
-        font-size: 0.8rem;
-    }
-    
-    .widget-data-subtitle-active {
-        font-size: 0.8rem;
-    }
-    .chart-icon {
-        font-size: 1.5rem;
-    }
-
-    .meta-box {
-        font-size: 0.8rem;
-    }
-    
-    .meta-box p {
-        font-size: 0.6rem !important;
-    }
-    
-    .meta-box a {
-        font-size: 0.8rem;
-    }
-    
-    .meta-box i {
-        font-size: 0.8rem;
-    }
     .card-box-title {
         padding: 18px;
         border-top: none;
         background-color: transparent;
         border-bottom: none;
     }
-    
-    .card-box .title {
-        font-size: 1rem;
-    }
+
     
     .card-box .subtitle {
         line-height: 1.3;
-        font-size: 0.9rem;
+
     }
     .info-action {
         width: 100%;
@@ -10100,7 +9379,7 @@ figure.table{
         top: 0px;
         right: 0px;
         border-radius: 100px;
-        font-size: 1rem;
+
     }
     .btn-card-detail{
         position: unset;
@@ -10113,7 +9392,7 @@ figure.table{
         margin: 0 !important;
     }
     .page-status span {
-        font-size: 14px;
+
         font-weight: 600;
         position: absolute;
         right: 50%;
@@ -10124,7 +9403,6 @@ figure.table{
     .page-status {
         width: 100%;
         padding-top: 18px;
-        font-size: 26px;
         text-align: center;
         font-weight: 700;
         margin-top: 8px;
@@ -10168,13 +9446,11 @@ figure.table{
     }
     .trans-card .trans-card-title-b-0 {
         padding: 4px 6px 10px 6px;
-        font-size: 0.5rem;
     }
     .grid-4{
         grid-template-columns: repeat(1, 1fr);
     }
     .image-title p{
-        font-size: 0.9rem !important;
         padding: 0px 0px;
     }
     .image-title{
@@ -10183,20 +9459,16 @@ figure.table{
     .left-lable{
         padding: 2px 8px;
     }
-    .left-lable i{
-        font-size: 0.6rem !important;
-    }
-    .left-lable p{
-        font-size: 0.6rem !important;
-    }
+
     .card-ptext-content-50{
         grid-template-columns: 1fr 1fr;
     }
     .card-box {
+        padding: 0 0 18px 0 !important;
+        background-color: #80808000 !important;
         box-shadow: none;
         border: none;
         border-bottom: 1px solid #dddddd;
-        border-radius: 4px !important;
     }
     .form-alert {
         box-shadow: none !important;
@@ -10220,13 +9492,8 @@ figure.table{
         padding: 0;
         border-radius: unset !important;
     }
-    .page-header {
-        border: 1px solid #e1e1e1;
-        background-color: #f9f9f9;
-        box-shadow: none;
-    }
     .pages-subtitle {
-        font-size: 1rem;
+
         font-weight: 700 !important;
     }
     .card-hotel-pricelist-container {
@@ -10295,12 +9562,7 @@ figure.table{
         margin: 8px 0 0 0;
         border-radius: 4px;
     }
-    .total-price{
-        font-size: 1rem;
-    }
-    .total-price span{
-        font-size: 1rem;
-    }
+
     .alert-error-code{
         width: 70%;
         top: 80px;
@@ -10376,40 +9638,10 @@ figure.table{
         border-top: 1px solid #dddddd;
     }
 
-    .card-box .subtitle {
-        font-size: 0.9rem;
-    }
-
-    .card-box .subtitle span {
-        font-size: 0.9rem;
-    }
-
     .card-detail-title {
-        font-size: 0.6rem;
         font-weight: 400 !important;
     }
 
-    .widget-data-title {
-        font-size: 0.8rem;
-    }
-    
-    .widget-data-subtitle {
-        font-size: 0.8rem;
-    }
-    .widget-data-title-active {
-        font-size: 0.8rem;
-    }
-    
-    .widget-data-subtitle-active {
-        font-size: 0.8rem;
-    }
-    .chart-icon {
-        font-size: 1.6rem;
-    }
-
-    .label-title {
-        font-size: 2rem;
-    }
     .info-action {
         width: 100%;
     }
@@ -10461,7 +9693,7 @@ figure.table{
         grid-template-columns: repeat(2, 1fr);
     }
     .image-title p{
-        font-size: 1rem !important;
+
         padding: 0px 0px;
     }
     .image-title{
@@ -10470,12 +9702,7 @@ figure.table{
     .left-lable{
         padding: 2px 8px;
     }
-    .left-lable i{
-        font-size: 0.6rem !important;
-    }
-    .left-lable p{
-        font-size: 0.6rem !important;
-    }
+
     .card-ptext-content-50{
         grid-template-columns: 1fr;
     }
@@ -10550,40 +9777,12 @@ figure.table{
         border-top: 1px solid #dddddd;
     }
 
-    .card-box .subtitle {
-        font-size: 0.9rem;
-    }
 
-    .card-box .subtitle span {
-        font-size: 0.9rem;
-    }
 
     .card-detail-title {
-        font-size: 0.8rem;
         font-weight: 500 !important;
     }
 
-
-    .label-title {
-        font-size: 2rem;
-    }
-    .widget-data-title {
-        font-size: 0.8rem;
-    }
-    
-    .widget-data-subtitle {
-        font-size: 0.8rem;
-    }
-    .widget-data-title-active {
-        font-size: 0.8rem;
-    }
-    
-    .widget-data-subtitle-active {
-        font-size: 0.8rem;
-    }
-    .chart-icon {
-        font-size: 1.7rem;
-    }
     .info-action {
         width: 100%;
     }
@@ -10628,7 +9827,6 @@ figure.table{
         grid-template-columns: repeat(2, 1fr);
     }
     .image-title p{
-        font-size: 1.2rem !important;
         padding: 0px 0px;
     }
     .image-title{
@@ -10679,15 +9877,7 @@ figure.table{
     }
 
     .meta-box {
-        --fs-8: 0.8rem;
-    }
-
-    .meta-box>ion-icon {
-        font-size: 0.8rem;
-    }
-
-    .widget-data-title {
-        font-size: 1rem;
+        --fs-8: 1rem;
     }
     .info-action {
         width: 100%;
@@ -10720,7 +9910,6 @@ figure.table{
         grid-template-columns: repeat(3, 1fr);
     }
     .image-title p{
-        font-size: 0.9rem !important;
         padding: 0px 0px;
     }
     .image-title{
@@ -10771,9 +9960,6 @@ figure.table{
         margin-bottom: 15px;
     }
 
-    .widget-data-title {
-        font-size: 1rem;
-    }
     .info-action {
         width: 80%;
     }
@@ -10806,7 +9992,6 @@ figure.table{
         grid-template-columns: repeat(3, 1fr);
     }
     .image-title p{
-        font-size: 0.9rem !important;
         padding: 0px 0px;
     }
     .image-title{

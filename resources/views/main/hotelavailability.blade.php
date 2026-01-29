@@ -8,7 +8,7 @@
                 <div class="page-header">
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
-                            <div class="title"><i class="icon-copy dw dw-hotel-o"></i> {{ $hotel->name }}</div>
+                            <div class="title"><i class="icon-copy dw dw-building1"></i>{{ $hotel->name }}</div>
                             @include('partials.breadcrumbs', [
                                 'breadcrumbs' => [
                                     ['url' => route('dashboard.index'), 'label' => __('messages.Dashboard')],
@@ -42,11 +42,10 @@
                                             <div class="card-box">
                                                 <div class="row">
                                                     <div class="col-md-12 m-b-18">
-                                                        <div class="pages-description">{{ $hotel->name }}</div>
-                                                        <div class="pages-subtitle">
+                                                        <div class="subtitle">
                                                             @lang('messages.Promotion Prices')
                                                         </div>
-                                                        <div class="pages-description">{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</div>
+                                                        <span>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</span>
                                                     </div>
                                                     <div class="col-md-12">
                                                         @foreach ($processedPromos as $hotel_promo_price)
@@ -162,11 +161,10 @@
                                             <div class="card-box">
                                                 <div class="row">
                                                     <div class="col-md-12 m-b-18">
-                                                        <div class="pages-description">{{ $hotel->name }}</div>
-                                                        <div class="pages-subtitle">
+                                                        <div class="subtitle">
                                                             @lang('messages.Package Prices')
                                                         </div>
-                                                        <div class="pages-description">{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</div>
+                                                        <span>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</span>
                                                     </div>
                                                     <div class="col-md-12">
                                                         @foreach ($packages as $package)
@@ -248,11 +246,10 @@
                                             <div class="card-box">
                                                 <div class="row">
                                                     <div class="col-md-12 m-b-18">
-                                                        <div class="pages-description">{{ $hotel->name }}</div>
-                                                        <div class="pages-subtitle">
+                                                        <div class="subtitle">
                                                             @lang('messages.Normal Prices')
                                                         </div>
-                                                        <div class="pages-description">{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</div>
+                                                        <span>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</span>
                                                     </div>
                                                     <div class="col-md-12">
                                                         @foreach($normalPriceData as $room_normal_price)
