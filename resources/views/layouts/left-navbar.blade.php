@@ -197,20 +197,13 @@
                                     </ul>
                                 </li>
                             @endcan
-                            <li class="dropdown">
-                                <a href="javascript:;" class="dropdown-toggle">
-                                    <span class="micon dw dw-file2"></span><span class="mtext">@lang("messages.Data")</span>
-                                </a>
-                                <ul class="submenu">
-                                    <li>
-                                        <a href="{{ route('itineraries.index') }}" class="dropdown-toggle no-arrow">
-                                            <span class="icon-copy dw dw-map-6" aria-hidden="true"></span> @lang('messages.Itinerary')
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
                             @canany(['posDev','posAuthor','posRsv','weddingDvl','weddingSls','weddingAuthor','weddingRsv'])
-                                <li class="dropdown">
+                                <li>
+                                    <a href="{{ route('itineraries.index') }}" class="dropdown-toggle no-arrow">
+                                        <span class="micon dw dw-map-6" aria-hidden="true"></span> @lang('messages.Itinerary')
+                                    </a>
+                                </li>
+                                {{-- <li class="dropdown">
                                     <a href="javascript:;" class="dropdown-toggle">
                                         <span class="micon icon-copy fa fa-percent"></span><span class="mtext">@lang("messages.Promo")</span>
                                     </a>
@@ -226,7 +219,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li>
+                                </li> --}}
                             @endcanany
                             @canany(['posDev','posRsv','weddingDvl','weddingSls','weddingAuthor','weddingRsv'])
                                 {{-- SPK --}}
@@ -240,7 +233,7 @@
                                         <span class="micon dw dw-list"></span> @lang("messages.Reservations")
                                     </a>
                                 </li> --}}
-                                @can('posDev')
+                                {{-- @can('posDev')
                                     <li class="order-count">
                                         <a href="{{ route('orders-admin') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('orders-admin') ? 'active' : '' }}">
                                             <i class="micon icon-copy dw dw-shopping-cart1" aria-hidden="true"></i> @lang("messages.Orders")
@@ -279,7 +272,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                @endcanany
+                                @endcanany --}}
                             @endcanany
                             <li class="dropdown">
                                 <a href="javascript:;" class="dropdown-toggle">
@@ -318,11 +311,11 @@
                                 </a>
                                 <ul class="submenu">
                                     @canany(['posDev','posAuthor','posRsv','weddingDvl','weddingSls','weddingAuthor','weddingRsv'])
-                                        @foreach ($services_admin as $menuadmin)
+                                        @foreach ($services_menu as $menuadmin)
                                             @canany(['posDev','posAuthor','posRsv'])
                                                 <li>
                                                     <a href="{{ url("$menuadmin->nicname"."-admin") }}" class="{{ request()->routeIs($menuadmin->nicname.'-admin.index') ? "active" : "" }}">
-                                                        <span class="micon {!! $menuadmin->icon !!}"></span> {{ $menuadmin->name == "Villas"?__("messages.Private Villa"):__("messages.".$menuadmin->name); }}
+                                                        <span class="micon {!! $menuadmin->icon !!}"></span> {{ __("messages.".$menuadmin->name) }}
                                                     </a>
                                                 </li>
                                             @endcanany

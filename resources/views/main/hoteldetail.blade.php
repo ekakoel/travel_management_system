@@ -18,7 +18,7 @@
                 @include('partials.alerts')
 
                 <div class="row">
-                    @if (session('bookingcode') or $promotions->count() > 0)
+                    {{-- @if (session('bookingcode') or $promotions->count() > 0)
                         <div class="col-md-12 promotion-bookingcode">
                             @if (session('bookingcode'))
                                 <div class="bookingcode-card">
@@ -48,14 +48,16 @@
                                 @endforeach
                             @endif
                         </div>
-                    @endif
+                    @endif --}}
                     <div class="col-md-4 mobile">
                         <div class="row">
                             <div class="col-md-12">
                                 <div
                                     class="card-box m-b-18 {{ session('booking_dates.duration') < $hotel->min_stay ? 'form-alert' : '' }}">
                                     <div class="card-box-title">
-                                        <i class="icon-copy fa fa-search" aria-hidden="true"></i>@lang('messages.Check Price')
+                                        <div class="subtitle">
+                                            <i class="icon-copy fa fa-search" aria-hidden="true"></i> @lang('messages.Check Price')
+                                        </div>
                                     </div>
                                     <div class="card-box-body">
                                         <form id="searchHotelMobile" action="{{ route('view.hotel-prices', $hotel->code) }}"
@@ -123,7 +125,9 @@
                         </div>
                         <div class="card-box m-b-18">
                             <div class="card-box-title">
-                                <i class="dw dw-building1"></i> {{ $hotel->name }}
+                                <div class="subtitle">
+                                    <i class="dw dw-building1"></i> {{ $hotel->name }}
+                                </div>
                             </div>
                             <div class="card-box-body">
                                 <div class="page-card">
@@ -188,8 +192,7 @@
                                 </div>
                                 <hr class="hr-light">
                                 <div class="card-box-subtitle">
-                                    <div class="subtitle"><i class="icon-copy fa fa-hotel" aria-hidden="true"></i>
-                                        @lang('messages.Suites and Villas')</div>
+                                    <i class="icon-copy fa fa-hotel" aria-hidden="true"></i> @lang('messages.Suites and Villas')
                                 </div>
                                 <div class="card-box-content">
                                     @foreach ($hotel->rooms as $room)
@@ -211,7 +214,9 @@
                                 <div
                                     class="card-box m-b-18 {{ session('booking_dates.duration') < $hotel->min_stay ? 'form-alert' : '' }}">
                                     <div class="card-box-title">
-                                        <i class="icon-copy fa fa-search" aria-hidden="true"></i>@lang('messages.Check Price')
+                                        <div class="subtitle">
+                                            <i class="icon-copy fa fa-search" aria-hidden="true"></i> @lang('messages.Check Price')
+                                        </div>
                                     </div>
                                     <div class="card-box-body">
                                         <form id="searchHotelDesktop"
@@ -236,14 +241,14 @@
                                         </form>
                                     </div>
                                     <div class="card-box-footer">
-                                        <div class="row">
-                                            <div class="col-6 text-left">
+                                        <div class="row w-100">
+                                            <div class="col-md-6 text-left">
                                                 @if (session('booking_dates.duration') < $hotel->min_stay)
                                                     <p class="error-notification"> @lang('messages.Minimum stay')
                                                         {{ $hotel->min_stay }} @lang('messages.nights')</p>
                                                 @endif
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-md-6">
                                                 <button form="searchHotelDesktop" type="submit" class="btn btn-primary"
                                                     style="float: right;"><i class='icon-copy fa fa-search'
                                                         aria-hidden='true'></i> @lang('messages.Check Price')</button>

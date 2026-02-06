@@ -495,11 +495,11 @@
             <p>@lang('messages.You can book this promotional service through the available options below!')</p>
             <div class="btn-action">
                 <!-- Facebook Booking -->
-                <a href="https://online.balikamitour.com/hotel-{{ $hotel->code }}" target="_blank"
+                {{-- <a href="https://online.balikamitour.com/hotel-{{ $hotel->code }}" target="_blank"
                     class="btn d-flex align-items-center"
                     style="background: #1877F2; color: white;">
                     <i class="fa fa-globe" aria-hidden="true"></i>@lang('messages.Book Here')
-                </a>
+                </a> --}}
                 <!-- Email Booking -->
                 <a href="mailto:reservation@balikamitour.com?subject=Room%20Booking%20Inquiry"
                     class="btn d-flex align-items-center"

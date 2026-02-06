@@ -1246,38 +1246,49 @@ input[type=checkbox]{
 .card-hotel-pricelist-container .item-description .description-price{
     background-color: white;
     margin-bottom: 8px;
-    padding: 4px 8px;
     border-radius: 4px;
-    height: auto;
+    height: 100%;
     align-content: center;
     border: 0.5px solid #d7d7d7;
 }
 .card-hotel-pricelist-container .item-description .description-detail{
+    font-size: 0.9rem;
     display: grid;
     width: 60%;
-    gap: 11px;
+    gap: 8px;
     margin: 10px 0;
+    align-items: start;
+    align-content: start;
 }
 .card-hotel-pricelist-container .item-description .description-detail span{
-    color: #323232;
+    font-size: 0.8rem;
+    color: rgb(95, 95, 95);
     line-height: 1;
 }
 .card-hotel-pricelist-container .item-description .description-detail .description-title{
+    font-size: 1.2rem;
     font-weight: 600;
     color: #2b2b2b;
     line-height: 1;
 }
 .card-hotel-pricelist-container .item-description .description-price .price{
     color: #2b2b2b;
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 .card-hotel-pricelist-container .item-description .description-action{
     height: 100%;
     width: 40%;
     border-radius: 0 3px 3px 0;
     text-align: center;
-    align-content: end;
+    align-content: space-between;
     padding: 18px;
     background-color: #e5e5e5;
+    display: grid;
+    align-items: center;
+}
+.pricelist{
+    margin-bottom: 18px;
 }
 .card-button{
     background-image: linear-gradient(184deg, #207cf200, #00000063);
@@ -2361,6 +2372,10 @@ select {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.form-control::after{
+    margin-right: 18px;
+}
 .form-control .file{
     width: 100%;
     padding: 4px;
@@ -2519,6 +2534,12 @@ select {
     margin-top: 4px;
     border: unset;
     border-bottom: 2px #93939380 dotted;
+}
+.light-hr {
+    margin-bottom: 4px;
+    margin-top: 4px;
+    border: unset;
+    border-bottom: 1px #c7c7c7 solid;
 }
 
 .form-notif {
@@ -2903,7 +2924,7 @@ select {
 }
 
 .title {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: #0058a7;
     font-weight: 700;
     display: inline-flex;
@@ -3750,7 +3771,7 @@ select {
     font-weight: 300;
 }
 .page-header {
-    background-color: #e3e3e3;
+    /* background-color: #e3e3e3; */
     border-radius: 8px;
     padding: 8px 20px 20px 20px;
     margin: 0 0 18px 0 !important;
@@ -3762,6 +3783,8 @@ select {
     border-radius: 0 0 8px 8px;
     background-color: white;
     font-size: 0.8rem;
+    border-top: 1px solid #d7d7d7;
+
 }
 
 .breadcrumb-item {
@@ -4635,6 +4658,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child, table.
     margin-bottom: 18px;
 }
 .trans-box-title{
+    font-size: 1.4rem;
     margin-bottom: 18px;
     line-height: 1;
     font-weight: 600;
@@ -4956,6 +4980,7 @@ marquee{
     height: fit-content;
     background: #ffffff;
     padding: 18px !important;
+    overflow: hidden;
 }
 
 .card-box ol li{
@@ -4972,6 +4997,7 @@ marquee{
     text-wrap-mode: wrap;
 }
 .card-box .content ol li, .card-box .content ul li{
+    padding: 4px 0px;
     list-style: disc;
     margin-left: 18px;
 }
@@ -5022,17 +5048,23 @@ marquee{
 
 
 .card-box-title .subtitle {
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 600;
     line-height: 1;
-    text-transform: uppercase;
+    text-transform: none;
     color: #4d4d4d;
 }
 
 .card-box-title .subtitle i{
-    font-family: "FontAwesome";
-    padding: 0px 8px 0px 14px;
+    font-size: 1rem;
+    padding: 0px 4px 0px 14px;
     margin-left: -13px;
     border-radius: 8px 0 0 0;
+}
+.card-box-title i{
+    font-size: 0.8rem;
+    color: white;
+    font-weight:400;
 }
 
 .card-box .card-subtitle {
@@ -5075,25 +5107,25 @@ marquee{
 
 .card-box .subtitle span {
     font-weight: 500;
-    color: red;
 }
 
 
 .card-box-title{
     position: relative;
     font-weight: 700;
-    margin: -20px -18px 18px -18px;
+    margin: -20px -20px 20px -20px;
     padding: 8px 18px;
-    border-radius: 8px 8px 0 0;
-    background-color: #ededed;
+    background-color: #2b5893;
     border-bottom: 1px solid #d9d9d9;
     text-transform: uppercase;
+    width: auto;
+
 }
 .card-box-title .title {
   font-size: 1.3rem;
   font-weight: 700;
   line-height: normal;
-  color: #595959;
+  color: white;
   text-transform: none;
 }
 
@@ -5101,19 +5133,23 @@ marquee{
   font-size: 1.2rem;
   font-weight: 700;
   line-height: normal;
+  color: white;
 }
 .card-box-title span {
     position: absolute;
     right: 10px;
-    top: 6px;
-    color: #ffffff;
-    background-color: #878787;
+    top: 50%;
+    transform: translate(0, -50%);
+    color: #474747;
+    background-color: #ffffff;
     padding: 0px 6px;
     border-radius: 20px;
     font-weight: 400;
     font-size: 0.7rem;
 }
 .card-box-subtitle{
+    font-size: 1rem;
+    font-weight: 700;;
     border-radius: 3px;
     margin-top: 18px;
     margin-bottom: 8px;
@@ -5783,7 +5819,7 @@ button span {
     gap: 18px;
     width: 100%;
     place-content: flex-end;
-    background-color: #17457f;
+    background-color: #ffffff;
     padding: 8px;
     border-radius: 6px;
     border: 1px solid #8080805c;
@@ -5954,7 +5990,7 @@ td span{
     transition: all .3s ease-in-out;
     margin-bottom: 0px !important;
     background-color: #ffffff;
-    padding: 6px 4px 6px 8px;
+    padding: 6px 18px 6px 8px;
 }
 
 .full-button {
@@ -5976,7 +6012,7 @@ td span{
 }
 .main-container {
     padding-top: 70px;
-    background-color: #f9f9f9;
+    background-color: #f3f3f3;
 }
 
 .pd-0 {
@@ -9360,6 +9396,17 @@ figure.table{
         line-height: 1.3;
 
     }
+    .card-box-title .subtitle {
+        color: #373737;
+    }
+
+    .card-box-title .subtitle i{
+        color: #373737;
+    }
+    .card-box-title i{
+        color: #373737;
+    }
+
     .info-action {
         width: 100%;
     }
@@ -9469,6 +9516,12 @@ figure.table{
         box-shadow: none;
         border: none;
         border-bottom: 1px solid #dddddd;
+    }
+    .card-box-title{
+        padding: 18px 18px 0 18px !important;
+    }
+    .card-box .title{
+       color: #2b2b2b;
     }
     .form-alert {
         box-shadow: none !important;

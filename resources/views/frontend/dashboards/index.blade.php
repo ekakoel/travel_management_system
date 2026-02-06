@@ -42,6 +42,7 @@
                         </div>
                     </div>
                 @endif
+                <hr class="light-hr">
                 {{-- Transport Section --}}
                 @if (isset($menu_transport) && $transports->isNotEmpty())
                     <div class="trans-box">
@@ -56,6 +57,26 @@
                         <div class="trans-box-footer">
                             <a href="/transports">
                                 <button class="btn btn-primary text-white">@lang('messages.Transportation') <i
+                                        class="icon-copy fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+                            </a>
+                        </div>
+                    </div>
+                @endif
+                <hr class="light-hr">
+                {{-- Transport Section --}}
+                @if (isset($menu_tour) && $tours->isNotEmpty())
+                    <div class="trans-box">
+                        <div class="trans-box-title">
+                            <i class="icon-copy dw dw-map-2"></i>@lang('messages.Tour Package')
+                        </div>
+                        <div class="trans-box-content">
+                            @foreach ($tours as $tour)
+                                @include('partials.tour-card', compact('tour'))
+                            @endforeach
+                        </div>
+                        <div class="trans-box-footer">
+                            <a href="{{ route('view.tours') }}">
+                                <button class="btn btn-primary text-white">@lang('messages.Tour Package') <i
                                         class="icon-copy fa fa-arrow-circle-right" aria-hidden="true"></i></button>
                             </a>
                         </div>

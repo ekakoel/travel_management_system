@@ -1,7 +1,10 @@
 <div class="col-md-12">
     <div class="card-box">
-        <div class="pages-subtitle">
-            @lang('messages.Hotels Around') {{ $hotel->region }}
+        <div class="card-box-title">
+            <div class="subtitle">
+                <i class="dw dw-building1"></i> 
+                @lang('messages.Hotels Around') {{ $hotel->region }}
+            </div>
             <span>@lang('messages.Availability') {{ count($nearhotels) }}</span>
         </div>
         <div class="card-box-content">

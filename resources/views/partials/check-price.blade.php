@@ -2,7 +2,10 @@
     <div class="col-md-12">
         <div class="card-box {{ session('booking_dates.duration') < $hotel->min_stay?"form-alert":""; }}">
             <div class="card-box-title">
-                <div class="subtitle"><i class="icon-copy fa fa-search" aria-hidden="true"></i>@lang('messages.Check Price')</div>
+                <div class="subtitle">
+                    <i class="icon-copy fa fa-search" aria-hidden="true"></i>
+                    @lang('messages.Check Price')
+                </div>
             </div>
             <div class="detail-item">
                 <div class="row">

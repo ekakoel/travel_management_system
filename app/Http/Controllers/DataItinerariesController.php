@@ -20,17 +20,11 @@ class DataItinerariesController extends Controller
         return view('admin.itineraries.index', compact('itineraries'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.itineraries.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -50,25 +44,16 @@ class DataItinerariesController extends Controller
             ->with('success', 'Itinerary berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(DataItineraries $itinerary)
     {
         return view('admin.itineraries.show', compact('itinerary'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(DataItineraries $itinerary)
     {
         return view('admin.itineraries.edit', compact('itinerary'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, DataItineraries $itinerary)
     {
         $validated = $request->validate([
@@ -88,9 +73,6 @@ class DataItinerariesController extends Controller
             ->with('success', 'Itinerary berhasil diperbarui');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(DataItineraries $itinerary)
     {
         $itinerary->delete();

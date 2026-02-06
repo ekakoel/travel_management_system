@@ -489,13 +489,13 @@ class HotelsController extends Controller
 
         $processedPromos = [];
         $normalPriceData = [];
+        $totalNormalRoomPrice = 0;
+        $totalKickBack = 0;
         foreach ($hotel->rooms as $room) {
             $promoDetails = $this->processPromo($room, $room_prices, $hotel_promotions, $checkin, $duration, $usdrates, $tax);
             if ($promoDetails) {
                 $processedPromos[] = $promoDetails;
             }
-            $totalNormalRoomPrice = 0;
-            $totalKickBack = 0;
             $normalPricePerDate = [];
             $has_normal = [];
             for ($k=0; $k < $duration; $k++) { 

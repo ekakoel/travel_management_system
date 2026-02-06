@@ -297,7 +297,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
                     <a class="dropdown-item" href="/profile"><i class="dw dw-user1"></i>{{ Auth::user()->name }}</a>
-                    <a class="dropdown-item" href="/orders"><i class="icon-copy fa fa-tags" aria-hidden="true"></i> @lang('messages.Order')</a>
+                    {{-- <a class="dropdown-item" href="/orders"><i class="icon-copy fa fa-tags" aria-hidden="true"></i> @lang('messages.Order')</a> --}}
                     <a class="dropdown-item" href="/manual-book"><i class="icon-copy fa fa-book" aria-hidden="true"></i> @lang('messages.Manual Book')</a>
                     <a class="dropdown-item" href="/terms-and-conditions"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Term And Condition')</a>
                     <a class="dropdown-item" href="/privacy-policy"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Privacy Policy')</a>

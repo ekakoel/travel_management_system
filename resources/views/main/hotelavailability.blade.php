@@ -1,5 +1,5 @@
-@section('title',__('Hotel Availability'))
 @extends('layouts.head')
+@section('title',__('Hotel Availability'))
 @section('content')
     <div class="mobile-menu-overlay"></div>
     <div class="main-container">
@@ -30,23 +30,24 @@
                     </div>
                 @endif
                 <div class="row">
-                    <div class="col-md-4 mobile">
+                    <div class="col-md-4 mobile m-b-18">
                         @include('partials.check-price', compact('nearhotels'))
                     </div>
                     <div class="col-md-8">
                             <div class="row">
-                                {{-- PROMO PRICE --}}
                                 @if (count($processedPromos) > 0 or count($packages)>0 or $normalPriceData)
+                                    {{-- PROMO PRICE --}}
                                     @if (count($processedPromos) > 0)
                                         <div class="col-md-12 m-b-18">
                                             <div class="card-box">
-                                                <div class="row">
-                                                    <div class="col-md-12 m-b-18">
-                                                        <div class="subtitle">
-                                                            @lang('messages.Promotion Prices')
-                                                        </div>
-                                                        <span>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</span>
+                                                <div class="card-box-title">
+                                                    <div class="subtitle">
+                                                        <i class="icon-copy dw dw-price-tag"> </i>
+                                                         @lang('messages.Promotion Prices')
                                                     </div>
+                                                    <div><i>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</i></div>
+                                                </div>
+                                                <div class="row">
                                                     <div class="col-md-12">
                                                         @foreach ($processedPromos as $hotel_promo_price)
                                                             @php
@@ -107,6 +108,16 @@
                                                                                 @lang('messages.Booking code') | ${{ session('bookingcode.discounts') }}
                                                                             </div>
                                                                         @endif
+                                                                        <div class="detail">
+                                                                            @foreach ($hotelPromotions as $hotel_promotion)
+                                                                            @if ($hotel_promotion->include)
+                                                                                    <b>@lang('messages.Include'):</b><br>
+                                                                                    @include('partials.modal-hotel-promo-include', compact("hotel_promotion"))
+                                                                                @endif
+                                                                            @endforeach
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="description-action">
                                                                         <div class="pricelist">
                                                                             @foreach ($hotel_promo_price['price_list'] as $index => $price)
                                                                                 @php
@@ -123,20 +134,10 @@
                                                                                 </div>
                                                                             @endforeach
                                                                         </div>
-                                                                        <div class="detail">
-                                                                            <b>@lang('messages.Include'):</b><br>
-                                                                            @foreach ($hotelPromotions as $hotel_promotion)
-                                                                                @if ($hotel_promotion->include)
-                                                                                    @include('partials.modal-hotel-promo-include', compact("hotel_promotion"))
-                                                                                @endif
-                                                                            @endforeach
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="description-action">
                                                                         <div class="description-price">
                                                                             <div class="price">{{ currencyFormatUsd($hotel_promo_price['total_price']) }}</div>
                                                                         </div>
-                                                                        <form action="{{ route('view.order-hotel-promo',$hotel_promo_price['room']->id) }}" method="POST">
+                                                                        {{-- <form action="{{ route('view.order-hotel-promo',$hotel_promo_price['room']->id) }}" method="POST">
                                                                             @csrf
                                                                             <input type="hidden" name="service" value="Hotel Promo">
                                                                             <input type="hidden" name="promo_id" value="{{ json_encode($hotel_promo_price['promo_id_list']) }}">
@@ -145,7 +146,7 @@
                                                                             <input type="hidden" name="type_price" value="{{ json_encode($hotel_promo_price['type_price']) }}">
                                                                             <input type="hidden" name="price_list" value="{{ json_encode($hotel_promo_price['price_list']) }}">
                                                                             <button type="submit" class="btn btn-primary w-100"><i class="fa fa-shopping-basket"></i> @lang('messages.Order')</button>
-                                                                        </form>
+                                                                        </form> --}}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -162,9 +163,12 @@
                                                 <div class="row">
                                                     <div class="col-md-12 m-b-18">
                                                         <div class="subtitle">
+                                                            <i class="icon-copy dw dw-price-tag"> </i>
                                                             @lang('messages.Package Prices')
                                                         </div>
-                                                        <span>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</span>
+                                                        <div>
+                                                            <i>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</i>
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-12">
                                                         @foreach ($packages as $package)
@@ -211,7 +215,6 @@
                                                                             <b>
                                                                                 {{ $package->name }}
                                                                             </b><br>
-                                                                            
                                                                             @if ($package->benefits)
                                                                                 @include('partials.modal-hotel-package-benefits', compact('package'))
                                                                             @endif
@@ -221,16 +224,17 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="description-action">
+                                                                        
                                                                         <div class="description-price">
                                                                             <div class="price">{{ "$" . number_format($package->calculated_price) }}</div>
                                                                         </div>
-                                                                        <form action="{{ route('view.order-hotel-package',$package->room->id) }}" method="POST">
+                                                                        {{-- <form action="{{ route('view.order-hotel-package',$package->room->id) }}" method="POST">
                                                                             @csrf
                                                                             <input type="hidden" name="hotel_id" value="{{ $hotel->id }}">
                                                                             <input type="hidden" name="service" value="Hotel Package">
                                                                             <input type="hidden" name="package_id" value="{{ $package->id }}">
                                                                             <button type="submit" class="btn btn-primary w-100"><i class="fa fa-shopping-basket"></i> @lang('messages.Order')</button>
-                                                                        </form>
+                                                                        </form> --}}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -244,13 +248,16 @@
                                     @if ($normalPriceData)
                                         <div class="col-md-12 m-b-18">
                                             <div class="card-box">
-                                                <div class="row">
-                                                    <div class="col-md-12 m-b-18">
-                                                        <div class="subtitle">
-                                                            @lang('messages.Normal Prices')
-                                                        </div>
-                                                        <span>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</span>
+                                                <div class="card-box-title">
+                                                    <div class="subtitle">
+                                                        <i class="icon-copy dw dw-price-tag"> </i>
+                                                        @lang('messages.Normal Prices')
                                                     </div>
+                                                    <div>
+                                                        <i>{{ dateFormat($checkin)." - ".dateFormat($checkout) }} ({{ $duration }} @lang('messages.nights'))</i>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
                                                     <div class="col-md-12">
                                                         @foreach($normalPriceData as $room_normal_price)
                                                             @php
@@ -301,6 +308,13 @@
                                                                                 @lang('messages.Booking code') | ${{ session('bookingcode.discounts') }}
                                                                             </div>
                                                                         @endif
+                                                                        <div class="detail">
+                                                                            @if ($normal_price_rooms->include)
+                                                                                @include('partials.modal-hotel-normal-include', compact("normal_price_rooms"))
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="description-action">
                                                                         <div class="pricelist">
                                                                             @foreach($room_normal_price['normal_prices'] as $normal_r_price)
                                                                                 <div class="p-card-info text-center">
@@ -313,15 +327,12 @@
                                                                                 </div>
                                                                             @endforeach
                                                                         </div>
-                                                                        <div class="detail">
-                                                                            @if ($normal_price_rooms->include)
-                                                                                @include('partials.modal-hotel-normal-include', compact("normal_price_rooms"))
-                                                                            @endif
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="description-action">
                                                                         @if ($room_normal_price['total_kick_b']>0 || $promotion_price)
                                                                             <div class="description-price">
+                                                                                <span>{{ dateFormat($checkin)." - ".dateFormat($checkout) }}</span><br>
+                                                                                <span>
+                                                                                    ({{ $duration }} @lang('messages.nights'))
+                                                                                </span>
                                                                                 <div class="price">
                                                                                     <div class="price-after-discount">{{ currencyFormatUsd($room_normal_price['total_price']) }}</div>
                                                                                 </div>
@@ -330,7 +341,7 @@
                                                                         <div class="description-price">
                                                                             <div class="price">{{ currencyFormatUsd($room_normal_price['total_price'] - $room_normal_price['total_kick_b'] - $promotion_price) }}</div>
                                                                         </div>
-                                                                        <form action="{{ route('view.order-hotel-normal',$room_normal_price['normal_room']->id) }}" method="POST">
+                                                                        {{-- <form action="{{ route('view.order-hotel-normal',$room_normal_price['normal_room']->id) }}" method="POST">
                                                                             @csrf
                                                                             @if ($room_normal_price['total_kick_b'] > 0)
                                                                                 <input type="hidden" name="kick_back" value="{{ $room_normal_price['total_kick_b'] }}">
@@ -353,7 +364,7 @@
                                                                             <input type="hidden" name="hotel_id" value="{{ $hotel->id }}">
                                                                             <input type="hidden" name="room_id" value="{{ $room_normal_price['normal_room']->id }}">
                                                                             <button type="submit" class="btn btn-primary w-100"><i class="fa fa-shopping-basket"></i> @lang('messages.Order')</button>
-                                                                        </form>
+                                                                        </form> --}}
                                                                     </div>
                                                                 </div>
                                                             </div>

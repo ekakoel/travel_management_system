@@ -90,7 +90,7 @@
                 </div>
             @endif
             {{-- BOOKING CODE AND PROMOTION =================================================================================================== --}}
-            <div class="row" id="bookingcode_promotion">
+            {{-- <div class="row" id="bookingcode_promotion">
                 <div class="col-12 promotion-bookingcode">
                     @if (isset($bookingcode->code))
                         <div class="bookingcode-card">
@@ -148,8 +148,8 @@
                         @endif
                     @endif
                 </div>
-            </div>
-            <div class="row">
+            </div> --}}
+            {{-- <div class="row">
                 <div class="col-md-4 mobile">
                     <div class="card-box">
                         <div class="card-box-title">
@@ -172,7 +172,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-md-8">
                     <div class="card-box m-b-18">
                         <div class="card-box-title">
@@ -301,9 +301,9 @@
                                                                         <tr>
                                                                             <th data-priority="1" style="width: 5%;">@lang('messages.No')</th>
                                                                             <th data-priority="3" class="datatable-nosort" style="width: 50%;">@lang('messages.Destination')</th>
-                                                                            <th data-priority="3" class="datatable-nosort" style="width: 15%;">@lang('messages.Duration')</th>
-                                                                            <th data-priority="1" class="datatable-nosort" style="width: 15%;">@lang('messages.Price')</th>
-                                                                            <th data-priority="3" class="datatable-nosort" style="width: 15%;">@lang('messages.Action')</th>
+                                                                            <th data-priority="3" class="datatable-nosort" style="width: 20%;">@lang('messages.Duration')</th>
+                                                                            <th data-priority="1" class="datatable-nosort" style="width: 25%;">@lang('messages.Price')</th>
+                                                                            {{-- <th data-priority="3" class="datatable-nosort" style="width: 15%;">@lang('messages.Action')</th> --}}
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -326,7 +326,7 @@
                                                                                         <p>{{ currencyFormatUsd($price_dr['final_price']) }}</p>
                                                                                     @endif
                                                                                 </td>
-                                                                                <form id="order-transport-{{ $price_dr->id }}" action="/order-transport-{{ $price_dr->id }}" method="POST">
+                                                                                {{-- <form id="order-transport-{{ $price_dr->id }}" action="/order-transport-{{ $price_dr->id }}" method="POST">
                                                                                     @csrf
                                                                                     @if (isset($bookingcode->id))
                                                                                         <input type="hidden" name="bookingcode" value="{{ $bookingcode->code }}">
@@ -334,7 +334,7 @@
                                                                                 </form>
                                                                                 <td>
                                                                                     <button type="submit" form="order-transport-{{ $price_dr->id }}" style="float: right" class="btn btn-primary"><i class="fa fa-shopping-basket"></i> @lang('messages.Order')</button>
-                                                                                </td>
+                                                                                </td> --}}
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
@@ -357,9 +357,9 @@
                                                                         <tr>
                                                                             <th data-priority="1" style="width: 5%;">@lang('messages.No')</th>
                                                                             <th data-priority="1" class="datatable-nosort" style="width: 50%;">@lang('messages.Src') <-> @lang('messages.Dst')</th>
-                                                                            <th data-priority="3" class="datatable-nosort" style="width: 15%;">@lang('messages.Duration')</th>
-                                                                            <th data-priority="1" class="datatable-nosort" style="width: 15%;">@lang('messages.Price')</th>
-                                                                            <th data-priority="3" class="datatable-nosort" style="width: 15%;">@lang('messages.Action')</th>
+                                                                            <th data-priority="3" class="datatable-nosort" style="width: 20%;">@lang('messages.Duration')</th>
+                                                                            <th data-priority="1" class="datatable-nosort" style="width: 25%;">@lang('messages.Price')</th>
+                                                                            {{-- <th data-priority="3" class="datatable-nosort" style="width: 15%;">@lang('messages.Action')</th> --}}
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -382,7 +382,7 @@
                                                                                         <p>{{ currencyFormatUsd($price_as['final_price']) }}</p>
                                                                                     @endif
                                                                                 </td>
-                                                                                <form id="order-transport-{{ $price_as->id }}" action="/order-transport-{{ $price_as->id }}" method="POST">
+                                                                                {{-- <form id="order-transport-{{ $price_as->id }}" action="/order-transport-{{ $price_as->id }}" method="POST">
                                                                                     @csrf
                                                                                     @if (isset($bookingcode->id))
                                                                                         <input type="hidden" name="bookingcode" value="{{ $bookingcode->code }}">
@@ -390,7 +390,7 @@
                                                                                 </form>
                                                                                 <td>
                                                                                     <button type="submit" form="order-transport-{{ $price_as->id }}" style="float: right" class="btn btn-primary"><i class="fa fa-shopping-basket"></i> @lang('messages.Order')</button>
-                                                                                </td>
+                                                                                </td> --}}
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
@@ -466,7 +466,7 @@
                     </div>
                 </div>
                 
-                <div class="col-md-4 desktop">
+                {{-- <div class="col-md-4 desktop">
                     <div class="card-box">
                         <div class="card-box-title">
                             <div class="subtitle"><i class="icon-copy fa fa-qrcode" aria-hidden="true"></i>@lang('messages.Booking Code')</div>
@@ -490,7 +490,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 @if (count($similartransports) > 0)
                     <div class="col-md-12">
                         <div class="card-box">

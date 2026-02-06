@@ -43,7 +43,8 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="card-box">
-                                <form id="updateItinerary" action="{{ route('itineraries.store') }}" method="POST" class="space-y-8">
+                                <form id="updateItinerary" action="{{ route('itineraries.update', $itinerary->id) }}" method="POST" class="space-y-8">
+                                    @method('PUT')
                                     @csrf
                                     <div class="card-box-title">
                                         <div class="title">Create New Itineraries</div>

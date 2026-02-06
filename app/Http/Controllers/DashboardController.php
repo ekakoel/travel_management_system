@@ -30,13 +30,14 @@ class DashboardController extends Controller
         $now = Carbon::now();
         $menus = Cache::remember('services_menus', 3600, function () {
             return Services::where('status', 'Active')
-                ->whereIn('name', ['Weddings', 'Hotels', 'Transports'])
+                ->whereIn('name', ['Tours','Weddings', 'Hotels', 'Transports'])
                 ->get()
                 ->keyBy('name');
         });
         $menu_wedding = $menus->get('Weddings');
         $menu_hotel = $menus->get('Hotels');
         $menu_transport = $menus->get('Transports');
+        $menu_tour = $menus->get('Tours');
         $promotions = Cache::remember('active_promotions', 3600, function () use ($now) {
             return Promotion::select('name', 'discounts', 'periode_start', 'periode_end')
                 ->where('status', 'Active')
@@ -66,7 +67,13 @@ class DashboardController extends Controller
             ->select('cover', 'capacity', 'name', 'code')
             ->where('status', 'Active')
             ->latest()
-            ->limit(4)
+            ->limit(8)
+            ->get();
+        $tours = DB::table('tours')
+            ->select('cover', 'duration_days', 'duration_nights', 'name', 'code')
+            ->where('status', 'Active')
+            ->latest()
+            ->limit(8)
             ->get();
 
         $weddings = Weddings::with(['hotels' => function ($query) {
@@ -84,10 +91,12 @@ class DashboardController extends Controller
             'hotels',
             'weddings',
             'transports',
+            'tours',
             'promotions',
             'menu_wedding',
             'menu_hotel',
-            'menu_transport'
+            'menu_transport',
+            'menu_tour',
         ));
     }
 }
