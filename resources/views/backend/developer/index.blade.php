@@ -35,6 +35,24 @@
                         </div>
                     @endforeach
                 </div>
+                <div class="bg-white rounded-xl shadow p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">
+                            Hotel Price Overview
+                        </h2>
+
+                        <select id="hotelSelect" class="border rounded px-3 py-1 text-sm">
+                            <option value="">Select Hotel</option>
+                            @foreach($hotels as $hotel)
+                                <option value="{{ $hotel->id }}">{{ $hotel->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <canvas id="priceChart" height="90"></canvas>
+                </div>
+
+
                 <div class="info-action">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
@@ -86,4 +104,49 @@
             </div>
         </div>
     @endcan
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        let chart;
+
+        const ctx = document.getElementById('priceChart').getContext('2d');
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Contract Rate',
+                    data: [],
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59,130,246,0.15)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+
+        document.getElementById('hotelSelect').addEventListener('change', function () {
+            let hotelId = this.value;
+
+            if (!hotelId) return;
+
+            fetch(`/dashboard/hotel-price-chart?hotel_id=${hotelId}`)
+                .then(res => res.json())
+                .then(data => {
+                    chart.data.labels = data.months;
+                    chart.data.datasets[0].data = data.values;
+                    chart.update();
+                });
+        });
+    </script>
+
+
 @endsection

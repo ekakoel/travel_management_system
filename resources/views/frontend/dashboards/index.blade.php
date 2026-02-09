@@ -63,7 +63,7 @@
                     </div>
                 @endif
                 <hr class="light-hr">
-                {{-- Transport Section --}}
+                {{-- Tour Package Section --}}
                 @if (isset($menu_tour) && $tours->isNotEmpty())
                     <div class="trans-box">
                         <div class="trans-box-title">

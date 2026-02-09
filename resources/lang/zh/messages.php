@@ -1374,4 +1374,5 @@ return[
     'Tour Area' => '旅遊區域',
     'The order has been successfully updated' => '旅遊區域',
     'Data' => '資料',
+    'Use the Check Price button to view the price of this hotel.' => '請點擊『查看價格』按鈕以查看此飯店的價格。',
 ];

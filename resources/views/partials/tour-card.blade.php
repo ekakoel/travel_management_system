@@ -10,7 +10,7 @@
                 @endif
             </p>
         </div>
-        <a href="{{ route('view.tour-detail',$tour->code) }}">
+        <a href="{{ route('view.tour-detail',$tour->slug) }}">
             <img src="{{ $tour->cover?getThumbnail('/tours/tours-cover/' . $tour->cover,320,200):getThumbnail('images/default.webp',380,200) }}" class="thumbnail-image" loading="lazy">
             <div class="card-detail-title">{{ $tour->name }}</div>
         </a>

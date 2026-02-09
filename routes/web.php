@@ -208,6 +208,8 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             Route::post('/ui-config/update', [UiConfigController::class, 'update'])->name('admin.ui-config.update');
             Route::post('/ui-config/store', [UiConfigController::class, 'store'])->name('admin.ui-config.store');
             Route::delete('/ui-config/delete/{id}', [UiConfigController::class, 'destroy'])->name('admin.ui-config.delete');
+            Route::get('/dashboard/hotel-price-chart', [DashboardController::class, 'hotelPriceChart']);
+
 
             // ---------------------------------------------------
             //                    REGISTER NOTIFICATION

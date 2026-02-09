@@ -1359,4 +1359,5 @@ return[
     'Tour Area' => '旅游区域',
     'The order has been successfully updated' => '旅游区域',
     'Data' => '数据',
+    'Use the Check Price button to view the price of this hotel.' => '请点击『查看价格』按钮以查看该酒店的价格。',
 ];

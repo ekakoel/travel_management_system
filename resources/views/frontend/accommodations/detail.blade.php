@@ -72,10 +72,10 @@
         <div class="row g-5 align-items-center">
             <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.1s">
                 <h2 class="section-title">@lang('messages.Empowering Partners to Deliver Exceptional Travel Experiences.')</h2>
-                <p class="section-subtitle">@lang('messages.Access the booking portal below to reserve services for your clients quickly and efficiently.')</p>
+                <p class="section-subtitle">@lang('messages.Use the Check Price button to view the price of this hotel.')</p>
             </div>
             <div class="col-lg-4 wow fadeInUp text-right" data-wow-delay="0.1s">
-                <a href="{{ route('view.hotel-detail',$hotel->code) }}" class="btn-primary btn-book">@lang('messages.Book as Partner')</a>
+                <a href="{{ route('view.hotel-detail',$hotel->code) }}" class="btn-primary btn-book">@lang('messages.Check Price')</a>
             </div>
         </div>
     </div>

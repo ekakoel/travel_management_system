@@ -1370,4 +1370,5 @@ return [
     'Tour Area' => 'Tour Area',
     'The order has been successfully updated' => 'The order has been successfully updated',
     'Data' => 'Data',
+    'Use the Check Price button to view the price of this hotel.' => 'Use the Check Price button to view the price of this hotel.',
 ];

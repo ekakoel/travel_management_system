@@ -15,8 +15,10 @@ use App\Models\Weddings;
 use App\Models\Attention;
 use App\Models\Activities;
 use App\Models\AdminPanel;
+use App\Models\HotelPrice;
 use App\Models\Transports;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreAdminPanelRequest;
 use App\Http\Requests\UpdateAdminPanelRequest;
 
@@ -81,6 +83,7 @@ class AdminPanelController extends Controller
         $villas_inactive = Villas::where('status','!=','Active')->get();
         $weddings_active = Weddings::where('status','Active')->get();
         $configs = UiConfig::orderBy('page','asc')->get();
+        $hotels = Hotels::orderBy('name')->get();
         return view('backend.developer.index',compact('adminpanel'),[
             'attentions'=>$attentions,
             'usdrates'=>$usdrates,
@@ -113,6 +116,34 @@ class AdminPanelController extends Controller
             'villas_active'=>$villas_active,
             'villas_inactive'=>$villas_inactive,
             'configs'=>$configs,
+            'hotels'=>$hotels,
+        ]);
+    }
+
+    public function hotelPriceChart(Request $request)
+    {
+        $hotelId = $request->hotel_id;
+
+        $prices = HotelPrice::where('hotels_id', $hotelId)
+            ->select(
+                DB::raw('MONTH(start_date) as month'),
+                DB::raw('AVG(contract_rate) as avg_price')
+            )
+            ->groupBy(DB::raw('MONTH(start_date)'))
+            ->orderBy('month')
+            ->get();
+
+        $months = [];
+        $values = [];
+
+        foreach ($prices as $price) {
+            $months[] = Carbon::create()->month($price->start_date)->format('M');
+            $values[] = round($price->contract_rate);
+        }
+
+        return response()->json([
+            'months' => $months,
+            'values' => $values
         ]);
     }
     
