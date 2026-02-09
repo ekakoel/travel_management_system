@@ -70,7 +70,7 @@ class DashboardController extends Controller
             ->limit(8)
             ->get();
         $tours = DB::table('tours')
-            ->select('cover', 'duration_days', 'duration_nights', 'name', 'code')
+            ->select('cover', 'duration_days', 'duration_nights', 'name', 'code','slug')
             ->where('status', 'Active')
             ->latest()
             ->limit(8)
