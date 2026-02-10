@@ -150,6 +150,10 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
         Route::post('/connect', [WhatsAppController::class, 'connect'])->name('wa.connect');
         Route::get('/qr', [WhatsappController::class, 'qr'])->name('wa.qr');
         Route::post('/disconnect', [WhatsappController::class, 'disconnect'])->name('wa.disconnect');
+        Route::post('/reload', [WhatsappController::class, 'reload'])->name('wa.reload');
+    });
+    Route::get('/test-wa', function () {
+        return Http::timeout(5)->get("http://127.0.0.1:3000/status")->json();
     });
     Route::post('/wa/status/update', [WhatsAppController::class, 'updateStatus']);
 
