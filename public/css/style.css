@@ -5119,7 +5119,7 @@ marquee{
     border-bottom: 1px solid #d9d9d9;
     text-transform: uppercase;
     width: auto;
-
+    color: white;
 }
 .card-box-title .title {
   font-size: 1.3rem;
