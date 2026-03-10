@@ -116,6 +116,10 @@ Route::prefix('whatsapp')->middleware('apikey')->group(function () {
     Route::post('/send-both', [WhatsAppController::class, 'send_wa_both']);
 
     Route::post('/status/update', [WhatsAppController::class, 'updateStatus']);
+    Route::get('/ping', [WhatsAppController::class, 'ping']);
+    Route::get('/session', [WhatsAppController::class, 'session']);
+    Route::get('/device', [WhatsAppController::class, 'device']);
+    Route::post('/restart', [WhatsAppController::class, 'restart']);
 
 });
 

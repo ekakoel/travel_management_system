@@ -362,4 +362,88 @@ class WhatsAppController extends Controller
 
         return view('admin.transportmanagement.spks.report_spk', compact('spk', 'now', 'expired_date'));
     }
+
+    public function ping()
+    {
+        try {
+
+            $res = Http::timeout(5)->get($this->base . "/health");
+
+            return response()->json([
+                'ok' => true,
+                'server' => 'running',
+                'data' => $res->json()
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'ok' => false,
+                'server' => 'offline',
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+    }
+    public function session()
+    {
+        try {
+
+            $res = Http::timeout(5)->get($this->base . "/status");
+
+            return response()->json([
+                'ok' => true,
+                'session' => $res->json()
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'ok' => false,
+                'message' => $e->getMessage()
+            ]);
+
+        }
+    }
+    public function device()
+    {
+        try {
+
+            $res = Http::timeout(5)->get($this->base . "/device");
+
+            return response()->json([
+                'ok' => true,
+                'device' => $res->json()
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'ok' => false,
+                'message' => $e->getMessage()
+            ]);
+
+        }
+    }
+    public function restart()
+    {
+        try {
+
+            $res = Http::timeout(10)->post($this->base . "/reload");
+
+            return response()->json([
+                'ok' => true,
+                'message' => 'WhatsApp restarting',
+                'data' => $res->json()
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'ok' => false,
+                'message' => $e->getMessage()
+            ]);
+
+        }
+    }
 }
