@@ -121,6 +121,9 @@ Route::prefix('whatsapp')->middleware('apikey')->group(function () {
     Route::get('/device', [WhatsAppController::class, 'device']);
     Route::post('/restart', [WhatsAppController::class, 'restart']);
 
+    Route::post('/disconnect', [WhatsAppController::class, 'disconnect']);
+    Route::post('/reset', [WhatsAppController::class, 'reset']);
+
 });
 
 // Route::post('/doku/webhook', function (Request $request) {

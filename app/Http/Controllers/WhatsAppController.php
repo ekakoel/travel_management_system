@@ -332,13 +332,35 @@ class WhatsAppController extends Controller
     public function disconnect()
     {
         try {
-            $res = Http::timeout(5)->post($this->base . "/logout");
+
+            $res = Http::timeout(10)->post($this->base . "/logout");
+
             return response()->json($res->json());
+
         } catch (\Exception $e) {
+
             return response()->json([
-                'success' => false,
+                'ok' => false,
                 'message' => $e->getMessage()
             ]);
+
+        }
+    }
+    public function reset()
+    {
+        try {
+
+            $res = Http::timeout(10)->post($this->base . "/reset");
+
+            return response()->json($res->json());
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'ok' => false,
+                'message' => $e->getMessage()
+            ]);
+
         }
     }
 
