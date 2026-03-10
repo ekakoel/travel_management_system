@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\API\V1\DokuWebhookController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WhatsAppController;
+use App\Models\SubmittedReview;
+use App\Models\SubmittedWeddingReview;
+use App\Models\TemporaryReviewLink;
+use App\Models\TemporaryWeddingReviewLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\V1\DokuWebhookController;
-use App\Http\Controllers\ReviewController;
-use App\Models\TemporaryReviewLink;
-use App\Models\SubmittedReview;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -98,6 +101,23 @@ Route::get('/validate-wedding-review-link', function (Request $request) {
 });
 Route::post('/generate-review-link', [ReviewController::class, 'generateReviewLink']);
 Route::post('/generate-wedding-review-link', [ReviewController::class, 'generateWeddingReviewLink']);
+
+Route::prefix('whatsapp')->middleware('apikey')->group(function () {
+
+    Route::get('/status', [WhatsAppController::class, 'status']);
+    Route::get('/qr', [WhatsAppController::class, 'qr']);
+
+    Route::post('/connect', [WhatsAppController::class, 'connect']);
+    Route::post('/disconnect', [WhatsAppController::class, 'disconnect']);
+    Route::post('/reload', [WhatsAppController::class, 'reload']);
+
+    Route::post('/send-driver', [WhatsAppController::class, 'send_wa_driver']);
+    Route::post('/send-operator', [WhatsAppController::class, 'send_wa_operator']);
+    Route::post('/send-both', [WhatsAppController::class, 'send_wa_both']);
+
+    Route::post('/status/update', [WhatsAppController::class, 'updateStatus']);
+
+});
 
 // Route::post('/doku/webhook', function (Request $request) {
 //     // Log request untuk debugging
