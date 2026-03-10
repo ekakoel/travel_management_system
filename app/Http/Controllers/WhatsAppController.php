@@ -14,7 +14,7 @@ class WhatsAppController extends Controller
 
     public function __construct()
     {
-        $this->base = "http://127.0.0.1:3000";
+        $this->base = "127.0.0.1:3000";
     }
 
     // =========================================================
