@@ -1276,11 +1276,30 @@
         window.initMap = initMap;
     </script>
     <script>
+        const waApiBase = "{{ url('/api/whatsapp') }}";
+        const waApiKey = "{{ env('WA_API_KEY') }}";
+
+        function waRequest(method, path, data, onSuccess) {
+            return $.ajax({
+                url: waApiBase + path,
+                type: method,
+                data: data || {},
+                headers: { "X-API-KEY": waApiKey },
+                success: onSuccess,
+                error: function (xhr) {
+                    const msg = xhr.status === 401 ? "Unauthorized (API key salah)" : (xhr.responseJSON?.message || "Request gagal");
+                    $("#wa-status").html(`<span class="badge badge-danger">Error</span>`);
+                    $("#wa-status-box").html(`<div class="alert alert-danger">${msg}</div>`);
+                }
+            });
+        }
+
         function loadStatus() {
             $("#wa-status").html(`<span class="badge badge-info">Checking...</span>`);
 
-            $.get("{{ route('wa.status') }}", function(res) {
+            waRequest("GET", "/status", null, function (res) {
                 let html = "";
+                const number = res.number || res.phone || "-";
 
                 if (res.connected) {
                     $("#wa-status").html(`<span class="badge badge-success">Connected</span>`);
@@ -1288,7 +1307,7 @@
                     html = `
                         <div class="alert alert-success">
                             Status: ${res.status || ''}<br>
-                            Nomor: +${res.number || '-'}
+                            Nomor: +${number}
                         </div>
                     `;
 
@@ -1318,7 +1337,7 @@
             $("#wa-qrcode").html("Loading QR...");
             $("#waModal").modal("show");
 
-            $.get("{{ route('wa.qr') }}", function(res) {
+            waRequest("GET", "/qr", null, function (res) {
                 if (res.qr) {
                     $("#wa-qrcode").html(`<img src="${res.qr}" style="width: 260px;">`);
                 } else {
@@ -1329,13 +1348,13 @@
 
         // Klik tombol disconnect
         $("#btnDisconnectWA").click(function () {
-            $.post("{{ route('wa.disconnect') }}", {_token: '{{ csrf_token() }}' }, function() {
+            waRequest("POST", "/disconnect", {}, function () {
                 loadStatus();
             });
         });
 
         // Klik Refresh
-        $("#btnRefreshWA").click(function() {
+        $("#btnRefreshWA").click(function () {
             loadStatus();
         });
 
