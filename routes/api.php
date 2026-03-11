@@ -101,7 +101,6 @@ Route::get('/validate-wedding-review-link', function (Request $request) {
 });
 Route::post('/generate-review-link', [ReviewController::class, 'generateReviewLink']);
 Route::post('/generate-wedding-review-link', [ReviewController::class, 'generateWeddingReviewLink']);
-
 Route::prefix('whatsapp')->middleware('apikey')->group(function () {
 
     Route::get('/status', [WhatsAppController::class, 'status']);
@@ -126,81 +125,3 @@ Route::prefix('whatsapp')->middleware('apikey')->group(function () {
     Route::post('/reset', [WhatsAppController::class, 'reset']);
 
 });
-
-// Route::post('/doku/webhook', function (Request $request) {
-//     // Log request untuk debugging
-//     Log::info('DOKU Webhook Data:', $request->all());
-
-//     // Ambil data dari request
-//     $status = $request->input('transaction.status'); // Status transaksi
-//     $invoice_number = $request->input('order.invoice_number'); // ID pesanan
-//     $invoice = InvoiceAdmin::where('inv_no',$invoice_number)->first();
-//     // Cari pesanan berdasarkan invoice_number
-//     $order = Orders::where('rsv_id', $invoice->rsv_id)->first();
-//     $doku_va = DokuVirtualAccount::where('invoice_id',$invoice->id)->first();
-//     if (!$order) {
-//         return response()->json(['message' => 'Order not found'], 404);
-//     }
-
-//     // Perbarui status pesanan berdasarkan status dari DOKU
-//     if ($status === 'SUCCESS') {
-//         $order->status = 'Paid'; // Pesanan berhasil dibayar
-//         $doku_va->status = 'Paid'; // Pesanan berhasil dibayar
-//     } elseif ($status === 'FAILED' || $status === 'EXPIRED') {
-//         $order->status = 'Approved'; // Pembayaran gagal atau kedaluwarsa
-//         $doku_va->status = 'Pending'; // Pembayaran gagal atau kedaluwarsa
-//     } else {
-//         $order->status = 'Approved'; // Status lain
-//         $doku_va->status = 'Pending'; // Pembayaran gagal atau kedaluwarsa
-//     }
-//     $order->save();
-//     $doku_va->save();
-//     return response()->json(['message' => 'Order status updated']);
-// });
-
-// Route::post('/doku/webhook', function (Request $request) {
-//     // Log seluruh request dari DOKU
-//     Log::info('DOKU Webhook Data:', $request->all());
-
-//     // Ambil data dari request
-//     $status = $request->input('transaction.status'); // Status transaksi
-//     $invoice_number = $request->input('order.invoice_number'); // ID pesanan
-//     $amount = $request->input('order.amount'); // Jumlah pembayaran
-
-//     // Cek apakah invoice_number ada
-//     if (!$invoice_number) {
-//         Log::error('Invoice Number is missing');
-//         return response()->json(['message' => 'Invoice Number is missing'], 400);
-//     }
-
-//     // Cari invoice berdasarkan invoice_number
-//     $invoice = InvoiceAdmin::where('inv_no', $invoice_number)->first();
-//     if (!$invoice) {
-//         Log::error('Invoice not found', ['invoice_number' => $invoice_number]);
-//         return response()->json(['message' => 'Invoice not found'], 404);
-//     }
-
-//     // Cari pesanan berdasarkan rsv_id dari invoice
-//     $order = Orders::where('rsv_id', $invoice->rsv_id)->first();
-//     if (!$order) {
-//         Log::error('Order not found', ['rsv_id' => $invoice->rsv_id]);
-//         return response()->json(['message' => 'Order not found'], 404);
-//     }
-//     if ($status === 'SUCCESS') {
-//         $order->status = 'Paid'; // Pesanan berhasil dibayar
-//         $doku_va->status = 'Paid'; // Pesanan berhasil dibayar
-//     } elseif ($status === 'FAILED' || $status === 'EXPIRED') {
-//         $order->status = 'Approved'; // Pembayaran gagal atau kedaluwarsa
-//         $doku_va->status = 'Pending'; // Pembayaran gagal atau kedaluwarsa
-//     } else {
-//         $order->status = 'Approved'; // Status lain
-//         $doku_va->status = 'Pending'; // Pembayaran gagal atau kedaluwarsa
-//     }
-//     $order->save();
-//     $doku_va->save();
-//     // Update status pesanan berdasarkan status transaksi dari DOKU
-
-//     Log::info('Order Updated', ['order_id' => $order->id, 'status' => $order->status]);
-
-//     return response()->json(['message' => 'Order status updated']);
-// });

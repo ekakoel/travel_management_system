@@ -353,7 +353,11 @@ class WhatsAppController extends Controller
     {
         try {
 
-            $res = Http::timeout(10)->post($this->base . "/logout");
+            $res = Http::timeout(10)->post($this->base . "/disconnect");
+            if ($res->failed()) {
+                // Fallback for servers that expose /logout instead of /disconnect
+                $res = Http::timeout(10)->post($this->base . "/logout");
+            }
 
             return response()->json($res->json());
 
