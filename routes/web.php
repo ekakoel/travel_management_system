@@ -159,13 +159,14 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     //     Route::post('/wa/send-driver', [WhatsAppController::class, 'send_wa_driver']);
     //     Route::post('/wa/send-operator', [WhatsAppController::class, 'send_wa_operator']);
     // });
-    // Route::prefix('whatsapp')->group(function () {
-    //     Route::get('/status', [WhatsappController::class, 'status'])->name('wa.status');
-    //     Route::post('/connect', [WhatsAppController::class, 'connect'])->name('wa.connect');
-    //     Route::get('/qr', [WhatsappController::class, 'qr'])->name('wa.qr');
-    //     Route::post('/disconnect', [WhatsappController::class, 'disconnect'])->name('wa.disconnect');
-    //     Route::post('/reload', [WhatsappController::class, 'reload'])->name('wa.reload');
-    // });
+    Route::prefix('whatsapp')->group(function () {
+        Route::get('/status', [WhatsAppController::class, 'status'])->name('wa.status');
+        Route::post('/connect', [WhatsAppController::class, 'connect'])->name('wa.connect');
+        Route::get('/qr', [WhatsAppController::class, 'qr'])->name('wa.qr');
+        Route::post('/disconnect', [WhatsAppController::class, 'disconnect'])->name('wa.disconnect');
+        Route::post('/restart', [WhatsAppController::class, 'restart'])->name('wa.restart');
+        Route::post('/reset', [WhatsAppController::class, 'reset'])->name('wa.reset');
+    });
     // Route::get('/test-wa', function () {
     //     return Http::timeout(5)->get("http://127.0.0.1:3000/status")->json();
     // });
