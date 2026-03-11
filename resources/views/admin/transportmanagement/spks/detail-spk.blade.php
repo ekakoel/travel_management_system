@@ -1276,18 +1276,20 @@
         window.initMap = initMap;
     </script>
     <script>
-        const waApiBase = "{{ url('/api/whatsapp') }}";
-        const waApiKey = "{{ env('WA_API_KEY') }}";
+        const waRoutes = {
+            status: "{{ route('wa.status') }}",
+            qr: "{{ route('wa.qr') }}",
+            disconnect: "{{ route('wa.disconnect') }}"
+        };
 
-        function waRequest(method, path, data, onSuccess) {
+        function waRequest(method, url, data, onSuccess) {
             return $.ajax({
-                url: waApiBase + path,
+                url: url,
                 type: method,
                 data: data || {},
-                headers: { "X-API-KEY": waApiKey },
                 success: onSuccess,
                 error: function (xhr) {
-                    const msg = xhr.status === 401 ? "Unauthorized (API key salah)" : (xhr.responseJSON?.message || "Request gagal");
+                    const msg = xhr.responseJSON?.message || "Request gagal";
                     $("#wa-status").html(`<span class="badge badge-danger">Error</span>`);
                     $("#wa-status-box").html(`<div class="alert alert-danger">${msg}</div>`);
                 }
@@ -1297,7 +1299,7 @@
         function loadStatus() {
             $("#wa-status").html(`<span class="badge badge-info">Checking...</span>`);
 
-            waRequest("GET", "/status", null, function (res) {
+            waRequest("GET", waRoutes.status, null, function (res) {
                 let html = "";
                 const number = res.number || res.phone || "-";
 
@@ -1337,7 +1339,7 @@
             $("#wa-qrcode").html("Loading QR...");
             $("#waModal").modal("show");
 
-            waRequest("GET", "/qr", null, function (res) {
+            waRequest("GET", waRoutes.qr, null, function (res) {
                 if (res.qr) {
                     $("#wa-qrcode").html(`<img src="${res.qr}" style="width: 260px;">`);
                 } else {
@@ -1348,7 +1350,7 @@
 
         // Klik tombol disconnect
         $("#btnDisconnectWA").click(function () {
-            waRequest("POST", "/disconnect", {}, function () {
+            waRequest("POST", waRoutes.disconnect, { _token: "{{ csrf_token() }}" }, function () {
                 loadStatus();
             });
         });

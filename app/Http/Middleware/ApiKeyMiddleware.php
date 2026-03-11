@@ -15,7 +15,8 @@ class ApiKeyMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ($request->header('X-API-KEY') !== env('WA_API_KEY')) {
+        $expectedKey = config('services.whatsapp.api_key', env('WA_API_KEY'));
+        if (!$expectedKey || $request->header('X-API-KEY') !== $expectedKey) {
             return response()->json([
                 'error' => 'Unauthorized'
             ], 401);

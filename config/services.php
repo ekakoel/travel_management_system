@@ -39,6 +39,8 @@ return [
     
     'whatsapp' => [
         'url' => env('WA_SERVER_URL', 'http://127.0.0.1/send-message'),
+        'bot_url' => env('WHATSAPP_BOT_URL', 'http://127.0.0.1:3000'),
+        'api_key' => env('WA_API_KEY'),
     ],
     // 'doku' => [
     //     'client_id' => env('DOKU_CLIENT_ID', 'BRN-0224-1653983386996'),

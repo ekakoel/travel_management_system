@@ -14,7 +14,7 @@ class WhatsAppController extends Controller
 
     public function __construct()
     {
-        $this->base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1:3000'), '/');
+        $this->base = rtrim(config('services.whatsapp.bot_url', env('WHATSAPP_BOT_URL', 'http://127.0.0.1:3000')), '/');
     }
 
     // =========================================================
