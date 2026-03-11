@@ -97,6 +97,38 @@ Follow these instructions to get a copy of the project up and running on your lo
     ```
 2.  Your application should now be running at `http://127.0.0.1:8000`.
 
+## WhatsApp API
+
+This project can proxy and control a local WhatsApp bot server. Configure these in `.env`:
+```env
+WHATSAPP_BOT_URL=http://127.0.0.1:3000
+WA_API_KEY=your-secret-key
+```
+
+All WhatsApp endpoints are under `POST /api/whatsapp/*` and protected by `X-API-KEY`.
+
+Example send:
+```bash
+curl -X POST http://127.0.0.1:8000/api/whatsapp/send \
+  -H "X-API-KEY: your-secret-key" \
+  -H "Content-Type: application/json" \
+  -d "{\"phone\":\"08123456789\",\"message\":\"Hello\"}"
+```
+
+Other endpoints:
+```text
+GET  /api/whatsapp/status
+GET  /api/whatsapp/qr
+POST /api/whatsapp/connect
+POST /api/whatsapp/disconnect
+POST /api/whatsapp/reload
+POST /api/whatsapp/restart
+POST /api/whatsapp/reset
+POST /api/whatsapp/send-driver
+POST /api/whatsapp/send-operator
+POST /api/whatsapp/send-both
+```
+
 ## ✅ Testing
 
 To run the PHPUnit test suite, execute the following command:

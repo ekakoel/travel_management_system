@@ -14,7 +14,7 @@ class WhatsAppController extends Controller
 
     public function __construct()
     {
-        $this->base = "127.0.0.1:3000";
+        $this->base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1:3000'), '/');
     }
 
     // =========================================================
@@ -33,6 +33,26 @@ class WhatsAppController extends Controller
         }
 
         return $number;
+    }
+
+    // =========================================================
+    // ✅ GENERIC SEND (ANY MESSAGE)
+    // =========================================================
+    public function send(Request $request)
+    {
+        $validated = $request->validate([
+            'phone' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        $wa = new WhatsappService();
+        $result = $wa->send($validated['phone'], $validated['message']);
+
+        return response()->json([
+            'success' => $result && ($result['ok'] ?? false),
+            'message' => ($result && ($result['ok'] ?? false)) ? 'Pesan berhasil dikirim' : 'Gagal mengirim pesan',
+            'data' => $result,
+        ]);
     }
 
     // =========================================================

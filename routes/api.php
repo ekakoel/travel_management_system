@@ -111,6 +111,7 @@ Route::prefix('whatsapp')->middleware('apikey')->group(function () {
     Route::post('/disconnect', [WhatsAppController::class, 'disconnect']);
     Route::post('/reload', [WhatsAppController::class, 'reload']);
 
+    Route::post('/send', [WhatsAppController::class, 'send']);
     Route::post('/send-driver', [WhatsAppController::class, 'send_wa_driver']);
     Route::post('/send-operator', [WhatsAppController::class, 'send_wa_operator']);
     Route::post('/send-both', [WhatsAppController::class, 'send_wa_both']);

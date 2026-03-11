@@ -11,7 +11,7 @@ class WhatsappService
 
     public function __construct()
     {
-       $this->endpoint = rtrim(env('WHATSAPP_BOT_URL'), '/');
+        $this->base = rtrim(env('WHATSAPP_BOT_URL', 'http://127.0.0.1:3000'), '/');
     }
     /**
      * Send message via Node bot.
@@ -26,10 +26,10 @@ class WhatsappService
             ];
 
             // Kirim ke /send
-            $response = Http::timeout(10)->post($this->endpoint . '/send', $payload);
+            $response = Http::timeout(10)->post($this->base . '/send', $payload);
 
             Log::info('WA Send Response', [
-                'endpoint' => $this->base.'/send',
+                'endpoint' => $this->base . '/send',
                 'payload' => $payload,
                 'status' => $response->status(),
                 'body' => $response->body(),
