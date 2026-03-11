@@ -1328,6 +1328,17 @@
 
                     $("#btnConnectWA").show();
                     $("#btnDisconnectWA").hide();
+
+                    // Auto load QR when not connected
+                    $("#wa-qrcode").html("Loading QR...");
+                    $("#waModal").modal("show");
+                    waRequest("GET", waRoutes.qr, null, function (qrRes) {
+                        if (qrRes.qr) {
+                            $("#wa-qrcode").html(`<img src="${qrRes.qr}" style="width: 260px;">`);
+                        } else {
+                            $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
+                        }
+                    });
                 }
 
                 $("#wa-status-box").html(html);
