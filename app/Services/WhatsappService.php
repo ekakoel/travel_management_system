@@ -17,16 +17,49 @@ class WhatsappService
      * Send message via Node bot.
      * phone: any format (will be normalized)
      */
+    // public function send(string $phone, string $message)
+    // {
+    //     try {
+    //         $payload = [
+    //             'phone' => $this->formatPhone($phone),
+    //             'message' => $message,
+    //         ];
+
+    //         // Kirim ke /send
+    //         $response = Http::timeout(10)->post($this->base . '/send', $payload);
+
+    //         Log::info('WA Send Response', [
+    //             'endpoint' => $this->base . '/send',
+    //             'payload' => $payload,
+    //             'status' => $response->status(),
+    //             'body' => $response->body(),
+    //         ]);
+
+    //         return $response->json();
+    //     } catch (\Exception $e) {
+    //         Log::error('WA Send Failed', [
+    //             'error' => $e->getMessage(),
+    //             'phone' => $phone,
+    //             'message' => $message,
+    //         ]);
+    //         return ['ok' => false, 'error' => $e->getMessage()];
+    //     }
+    // }
     public function send(string $phone, string $message)
     {
         try {
+
             $payload = [
                 'phone' => $this->formatPhone($phone),
                 'message' => $message,
             ];
 
-            // Kirim ke /send
-            $response = Http::timeout(10)->post($this->base . '/send', $payload);
+            $response = Http::timeout(15)
+                ->withHeaders([
+                    'x-api-key' => env('WHATSAPP_API_KEY', 'BALIKAMI_SECRET_KEY'),
+                    'Accept' => 'application/json'
+                ])
+                ->post($this->base . '/send', $payload);
 
             Log::info('WA Send Response', [
                 'endpoint' => $this->base . '/send',
@@ -36,12 +69,14 @@ class WhatsappService
             ]);
 
             return $response->json();
+
         } catch (\Exception $e) {
+
             Log::error('WA Send Failed', [
                 'error' => $e->getMessage(),
                 'phone' => $phone,
-                'message' => $message,
             ]);
+
             return ['ok' => false, 'error' => $e->getMessage()];
         }
     }
@@ -75,7 +110,7 @@ class WhatsappService
         $p = preg_replace('/[^0-9]/', '', $phone);
         if ($p === '') return $phone;
         if (substr($p,0,1) === '0') $p = '62'.substr($p,1);
-        return $p.'@c.us';
+        return $p;
     }
 
     /* -------------------------

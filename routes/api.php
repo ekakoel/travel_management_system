@@ -101,27 +101,23 @@ Route::get('/validate-wedding-review-link', function (Request $request) {
 });
 Route::post('/generate-review-link', [ReviewController::class, 'generateReviewLink']);
 Route::post('/generate-wedding-review-link', [ReviewController::class, 'generateWeddingReviewLink']);
-Route::prefix('whatsapp')->middleware('apikey')->group(function () {
 
+// API WHATSAPP SERVER
+Route::prefix('whatsapp')->middleware('apikey')->group(function () {
     Route::get('/status', [WhatsAppController::class, 'status']);
     Route::get('/qr', [WhatsAppController::class, 'qr']);
-
     Route::post('/connect', [WhatsAppController::class, 'connect']);
     Route::post('/disconnect', [WhatsAppController::class, 'disconnect']);
     Route::post('/reload', [WhatsAppController::class, 'reload']);
-
     Route::post('/send', [WhatsAppController::class, 'send']);
     Route::post('/send-driver', [WhatsAppController::class, 'send_wa_driver']);
     Route::post('/send-operator', [WhatsAppController::class, 'send_wa_operator']);
     Route::post('/send-both', [WhatsAppController::class, 'send_wa_both']);
-
     Route::post('/status/update', [WhatsAppController::class, 'updateStatus']);
     Route::get('/ping', [WhatsAppController::class, 'ping']);
     Route::get('/session', [WhatsAppController::class, 'session']);
     Route::get('/device', [WhatsAppController::class, 'device']);
     Route::post('/restart', [WhatsAppController::class, 'restart']);
-
     Route::post('/disconnect', [WhatsAppController::class, 'disconnect']);
     Route::post('/reset', [WhatsAppController::class, 'reset']);
-
 });
