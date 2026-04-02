@@ -1346,17 +1346,50 @@
         }
 
         // Klik tombol connect (tampilkan QR)
+        // $("#btnConnectWA").click(function () {
+        //     $("#wa-qrcode").html("Loading QR...");
+        //     $("#waModal").modal("show");
+
+        //     waRequest("GET", waRoutes.qr, null, function (res) {
+        //         if (res.qr) {
+        //             $("#wa-qrcode").html(`<img src="${res.qr}" style="width: 260px;">`);
+        //         } else {
+        //             $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
+        //         }
+        //     });
+        // });
+        let qrInterval = null;
+
         $("#btnConnectWA").click(function () {
+
             $("#wa-qrcode").html("Loading QR...");
             $("#waModal").modal("show");
 
-            waRequest("GET", waRoutes.qr, null, function (res) {
-                if (res.qr) {
-                    $("#wa-qrcode").html(`<img src="${res.qr}" style="width: 260px;">`);
-                } else {
-                    $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
-                }
-            });
+            // clear interval lama kalau ada
+            if (qrInterval) clearInterval(qrInterval);
+
+            qrInterval = setInterval(function () {
+
+                waRequest("GET", waRoutes.qr, null, function (res) {
+
+                    if (res.qr) {
+
+                        $("#wa-qrcode").html(
+                            `<img src="${res.qr}" style="width:260px;">`
+                        );
+
+                    } else {
+
+                        $("#wa-qrcode").html(
+                            `<p class="text-warning">Menunggu QR...</p>`
+                        );
+
+                    }
+
+                });
+
+            }, 2000); // tiap 2 detik
+
         });
 
         // Klik tombol disconnect
