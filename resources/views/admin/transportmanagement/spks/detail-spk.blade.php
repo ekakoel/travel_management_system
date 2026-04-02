@@ -1296,25 +1296,73 @@
             });
         }
 
+        // function loadStatus() {
+        //     $("#wa-status").html(`<span class="badge badge-info">Checking...</span>`);
+
+        //     waRequest("GET", waRoutes.status, null, function (res) {
+        //         let html = "";
+        //         const number = res.number || res.phone || "-";
+
+        //         if (res.ready) {
+        //             $("#wa-status").html(`<span class="badge badge-success">Connected</span>`);
+
+        //             html = `
+        //                 <div class="alert alert-success">
+        //                     Status: ${res.status || ''}<br>
+        //                     Nomor: +${number}
+        //                 </div>
+        //             `;
+
+        //             $("#btnConnectWA").hide();
+        //             $("#btnDisconnectWA").show();
+
+        //         } else {
+        //             $("#wa-status").html(`<span class="badge badge-danger">Not Connected</span>`);
+
+        //             html = `
+        //                 <div class="alert alert-danger">
+        //                     ✖ Tidak Terhubung<br>
+        //                     Pesan: ${res.message || 'Unknown Error'}
+        //                 </div>
+        //             `;
+
+        //             $("#btnConnectWA").show();
+        //             $("#btnDisconnectWA").hide();
+
+        //             // Auto load QR when not connected
+        //             $("#wa-qrcode").html("Loading QR...");
+        //             $("#waModal").modal("show");
+        //             waRequest("GET", waRoutes.qr, null, function (qrRes) {
+        //                 if (qrRes.qr) {
+        //                     $("#wa-qrcode").html(`<img src="${qrRes.qr}" style="width: 260px;">`);
+        //                 } else {
+        //                     $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
+        //                 }
+        //             });
+        //         }
+
+        //         $("#wa-status-box").html(html);
+        //     });
+        // }
         function loadStatus() {
             $("#wa-status").html(`<span class="badge badge-info">Checking...</span>`);
 
             waRequest("GET", waRoutes.status, null, function (res) {
                 let html = "";
-                const number = res.number || res.phone || "-";
 
-                if (res.connected) {
+                if (res.ready) {
                     $("#wa-status").html(`<span class="badge badge-success">Connected</span>`);
 
                     html = `
                         <div class="alert alert-success">
-                            Status: ${res.status || ''}<br>
-                            Nomor: +${number}
+                            Status: READY<br>
+                            WhatsApp terhubung
                         </div>
                     `;
 
                     $("#btnConnectWA").hide();
                     $("#btnDisconnectWA").show();
+                    $("#waModal").modal("hide");
 
                 } else {
                     $("#wa-status").html(`<span class="badge badge-danger">Not Connected</span>`);
@@ -1322,21 +1370,21 @@
                     html = `
                         <div class="alert alert-danger">
                             ✖ Tidak Terhubung<br>
-                            Pesan: ${res.message || 'Unknown Error'}
+                            Status: ${res.state || 'Belum siap'}
                         </div>
                     `;
 
                     $("#btnConnectWA").show();
                     $("#btnDisconnectWA").hide();
 
-                    // Auto load QR when not connected
                     $("#wa-qrcode").html("Loading QR...");
                     $("#waModal").modal("show");
+
                     waRequest("GET", waRoutes.qr, null, function (qrRes) {
                         if (qrRes.qr) {
                             $("#wa-qrcode").html(`<img src="${qrRes.qr}" style="width: 260px;">`);
                         } else {
-                            $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
+                            $("#wa-qrcode").html(`<p class="text-warning">Menunggu QR...</p>`);
                         }
                     });
                 }
@@ -1345,19 +1393,6 @@
             });
         }
 
-        // Klik tombol connect (tampilkan QR)
-        // $("#btnConnectWA").click(function () {
-        //     $("#wa-qrcode").html("Loading QR...");
-        //     $("#waModal").modal("show");
-
-        //     waRequest("GET", waRoutes.qr, null, function (res) {
-        //         if (res.qr) {
-        //             $("#wa-qrcode").html(`<img src="${res.qr}" style="width: 260px;">`);
-        //         } else {
-        //             $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
-        //         }
-        //     });
-        // });
         let qrInterval = null;
 
         $("#btnConnectWA").click(function () {
@@ -1388,7 +1423,7 @@
 
                 });
 
-            }, 2000); // tiap 2 detik
+            }, 5000); // tiap 2 detik
 
         });
 
