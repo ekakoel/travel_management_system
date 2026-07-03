@@ -13,6 +13,10 @@ class CreateProductTagPivotTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('product_tag')) {
+            return;
+        }
+
         Schema::create('product_tag', function (Blueprint $table) {
             $table->bigInteger('product_id');
             $table->bigInteger('tag_id');

@@ -8,6 +8,10 @@ class CreatePromotionsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('promotions')) {
+            return;
+        }
+
         Schema::create('promotions', function (Blueprint $table) {
             $table->id();
             $table->string('cover')->nullable();

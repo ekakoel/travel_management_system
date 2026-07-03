@@ -13,6 +13,10 @@ class CreatePartnersTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('partners')) {
+            return;
+        }
+
         Schema::create('partners', function (Blueprint $table) {
             $table->id();
             $table->string('name');

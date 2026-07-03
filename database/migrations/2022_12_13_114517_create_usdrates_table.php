@@ -8,6 +8,10 @@ class CreateUsdRatesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('usd_rates')) {
+            return;
+        }
+
         Schema::create('usd_rates', function (Blueprint $table) {
             $table->id();
             $table->string('name');

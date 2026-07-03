@@ -8,14 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('destinations')) {
+            return;
+        }
+
         Schema::create('destinations', function (Blueprint $table) {
             $table->id();
             $table->string('area',125);
             $table->string('area_traditional',125)->nullable();
             $table->string('area_simplified',125)->nullable();
             $table->string('coverage_area',125)->nullable();
-            $table->integer('airport_duration',11)->nullable();
-            $table->integer('airport_distance',11)->nullable();
+            $table->integer('airport_duration')->nullable();
+            $table->integer('airport_distance')->nullable();
             $table->timestamps();
         });
     }

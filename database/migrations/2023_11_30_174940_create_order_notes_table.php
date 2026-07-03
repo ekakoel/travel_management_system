@@ -13,6 +13,10 @@ class CreateOrderNotesTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('order_notes')) {
+            return;
+        }
+
         Schema::create('order_notes', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id')->nullable();

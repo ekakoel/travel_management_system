@@ -13,6 +13,10 @@ class CreateDriversTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('drivers')) {
+            return;
+        }
+
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
             $table->integer('rsv_id')->nullable();

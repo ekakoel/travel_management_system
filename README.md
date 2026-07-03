@@ -1,8 +1,26 @@
 # Travel Management System
 
+See [docs/project-understanding-rules.md](docs/project-understanding-rules.md) for the mandatory project understanding rules that must be followed before any AI agent or developer makes changes in this repository.
+See [docs/blade-asset-rules.md](docs/blade-asset-rules.md) for the mandatory Blade, CSS, and JavaScript separation rules used in this repository.
+See [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md) for the mandatory frontend UI consistency rules used in this repository.
+See [docs/frontend-roadmap.md](docs/frontend-roadmap.md) for the mandatory frontend roadmap and change log that must be updated on every frontend change.
+See [docs/frontend-roadmap-entry-template.md](docs/frontend-roadmap-entry-template.md) for the ready-to-copy roadmap entry template used for frontend work.
+
 This repository contains the source code for a comprehensive Travel Management System, a web application designed to streamline the management of tours, bookings, and customer relations for a travel agency.
 
 The application features a robust admin panel for managing tours, orders, users, and other site content, alongside a customer-facing interface for browsing and booking tour packages.
+
+## Mandatory Working Rule
+
+Before making any code change, adjustment, refactor, or debugging step in this project, every AI agent and developer must first understand the relevant system flow thoroughly, especially:
+
+- route structure
+- route groups and middleware layers
+- auth, approval, and profile completeness flow
+- controller to view flow
+- redirect and canonical URL behavior
+
+Do not implement changes based on a single file in isolation. Read [docs/project-understanding-rules.md](docs/project-understanding-rules.md) first and treat it as mandatory.
 
 ## ✨ Features
 

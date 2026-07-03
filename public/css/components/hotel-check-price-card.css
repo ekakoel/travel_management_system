@@ -1,0 +1,83 @@
+.hotel-check-card {
+    overflow: hidden;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.hotel-check-card .card-box-title {
+    padding: 1.1rem 1.25rem 0.5rem;
+    border-bottom: 0;
+    border-radius: 8px;
+}
+
+.hotel-check-card .card-box-body {
+    padding: 0;
+    background: transparent;
+}
+
+.hotel-check-card .card-box-footer {
+    background: transparent;
+    border-top: 0;
+    border: none;
+    padding: 0;
+}
+
+.hotel-check-kicker {
+    margin-bottom: 0.75rem;
+    padding: 0.4rem 0.75rem;
+    background: #eef6ff;
+}
+
+.hotel-check-heading {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.hotel-check-subheading {
+    margin: 0.35rem 0 0;
+}
+
+.hotel-check-meta {
+    margin: 1rem 0;
+}
+
+.hotel-check-meta-item {
+    padding: 0.85rem 0.95rem;
+    background: #fff;
+}
+
+.hotel-check-meta-value {
+    display: block;
+}
+
+.hotel-check-form-group label {
+    margin-bottom: 0.45rem;
+    font-size: 0.83rem;
+}
+
+.hotel-check-form-group .input-group-icon {
+    margin-bottom: 0;
+}
+
+.hotel-check-form-group .icon-copy {
+    color: #0f5fa8;
+}
+
+.hotel-check-card .btn-primary {
+    width: 100%;
+}
+
+.daterangepicker {
+    z-index: 2000 !important;
+}
+
+.hotel-check-note {
+    margin: 0.8rem 0 0;
+    padding: 8px 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 767.98px) {
+    .hotel-check-meta {
+        grid-template-columns: 1fr;
+    }
+}

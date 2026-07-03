@@ -17,8 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrap();
-        config(['app.locale' => 'en']);
-	    Carbon::setLocale('en');
+        Carbon::setLocale(config('app.locale'));
 
         Blade::directive('uiEnabled', function ($name) {
             return "<?php 

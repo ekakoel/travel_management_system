@@ -1,0 +1,437 @@
+.frontend-surface-card,
+.hotel-booking-layout .card-box,
+.availability-section,
+.availability-empty,
+.accommodation-section,
+.accommodation-cta,
+.hotel-check-card {
+    border: 1px solid var(--frontend-shell-border);
+    border-radius: var(--frontend-shell-radius-lg);
+    background: var(--frontend-shell-surface);
+    box-shadow: var(--frontend-shell-shadow-lg);
+    backdrop-filter: blur(10px);
+}
+
+.availability-hero,
+.frontend-availability-family-hero,
+.hotel-booking-hero,
+.accommodation-hero {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    gap: 1.75rem;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+    padding: var(--frontend-shell-panel-padding);
+    overflow: hidden;
+    border: 1px solid var(--frontend-shell-border-strong);
+    border-radius: var(--frontend-shell-radius-lg);
+    box-shadow: var(--frontend-shell-shadow-xl);
+}
+
+.accommodation-hero {
+    grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+}
+
+.availability-hero--merged,
+.frontend-availability-family-hero--merged {
+    margin-top: 1.75rem;
+    margin-bottom: 0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--frontend-shell-shadow-topband);
+}
+
+.availability-hero__media img,
+.hotel-booking-hero__media img,
+.accommodation-hero__media img {
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    object-fit: cover;
+    border-radius: var(--frontend-shell-radius-md);
+}
+
+.accommodation-hero__media img {
+    min-height: 320px;
+}
+
+.availability-hero__content,
+.hotel-booking-hero__content,
+.accommodation-hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.45rem;
+}
+
+.availability-hero--merged .availability-title,
+.availability-hero--merged .availability-subtitle,
+.availability-hero--merged .availability-description,
+.availability-hero--merged .availability-meta__item strong,
+.frontend-availability-family-hero--merged .hotel-booking-hero__title,
+.frontend-availability-family-hero--merged .hotel-booking-hero__text,
+.frontend-availability-family-hero--merged .hotel-booking-meta__item strong,
+.frontend-availability-family-hero--merged .hotel-booking-offer-note {
+    color: #fff;
+}
+
+.availability-hero--merged .availability-kicker,
+.frontend-availability-family-hero--merged .hotel-booking-kicker {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+.availability-hero--merged .availability-subtitle,
+.availability-hero--merged .availability-description,
+.frontend-availability-family-hero--merged .hotel-booking-hero__text,
+.frontend-availability-family-hero--merged .hotel-booking-meta__item span {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.availability-description,
+.frontend-availability-family-description {
+    margin: 1rem 0 0;
+    color: var(--frontend-shell-muted);
+    font-size: 0.94rem;
+    line-height: 1.7;
+    max-width: 760px;
+}
+
+.availability-results,
+.accommodation-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: var(--frontend-shell-section-gap);
+}
+
+.availability-section,
+.accommodation-section {
+    padding: var(--frontend-shell-panel-padding);
+}
+
+.availability-section__header,
+.accommodation-section__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+}
+
+.availability-section__eyebrow,
+.accommodation-section__eyebrow,
+.booking-wizard__eyebrow,
+.booking-review__eyebrow {
+    margin-bottom: 0.35rem;
+    color: var(--frontend-shell-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.availability-section__title,
+.accommodation-section__title,
+.booking-wizard__title,
+.booking-review__title {
+    margin: 0;
+    color: var(--frontend-shell-text);
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.availability-section__range,
+.accommodation-section__range {
+    padding: 0.7rem 0.95rem;
+    border-radius: var(--frontend-shell-radius-sm);
+    background: linear-gradient(180deg, var(--frontend-shell-surface-muted) 0%, #eff6ff 100%);
+    color: var(--frontend-shell-primary);
+    font-size: 0.88rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.accommodation-richtext,
+.booking-review__room-body,
+.booking-review__transport-value {
+    color: #334155;
+    font-size: 0.95rem;
+    line-height: 1.75;
+}
+
+.accommodation-richtext > *:last-child,
+.availability-modal__body > :last-child {
+    margin-bottom: 0;
+}
+
+.accommodation-benefit,
+.availability-details,
+.booking-review__room-item,
+.booking-review__transport-block,
+.booking-review__fact,
+.booking-review__empty,
+.hotel-check-meta-item {
+    border: 1px solid #e2e8f0;
+    border-radius: var(--frontend-shell-radius-md);
+    background: linear-gradient(180deg, var(--frontend-shell-surface-solid) 0%, var(--frontend-shell-surface-soft) 100%);
+    box-shadow: var(--frontend-shell-shadow-md);
+}
+
+.accommodation-benefit {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: start;
+    padding: 0.9rem 1rem;
+}
+
+.accommodation-benefit__icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--frontend-shell-radius-pill);
+    background: var(--frontend-shell-success-soft);
+    color: var(--frontend-shell-success);
+    font-size: 0.9rem;
+}
+
+.accommodation-room-card,
+.availability-rate-card {
+    border: 1px solid #d8e1ec;
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.08), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+    box-shadow: var(--frontend-shell-shadow-md);
+}
+
+.accommodation-room-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.accommodation-room-card:hover {
+    transform: translateY(-4px);
+    border-color: #bfdbfe;
+    box-shadow: var(--frontend-shell-shadow-lg);
+}
+
+.accommodation-room-card__title,
+.availability-rate-card__title,
+.hotel-check-heading {
+    color: var(--frontend-shell-text);
+    font-weight: 800;
+}
+
+.accommodation-room-card__link {
+    color: var(--frontend-shell-primary);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.availability-empty {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.availability-empty__icon {
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 1rem;
+    border-radius: var(--frontend-shell-radius-pill);
+    background: var(--frontend-shell-primary-soft);
+    color: var(--frontend-shell-primary);
+    font-size: 1.5rem;
+}
+
+.availability-empty h2 {
+    margin-bottom: 0.55rem;
+    color: var(--frontend-shell-text);
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+.availability-empty p,
+.hotel-check-note,
+.hotel-check-subheading {
+    margin: 0;
+    color: var(--frontend-shell-muted);
+    font-size: 0.9rem;
+}
+
+.frontend-detail-block {
+    padding: var(--frontend-shell-panel-padding);
+    border: 1px solid var(--frontend-shell-border);
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.06), transparent 30%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+    box-shadow: var(--frontend-shell-shadow-md);
+}
+
+.frontend-detail-block + .frontend-detail-block {
+    margin-top: 1rem;
+}
+
+.frontend-detail-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.frontend-detail-block__eyebrow {
+    margin-bottom: 0.35rem;
+    color: var(--frontend-shell-primary);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.frontend-detail-block__title {
+    margin: 0;
+    color: var(--frontend-shell-text);
+    font-size: 1.08rem;
+    font-weight: 800;
+}
+
+.frontend-detail-block__meta {
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--frontend-shell-radius-sm);
+    background: linear-gradient(180deg, var(--frontend-shell-surface-muted) 0%, #eff6ff 100%);
+    color: var(--frontend-shell-primary);
+    font-size: 0.84rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.frontend-fact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.frontend-fact-card {
+    padding: 0.9rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--frontend-shell-radius-md);
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.frontend-fact-card span {
+    display: block;
+    margin-bottom: 0.28rem;
+    color: var(--frontend-shell-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.frontend-fact-card strong {
+    color: var(--frontend-shell-text);
+    font-size: 0.94rem;
+    line-height: 1.55;
+}
+
+.frontend-fact-card__content {
+    color: var(--frontend-shell-text);
+    font-size: 0.94rem;
+    line-height: 1.7;
+}
+
+.frontend-fact-card__content > :last-child {
+    margin-bottom: 0;
+}
+
+.frontend-fact-card--wide {
+    grid-column: span 2;
+}
+
+.frontend-fact-card--fullrow {
+    grid-column: 1 / -1;
+}
+
+.frontend-richtext {
+    color: #334155;
+    font-size: 0.94rem;
+    line-height: 1.8;
+}
+
+.frontend-richtext > :last-child {
+    margin-bottom: 0;
+}
+
+.frontend-table-shell {
+    padding: 0.95rem 1rem;
+    border: 1px solid #dbe4ee;
+    border-radius: var(--frontend-shell-radius-md);
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.frontend-table-shell table {
+    margin-bottom: 0;
+}
+
+@media (max-width: 991.98px) {
+    .frontend-fact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .availability-hero,
+    .frontend-availability-family-hero,
+    .hotel-booking-hero,
+    .accommodation-hero {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .availability-hero,
+    .frontend-availability-family-hero,
+    .hotel-booking-hero,
+    .accommodation-hero,
+    .availability-section,
+    .accommodation-section,
+    .accommodation-cta,
+    .hotel-booking-layout .card-box,
+    .availability-empty {
+        padding: 1rem;
+        border-radius: var(--frontend-shell-radius-md);
+    }
+
+    .availability-section__header,
+    .accommodation-section__header {
+        flex-direction: column;
+    }
+
+    .availability-section__range,
+    .accommodation-section__range,
+    .frontend-detail-block__meta {
+        white-space: normal;
+    }
+
+    .frontend-detail-block__header {
+        flex-direction: column;
+    }
+
+    .frontend-fact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .frontend-fact-card--wide {
+        grid-column: auto;
+    }
+}

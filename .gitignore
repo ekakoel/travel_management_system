@@ -47,3 +47,9 @@ Desktop.ini
 # Docker / CI
 .docker/
 docker-compose.override.yml
+
+# Temporary Browser
+.tmp-edge-profile/
+.tmp-edge-profile/
+.tmp-chrome-profile/
+.tmp-browser-profile/

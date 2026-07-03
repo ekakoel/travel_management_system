@@ -51,9 +51,9 @@
                     @endif
                 </div>
                 <div class="dropdown-menu shadow-sm m-0">
-                    <a class="dropdown-item" href="{{ url('lang/en?redirect=' . urlencode(request()->fullUrl())) }}"><i class="fa fa-language" aria-hidden="true"></i>English</a>
-                    <a class="dropdown-item" href="{{ url('lang/zh?redirect=' . urlencode(request()->fullUrl())) }}"><i class="fa fa-language" aria-hidden="true"></i> 繁體中文</a>
-                    <a class="dropdown-item" href="{{ url('lang/zh-CN?redirect=' . urlencode(request()->fullUrl())) }}"><i class="fa fa-language" aria-hidden="true"></i> 简体中文</a>
+                    <a class="dropdown-item" href="{{ language_switch_url('en') }}"><i class="fa fa-language" aria-hidden="true"></i>English</a>
+                    <a class="dropdown-item" href="{{ language_switch_url('zh') }}"><i class="fa fa-language" aria-hidden="true"></i> 繁體中文</a>
+                    <a class="dropdown-item" href="{{ language_switch_url('zh-CN') }}"><i class="fa fa-language" aria-hidden="true"></i> 简体中文</a>
                 </div>
             </div>
             @if (Auth::check())

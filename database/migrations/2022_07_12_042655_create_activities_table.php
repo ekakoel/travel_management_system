@@ -8,6 +8,10 @@ class CreateActivitiesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('activities')) {
+            return;
+        }
+
         Schema::create('activities', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('partners_id')->nullable();

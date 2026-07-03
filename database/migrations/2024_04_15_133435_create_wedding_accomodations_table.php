@@ -13,6 +13,10 @@ class CreateWeddingAccomodationsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('wedding_accomodations')) {
+            return;
+        }
+
         Schema::create('wedding_accomodations', function (Blueprint $table) {
             $table->id();
             $table->integer('wedding_planner_id');

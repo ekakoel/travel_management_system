@@ -8,6 +8,10 @@ class CreateOrderLogsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('order_logs')) {
+            return;
+        }
+
         Schema::create('order_logs', function (Blueprint $table) {
             $table->id();
             $table->string('order_id');

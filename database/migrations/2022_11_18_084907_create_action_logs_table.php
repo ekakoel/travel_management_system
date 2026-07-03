@@ -8,6 +8,10 @@ class CreateActionLogsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('action_logs')) {
+            return;
+        }
+
         Schema::create('action_logs', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');

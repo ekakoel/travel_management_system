@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('submitted_reviews')) {
+            return;
+        }
+
         Schema::create('submitted_reviews', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('booking_code');

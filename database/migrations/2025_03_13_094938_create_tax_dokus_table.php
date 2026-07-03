@@ -9,6 +9,10 @@ return new class extends Migration
 
     public function up(): void
     {
+        if (Schema::hasTable('tax_dokus')) {
+            return;
+        }
+
         Schema::create('tax_dokus', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('tax_name');

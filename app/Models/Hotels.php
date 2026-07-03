@@ -69,6 +69,11 @@ class Hotels extends Model
         'max_stay',
     ];
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'Active');
+    }
+
     public function images(){
         return $this->hasMany(HotelsImages::class,'hotels_id');
     }

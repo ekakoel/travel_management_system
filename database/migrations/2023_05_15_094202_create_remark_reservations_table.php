@@ -8,6 +8,10 @@ class CreateRemarkReservationsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('remark_reservations')) {
+            return;
+        }
+
         Schema::create('remark_reservations', function (Blueprint $table) {
             $table->id();
             $table->integer('rsv_id');

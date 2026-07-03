@@ -1,0 +1,38 @@
+.frontend-page-shell {
+    --frontend-shell-text: #0f172a;
+    --frontend-shell-muted: #64748b;
+    --frontend-shell-subtle: #475569;
+    --frontend-shell-border: #dbe4ee;
+    --frontend-shell-border-strong: #d8e4f0;
+    --frontend-shell-surface: rgba(255, 255, 255, 0.88);
+    --frontend-shell-surface-solid: #ffffff;
+    --frontend-shell-surface-soft: #f8fbfe;
+    --frontend-shell-surface-muted: #f8fafc;
+    --frontend-shell-primary: #0f5fa8;
+    --frontend-shell-primary-soft: #e0f2fe;
+    --frontend-shell-secondary: #0d7b8f;
+    --frontend-shell-accent: #21a179;
+    --frontend-shell-success: #15803d;
+    --frontend-shell-success-soft: #dcfce7;
+    --frontend-shell-warning: #b45309;
+    --frontend-shell-warning-soft: #fff4e5;
+    --frontend-shell-danger: #c2410c;
+    --frontend-shell-shadow-sm: 0 12px 28px rgba(14, 116, 144, 0.12);
+    --frontend-shell-shadow-md: 0 18px 44px rgba(15, 23, 42, 0.06);
+    --frontend-shell-shadow-lg: 0 20px 46px rgba(15, 23, 42, 0.08);
+    --frontend-shell-shadow-xl: 0 24px 60px rgba(15, 23, 42, 0.10);
+    --frontend-shell-shadow-topband: 0 20px 50px rgba(8, 47, 73, 0.18);
+    --frontend-shell-radius-sm: 14px;
+    --frontend-shell-radius-md: 18px;
+    --frontend-shell-radius-lg: 24px;
+    --frontend-shell-radius-pill: 999px;
+    --frontend-shell-section-gap: 1.25rem;
+    --frontend-shell-content-gap: 1.5rem;
+    --frontend-shell-panel-padding: 1.25rem;
+    --frontend-shell-card-padding: 1rem;
+    --frontend-shell-form-height: 52px;
+    --frontend-shell-button-height: 48px;
+    --frontend-shell-topband-start: #0f5fa8;
+    --frontend-shell-topband-mid: #0d7b8f;
+    --frontend-shell-topband-end: #21a179;
+}

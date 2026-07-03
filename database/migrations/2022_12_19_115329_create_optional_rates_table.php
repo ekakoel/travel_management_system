@@ -8,6 +8,10 @@ class CreateOptionalRatesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('optional_rates')) {
+            return;
+        }
+
         Schema::create('optional_rates', function (Blueprint $table) {
             $table->id();
             $table->integer('hotels_id')->nullable();

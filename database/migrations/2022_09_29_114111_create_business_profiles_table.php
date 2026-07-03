@@ -8,6 +8,10 @@ class CreateBusinessProfilesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('business_profiles')) {
+            return;
+        }
+
         Schema::create('business_profiles', function (Blueprint $table) {
             $table->id();
             $table->string("name");

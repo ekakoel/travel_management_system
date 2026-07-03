@@ -8,6 +8,10 @@ class CreateGuestsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('guests')) {
+            return;
+        }
+
         Schema::create('guests', function (Blueprint $table) {
             $table->id();
             $table->string('id_passport_img')->nullable();

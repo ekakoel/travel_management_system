@@ -13,6 +13,10 @@ class CreateVendorPackagesTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('vendor_packages')) {
+            return;
+        }
+
         Schema::create('vendor_packages', function (Blueprint $table) {
             $table->id();
             $table->text('cover');

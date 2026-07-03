@@ -8,6 +8,10 @@ class CreateRoomFacilitiesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('room_facilities')) {
+            return;
+        }
+
         Schema::create('room_facilities', function (Blueprint $table) {
             $table->id();
             $table->timestamps();

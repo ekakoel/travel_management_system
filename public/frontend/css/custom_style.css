@@ -140,7 +140,7 @@
     color: var(--dark) !important;
 }
 .main-container {
-    margin: 75px 0 0 0;
+    margin: 76px 0 0 0;
 }
 .container-fluid{
     margin: 0 !important;
@@ -1589,9 +1589,7 @@ legend {
     color: red;
 }
 
-.card-box p {
-    font-size: 0.8rem;
-}
+
 
 
 .card-box-footer-empty{

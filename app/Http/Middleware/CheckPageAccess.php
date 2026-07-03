@@ -11,10 +11,17 @@ class CheckPageAccess
 {
     public function handle(Request $request, Closure $next)
     {
-        $routeName = $request->route()->getName();
-        $uiConfig = UiConfig::where('name',$routeName)->first();
-        if ($routeName && !ui_config($routeName)) {
-            abort(403, $uiConfig->message);
+        $route = $request->route();
+        $routeName = $route ? $route->getName() : null;
+
+        if (!$routeName) {
+            return $next($request);
+        }
+
+        $uiConfig = UiConfig::where('name', $routeName)->first();
+
+        if ($uiConfig && !ui_config($routeName, true)) {
+            abort(403, $uiConfig->message ?: 'This page is currently unavailable.');
         }
 
         return $next($request);

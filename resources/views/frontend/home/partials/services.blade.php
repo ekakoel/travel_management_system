@@ -1,43 +1,86 @@
- <!-- Service Start -->
- <div class="container-xxl py-5 ">
+@push('styles')
+    @once
+        <link rel="stylesheet" href="{{ asset('css/pages/frontend-home-services.css') }}">
+    @endonce
+@endpush
+
+@php
+    $services = [
+        [
+            'delay' => '0.1s',
+            'href' => route('view.accommodation-service'),
+            'image' => getThumbnail($homeServiceImages['accommodations'] ?? 'images/default.webp', 760, 520),
+            'title' => __('home.services.items.accommodations.title'),
+            'accent' => __('home.services.items.accommodations.accent'),
+            'description' => __('home.services.items.accommodations.description'),
+            'image_class' => 'home-service-card__image--cover home-service-card__image--accommodation',
+        ],
+        [
+            'delay' => '0.2s',
+            'href' => route('view.transport-service'),
+            'image' => getThumbnail($homeServiceImages['transportation'] ?? 'images/default.webp', 760, 520),
+            'title' => __('home.services.items.transportation.title'),
+            'accent' => __('home.services.items.transportation.accent'),
+            'description' => __('home.services.items.transportation.description'),
+            'image_class' => 'home-service-card__image--cover home-service-card__image--transport',
+        ],
+        [
+            'delay' => '0.3s',
+            'href' => route('tour-package-service'),
+            'image' => getThumbnail($homeServiceImages['tours'] ?? 'images/default.webp', 760, 520),
+            'title' => __('home.services.items.tours.title'),
+            'accent' => __('home.services.items.tours.accent'),
+            'description' => __('home.services.items.tours.description'),
+            'image_class' => 'home-service-card__image--cover home-service-card__image--tour',
+        ],
+    ];
+@endphp
+
+<!-- Service Start -->
+<section class="home-section home-services-section container-xxl">
     <div class="container">
-        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
-            <h1 class="display-6">@lang('messages.Services')</h1>
-            <p class="text-primary fs-5 mb-5">@lang('messages.Seamless Business Travel, Unmatched Professionalism.')</p>
+        <div class="home-services-heading text-center mx-auto wow fadeInUp" data-wow-delay="0.1s">
+            <span class="home-services-heading__eyebrow">{{ __('home.services.eyebrow') }}</span>
+            <h2 class="home-services-heading__title">{{ __('home.services.title') }}</h2>
+            <p class="home-services-heading__subtitle">
+                {{ __('home.services.subtitle') }}
+            </p>
         </div>
+
         <div class="row g-4">
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="service-item text-center">
-                    <a href="{{ route('view.accommodation-service') }}">
-                        <div class="icon-container">
-                            <img class="img-fluid hover-effect mb-4" src="/landing-page/img/luxury_accommodation.png" alt="">
-                        </div>
-                        <h5 class="mb-3">@lang('messages.Premium Accommodations')</h5>
-                    </a>
+            @foreach ($services as $service)
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
+                    <article class="home-service-card service-item h-100">
+                        <a class="home-service-card__link" href="{{ $service['href'] }}">
+                            <div class="home-service-card__media icon-container">
+                                <img
+                                    class="img-fluid hover-effect home-service-card__image {{ $service['image_class'] }}"
+                                    src="{{ $service['image'] }}"
+                                    alt="{{ $service['title'] }}"
+                                    loading="lazy"
+                                >
+
+                                <div class="home-service-card__badge-wrap">
+                                    <span class="home-service-card__accent">{{ $service['accent'] }}</span>
+                                </div>
+                            </div>
+
+                            <div class="home-service-card__body">
+                                <h3 class="home-service-card__title">{{ $service['title'] }}</h3>
+                                <p class="home-service-card__description">{{ $service['description'] }}</p>
+
+                                <div class="home-service-card__footer">
+                                    <span class="home-service-card__line"></span>
+                                    <span class="home-service-card__action" aria-hidden="true">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </article>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="service-item text-center">
-                    <a href="{{ route('view.transport-service') }}">
-                        <div class="icon-container">
-                            <img class="img-fluid hover-effect mb-4" src="/landing-page/img/luxury_transport.png" alt="">
-                            <h5 class="mb-3">@lang('messages.Luxury Transportation')</h5>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="service-item text-center">
-                    <a href="{{ route('tour-package-service') }}">
-                        <div class="icon-container">
-                        <img class="img-fluid hover-effect mb-4" src="/landing-page/img/luxury_tour.png" alt="">
-                        </div>
-                        <h5 class="mb-3">@lang('messages.Customized Tour Packages')</h5>
-                    </a>
-                </div>
-            </div>
-            
+            @endforeach
         </div>
     </div>
-</div>
+</section>
 <!-- Service End -->

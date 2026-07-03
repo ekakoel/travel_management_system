@@ -152,6 +152,33 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
+                                                            <label for="include" class="form-label">Include</label>
+                                                            <textarea id="include" name="include" class="textarea_editor form-control" placeholder="Insert include">{{ $room->include }}</textarea>
+                                                        </div>
+                                                        @error('include')
+                                                            <div class="alert alert-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="include_traditional" class="form-label">Include (Traditional)</label>
+                                                            <textarea id="include_traditional" name="include_traditional" class="textarea_editor form-control" placeholder="Insert include in Chinese traditional">{{ $room->include_traditional }}</textarea>
+                                                        </div>
+                                                        @error('include_traditional')
+                                                            <div class="alert alert-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="include_simplified" class="form-label">Include (Simplified)</label>
+                                                            <textarea id="include_simplified" name="include_simplified" class="textarea_editor form-control" placeholder="Insert include in Chinese Simplified">{{ $room->include_simplified }}</textarea>
+                                                        </div>
+                                                        @error('include_simplified')
+                                                            <div class="alert alert-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
                                                             <label for="amenities" class="form-label">Amenities</label>
                                                             <textarea id="amenities" name="amenities" class="textarea_editor form-control" placeholder="Insert amenities">{{ $room->amenities }}</textarea>
                                                         </div>

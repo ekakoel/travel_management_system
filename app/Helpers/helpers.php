@@ -3,6 +3,7 @@ use Carbon\Carbon;
 use App\Models\UiConfig;
 use Intervention\Image\ImageManager;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\MapController;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,111 @@ if (!function_exists('set_ui_config')) {
         $config = UiConfig::updateOrCreate(['name' => $name], ['status' => $status, 'message' => $message]);
         Cache::forget("ui_config_{$name}");
         return $config;
+    }
+}
+
+if (!function_exists('canonical_frontend_url')) {
+    function canonical_frontend_url(?Request $request = null): string
+    {
+        $request ??= request();
+        $route = $request->route();
+        $routeName = $route ? $route->getName() : null;
+
+        if (in_array($routeName, ['view.hotel-prices.page', 'view.hotel-prices'], true)) {
+            $code = $route->parameter('code');
+            $checkin = $request->query('checkin') ?: session('booking_dates.checkin') ?: $request->input('checkin');
+            $checkout = $request->query('checkout') ?: session('booking_dates.checkout') ?: $request->input('checkout');
+
+            if ($code && $checkin && $checkout) {
+                return route('view.hotel-prices.page', [
+                    'code' => $code,
+                    'checkin' => $checkin,
+                    'checkout' => $checkout,
+                ]);
+            }
+        }
+
+        if (in_array($routeName, ['view.hotel-detail', 'view.hotel-detail-flyer', 'view.accommodation-detail', 'view.hotel-check-price', 'view.accommodation-check-price'], true)) {
+            $code = $route->parameter('code');
+
+            if ($code) {
+                $parameters = ['code' => $code];
+
+                if ($request->boolean('check_price')) {
+                    $parameters['check_price'] = 1;
+                }
+
+                $targetRoute = match ($routeName) {
+                    'view.hotel-detail',
+                    'view.hotel-detail-flyer' => 'view.accommodation-detail',
+                    'view.hotel-check-price' => 'view.accommodation-check-price',
+                    default => $routeName,
+                };
+
+                return route($targetRoute, $parameters);
+            }
+        }
+
+        if (in_array($routeName, ['view.order-hotel-normal', 'view.order-hotel-promo', 'view.order-hotel-package'], true)) {
+            $hotelId = $request->input('hotel_id');
+            $checkin = session('booking_dates.checkin') ?: $request->input('checkin');
+            $checkout = session('booking_dates.checkout') ?: $request->input('checkout');
+
+            if ($hotelId) {
+                $hotel = \App\Models\Hotels::select('code')->find($hotelId);
+
+                if ($hotel && $checkin && $checkout) {
+                    return route('view.hotel-prices.page', [
+                        'code' => $hotel->code,
+                        'checkin' => $checkin,
+                        'checkout' => $checkout,
+                    ]);
+                }
+
+                if ($hotel) {
+                    return route('view.accommodation-detail', ['code' => $hotel->code]);
+                }
+            }
+        }
+
+        if ($request->isMethod('get')) {
+            return $request->fullUrl();
+        }
+
+        return url()->previous() ?: url('/');
+    }
+}
+
+if (!function_exists('language_switch_url')) {
+    function language_switch_url(string $locale, ?Request $request = null): string
+    {
+        $redirect = canonical_frontend_url($request);
+
+        return route('language.switch', ['locale' => $locale, 'redirect' => $redirect]);
+    }
+}
+
+if (!function_exists('localized_model_field')) {
+    function localized_model_field($model, string $field): string
+    {
+        if (!$model) {
+            return '';
+        }
+
+        $locale = app()->getLocale();
+        $localizedField = match ($locale) {
+            'zh' => $field . '_traditional',
+            'zh-CN' => $field . '_simplified',
+            default => $field,
+        };
+
+        $value = trim((string) data_get($model, $localizedField, ''));
+
+        if ($value !== '') {
+            return $value;
+        }
+
+        return trim((string) data_get($model, $field, ''));
     }
 }
 

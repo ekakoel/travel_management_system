@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
+        if (Schema::hasTable('doku_virtual_accounts')) {
+            return;
+        }
+
         Schema::create('doku_virtual_accounts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('invoice_id')->nullable();

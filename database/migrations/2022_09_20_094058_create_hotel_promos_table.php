@@ -8,6 +8,10 @@ class CreateHotelPromosTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('hotel_promos')) {
+            return;
+        }
+
         Schema::create('hotel_promos', function (Blueprint $table) {
             $table->id();
             $table->string('promotion_type')->nullable();

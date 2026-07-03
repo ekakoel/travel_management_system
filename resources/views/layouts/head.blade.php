@@ -46,6 +46,7 @@
 	</script>
 	@livewireStyles
     <link href="{{ asset('multiform.css') }}" rel="stylesheet" id="bootstrap">
+	@stack('styles')
 	</head>
 	<body class="sidebar-light anim-feed-up">
 		<div id="page-loader">
@@ -57,6 +58,7 @@
 		@include('layouts.left-navbar')
 		@yield('content')
 		@include('layouts.footjs')
+		@stack('scripts')
 	</body>
 	@livewireScripts
 </html>

@@ -9,6 +9,10 @@ class CreateContractsTable extends Migration
 
     public function up()
     {
+        if (Schema::hasTable('contracts')) {
+            return;
+        }
+
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
             $table->string('hotels_id')->nullable();

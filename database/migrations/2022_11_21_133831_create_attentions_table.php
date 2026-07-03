@@ -8,6 +8,10 @@ class CreateAttentionsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('attentions')) {
+            return;
+        }
+
         Schema::create('attentions', function (Blueprint $table) {
             $table->id();
             $table->string('page');

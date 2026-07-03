@@ -13,6 +13,10 @@ class CreateDownloadDataHotelsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('download_data_hotels')) {
+            return;
+        }
+
         Schema::create('download_data_hotels', function (Blueprint $table) {
             $table->id();
             $table->string("hotel_name");

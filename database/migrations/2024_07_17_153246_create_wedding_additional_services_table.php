@@ -13,6 +13,10 @@ class CreateWeddingAdditionalServicesTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('wedding_additional_services')) {
+            return;
+        }
+
         Schema::create('wedding_additional_services', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('order_id')->nullable();

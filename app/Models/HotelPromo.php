@@ -65,8 +65,8 @@ class HotelPromo extends Model
 
     public function scopeValidForBooking($query, $now)
     {
-        return $query->where('book_periode_end', '>=', $now)
-                    ->orWhere('book_periode_start', '<=', $now);
+        return $query->whereDate('book_periode_start', '<=', $now)
+            ->whereDate('book_periode_end', '>=', $now);
     }
     public function scopeValidForStay($query, $checkin)
     {

@@ -13,6 +13,10 @@ class CreateFlightsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('flights')) {
+            return;
+        }
+
         Schema::create('flights', function (Blueprint $table) {
             $table->id();
             $table->string('type');

@@ -8,6 +8,10 @@ class CreateIncludeReservationsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('include_reservations')) {
+            return;
+        }
+
         Schema::create('include_reservations', function (Blueprint $table) {
             $table->id();
             $table->integer('rsv_id');

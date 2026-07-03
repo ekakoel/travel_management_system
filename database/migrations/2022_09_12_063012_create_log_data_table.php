@@ -9,6 +9,10 @@ class CreateLogDataTable extends Migration
 
     public function up()
     {
+        if (Schema::hasTable('log_data')) {
+            return;
+        }
+
         Schema::create('log_data', function (Blueprint $table) {
             $table->id();
             $table->timestamps();

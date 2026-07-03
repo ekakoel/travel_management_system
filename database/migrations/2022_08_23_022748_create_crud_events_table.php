@@ -13,6 +13,10 @@ class CreateCrudEventsTable extends Migration
      */
         public function up()
     {
+        if (Schema::hasTable('crud_events')) {
+            return;
+        }
+
         Schema::create('crud_events', function (Blueprint $table) {
             $table->id();
             $table->string('event_name');

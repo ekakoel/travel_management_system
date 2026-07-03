@@ -13,6 +13,10 @@ class CreateAdminPanelsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('admin_panels')) {
+            return;
+        }
+
         Schema::create('admin_panels', function (Blueprint $table) {
             $table->id();
             $table->timestamps();

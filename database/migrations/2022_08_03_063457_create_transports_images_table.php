@@ -8,6 +8,10 @@ class CreateTransportsImagesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('transports_images')) {
+            return;
+        }
+
         Schema::create('transports_images', function (Blueprint $table) {
             $table->id();
             $table->string("image");

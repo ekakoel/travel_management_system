@@ -13,6 +13,10 @@ class CreateEmailBlastsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('email_blasts')) {
+            return;
+        }
+
         Schema::create('email_blasts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');

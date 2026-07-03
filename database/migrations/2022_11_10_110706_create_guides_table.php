@@ -8,6 +8,10 @@ class CreateGuidesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('guides')) {
+            return;
+        }
+
         Schema::create('guides', function (Blueprint $table) {
             $table->id();
             $table->string('name');

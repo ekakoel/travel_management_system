@@ -13,6 +13,10 @@ class CreateOrderWeddingsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('order_weddings')) {
+            return;
+        }
+
         Schema::create('order_weddings', function (Blueprint $table) {
             $table->id();
             $table->string('orderno');

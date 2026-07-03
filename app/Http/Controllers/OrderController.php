@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use App\Notifications\NotifikasiWhatsApp;
 use Google\Service\ShoppingContent\Resource\Promotions;
 
@@ -61,6 +62,243 @@ class OrderController extends Controller
     public function __construct()
     {
         $this->middleware(['auth','verified']);
+    }
+
+    private function getBookingAgents()
+    {
+        return User::where('status', 'Active')
+            ->whereNotNull('email_verified_at')
+            ->where('is_approved', true)
+            ->get();
+    }
+
+    private function buildHotelBookingTransportOptions($hotel, $usdrates, $tax)
+    {
+        return Transports::with('prices')
+            ->select('id', 'name', 'brand', 'capacity')
+            ->where('status', 'Active')
+            ->orderByDesc('capacity')
+            ->get()
+            ->map(function ($transport) use ($hotel, $usdrates, $tax) {
+                $selectedPrice = optional($transport->prices)
+                    ->sortBy('duration')
+                    ->firstWhere('duration', '>=', optional($hotel)->airport_duration);
+
+                if (! $selectedPrice && $transport->prices->isNotEmpty()) {
+                    $selectedPrice = $transport->prices->sortByDesc('duration')->first();
+                }
+
+                return [
+                    'id' => $transport->id,
+                    'label' => $transport->brand . ' ' . $transport->name . ' - (' . $transport->capacity . ')',
+                    'price' => $selectedPrice ? (int) round($selectedPrice->calculatePrice($usdrates, $tax)) : 0,
+                    'price_id' => $selectedPrice->id ?? 0,
+                ];
+            })
+            ->values();
+    }
+
+    private function getBookingExtraBeds($hotelId, $roomId = null)
+    {
+        $query = ExtraBed::query()
+            ->where('hotels_id', $hotelId);
+
+        if ($roomId && Schema::hasColumn('extra_beds', 'rooms_id')) {
+            $query->where(function ($builder) use ($roomId) {
+                $builder->where('rooms_id', $roomId)
+                    ->orWhereNull('rooms_id');
+            })->orderByRaw('CASE WHEN rooms_id = ? THEN 0 ELSE 1 END', [$roomId]);
+        }
+
+        return $query
+            ->orderBy('id')
+            ->get()
+            ->unique('id')
+            ->values();
+    }
+
+    private function resolveSelectedExtraBed($extraBeds, $selectedId)
+    {
+        if ($selectedId !== null && $selectedId !== '') {
+            return $extraBeds->firstWhere('id', (int) $selectedId);
+        }
+
+        return $extraBeds->first();
+    }
+
+    private function getRoomAdultCapacity($room): int
+    {
+        return (int) ($room->capacity_adult ?? $room->capacity ?? 0);
+    }
+
+    private function normalizeBookingDate($value, $fallback = null, $withTime = false)
+    {
+        if ($value === null || $value === '') {
+            if ($fallback === null || $fallback === '') {
+                return null;
+            }
+
+            return $this->normalizeBookingDate($fallback, null, $withTime);
+        }
+
+        if ($value instanceof Carbon) {
+            return $withTime
+                ? $value->format('Y-m-d H:i:s')
+                : $value->format('Y-m-d');
+        }
+
+        $value = trim((string) $value);
+        $formats = $withTime
+            ? [
+                'F/d/Y h:i a',
+                'F/d/Y h:i A',
+                'M/d/Y h:i a',
+                'M/d/Y h:i A',
+                'm/d/Y h:i a',
+                'm/d/Y h:i A',
+                'm/d/Y H:i',
+                'Y-m-d H:i:s',
+                'Y-m-d H:i',
+                'Y-m-d\TH:i',
+            ]
+            : [
+                'F/d/Y',
+                'M/d/Y',
+                'm/d/Y',
+                'Y-m-d',
+            ];
+
+        foreach ($formats as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, $value);
+
+                return $withTime
+                    ? $date->format('Y-m-d H:i:s')
+                    : $date->format('Y-m-d');
+            } catch (\Throwable $e) {
+                // Try the next accepted format.
+            }
+        }
+
+        try {
+            $date = Carbon::parse($value);
+
+            return $withTime
+                ? $date->format('Y-m-d H:i:s')
+                : $date->format('Y-m-d');
+        } catch (\Throwable $e) {
+            if ($fallback !== null && $fallback !== '') {
+                return $this->normalizeBookingDate($fallback, null, $withTime);
+            }
+
+            return null;
+        }
+    }
+
+    private function buildAdditionalFlightsSummary(Request $request): ?string
+    {
+        $types = (array) $request->input('flight_type', []);
+        $times = (array) $request->input('flight_time', []);
+        $transportLabels = (array) $request->input('flight_transport_label', []);
+        $entryCount = max(count($types), count($times), count($transportLabels));
+        $entries = [];
+
+        for ($index = 0; $index < $entryCount; $index++) {
+            $type = trim((string) ($types[$index] ?? ''));
+            $time = trim((string) ($times[$index] ?? ''));
+            $transportLabel = trim((string) ($transportLabels[$index] ?? ''));
+
+            if ($type === '' && $time === '' && $transportLabel === '') {
+                continue;
+            }
+
+            $parts = [];
+
+            if ($type !== '') {
+                $parts[] = $type === 'departure' ? __('messages.Departure') : __('messages.Arrival');
+            }
+
+            if ($time !== '') {
+                $normalizedTime = $this->normalizeBookingDate($time, null, true);
+                $parts[] = $normalizedTime ? dateTimeFormat($normalizedTime) : $time;
+            }
+
+            if ($transportLabel !== '') {
+                $parts[] = $transportLabel;
+            }
+
+            if (!empty($parts)) {
+                $entries[] = ($index + 1) . '. ' . implode(' | ', $parts);
+            }
+        }
+
+        if (empty($entries)) {
+            return null;
+        }
+
+        return __('messages.Flight and transport detail') . ":\n" . implode("\n", $entries);
+    }
+
+    private function mergeOrderNoteWithAdditionalFlights(?string $note, Request $request): ?string
+    {
+        $baseNote = trim((string) $note);
+        $additionalFlightsSummary = $this->buildAdditionalFlightsSummary($request);
+
+        if (!$additionalFlightsSummary) {
+            return $baseNote !== '' ? $baseNote : null;
+        }
+
+        return trim($baseNote !== '' ? $baseNote . "\n\n" . $additionalFlightsSummary : $additionalFlightsSummary);
+    }
+
+    private function localizedJoinedField($items, string $field, string $separator = '<br>'): string
+    {
+        return collect($items)
+            ->map(fn ($item) => localized_model_field($item, $field))
+            ->filter(fn ($value) => trim((string) $value) !== '')
+            ->implode($separator);
+    }
+
+    private function buildHotelBookingRoomFormData($hotel, $room, $roomCapacity, $duration, $usdrates, $tax, $extraBedMode = 'nightly', $extraBedTriggerCapacity = null)
+    {
+        $extraBeds = $this->getBookingExtraBeds($hotel->id, $room->id);
+        $triggerCapacity = $extraBedTriggerCapacity ?? ($room->capacity ?? $roomCapacity);
+        $adultCapacity = (int) ($room->capacity_adult ?? $triggerCapacity);
+        $childCapacity = (int) ($room->capacity_child ?? max($roomCapacity - $adultCapacity, 0));
+        $adultLabel = $adultCapacity === 1 ? __('messages.Adult') : __('messages.Adults');
+        $childLabel = $childCapacity === 1 ? __('messages.Child') : __('messages.Children');
+        $guestPlaceholder = __('messages.Capacity') . ' ' . $adultCapacity . ' ' . strtolower($adultLabel);
+
+        if ($childCapacity > 0) {
+            $guestPlaceholder .= ' + ' . $childCapacity . ' ' . strtolower($childLabel);
+        }
+
+        return [
+            'room_capacity' => $roomCapacity,
+            'adult_capacity' => $adultCapacity,
+            'child_capacity' => $childCapacity,
+            'extra_bed_trigger_capacity' => $triggerCapacity,
+            'guest_placeholder' => $guestPlaceholder,
+            'extra_bed_options' => $extraBeds->map(function ($extraBed) use ($usdrates, $tax, $duration, $extraBedMode) {
+                $price = $extraBed->calculatePrice($usdrates, $tax);
+                $extraBedName = __('messages.' . $extraBed->name) !== 'messages.' . $extraBed->name
+                    ? __('messages.' . $extraBed->name)
+                    : $extraBed->name;
+                $extraBedType = __('messages.' . $extraBed->type) !== 'messages.' . $extraBed->type
+                    ? __('messages.' . $extraBed->type)
+                    : $extraBed->type;
+
+                if ($extraBedMode === 'stay') {
+                    $price *= $duration;
+                }
+
+                return [
+                    'id' => $extraBed->id,
+                    'label' => trim($extraBedName . ' (' . $extraBedType . ')'),
+                    'price' => (int) round($price),
+                ];
+            })->values(),
+        ];
     }
 
     // VIEW ORDERS ================================================================================================> OK
@@ -194,14 +432,9 @@ class OrderController extends Controller
     // VIEW USER ORDER HOTEL PROMO =================================================================================> OK
     public function order_hotel_promo(Request $request, $id)
     {
-        $user_id = Auth::id();
         $now = Carbon::now();
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = UsdRates::where('name', 'USD')->first();
-        $business = BusinessProfile::find(1);
-        $logoDark = Cache::remember('app.logo_dark', 3600, fn() => config('app.logo_dark'));
-        $altLogo = Cache::remember('app.alt_logo', 3600, fn() => config('app.alt_logo'));
-        $attentions = Attention::where('page', 'order-hotel-promo')->get();
         $room = HotelRoom::with('hotels')->findOrFail($id);
         $hotel = $room->hotels;
         if (!session()->has('booking_dates.checkin')) {
@@ -214,26 +447,21 @@ class OrderController extends Controller
         $orderNumber = "HPP" . date('ymd', strtotime($now)) . "-" . $order_value;
         $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
         $room_capacity = $room->capacity_adult + $room->capacity_child;
+        $room->localized_include = localized_model_field($room, 'include');
+        $room->localized_amenities = localized_model_field($room, 'amenities');
         $prIds = $request->promo_id;
         $uniqueHotelPromoIds = array_unique(json_decode($request->promo_id));
         $promos = HotelPromo::whereIn('id', $uniqueHotelPromoIds)->get();
-        $promo_name = $promos->pluck('name')->implode(', ');
-        $promo_benefits = $promos->pluck('benefits')->implode('<br>');
-        $promo_include = $promos->pluck('include')->implode('<br>');
-        $promo_additional_info = $promos->pluck('additional_info')->implode('<br>');
-        $transports = Transports::with('prices')
-            ->select('id', 'name', 'brand', 'capacity')
-            ->where('status', "Active")
-            ->orderByDesc('capacity')
-            ->get();
-        $transport_prices = TransportPrice::where('duration','>=', $hotel->airport_duration)->get();
+        $promo_name = $this->localizedJoinedField($promos, 'name', ', ');
+        $promo_benefits = $this->localizedJoinedField($promos, 'benefits');
+        $promo_include = $this->localizedJoinedField($promos, 'include');
+        $promo_additional_info = $this->localizedJoinedField($promos, 'additional_info');
+        $transportOptions = $this->buildHotelBookingTransportOptions($hotel, $usdrates, $tax);
+        $roomForm = $this->buildHotelBookingRoomFormData($hotel, $room, $room_capacity, $duration, $usdrates, $tax, 'nightly', $room->capacity_adult);
         $promo_price = $request->promo_price;
         $price_list = $request->price_list;
         $final_price = 0;
-        $agents = User::where('status', "Active")
-            ->whereNotNull('email_verified_at')
-            ->where('is_approved', true)
-            ->get();
+        $agents = $this->getBookingAgents();
 
         $optional_rates = OptionalRate::mustBuy($checkin, $checkout)->get();
         $totalPriceOptionalRates = $optional_rates->sum(function ($rate) use ($usdrates, $tax) {
@@ -241,12 +469,12 @@ class OrderController extends Controller
         });
 
         return view('form.order-hotel-promo', compact(
-            'now', 'usdrates', 'tax', 'business', 'logoDark', 'altLogo',
+            'now', 'usdrates', 'tax',
             'service', 'orderNumber', 'checkin', 'checkout', 'duration',
             'hotel', 'promos', 'prIds', 'promo_name', 'room', 'room_capacity',
             'promo_benefits', 'promo_include', 'promo_additional_info',
-            'transports', 'transport_prices', 'final_price', 'promo_price',
-            'uniqueHotelPromoIds', 'price_list', 'agents','optional_rates','totalPriceOptionalRates'
+            'transportOptions', 'final_price', 'promo_price',
+            'uniqueHotelPromoIds', 'price_list', 'agents', 'optional_rates', 'totalPriceOptionalRates', 'roomForm'
         ));
     }
 
@@ -263,10 +491,6 @@ class OrderController extends Controller
         $now = Carbon::now();
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
-        $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
-        $logoDark = Cache::remember('app.logo_dark', 3600, fn() => config('app.logo_dark'));
-        $altLogo = Cache::remember('app.alt_logo', 3600, fn() => config('app.alt_logo'));
-        $attentions = Attention::where('page', 'order-villa-promo')->get();
         $duration = session('booking_dates.duration');
         $orders = Orders::where('sales_agent', $user_id)
             ->whereDate('created_at', $now)
@@ -656,7 +880,7 @@ class OrderController extends Controller
         $departure_time = date('Y-m-d H:i',strtotime($request->departure_time));
         $order->update([
             "status"=>$status,
-            "note"=>$request->note,
+            "note"=>$this->mergeOrderNoteWithAdditionalFlights($request->note, $request),
             "number_of_guests"=>$number_of_guests,
             "airport_shuttle_price" =>$request->airport_shuttle_price,
             "final_price" =>$request->final_price, 
@@ -1000,23 +1224,20 @@ class OrderController extends Controller
         $bedroom = $room->capacity / 2;
         $room_capacity = $room->capacity + $bedroom;
         $package = HotelPackage::find($request->package_id);
-        $transports = Transports::with('prices')
-            ->select('id', 'name', 'brand', 'capacity')
-            ->where('status', "Active")
-            ->orderByDesc('capacity')
-            ->get();
-        $transport_prices = TransportPrice::where('duration','>=', $hotel->airport_duration)->get();
-        $agents = User::where('status', "Active")
-            ->whereNotNull('email_verified_at')
-            ->get();
+        $room->localized_include = localized_model_field($room, 'include');
+        $room->localized_amenities = localized_model_field($room, 'amenities');
+        $transportOptions = $this->buildHotelBookingTransportOptions($hotel, $usdrates, $tax);
+        $roomForm = $this->buildHotelBookingRoomFormData($hotel, $room, $room_capacity, $duration, $usdrates, $tax, 'nightly', $this->getRoomAdultCapacity($room));
+        $agents = $this->getBookingAgents();
         $final_price = $package->calculatePrice($usdrates,$tax);
+        $package->localized_name = localized_model_field($package, 'name');
+        $package->localized_benefits = localized_model_field($package, 'benefits');
+        $package->localized_include = localized_model_field($package, 'include');
+        $package->localized_additional_info = localized_model_field($package, 'additional_info');
         $data = ([
             'now' => $now,
             'usdrates' => $usdrates,
             'tax' => $tax,
-            'business' => $business,
-            'logoDark' => $logoDark,
-            'altLogo' => $altLogo,
             'service' => $service,
             'orderNumber' => $orderNumber,
             'checkin' => $checkin,
@@ -1026,10 +1247,10 @@ class OrderController extends Controller
             'room' => $room,
             'room_capacity' => $room_capacity,
             'package' => $package,
-            'transports' => $transports,
-            'transport_prices' => $transport_prices,
+            'transportOptions' => $transportOptions,
             'agents' => $agents,
             'final_price' => $final_price,
+            'roomForm' => $roomForm,
         ]);
         return view('form.order-hotel-package',$data);
     }
@@ -1043,10 +1264,6 @@ class OrderController extends Controller
         $now = Carbon::now();
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
-        $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
-        $logoDark = Cache::remember('app.logo_dark', 3600, fn() => config('app.logo_dark'));
-        $altLogo = Cache::remember('app.alt_logo', 3600, fn() => config('app.alt_logo'));
-        $attentions = Attention::where('page', 'order-hotel-promo')->get();
         $promotions = Promotion::where('periode_start','<=',$now)->where('periode_end','>=',$now)->where('status','Active')->get();
         $promotions_id = json_encode($promotions->pluck('id'));
         $promotions_name = $promotions->pluck('name')->implode(', ');
@@ -1061,29 +1278,18 @@ class OrderController extends Controller
         [$bookingcode, $bookingcode_status] = $this->check_booking_code($bk_code, $orders, $now);
         $room = HotelRoom::with(['hotels'])->find($id);
         $hotel = $room->hotels;
-        $bedroom = $room->capacity / 2;
-        $room_capacity = $room->capacity + $bedroom;
-        $transports = Transports::with('prices')
-            ->where('status', 'Active')
-            ->orderByDesc('capacity')
-            ->get()
-            ->map(function ($transport) use ($hotel, $usdrates, $tax) {
-                $selectedPrice = optional($transport->prices->firstWhere('duration', '>=', optional($hotel)->airport_duration));
-                $transport->calculated_price = $selectedPrice ? $selectedPrice->calculatePrice($usdrates, $tax) : 0;
-                $transport->calculated_price_id = $selectedPrice->id ?? null;
-                return $transport;
-            });
-        $extrabed = ExtraBed::where('hotels_id', $request->hotel_id)->get();
-        $usdrates = UsdRates::where('name', 'USD')->first();
-        $tax = Tax::where('name', "Tax")->first();
+        $room->localized_include = localized_model_field($room, 'include');
+        $room->localized_amenities = localized_model_field($room, 'amenities');
+        $adultCapacity = $this->getRoomAdultCapacity($room);
+        $childCapacity = (int) ($room->capacity_child ?? max(((int) $room->capacity) - $adultCapacity, 0));
+        $room_capacity = $adultCapacity + $childCapacity;
+        $transportOptions = $this->buildHotelBookingTransportOptions($hotel, $usdrates, $tax);
+        $roomForm = $this->buildHotelBookingRoomFormData($hotel, $room, $room_capacity, (int) $request->duration, $usdrates, $tax, 'stay', $adultCapacity);
         $price_list = $request->price_list;
         $normal_price = $request->normal_price;
-        $agents = User::where('status', "Active")
-            ->whereNotNull('email_verified_at')
-            ->get();
+        $agents = $this->getBookingAgents();
         $data = [
             'now' => $now,
-            'business' => $business,
             'duration' => $request->duration,
             'checkin' => $request->checkin,
             'checkout' => $request->checkout,
@@ -1097,22 +1303,18 @@ class OrderController extends Controller
             'hotel' => $hotel,
             'room' => $room,
             'room_capacity' => $room_capacity,
-            'transports' => $transports,
-            'extrabed' => $extrabed,
-            'usdrates' => $usdrates,
-            'tax' => $tax,
+            'transportOptions' => $transportOptions,
             'agents' => $agents,
             'promotions' => $promotions,
             'promotions_id' => $promotions_id,
             'bookingcode' => $bookingcode,
             'bookingcode_status' => $bookingcode_status,
             'orderNumber' => $orderNumber,
-            'logoDark' => $logoDark,
-            'altLogo' => $altLogo,
             'price_list' => $price_list,
             'promotions_name' => $promotions_name,
             'promotions_discount' => $promotions_discount,
             'total_promotions_discount' => $total_promotions_discount,
+            'roomForm' => $roomForm,
         ];
         return view('form.order-hotel-normal',$data);
     }
@@ -1141,6 +1343,8 @@ class OrderController extends Controller
         $room = $package->room;
         $checkin = Carbon::parse(session('booking_dates.checkin'))->format('Y-m-d');
         $checkout = Carbon::parse(session('booking_dates.checkout'))->format('Y-m-d');
+        $arrivalTime = $this->normalizeBookingDate($request->arrival_time, $checkin . ' 11:00:00', true);
+        $departureTime = $this->normalizeBookingDate($request->departure_time, $checkout . ' 11:00:00', true);
         $number_of_guests = array_sum($request->number_of_guests);
         $number_of_room = count($request->number_of_guests);
         $number_of_guests_room = json_encode($request->number_of_guests);
@@ -1150,18 +1354,18 @@ class OrderController extends Controller
         $request_quotation = $request->request_quotation ? 1 : NULL;
         $duration = $request->duration;
         $cancellation_policy = $hotel->cancellation_policy;
+        $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
 
-        $extraBeds = ExtraBed::where('hotels_id', $hotel->id)->get();
+        $extraBeds = $this->getBookingExtraBeds($hotel->id, $room->id);
+        $adultCapacity = $this->getRoomAdultCapacity($room);
         $extra_bed_proses = [];
         $extra_bed_id_price = [];
         $extrabed_id = [];
         foreach ($request->number_of_guests as $index => $number_of_guest) {
-            $isExtraBedNeeded = $number_of_guest > $room->capacity;
+            $isExtraBedNeeded = $number_of_guest > $adultCapacity;
             $extra_bed_proses[] = $isExtraBedNeeded ? 'Yes' : 'No';
             if ($isExtraBedNeeded) {
-                $extraBed = isset($request->extra_bed_id[$index]) 
-                    ? $extraBeds->find($request->extra_bed_id[$index]) 
-                    : $extraBeds->first();
+                $extraBed = $this->resolveSelectedExtraBed($extraBeds, $request->extra_bed_id[$index] ?? null);
 
                 if ($extraBed) {
                     $price_extra_bed = $extraBed->calculatePrice($usdrates, $tax) * $duration;
@@ -1250,12 +1454,12 @@ class OrderController extends Controller
             'status'                    => $status,
             'sales_agent'               => $sales_agent,
             'arrival_flight'            => $request->arrival_flight,
-            'arrival_time'              => $request->arrival_time,
+            'arrival_time'              => $arrivalTime,
             'airport_shuttle_in'        => $request->airport_shuttle_in,
             'departure_flight'          => $request->departure_flight,
-            'departure_time'            => $request->departure_time,
+            'departure_time'            => $departureTime,
             'airport_shuttle_out'       => $request->airport_shuttle_out,
-            'note'                      => $request->note,
+            'note'                      => $compiledNote,
             'cancellation_policy'       => $cancellation_policy,
         ]);
         // dd($order);
@@ -1309,6 +1513,8 @@ class OrderController extends Controller
         }
         $checkin = Carbon::parse(session('booking_dates.checkin'))->format('Y-m-d');
         $checkout = Carbon::parse(session('booking_dates.checkout'))->format('Y-m-d');
+        $arrivalTime = $this->normalizeBookingDate($request->arrival_time, $checkin . ' 11:00:00', true);
+        $departureTime = $this->normalizeBookingDate($request->departure_time, $checkout . ' 11:00:00', true);
         $user_id = $user->id;
         $email = $user->email;
         $name = $user->name;
@@ -1320,7 +1526,6 @@ class OrderController extends Controller
         $room = HotelRoom::with('hotels.extrabeds')->find($request->room_id);
         $hotel = $room->hotels;
         $hotel_id = $hotel->id;
-        $extrabeds = $hotel->extrabeds;
         $request_quotation = $request->request_quotation ? 1 : NULL;
         $agent_id = $sales_agent;
         $promo_ids = json_decode($request->promo_id);
@@ -1355,7 +1560,7 @@ class OrderController extends Controller
         $additional_info = implode('<br>', $data_additional_info);
         $total_room = count($request->number_of_guests);
         $cancellation_policy = $room->hotels->cancellation_policy;
-        $remark = $request->note;
+        $remark = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
         $usd_rate_sell = $usdrates->sell;
         $usd_rate_buy = $usdrates->buy;
         $cny_rate_sell = $cnyrates->sell;
@@ -1363,17 +1568,16 @@ class OrderController extends Controller
         $twd_rate_sell = $twdrates->sell;
         $twd_rate_buy = $twdrates->buy;
         $duration = $request->duration;
-        $extraBeds = ExtraBed::where('hotels_id', $hotel->id)->get()->keyBy('id');
+        $extraBeds = $this->getBookingExtraBeds($hotel->id, $room->id);
+        $adultCapacity = $this->getRoomAdultCapacity($room);
         $extra_bed_proses = [];
         $extra_bed_id_price = [];
         $extrabed_id = [];
         foreach ($request->number_of_guests as $index => $number_of_guest) {
-            $isExtraBedNeeded = $number_of_guest > $room->capacity_adult;
+            $isExtraBedNeeded = $number_of_guest > $adultCapacity;
             $extra_bed_proses[] = $isExtraBedNeeded ? 'Yes' : 'No';
             if ($isExtraBedNeeded) {
-                $extraBed = isset($request->extra_bed_id[$index])
-                    ? $request->extra_bed_id[$index] 
-                    : $extraBeds->first();
+                $extraBed = $this->resolveSelectedExtraBed($extraBeds, $request->extra_bed_id[$index] ?? null);
 
                 if ($extraBed) {
                     $price_extra_bed = $extraBed->calculatePrice($usdrates, $tax) * $duration;
@@ -1421,6 +1625,10 @@ class OrderController extends Controller
         });
         $optional_price = $totalPriceOptionalRates * $number_of_guests;
         $order = $this->create_order($request, $user_id, $name, $email, $orderData, $room, $request_quotation, $duration, $extra_bed_id, $extra_bed_proses, $extra_bed_price_list, $total_extra_bed_price, $extra_bed_status, $airport_shuttle_prices, $agent_id, $usdrates, $cnyrates, $twdrates, $tax, $status, $optional_price);
+        $order->update([
+            'arrival_time' => $arrivalTime,
+            'departure_time' => $departureTime,
+        ]);
         if ($request->airport_shuttle_in || $request->airport_shuttle_out) {
             $order_airport_shuttle = $this->create_order_airport_shuttle($request, $hotel, $order, $price_in_id ,$price_out_id, $price_in, $price_out);
         }
@@ -1501,6 +1709,8 @@ class OrderController extends Controller
         $service_id = $hotel->id;
         $checkin = Carbon::parse(session('booking_dates.checkin'))->format('Y-m-d');
         $checkout = Carbon::parse(session('booking_dates.checkout'))->format('Y-m-d');
+        $arrivalTime = $this->normalizeBookingDate($request->arrival_time, $checkin . ' 11:00:00', true);
+        $departureTime = $this->normalizeBookingDate($request->departure_time, $checkout . ' 11:00:00', true);
         $number_of_guests = array_sum($request->number_of_guests);
         $number_of_room = count($request->number_of_guests);
         $number_of_guests_room = json_encode($request->number_of_guests);
@@ -1510,18 +1720,18 @@ class OrderController extends Controller
         $request_quotation = $request->request_quotation ? 1 : NULL;
         $duration = $request->duration;
         $cancellation_policy = $hotel->cancellation_policy;
+        $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
 
-        $extraBeds = ExtraBed::where('hotels_id', $hotel->id)->get();
+        $extraBeds = $this->getBookingExtraBeds($hotel->id, $room->id);
+        $adultCapacity = $this->getRoomAdultCapacity($room);
         $extra_bed_proses = [];
         $extra_bed_id_price = [];
         $extrabed_id = [];
         foreach ($request->number_of_guests as $index => $number_of_guest) {
-            $isExtraBedNeeded = $number_of_guest > $room->capacity;
+            $isExtraBedNeeded = $number_of_guest > $adultCapacity;
             $extra_bed_proses[] = $isExtraBedNeeded ? 'Yes' : 'No';
             if ($isExtraBedNeeded) {
-                $extraBed = isset($request->extra_bed_id[$index]) 
-                    ? $extraBeds->find($request->extra_bed_id[$index]) 
-                    : $extraBeds->first();
+                $extraBed = $this->resolveSelectedExtraBed($extraBeds, $request->extra_bed_id[$index] ?? null);
 
                 if ($extraBed) {
                     $price_extra_bed = $extraBed->calculatePrice($usdrates, $tax) * $duration;
@@ -1615,12 +1825,12 @@ class OrderController extends Controller
             'status'                    => $status,
             'sales_agent'               => $sales_agent,
             'arrival_flight'            => $request->arrival_flight,
-            'arrival_time'              => $request->arrival_time,
+            'arrival_time'              => $arrivalTime,
             'airport_shuttle_in'        => $request->airport_shuttle_in,
             'departure_flight'          => $request->departure_flight,
-            'departure_time'            => $request->departure_time,
+            'departure_time'            => $departureTime,
             'airport_shuttle_out'       => $request->airport_shuttle_out,
-            'note'                      => $request->note,
+            'note'                      => $compiledNote,
             'cancellation_policy'       => $cancellation_policy,
         ]);
         // dd($order);
@@ -1672,10 +1882,12 @@ class OrderController extends Controller
         $special_date = json_encode($request->special_date);
         $checkin = date('Y-m-d', strtotime(session("booking_dates.checkin")));
         $checkout = date('Y-m-d', strtotime(session("booking_dates.checkout")));
+        $arrivalTimeNormalized = $this->normalizeBookingDate($request->arrival_time, $checkin . ' 11:00:00', true);
+        $departureTimeNormalized = $this->normalizeBookingDate($request->departure_time, $checkout . ' 11:00:00', true);
         $capacity = $room->capacity_adult;
         if ($request->airport_shuttle_in || $request->airport_shuttle_out) {
-            $arrival_time = $request->arrival_time ? $request->arrival_time : date('Y-m-d', strtotime(session("booking_dates.checkin")))." 11:00:00";
-            $departure_time = $request->departure_time ? $request->departure_time : date('Y-m-d', strtotime(session("booking_dates.checkout")))." 11:00:00";
+            $arrival_time = $arrivalTimeNormalized;
+            $departure_time = $departureTimeNormalized;
             $arrival_flight = $request->arrival_flight ? $request->arrival_flight : "Insert flight number";
             $departure_flight = $request->departure_flight ? $request->departure_flight : "Insert flight number";
         }else {
@@ -1762,7 +1974,7 @@ class OrderController extends Controller
         $shuttles = [];
         $number_of_guests = array_sum($request->number_of_guests);
         if ($request->airport_shuttle_in) {
-            $date_in = $request->arrival_time ? Carbon::parse($request->arrival_time)->format('Y-m-d H:i') : date('Y-m-d', strtotime(session("booking_dates.checkin")))." 11:00:00";
+            $date_in = $this->normalizeBookingDate($request->arrival_time, session("booking_dates.checkin") . ' 11:00:00', true);
             $flight_number_in = $request->arrival_flight ? $request->arrival_flight : "Insert flight number";
             $shuttles[] = [
                 'date' => $date_in,
@@ -1782,7 +1994,7 @@ class OrderController extends Controller
             ];
         }
         if ($request->airport_shuttle_out) {
-            $date_out = $request->departure_time ? Carbon::parse($request->departure_time)->format('Y-m-d H:i') : date('Y-m-d', strtotime(session("booking_dates.checkout")))." 11:00:00";
+            $date_out = $this->normalizeBookingDate($request->departure_time, session("booking_dates.checkout") . ' 11:00:00', true);
             $flight_number_out = $request->departure_flight ? $request->departure_flight : "Insert flight number";
             $shuttles[] = [
                 'date' => $date_out,
@@ -1887,6 +2099,7 @@ class OrderController extends Controller
         ]);
         $extra_bed_test = json_decode($order->extra_bed, true) ?? [];
         $extraBeds = ExtraBed::where('hotels_id', $hotel->id)->get();
+        $extraBedPrices = collect(json_decode($order->extra_bed_price, true) ?? []);
         $serviceLabels = [
             'Hotel' => [['label' => 'messages.Hotel', 'value' => $order->servicename]],
             'Hotel Promo' => [
@@ -1940,6 +2153,7 @@ class OrderController extends Controller
                 'promotion_discount' => $promotion_discount,
                 'agent' => $agent,
                 'extra_bed_test' => $extra_bed_test,
+                'extraBedPrices' => $extraBedPrices,
             ], $decodedData->toArray()));
         }
         return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
@@ -2986,8 +3200,9 @@ class OrderController extends Controller
         DB::transaction(function () use ($request, $order, $hotel, $number_of_guests, $agent) {
             $price_in = 0;
             $price_out = 0;
+            $date_in = $this->normalizeBookingDate($request->arrival_time, $order->checkin . ' 11:00:00', true);
+            $date_out = $this->normalizeBookingDate($request->departure_time, $order->checkout . ' 11:00:00', true);
             if ($request->airport_shuttle_in) {
-                $date_in = Carbon::parse($request->arrival_time)->format('Y-m-d H:i');
                 $price_in = $request->airport_shuttle_in_price ?: 0;
                 $arrival_flight = $request->arrival_flight ? $request->arrival_flight : "-";
                 AirportShuttle::updateOrCreate(
@@ -3009,7 +3224,6 @@ class OrderController extends Controller
                 AirportShuttle::where('order_id', $order->id)->where('nav', 'In')->delete();
             }
             if ($request->airport_shuttle_out) {
-                $date_out = Carbon::parse($request->departure_time)->format('Y-m-d H:i');
                 $price_out = $request->airport_shuttle_out_price ?: 0;
                 $departure_flight = $request->departure_flight ? $request->departure_flight : "-";
                 AirportShuttle::updateOrCreate(
@@ -3038,10 +3252,10 @@ class OrderController extends Controller
                 "airport_shuttle_price" => $airport_shuttle_price ?: null,
                 "final_price" => $final_price,
                 "arrival_flight" => $request->arrival_flight,
-                "arrival_time" => $request->arrival_time ? Carbon::parse($request->arrival_time)->format('Y-m-d H:i') : null,
+                "arrival_time" => $request->arrival_time ? $date_in : null,
                 "airport_shuttle_in" => $request->airport_shuttle_in,
                 "departure_flight" => $request->departure_flight,
-                "departure_time" => $request->departure_time ? Carbon::parse($request->departure_time)->format('Y-m-d H:i') : null,
+                "departure_time" => $request->departure_time ? $date_out : null,
                 "airport_shuttle_out" => $request->airport_shuttle_out,
                 "note" => $request->note,
                 "request_quotation" => $request->request_quotation,

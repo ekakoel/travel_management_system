@@ -163,11 +163,12 @@
                                             @if ($extra_bed_test[$index] == 'Yes')
                                                 @php
                                                     $extra_bed = $extraBeds->where('id',$extra_bed_id[$index])->first();
+                                                    $extra_bed_room_price = (float) ($extraBedPrices[$index] ?? 0);
                                                 @endphp
                                                 @if ($extra_bed)
                                                     <div class="table-service-name">
                                                         {{ $extra_bed->name }} ({{ $extra_bed->type }})
-                                                        {{ currencyFormatUsd(($extra_bed->calculatePrice($usdrates, $tax))*$order->duration) }}
+                                                        {{ currencyFormatUsd($extra_bed_room_price) }}
                                                     </div>
                                                 @else
                                                     <p class="text-danger">

@@ -79,7 +79,7 @@
                 <p class="section-subtitle">@lang('messages.Access the booking portal below to reserve services for your clients quickly and efficiently.')</p>
             </div>
             <div class="col-lg-4 wow fadeInUp text-right" data-wow-delay="0.1s">
-                <a href="{{ route('view.hotel-detail',$hotel->code) }}" class="btn-primary btn-book">@lang('messages.Book as Partner')</a>
+                <a href="{{ route('view.accommodation-detail',$hotel->code) }}" class="btn-primary btn-book">@lang('messages.Book as Partner')</a>
             </div>
         </div>
     </div>
@@ -99,4 +99,3 @@
     });
 </script>
 @endsection
-

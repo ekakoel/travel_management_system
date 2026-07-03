@@ -8,6 +8,10 @@ class CreateActivityTypesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('activity_types')) {
+            return;
+        }
+
         Schema::create('activity_types', function (Blueprint $table) {
             $table->id();
             $table->string('type');

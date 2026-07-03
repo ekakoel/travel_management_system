@@ -8,6 +8,10 @@ class CreateWeddingDinnerVenuesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('wedding_dinner_venues')) {
+            return;
+        }
+
         Schema::create('wedding_dinner_venues', function (Blueprint $table) {
             $table->id();
             $table->foreignId("wedding_id")->constrained("weddings")->onDelete("cascade");

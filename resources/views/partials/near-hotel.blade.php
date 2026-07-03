@@ -1,38 +1,53 @@
-<div class="col-md-12">
-    <div class="card-box">
-        <div class="card-box-title">
-            <div class="subtitle">
-                <i class="dw dw-building1"></i> 
-                @lang('messages.Hotels Around') {{ $hotel->region }}
-            </div>
-            <span>@lang('messages.Availability') {{ count($nearhotels) }}</span>
+<section class="availability-section availability-section--related frontend-surface-card">
+    <div class="availability-section__header">
+        <div>
+            <div class="availability-section__eyebrow">@lang('messages.Hotels Around') {{ $hotel->region }}</div>
+            <h2 class="availability-section__title">@lang('messages.Nearby Hotels')</h2>
         </div>
-        <div class="card-box-content">
-            @foreach ($nearhotels as $hotel)
-                <div class="card">
-                    @if ($hotel->promos->isNotEmpty())
-                        <div class="persen-promo" data-toggle="tooltip" data-placement="top" title="Promotion" aria-hidden="true">
-                            <img src="{{ asset('storage/icon/persen.png') }}" alt="Promo discount" loading="lazy">
-                        </div>
-                    @endif
-                    <div class="image-container">
-                        <div class="first">
-                            <ul class="card-lable">
-                                <li class="item">
-                                    <div class="meta-box">
-                                        <i class="icon-copy fa fa-map-marker" aria-hidden="true"></i>
-                                        <p class="text">{{ $hotel->region }}</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <a href="{{ route('view.hotel-detail',$hotel->code) }}">
-                            <img src="{{ getThumbnail('/hotels/hotels-cover/' . $hotel->cover,380,200) }}"  class="img-fluid rounded thumbnail-image">
-                            <div class="card-detail-title">{{ $hotel->name }}</div>
-                        </a>
-                    </div>
-                </div>
-            @endforeach
+        <div class="availability-section__range">
+            {{ count($nearhotels) }} @lang('messages.options')
         </div>
     </div>
-</div>
+
+    <div class="availability-related-grid">
+        @foreach ($nearhotels as $nearHotel)
+            <article class="availability-related-card">
+                <a class="availability-related-card__link" href="{{ route('view.accommodation-detail', $nearHotel->code) }}">
+                    <div class="availability-related-card__media">
+                        <img
+                            src="{{ $nearHotel->cover ? getThumbnail('/hotels/hotels-cover/' . $nearHotel->cover, 380, 240) : asset('storage/images/default.webp') }}"
+                            alt="{{ $nearHotel->name }}"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                        <div class="availability-related-card__badges">
+                            <span class="availability-related-card__badge">
+                                <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                {{ $nearHotel->region }}
+                            </span>
+
+                            @if ($nearHotel->promos->isNotEmpty())
+                                <span class="availability-related-card__badge availability-related-card__badge--promo">
+                                    <i class="fa fa-bolt" aria-hidden="true"></i>
+                                    @lang('messages.Promotion')
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="availability-related-card__body">
+                        <h3 class="availability-related-card__title">{{ $nearHotel->name }}</h3>
+                        <p class="availability-related-card__meta">
+                            @lang('messages.Similar stays in this area')
+                        </p>
+                        <span class="availability-related-card__action">
+                            @lang('messages.View Details')
+                            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                </a>
+            </article>
+        @endforeach
+    </div>
+</section>

@@ -8,6 +8,10 @@ class CreateHotelPricesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('hotel_prices')) {
+            return;
+        }
+
         Schema::create('hotel_prices', function (Blueprint $table) {
             $table->id();
             $table->foreignId("hotels_id")->constrained("hotels")->onDelete("cascade");

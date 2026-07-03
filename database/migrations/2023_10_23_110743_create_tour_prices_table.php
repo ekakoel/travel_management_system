@@ -13,6 +13,10 @@ class CreateTourPricesTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('tour_prices')) {
+            return;
+        }
+
         Schema::create('tour_prices', function (Blueprint $table) {
             $table->id();
             $table->string("tour_id")->constrained("tours")->onDelete("cascade");;

@@ -13,6 +13,10 @@ class CreateWeddingDinnerPackagesTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('wedding_dinner_packages')) {
+            return;
+        }
+
         Schema::create('wedding_dinner_packages', function (Blueprint $table) {
             $table->id();
             $table->string("dinner_venues_id");

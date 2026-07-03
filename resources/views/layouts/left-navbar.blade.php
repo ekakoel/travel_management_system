@@ -83,7 +83,7 @@
                             </a>
                             <ul class="submenu">
                                 <li>
-                                    <a href="{{ route('view.hotels') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.hotels') ? 'active' : '' }}">
+                                    <a href="{{ route('view.accommodation-service') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.accommodation-service') || request()->routeIs('view.accommodation-detail') || request()->routeIs('view.hotel-prices.page') ? 'active' : '' }}">
                                         <i class="icon-copy dw dw-hotel"></i> @lang("messages.Hotels")
                                     </a>
                                 </li>
@@ -233,7 +233,7 @@
                                         <span class="micon dw dw-list"></span> @lang("messages.Reservations")
                                     </a>
                                 </li> --}}
-                                {{-- @can('posDev')
+                                @can('posDev')
                                     <li class="order-count">
                                         <a href="{{ route('orders-admin') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('orders-admin') ? 'active' : '' }}">
                                             <i class="micon icon-copy dw dw-shopping-cart1" aria-hidden="true"></i> @lang("messages.Orders")
@@ -272,7 +272,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                @endcanany --}}
+                                @endcanany
                             @endcanany
                             <li class="dropdown">
                                 <a href="javascript:;" class="dropdown-toggle">

@@ -13,6 +13,10 @@ class CreateUpdateInformationTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('update_information')) {
+            return;
+        }
+
         Schema::create('update_information', function (Blueprint $table) {
             $table->id();
             $table->string('name');

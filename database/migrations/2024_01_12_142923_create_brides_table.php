@@ -13,6 +13,10 @@ class CreateBridesTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('brides')) {
+            return;
+        }
+
         Schema::create('brides', function (Blueprint $table) {
             $table->id();
             $table->string('bride');

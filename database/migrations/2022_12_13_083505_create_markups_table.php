@@ -8,6 +8,10 @@ class CreateMarkupsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('markups')) {
+            return;
+        }
+
         Schema::create('markups', function (Blueprint $table) {
             $table->id();
             $table->string("service");

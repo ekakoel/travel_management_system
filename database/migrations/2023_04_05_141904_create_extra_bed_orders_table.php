@@ -13,6 +13,10 @@ class CreateExtraBedOrdersTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('extra_bed_orders')) {
+            return;
+        }
+
         Schema::create('extra_bed_orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_id')->nullable();

@@ -8,6 +8,10 @@ class CreateHotelTypesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('hotel_types')) {
+            return;
+        }
+
         Schema::create('hotel_types', function (Blueprint $table) {
             $table->id();
             $table->foreignId("hotels_id")->constrained("hotels")->onDelete("cascade");

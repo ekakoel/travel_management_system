@@ -8,6 +8,10 @@ class CreateBookingCodesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('booking_codes')) {
+            return;
+        }
+
         Schema::create('booking_codes', function (Blueprint $table) {
             $table->id();
             $table->string('name');

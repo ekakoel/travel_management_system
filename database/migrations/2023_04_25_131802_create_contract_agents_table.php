@@ -13,6 +13,10 @@ class CreateContractAgentsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('contract_agents')) {
+            return;
+        }
+
         Schema::create('contract_agents', function (Blueprint $table) {
             $table->id();
             $table->string('contract_no');

@@ -13,6 +13,10 @@ class CreateManualBooksTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('manual_books')) {
+            return;
+        }
+
         Schema::create('manual_books', function (Blueprint $table) {
             $table->id();
             $table->string('name');

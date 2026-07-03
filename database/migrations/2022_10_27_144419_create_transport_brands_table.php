@@ -8,6 +8,10 @@ class CreateTransportBrandsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('transport_brands')) {
+            return;
+        }
+
         Schema::create('transport_brands', function (Blueprint $table) {
             $table->id();
             $table->string('brand');

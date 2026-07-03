@@ -8,6 +8,10 @@ class CreateTourTypesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('tour_types')) {
+            return;
+        }
+
         Schema::create('tour_types', function (Blueprint $table) {
             $table->id();
             $table->string('type');

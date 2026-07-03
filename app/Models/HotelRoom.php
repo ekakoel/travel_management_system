@@ -27,12 +27,19 @@ class HotelRoom extends Model
         'amenities',
         'amenities_traditional',
         'amenities_simplified',
+        'include',
+        'include_traditional',
+        'include_simplified',
         'additional_info',
         'additional_info_traditional',
         'additional_info_simplified',
         'status',
-        'include',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'Active');
+    }
 
     public function hotels(){
         return $this->belongsTo(Hotels::class,'hotels_id');

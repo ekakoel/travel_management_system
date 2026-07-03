@@ -86,34 +86,30 @@
     <div class="header-right">
         {{-- <div><p>{{ count($adm_order_wedding_draft) }}</p></div> --}}
         {{-- @if (app()->getLocale() == 'en')
-            <div class="language"><a href="{{ url('lang/zh') }}"><i class="fa fa-language" aria-hidden="true"></i> 中文</a></div>
-        @else
-            <div class="language"><a href="{{ url('lang/en') }}"><i class="fa fa-language" aria-hidden="true"></i> English</a></div>
-        @endif --}}
+                        English
+                    @elseif (app()->getLocale() == 'zh')
+                        繁體中文
+                    @else
+                        简体中文
+                    @endif --}}
         @if (!request()->isMethod('post'))
             <a class="dropdown-togle" href="#" role="button" data-toggle="dropdown">
                 <div class="lang-dropdown m-r-18">
                     <div class="dropdown">
                         <div class="lang-icon">
                             @if (app()->getLocale() == 'en')
-                                <i class="fa fa-language" aria-hidden="true"></i> English
-                            @elseif (app()->getLocale() == 'zh')
-                                <i class="fa fa-language" aria-hidden="true"></i> 繁體中文
-                            @else
-                                <i class="fa fa-language" aria-hidden="true"></i> 简体中文
-                            @endif
+                        English
+                    @elseif (app()->getLocale() == 'zh')
+                        繁體中文
+                    @else
+                        简体中文
+                    @endif
                         </div>
                         
                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                            <a class="dropdown-item" href="{{ url('lang/en?redirect=' . urlencode(request()->fullUrl())) }}">
-                                <i class="fa fa-language" aria-hidden="true"></i> English
-                            </a>
-                            <a class="dropdown-item" href="{{ url('lang/zh?redirect=' . urlencode(request()->fullUrl())) }}">
-                                <i class="fa fa-language" aria-hidden="true"></i> 繁體中文
-                            </a>
-                            <a class="dropdown-item" href="{{ url('lang/zh-CN?redirect=' . urlencode(request()->fullUrl())) }}">
-                                <i class="fa fa-language" aria-hidden="true"></i> 简体中文
-                            </a>
+                            <a class="dropdown-item" href="{{ language_switch_url('en') }}"><i class="fa fa-language" aria-hidden="true"></i>English</a>
+                    <a class="dropdown-item" href="{{ language_switch_url('zh') }}"><i class="fa fa-language" aria-hidden="true"></i> 繁體中文</a>
+                    <a class="dropdown-item" href="{{ language_switch_url('zh-CN') }}"><i class="fa fa-language" aria-hidden="true"></i> 简体中文</a>
                         </div>
                     </div>
                 </div>

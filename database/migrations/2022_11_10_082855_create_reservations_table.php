@@ -8,6 +8,10 @@ class CreateReservationsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('reservations')) {
+            return;
+        }
+
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->string('rsv_no');

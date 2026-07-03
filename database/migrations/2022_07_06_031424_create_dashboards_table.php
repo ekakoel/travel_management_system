@@ -13,6 +13,10 @@ class CreateDashboardsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('dashboards')) {
+            return;
+        }
+
         Schema::create('dashboards', function (Blueprint $table) {
             $table->id();
             $table->timestamps();

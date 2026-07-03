@@ -8,6 +8,10 @@ class CreateAdditionalServicesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('additional_services')) {
+            return;
+        }
+
         Schema::create('additional_services', function (Blueprint $table) {
             $table->id();
             $table->integer('rsv_id');

@@ -8,6 +8,10 @@ class CreateRestaurantRsvsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('restaurant_rsvs')) {
+            return;
+        }
+
         Schema::create('restaurant_rsvs', function (Blueprint $table) {
             $table->id();
             $table->string('rsv_id');

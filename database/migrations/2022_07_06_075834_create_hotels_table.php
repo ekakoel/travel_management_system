@@ -8,6 +8,10 @@ class CreateHotelsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('hotels')) {
+            return;
+        }
+
         Schema::create('hotels', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');

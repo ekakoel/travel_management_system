@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
+        if (Schema::hasTable('spk_destinations')) {
+            return;
+        }
+
         Schema::create('spk_destinations', function (Blueprint $table) {
             $table->id();
             $table->datetime('date')->nullable();

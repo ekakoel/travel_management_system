@@ -32,9 +32,9 @@
                                 @endif
                             </a>
                             <ul class="dropdown-menu shadow-sm m-0" aria-labelledby="langDropdown">
-                                <li><a class="dropdown-item" href="{{ url('lang/en') }}"><i class="fa fa-language"></i> English</a></li>
-                                <li><a class="dropdown-item" href="{{ url('lang/zh') }}"><i class="fa fa-language"></i> 繁體中文 (Chinese Traditional)</a></li>
-                                <li><a class="dropdown-item" href="{{ url('lang/zh-CN') }}"><i class="fa fa-language"></i> 简体中文 (Chinese Simplified)</a></li>
+                                <li><a class="dropdown-item" href="{{ language_switch_url('en') }}"><i class="fa fa-language"></i> English</a></li>
+                                <li><a class="dropdown-item" href="{{ language_switch_url('zh') }}"><i class="fa fa-language"></i> 繁體中文 (Chinese Traditional)</a></li>
+                                <li><a class="dropdown-item" href="{{ language_switch_url('zh-CN') }}"><i class="fa fa-language"></i> 简体中文 (Chinese Simplified)</a></li>
                             </ul>
                         </div>
                     </div>

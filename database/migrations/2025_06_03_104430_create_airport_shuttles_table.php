@@ -7,6 +7,10 @@ class CreateAirportShuttlesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('airport_shuttles')) {
+            return;
+        }
+
         Schema::create('airport_shuttles', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('date')->nullable();

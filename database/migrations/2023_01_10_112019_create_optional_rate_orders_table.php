@@ -8,6 +8,10 @@ class CreateOptionalRateOrdersTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('optional_rate_orders')) {
+            return;
+        }
+
         Schema::create('optional_rate_orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId("order_id")->constrained("orders")->onDelete("cascade");

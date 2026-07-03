@@ -8,6 +8,10 @@ class CreateAdditionalInvoicesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('additional_invoices')) {
+            return;
+        }
+
         Schema::create('additional_invoices', function (Blueprint $table) {
             $table->id();
             $table->integer('inv_id');

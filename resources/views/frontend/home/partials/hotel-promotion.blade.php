@@ -1,34 +1,35 @@
- <!-- Hotel Promotion -->
- <div class="container-fluid py-5 my-5">
+<section class="home-section home-promo-section">
     <div class="container">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h1 class="display-6">@lang('messages.Exclusive Hotel Promotions')</h1>
-            <p class="text-primary fs-5 mb-3">@lang('messages.Unlock Special Hotel Offers and Maximize Your Profit with Bali Kami Tour.')</p>
-        </div>
-        <div class="swiper mySwiper">
-            <div class="swiper-wrapper fadeInUp" data-wow-delay="0.1s">
-                @forelse($promos as $promo)
-                    <div class="swiper-slide">
-                        <a href="{{ route('view.hotel-detail',$promo->hotels?->code) }}">
-                            <div class="slide-content">
-                                <img src="{{ getThumbnail('hotels/hotels-cover/' . $promo->hotels->cover,600,900) }}" alt="{{ $promo->hotels->name." Promotion" }}">
-                                <div class="slide-info">
-                                    <h3 class="slide-name">{{ $promo->hotels->name }}</h3>
-                                    <p class="slide-promo">{{ $promo->promotion_type }}</p>
-                                    <span class="slide-dates">{{ dateFormat($promo->periode_start) }} - {{ dateFormat($promo->periode_end) }}</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                @empty
-                    <p>@lang('messages.No promotions available.')</p>
-                @endforelse
+        <div class="home-promo-section__head wow fadeInUp" data-wow-delay="0.1s">
+            <div class="home-section-heading home-promo-section__heading">
+                <span class="home-section-heading__eyebrow">{{ __('home.promo.eyebrow') }}</span>
+                <h2 class="home-section-heading__title">{{ __('home.promo.title') }}</h2>
+                <p class="home-section-heading__subtitle">{{ __('home.promo.subtitle') }}</p>
             </div>
-            <!-- Pagination -->
-            <div class="swiper-pagination"></div>
-            <!-- Navigator -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
+
+            <div class="home-promo-section__summary">
+                <span class="home-promo-section__count">{{ trans_choice('home.promo.active_offers', $promos->count(), ['count' => $promos->count()]) }}</span>
+                <a class="home-promo-section__link" href="{{ route('view.accommodation-service') }}">
+                    {{ __('home.promo.explore_all') }}
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
+
+        @include('partials.frontend-loop-swiper', [
+            'items' => $promos,
+            'minimumRenderedSlides' => 24,
+            'slidePartial' => 'frontend.home.partials.hotel-promotion-slide',
+            'slideVariable' => 'promo',
+            'swiperClass' => 'hotel-promo-swiper mySwiper',
+            'wrapperClass' => 'fadeInUp',
+            'wrapperDelay' => '0.1s',
+            'swiperEffect' => 'slide',
+            'swiperSpeed' => 650,
+            'showNavigation' => true,
+            'showPagination' => false,
+            'emptyMessage' => __('home.promo.empty'),
+            'emptyMessageClass' => 'text-center',
+        ])
     </div>
-</div>
+</section>

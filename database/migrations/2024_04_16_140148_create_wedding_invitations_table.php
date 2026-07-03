@@ -8,6 +8,10 @@ class CreateWeddingInvitationsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('wedding_invitations')) {
+            return;
+        }
+
         Schema::create('wedding_invitations', function (Blueprint $table) {
             $table->id();
             $table->integer("wedding_planner_id")->nullable();

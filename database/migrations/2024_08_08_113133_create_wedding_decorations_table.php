@@ -13,6 +13,10 @@ class CreateWeddingDecorationsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('wedding_decorations')) {
+            return;
+        }
+
         Schema::create('wedding_decorations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('hotel_id')->nullable();

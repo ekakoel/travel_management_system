@@ -13,6 +13,10 @@ class CreateTransactionsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('transactions')) {
+            return;
+        }
+
         Schema::create('transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('receipt');

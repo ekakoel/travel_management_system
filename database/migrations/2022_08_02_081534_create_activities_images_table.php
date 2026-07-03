@@ -8,6 +8,10 @@ class CreateActivitiesImagesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('activities_images')) {
+            return;
+        }
+
         Schema::create('activities_images', function (Blueprint $table) {
             $table->id();
             $table->string("image");

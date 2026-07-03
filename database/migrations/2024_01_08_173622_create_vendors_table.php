@@ -8,6 +8,10 @@ class CreateVendorsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('vendors')) {
+            return;
+        }
+
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
             $table->text('cover')->nulable();

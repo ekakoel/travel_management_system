@@ -57,7 +57,7 @@ class HotelPackage extends Model
     }
     public function calculatePrice($usdrates, $tax)
     {
-        $package_c_rate = $this->contract_rate;
+        $package_c_rate = $this->contract_rate * max((int) $this->duration, 1);
         $package_usd = (ceil($package_c_rate / $usdrates->rate)) + $this->markup;
         $package_tax = ceil($package_usd * ($tax->tax / 100));
         return $package_usd + $package_tax;
@@ -65,7 +65,7 @@ class HotelPackage extends Model
 
     public function calculateTax($usdrates, $tax)
     {
-        $package_c_rate = $this->contract_rate;
+        $package_c_rate = $this->contract_rate * max((int) $this->duration, 1);
         $package_usd = (ceil($package_c_rate / $usdrates->rate)) + $this->markup;
         $package_tax = ceil($package_usd * ($tax->tax / 100));
         return $package_tax;

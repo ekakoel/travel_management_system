@@ -13,6 +13,10 @@ class CreateWeddingPlannerTransportsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('wedding_planner_transports')) {
+            return;
+        }
+
         Schema::create('wedding_planner_transports', function (Blueprint $table) {
             $table->id();
             $table->integer('wedding_planner_id');

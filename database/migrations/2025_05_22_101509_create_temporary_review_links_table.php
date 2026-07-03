@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('temporary_review_links')) {
+            return;
+        }
+
         Schema::create('temporary_review_links', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('agent')->nullable();

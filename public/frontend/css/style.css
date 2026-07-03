@@ -287,27 +287,20 @@ p{
   filter: blur(3px);
 } */
 
-.swiper {
-  width: 100%;
-  height: 500px;
-  padding: 18px 80px;
-  box-sizing: border-box;
+.hotel-promo-swiper {
+  --loop-swiper-height: 500px;
+  --loop-swiper-padding-inline: 80px;
+  --loop-swiper-slide-width: 300px;
+  --loop-swiper-slide-height: 450px;
 }
 
-.swiper-slide {
-  width: 300px;
-  height: 450px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-  overflow: hidden;
-  filter: blur(2px);
-  transition: filter 0.4s ease, transform 0.4s ease;
-  box-shadow: 0 0 10px 0px #00000066;
+.hotel-promo-swiper .swiper-slide a {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
-.swiper-slide img {
+.hotel-promo-swiper .swiper-slide img {
     filter: grayscale(0.7);
     width: 100%;
     height: 100%;
@@ -316,53 +309,13 @@ p{
     transition: transform 0.8s ease; /* efek smooth */
 }
 
-/* slide aktif lebih besar + clear */
-.swiper-slide-active {
-  filter: blur(0);
-  transform: scale(1.1);
-}
-
-.swiper-slide-active img {
+.hotel-promo-swiper .swiper-slide-active img {
     filter: grayscale(0);
   transform: scale(1.15);
   margin-bottom: 15px;
 }
 
-/* kiri kanan blur lebih halus */
-.swiper-slide-prev,
-.swiper-slide-next {
-  filter: blur(0.5px);
-}
-
-/* navigator dalam lingkaran */
-.swiper-button-next,
-.swiper-button-prev {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
-  color: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  background: rgba(255, 255, 255, 0.9);
-  transform: scale(1.1);
-}
-.swiper-button-next:active,
-.swiper-button-prev:active {
-  transform: scale(0.95);
-}
-.swiper-button-next::after,
-.swiper-button-prev::after {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.slide-content {
+.hotel-promo-swiper .slide-content {
     height: 450px;
     display: flex;
     flex-direction: column;
@@ -371,7 +324,7 @@ p{
     background-color: #ffffff;
 }
 
-.slide-content img {
+.hotel-promo-swiper .slide-content img {
   /* width: 100%; */
   height: 100%;
   object-fit: cover;
@@ -379,7 +332,7 @@ p{
   transition: transform 0.8s ease;
 }
 
-.swiper-slide .slide-info {
+.hotel-promo-swiper .swiper-slide .slide-info {
     position: absolute;
     bottom: 0;
     background-color: rgb(255, 255, 255);
@@ -387,27 +340,27 @@ p{
     width: 100%;
     padding: 15px;
 }
-.swiper-slide-active .slide-info {
+.hotel-promo-swiper .swiper-slide-active .slide-info {
     background-color: rgb(255, 255, 255);
     color: #333;
     width: 100%;
     padding: 15px;
 }
 
-.slide-name {
+.hotel-promo-swiper .slide-name {
   font-size: 18px;
   font-weight: 700;
   margin: 5px 0;
 }
 
-.slide-promo {
+.hotel-promo-swiper .slide-promo {
   font-size: 14px;
   font-weight: 500;
   color: #555;
   margin: 2px 0;
 }
 
-.slide-dates {
+.hotel-promo-swiper .slide-dates {
   font-size: 13px;
   color: #777;
 }

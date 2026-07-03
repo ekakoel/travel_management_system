@@ -8,6 +8,10 @@ class CreateTransportsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('transports')) {
+            return;
+        }
+
         Schema::create('transports', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');

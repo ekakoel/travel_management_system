@@ -1,0 +1,98 @@
+.frontend-loop-swiper {
+  --loop-swiper-height: 500px;
+  --loop-swiper-padding-inline: 80px;
+  --loop-swiper-slide-width: 300px;
+  --loop-swiper-slide-height: 450px;
+  --loop-swiper-slide-radius: 8px;
+  --loop-swiper-slide-shadow: 0 0 10px 0 #00000066;
+  --loop-swiper-slide-blur: 2px;
+  --loop-swiper-neighbor-blur: 0.5px;
+  --loop-swiper-active-scale: 1.1;
+  --loop-swiper-active-image-scale: 1.15;
+  --loop-swiper-slide-transition: 0.4s ease;
+  --loop-swiper-image-transition: 0.8s ease;
+  --loop-swiper-nav-size: 45px;
+  --loop-swiper-nav-bg: rgba(255, 255, 255, 0.6);
+  --loop-swiper-nav-bg-hover: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  height: var(--loop-swiper-height);
+  padding: 18px var(--loop-swiper-padding-inline);
+  box-sizing: border-box;
+}
+
+.frontend-loop-swiper .swiper-wrapper {
+  align-items: center;
+}
+
+.frontend-loop-swiper .swiper-slide {
+  margin: 0 8px;
+  width: var(--loop-swiper-slide-width);
+  height: var(--loop-swiper-slide-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--loop-swiper-slide-radius);
+  overflow: hidden;
+  filter: blur(var(--loop-swiper-slide-blur));
+  transition: filter var(--loop-swiper-slide-transition), transform var(--loop-swiper-slide-transition);
+  box-shadow: var(--loop-swiper-slide-shadow);
+}
+
+.frontend-loop-swiper .swiper-slide-active {
+  filter: blur(0);
+  transform: scale(var(--loop-swiper-active-scale));
+}
+
+.frontend-loop-swiper .swiper-slide-prev,
+.frontend-loop-swiper .swiper-slide-next {
+  filter: blur(var(--loop-swiper-neighbor-blur));
+}
+
+.frontend-loop-swiper .swiper-button-next,
+.frontend-loop-swiper .swiper-button-prev {
+  width: var(--loop-swiper-nav-size);
+  height: var(--loop-swiper-nav-size);
+  border-radius: 50%;
+  background: var(--loop-swiper-nav-bg);
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.frontend-loop-swiper .swiper-button-next:hover,
+.frontend-loop-swiper .swiper-button-prev:hover {
+  background: var(--loop-swiper-nav-bg-hover);
+  transform: scale(1.1);
+}
+
+.frontend-loop-swiper .swiper-button-next:active,
+.frontend-loop-swiper .swiper-button-prev:active {
+  transform: scale(0.95);
+}
+
+.frontend-loop-swiper .swiper-button-next::after,
+.frontend-loop-swiper .swiper-button-prev::after {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+@media (max-width: 991.98px) {
+  .frontend-loop-swiper {
+    --loop-swiper-padding-inline: 48px;
+    --loop-swiper-slide-width: 260px;
+    --loop-swiper-slide-height: 400px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .frontend-loop-swiper {
+    --loop-swiper-height: 440px;
+    --loop-swiper-padding-inline: 24px;
+    --loop-swiper-slide-width: 220px;
+    --loop-swiper-slide-height: 340px;
+    --loop-swiper-active-scale: 1.04;
+    --loop-swiper-active-image-scale: 1.08;
+  }
+}

@@ -18,6 +18,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Orders extends Model
 {
     use HasFactory;
+
+    protected static function booted()
+    {
+        static::creating(function ($order) {
+            if ($order->confirmation_order === null) {
+                $order->confirmation_order = '';
+            }
+        });
+    }
+
     protected $fillable = [
         'orderno',
         'confirmation_order',

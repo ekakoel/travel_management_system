@@ -8,6 +8,10 @@ class CreateBankAccountsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('bank_accounts')) {
+            return;
+        }
+
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('bank');

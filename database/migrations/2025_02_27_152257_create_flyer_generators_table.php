@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('flyer_generators')) {
+            return;
+        }
+
         Schema::create('flyer_generators', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId("hotel_id")->constrained("hotels")->onDelete("cascade");

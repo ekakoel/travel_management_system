@@ -25,7 +25,7 @@
                 {{ $hotel->region }}
             </a>
         </div>
-        <a href="{{ route('view.hotel-detail',$hotel->code) }}">
+        <a href="{{ route('view.accommodation-detail',$hotel->code) }}">
             <img src="{{ $hotel->cover?getThumbnail('/hotels/hotels-cover/' . $hotel->cover,380,200):getThumbnail('/storage/images/default.webp',380,200) }}" class="thumbnail-image" loading="lazy">
             <div class="card-detail-title">{{ $hotel->name }}</div>
         </a>

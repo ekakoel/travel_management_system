@@ -1245,7 +1245,7 @@
                                 </div>
                             </td>
                             <td style="text-align: right;">
-                                {{ currencyFormatUsd(((($extrabed_price/$jml_extra_bed)/$jml_extra_bed)/$order->duration)) }}
+                                {{ currencyFormatUsd($extra_bed_unit_price) }}
                             </td>
                             <td style="text-align: right;">
                                 {{ $jml_extra_bed }}
@@ -1254,7 +1254,7 @@
                                 {{ $order->duration }}
                             </td>
                             <td style="text-align: right;">
-                                {{ currencyFormatUsd($extrabed_price/$jml_extra_bed) }}
+                                {{ currencyFormatUsd($extrabed_price) }}
                             </td>
                         </tr>
                     @endif

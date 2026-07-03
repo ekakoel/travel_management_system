@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('villa_prices')) {
+            return;
+        }
+
         Schema::create('villa_prices', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('villa_id')->constrained()->onDelete('cascade');

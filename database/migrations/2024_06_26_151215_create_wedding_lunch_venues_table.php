@@ -8,6 +8,10 @@ class CreateWeddingLunchVenuesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('wedding_lunch_venues')) {
+            return;
+        }
+
         Schema::create('wedding_lunch_venues', function (Blueprint $table) {
             $table->id();
             $table->integer('hotel_id');

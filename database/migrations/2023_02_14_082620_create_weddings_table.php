@@ -8,6 +8,10 @@ class CreateWeddingsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('weddings')) {
+            return;
+        }
+
         Schema::create('weddings', function (Blueprint $table) {
             $table->id();
             $table->string('code')->uniqid;

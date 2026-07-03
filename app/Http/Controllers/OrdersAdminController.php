@@ -87,6 +87,33 @@ class OrdersAdminController extends Controller
         $this->middleware(['auth']);
         // $this->middleware(['auth','can:isAdmin']);
     }
+
+    private function buildExtraBedSummary($encodedExtraBedPrice, $duration): array
+    {
+        $prices = collect(json_decode($encodedExtraBedPrice, true) ?? [])
+            ->map(function ($price) {
+                return (float) $price;
+            })
+            ->filter(function ($price) {
+                return $price > 0;
+            })
+            ->values();
+
+        $quantity = $prices->count();
+        $total = (float) $prices->sum();
+        $durationNights = max(1, (int) $duration);
+        $roomTotal = $quantity > 0 ? $total / $quantity : 0;
+        $unitPrice = $roomTotal / $durationNights;
+
+        return [
+            'prices' => $prices->all(),
+            'count' => $prices->count(),
+            'quantity' => $quantity,
+            'total' => $total,
+            'room_total' => $roomTotal,
+            'unit_price' => $unitPrice,
+        ];
+    }
     
     public function index()
     {
@@ -2507,21 +2534,12 @@ class OrdersAdminController extends Controller
         $guide = Guide::where('id',$order->guide_id)->first();
         $driver = Drivers::where('id',$order->driver_id)->first();
 
-        $ebp = json_decode($order->extra_bed_price);
-        if(isset($ebp)){
-            $extrabed_price = array_sum($ebp);
-            $jml_extra_bed = 0;
-            $cebp = count($ebp);
-            for ($i=0; $i < $cebp; $i++) { 
-                if ($ebp[$i]>0) {
-                    $jml_extra_bed = $jml_extra_bed + 1;
-                }
-            }
-        }else{
-            $cebp = 0;
-            $jml_extra_bed = 0;
-            $extrabed_price = 0;
-        }
+        $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
+        $extrabed_price = $extraBedSummary['total'];
+        $jml_extra_bed = $extraBedSummary['quantity'];
+        $cebp = $extraBedSummary['count'];
+        $extra_bed_room_price = $extraBedSummary['room_total'];
+        $extra_bed_unit_price = $extraBedSummary['unit_price'];
     
         if ($order->service == "Tour Package"){
             $amount = $order->price_total;
@@ -2706,21 +2724,12 @@ class OrdersAdminController extends Controller
         $guide = Guide::where('id',$order->guide_id)->first();
         $driver = Drivers::where('id',$order->driver_id)->first();
         
-        $ebp = json_decode($order->extra_bed_price);
-        if(isset($ebp)){
-            $extrabed_price = array_sum($ebp);
-            $jml_extra_bed = 0;
-            $cebp = count($ebp);
-            for ($i=0; $i < $cebp; $i++) { 
-                if ($ebp[$i]>0) {
-                    $jml_extra_bed = $jml_extra_bed + 1;
-                }
-            }
-        }else{
-            $cebp = 0;
-            $jml_extra_bed = 0;
-            $extrabed_price = 0;
-        }
+        $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
+        $extrabed_price = $extraBedSummary['total'];
+        $jml_extra_bed = $extraBedSummary['quantity'];
+        $cebp = $extraBedSummary['count'];
+        $extra_bed_room_price = $extraBedSummary['room_total'];
+        $extra_bed_unit_price = $extraBedSummary['unit_price'];
     
         if ($order->service == "Tour Package"){
             $amount = $order->price_total;
@@ -2858,6 +2867,8 @@ class OrdersAdminController extends Controller
                 'amount'=>$amount,
                 'jml_extra_bed'=>$jml_extra_bed,
                 'extrabed_price'=>$extrabed_price,
+                'extra_bed_room_price'=>$extra_bed_room_price,
+                'extra_bed_unit_price'=>$extra_bed_unit_price,
                 'cebp'=>$cebp,
                 'opsirate_order_date'=>$opsirate_order_date,
                 'opsirate_order_nog'=>$opsirate_order_nog,
@@ -2910,6 +2921,8 @@ class OrdersAdminController extends Controller
                 'amount'=>$amount,
                 'jml_extra_bed'=>$jml_extra_bed,
                 'extrabed_price'=>$extrabed_price,
+                'extra_bed_room_price'=>$extra_bed_room_price,
+                'extra_bed_unit_price'=>$extra_bed_unit_price,
                 'cebp'=>$cebp,
                 'opsirate_order_date'=>$opsirate_order_date,
                 'opsirate_order_nog'=>$opsirate_order_nog,
@@ -3018,21 +3031,12 @@ class OrdersAdminController extends Controller
         }
         $pdsc = json_decode($order->promotion_disc);
 
-        $ebp = json_decode($order->extra_bed_price);
-        if(isset($ebp)){
-            $extrabed_price = array_sum($ebp);
-            $jml_extra_bed = 0;
-            $cebp = count($ebp);
-            for ($i=0; $i < $cebp; $i++) { 
-                if ($ebp[$i]>0) {
-                    $jml_extra_bed = $jml_extra_bed + 1;
-                }
-            }
-        }else{
-            $cebp = 0;
-            $jml_extra_bed = 0;
-            $extrabed_price = 0;
-        }
+        $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
+        $extrabed_price = $extraBedSummary['total'];
+        $jml_extra_bed = $extraBedSummary['quantity'];
+        $cebp = $extraBedSummary['count'];
+        $extra_bed_room_price = $extraBedSummary['room_total'];
+        $extra_bed_unit_price = $extraBedSummary['unit_price'];
         if (isset($pdsc)) {
             $promotion_disc = array_sum($pdsc);
         }else{
@@ -3230,6 +3234,8 @@ class OrdersAdminController extends Controller
             'amount'=>$amount,
             'jml_extra_bed'=>$jml_extra_bed,
             'extrabed_price'=>$extrabed_price,
+            'extra_bed_room_price'=>$extra_bed_room_price,
+            'extra_bed_unit_price'=>$extra_bed_unit_price,
             'cebp'=>$cebp,
             'promotion_disc'=>$promotion_disc,
             'bankAccount'=>$bankAccount,
@@ -3364,21 +3370,12 @@ class OrdersAdminController extends Controller
         $bankAccount = BankAccount::where("id",1)->first();
         $pdsc = json_decode($order->promotion_disc);
 
-        $ebp = json_decode($order->extra_bed_price);
-        if(isset($ebp)){
-            $extrabed_price = array_sum($ebp);
-            $jml_extra_bed = 0;
-            $cebp = count($ebp);
-            for ($i=0; $i < $cebp; $i++) { 
-                if ($ebp[$i]>0) {
-                    $jml_extra_bed = $jml_extra_bed + 1;
-                }
-            }
-        }else{
-            $cebp = 0;
-            $jml_extra_bed = 0;
-            $extrabed_price = 0;
-        }
+        $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
+        $extrabed_price = $extraBedSummary['total'];
+        $jml_extra_bed = $extraBedSummary['quantity'];
+        $cebp = $extraBedSummary['count'];
+        $extra_bed_room_price = $extraBedSummary['room_total'];
+        $extra_bed_unit_price = $extraBedSummary['unit_price'];
         if (isset($pdsc)) {
             $promotion_disc = array_sum($pdsc);
         }else{
@@ -3488,6 +3485,8 @@ class OrdersAdminController extends Controller
             'amount'=>$amount,
             'jml_extra_bed'=>$jml_extra_bed,
             'extrabed_price'=>$extrabed_price,
+            'extra_bed_room_price'=>$extra_bed_room_price,
+            'extra_bed_unit_price'=>$extra_bed_unit_price,
             'cebp'=>$cebp,
             'promotion_disc'=>$promotion_disc,
             'bankAccount'=>$bankAccount,
@@ -3578,21 +3577,12 @@ class OrdersAdminController extends Controller
         $bankAccount = BankAccount::where("id",1)->first();
         $pdsc = json_decode($order->promotion_disc);
 
-        $ebp = json_decode($order->extra_bed_price);
-        if(isset($ebp)){
-            $extrabed_price = array_sum($ebp);
-            $jml_extra_bed = 0;
-            $cebp = count($ebp);
-            for ($i=0; $i < $cebp; $i++) { 
-                if ($ebp[$i]>0) {
-                    $jml_extra_bed = $jml_extra_bed + 1;
-                }
-            }
-        }else{
-            $cebp = 0;
-            $jml_extra_bed = 0;
-            $extrabed_price = 0;
-        }
+        $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
+        $extrabed_price = $extraBedSummary['total'];
+        $jml_extra_bed = $extraBedSummary['quantity'];
+        $cebp = $extraBedSummary['count'];
+        $extra_bed_room_price = $extraBedSummary['room_total'];
+        $extra_bed_unit_price = $extraBedSummary['unit_price'];
 
         // if (isset($optional_rate_orders->optional_rate_id)){
         //     $opsirate_order_date = json_decode($optional_rate_orders->service_date);
@@ -3690,6 +3680,8 @@ class OrdersAdminController extends Controller
             'amount'=>$amount,
             'jml_extra_bed'=>$jml_extra_bed,
             'extrabed_price'=>$extrabed_price,
+            'extra_bed_room_price'=>$extra_bed_room_price,
+            'extra_bed_unit_price'=>$extra_bed_unit_price,
             'cebp'=>$cebp,
             // 'opsirate_order_date'=>$opsirate_order_date,
             // 'opsirate_order_nog'=>$opsirate_order_nog,

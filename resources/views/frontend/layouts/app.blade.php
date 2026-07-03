@@ -32,7 +32,19 @@
     <!-- Template Stylesheet -->
     <link href="{{ asset('/frontend/css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('/frontend/css/custom_style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-base.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-page-shell.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-layout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-components.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-forms.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-swiper.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-availability-family.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/frontend-footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/hotel-check-price-card.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    @stack('styles')
 </head>
 <body>
     {{-- @include('layouts.home.navbar') --}}
@@ -43,9 +55,7 @@
         </div>
     </div>
     <a href="#" id="backToTopBtn" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top" style="display: none; place-content: center;"><i class="bi bi-arrow-up"></i></a>
-    {{-- @include('layouts.home.script') --}}
-    @include('home.partials.footer')
-    {{-- @include('frontend.layouts.footer') --}}
+    @include('frontend.layouts.footer-modern')
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -55,8 +65,13 @@
     <script src="{{ asset('/frontend/lib/waypoints/waypoints.min.js') }}"></script>
     <script src="{{ asset('/frontend/lib/owlcarousel/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('/frontend/lib/counterup/counterup.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     <!-- Template Javascript -->
-    <script src="{{ asset('/frontend/js/main.js') }}"></script>
+    <script src="{{ asset('/frontend/js/main.js') }}?v={{ filemtime(public_path('frontend/js/main.js')) }}"></script>
+    <script src="{{ asset('/frontend/js/components/frontend-hotel-check-price.js') }}?v={{ filemtime(public_path('frontend/js/components/frontend-hotel-check-price.js')) }}"></script>
+    <script src="{{ asset('/frontend/js/components/frontend-loop-swiper.js') }}?v={{ filemtime(public_path('frontend/js/components/frontend-loop-swiper.js')) }}"></script>
+    @stack('scripts')
 </body>
 </html>

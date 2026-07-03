@@ -13,6 +13,10 @@ class CreateExtraBedsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('extra_beds')) {
+            return;
+        }
+
         Schema::create('extra_beds', function (Blueprint $table) {
             $table->id();
             $table->timestamps();

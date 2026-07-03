@@ -13,6 +13,10 @@ class CreatePaymentConfirmationsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('payment_confirmations')) {
+            return;
+        }
+
         Schema::create('payment_confirmations', function (Blueprint $table) {
             $table->id();
             $table->foreignId("kurs_id")->constrained("usd_rates")->onDelete("cascade");

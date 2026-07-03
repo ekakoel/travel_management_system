@@ -96,7 +96,30 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     // ---------------------------------------------------
     Route::get('/',[FrontEndController::class,'index'])->name('home');
     Route::get('/accommodations',[FrontEndController::class,'accommodation_service'])->name('view.accommodation-service');
-    Route::get('/accommodation/{code}', [FrontEndController::class, 'accommodation_detail'])->name('view.accommodation-detail');
+    Route::get('/accommodation/{code}', [FrontEndController::class, 'accommodation_detail'])
+        ->where('code', '^(?!price-).+$')
+        ->name('view.accommodation-detail');
+    Route::post('/booking-code/remove', [FrontEndController::class, 'remove_booking_code'])->name('bookingcode.remove');
+    Route::get('/hotel/{code}', function (Request $request, $code) {
+        $parameters = ['code' => $code];
+
+        if ($request->boolean('check_price')) {
+            $parameters['check_price'] = 1;
+        }
+
+        return redirect()->route('view.accommodation-detail', $parameters);
+    })->name('view.hotel-detail');
+    Route::get('/hotel-{code}', function (Request $request, $code) {
+        $parameters = ['code' => $code];
+
+        if ($request->boolean('check_price')) {
+            $parameters['check_price'] = 1;
+        }
+
+        return redirect()->route('view.accommodation-detail', $parameters);
+    })->where('code', '^(?!price-).+$')->name('view.hotel-detail-flyer');
+    Route::get('/accommodation/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.accommodation-check-price');
+    Route::get('/hotel/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.hotel-check-price');
     Route::get('/transportations',[FrontEndController::class,'transport_service'])->name('view.transport-service');
 
     // ================================================================================================================================= DONE
@@ -189,7 +212,7 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::get('/contract-inv', [OrdersAdminController::class, 'confirmation_order']);
     // ---------------------------------------------------
 
-    Route::get('lang/{locale}',[LocalizationController::class,'changeLanguage']);
+    Route::get('lang/{locale}',[LocalizationController::class,'changeLanguage'])->name('language.switch');
     // Route::get('/', function () {return view('/home');});
     // Route::get('/', function () {return redirect('/home');});
     Route::get('change-password', [ForgotPasswordController::class, 'forgetPassword'])->name('change.password.get');
@@ -889,11 +912,28 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             Route::get('/hotels/autocomplete-region', [HotelsController::class, 'autocompleteRegion'])->name('hotels.autocompleteRegion');
             Route::get('/hotels/load-more', [HotelsController::class, 'loadMore'])->name('hotels.load-more');
             Route::post('/search-hotels',[HotelsController::class,'search_hotel'])->name('view.hotels-search');
-            Route::get('/hotel-{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail-flyer');
-            Route::get('/hotel/{code}',[HotelsController::class,'hoteldetail'])->name('view.hotel-detail');
-            Route::post('/hotel-price-{code}',[HotelsController::class,'hotel_price'])->name('view.hotel-prices');
             Route::post('/order-room-{id}',[HotelsController::class,'order_room'])->name('view.order-room');
             Route::post('/fcheck-code',[HotelsController::class,'fcheck_code'])->name('func.hotel-check-code');
+            Route::get('/accommodation/price-{code}', function (Request $request, $code) {
+                $checkin = $request->query('checkin') ?: session('booking_dates.checkin');
+                $checkout = $request->query('checkout') ?: session('booking_dates.checkout');
+
+                if ($checkin && $checkout) {
+                    return redirect()->route('view.hotel-prices.page', [
+                        'code' => $code,
+                        'checkin' => $checkin,
+                        'checkout' => $checkout,
+                    ]);
+                }
+
+                return redirect()->route('view.accommodation-detail', [
+                    'code' => $code,
+                    'check_price' => 1,
+                ]);
+            })->name('view.accommodation-prices.page');
+            Route::post('/accommodation/price-{code}', [HotelsController::class, 'hotel_price'])->name('view.accommodation-prices');
+            Route::get('/hotel-price-{code}',[HotelsController::class,'hotel_price_page'])->name('view.hotel-prices.page');
+            Route::post('/hotel-price-{code}',[HotelsController::class,'hotel_price'])->name('view.hotel-prices');
             Route::get('/hotel-{code}-{bcode}',[HotelsController::class,'hoteldetail_bookingcode'])->name('hotel-bookingcode');
             Route::post('/hotel-price-{code}-{bcode}',[HotelsController::class,'hotel_price_bookingcode'])->name('view.hotel-prices-bcode');
             Route::post('/fadd-optional-rate-order',[HotelsController::class,'func_add_optional_rate_order'])->name('fadd.optional-rate-order');

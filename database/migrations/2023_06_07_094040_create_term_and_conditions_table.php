@@ -8,6 +8,10 @@ class CreateTermAndConditionsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('term_and_conditions')) {
+            return;
+        }
+
         Schema::create('term_and_conditions', function (Blueprint $table) {
             $table->id();
             $table->string('type');

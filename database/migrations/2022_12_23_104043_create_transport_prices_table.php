@@ -8,6 +8,10 @@ class CreateTransportPricesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('transport_prices')) {
+            return;
+        }
+
         Schema::create('transport_prices', function (Blueprint $table) {
             $table->id();
             $table->foreignId("transports_id")->constrained("transports")->onDelete("cascade");

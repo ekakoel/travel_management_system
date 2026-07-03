@@ -8,6 +8,10 @@ class CreateInvoiceAdminsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('invoice_admins')) {
+            return;
+        }
+
         Schema::create('invoice_admins', function (Blueprint $table) {
             $table->id();
             $table->string('admin_code')->nullable();

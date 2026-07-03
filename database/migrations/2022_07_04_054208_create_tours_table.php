@@ -8,6 +8,10 @@ class CreateToursTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('tours')) {
+            return;
+        }
+
         Schema::create('tours', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');

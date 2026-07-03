@@ -8,6 +8,10 @@ class CreateWeddingReceptionVenuesTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('wedding_reception_venues')) {
+            return;
+        }
+
         Schema::create('wedding_reception_venues', function (Blueprint $table) {
             $table->id();
             $table->string('name');

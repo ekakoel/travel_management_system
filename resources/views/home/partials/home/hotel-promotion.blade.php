@@ -31,11 +31,11 @@
             <h1 class="display-6">@lang('messages.Exclusive Hotel Promotions')</h1>
             <p class="text-primary fs-5 mb-3">@lang('messages.Unlock Special Hotel Offers and Maximize Your Profit with Bali Kami Tour.')</p>
         </div>
-        <div class="swiper mySwiper">
+        <div class="swiper hotel-promo-swiper">
             <div class="swiper-wrapper fadeInUp" data-wow-delay="0.1s">
                 @forelse($promos as $promo)
-                    <div class="swiper-slide">
-                        <a href="{{ route('view.hotel-detail',$promo->hotels->code) }}">
+                    <div class="swiper-slide hotel-promo-swiper__slide">
+                        <a href="{{ route('view.accommodation-detail',$promo->hotels->code) }}">
                             <div class="slide-content">
                                 <img src="{{ getThumbnail('hotels/hotels-cover/' . $promo->hotels->cover,600,900) }}" alt="{{ $promo->hotels->name." Promotion" }}">
                                 <div class="slide-info">
@@ -51,10 +51,10 @@
                 @endforelse
             </div>
             <!-- Pagination -->
-            <div class="swiper-pagination"></div>
+            <div class="swiper-pagination hotel-promo-swiper__pagination"></div>
             <!-- Navigator -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next hotel-promo-swiper__next"></div>
+            <div class="swiper-button-prev hotel-promo-swiper__prev"></div>
         </div>
     </div>
 </div>

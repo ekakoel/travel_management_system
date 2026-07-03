@@ -8,6 +8,10 @@ class CreateExcludeReservationsTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('exclude_reservations')) {
+            return;
+        }
+
         Schema::create('exclude_reservations', function (Blueprint $table) {
             $table->id();
             $table->integer('rsv_id');

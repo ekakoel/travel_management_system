@@ -13,6 +13,10 @@ class CreateWeddingVenuesTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('wedding_venues')) {
+            return;
+        }
+
         Schema::create('wedding_venues', function (Blueprint $table) {
             $table->id();
             $table->integer('hotels_id');
