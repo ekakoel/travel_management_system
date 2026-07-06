@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 
 if (!function_exists('dateFormat')) {
-    function dateFormat($date, $format = "m/d/Y") {
+    function dateFormat($date, $format = 'Y-m-d') {
+        if (!$date) {
+            return '';
+        }
+
         return Carbon::parse($date)->translatedFormat($format);
     }
 }

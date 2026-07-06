@@ -32,16 +32,7 @@
     <!-- Template Stylesheet -->
     <link href="{{ asset('/frontend/css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('/frontend/css/custom_style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-tokens.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-base.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-page-shell.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-layout.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-components.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-forms.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-swiper.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-availability-family.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/frontend-footer.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/hotel-check-price-card.css') }}">
+    <link rel="stylesheet" href="{{ mix('build/frontend/css/app.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     @stack('styles')
@@ -70,8 +61,7 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('/frontend/js/main.js') }}?v={{ filemtime(public_path('frontend/js/main.js')) }}"></script>
-    <script src="{{ asset('/frontend/js/components/frontend-hotel-check-price.js') }}?v={{ filemtime(public_path('frontend/js/components/frontend-hotel-check-price.js')) }}"></script>
-    <script src="{{ asset('/frontend/js/components/frontend-loop-swiper.js') }}?v={{ filemtime(public_path('frontend/js/components/frontend-loop-swiper.js')) }}"></script>
+    <script src="{{ mix('build/frontend/js/app.js') }}" defer></script>
     @stack('scripts')
 </body>
 </html>

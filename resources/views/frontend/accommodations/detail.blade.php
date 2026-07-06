@@ -2,7 +2,7 @@
 @section('title', $hotel->name)
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/pages/accommodation-detail.css') }}">
+    <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/accommodation-detail-entry.css') }}">
 @endpush
 
 @section('content')
@@ -19,10 +19,10 @@
 
                 <div class="frontend-page-intro">
                     <div class="frontend-page-intro__copy">
-                        <span class="frontend-page-intro__eyebrow">@lang('messages.Accommodation Detail')</span>
+                        <span class="frontend-page-intro__eyebrow">@lang('messages.Hotel Detail')</span>
                         <h1 class="frontend-page-intro__title">{{ $hotel->name }}</h1>
                         <p class="frontend-page-intro__text">
-                            @lang('messages.Review hotel highlights, room collection, and partner-ready property information before continuing to the dedicated accommodation check price flow.')
+                            @lang('messages.Review hotel highlights, room collection, and partner-ready hotel information before continuing to the dedicated hotel check price flow.')
                         </p>
                     </div>
                     <div class="frontend-page-summary">
@@ -48,7 +48,7 @@
                 @if (request()->boolean('check_price'))
                     <div class="alert alert-info mt-4 mb-0" role="status" aria-live="polite">
                         <strong>@lang('messages.Please select stay dates to continue.')</strong>
-                        <div>@lang('messages.Choose check-in and check-out dates below to see live accommodation pricing.')</div>
+                        <div>@lang('messages.Choose check-in and check-out dates below to see live hotel pricing.')</div>
                     </div>
                 @endif
             </div>
@@ -121,10 +121,10 @@
                     >
                 </div>
                 <div class="accommodation-hero__content">
-                    <div class="accommodation-kicker">@lang('messages.Property Overview')</div>
-                    <h2 class="accommodation-title">@lang('messages.Partner-ready accommodation profile')</h2>
+                    <div class="accommodation-kicker">@lang('messages.Hotel Overview')</div>
+                    <h2 class="accommodation-title">@lang('messages.Partner-ready hotel profile')</h2>
                     <p class="accommodation-subtitle">
-                        @lang('messages.A concise property snapshot for travel agents, with quick access to room previews and the dedicated price-check flow.')
+                        @lang('messages.A concise hotel snapshot for travel agents, with quick access to room previews and the dedicated price-check flow.')
                     </p>
 
                     <div class="accommodation-meta">
@@ -153,8 +153,8 @@
                     <section class="accommodation-section frontend-surface-card">
                         <div class="accommodation-section__header">
                             <div>
-                                    <div class="accommodation-section__eyebrow">@lang('messages.About This Property')</div>
-                                    <h2 class="accommodation-section__title">@lang('messages.Essential property information')</h2>
+                                    <div class="accommodation-section__eyebrow">@lang('messages.About This Hotel')</div>
+                                    <h2 class="accommodation-section__title">@lang('messages.Essential hotel information')</h2>
                             </div>
                         </div>
 
@@ -162,7 +162,7 @@
                             @if ($hotel->localized_description)
                                 {!! $hotel->localized_description !!}
                             @else
-                                <p>@lang('messages.Property description is not available yet.')</p>
+                                <p>@lang('messages.Hotel description is not available yet.')</p>
                             @endif
                         </div>
                     </section>
@@ -172,7 +172,7 @@
                             <div class="accommodation-section__header">
                                 <div>
                                     <div class="accommodation-section__eyebrow">@lang('messages.Facilities')</div>
-                                    <h2 class="accommodation-section__title">@lang('messages.On-property facilities and amenities')</h2>
+                                    <h2 class="accommodation-section__title">@lang('messages.Facilities and Services')</h2>
                                 </div>
                             </div>
 
@@ -214,12 +214,31 @@
 
                             <div class="accommodation-room-grid">
                                 @foreach ($hotel->rooms as $room)
+                                    @php
+                                        $roomPromos = $room->promos->map(function ($promo) {
+                                            return [
+                                                'name' => $promo->name,
+                                                'booking_period' => dateFormat($promo->book_periode_start) . ' - ' . dateFormat($promo->book_periode_end),
+                                                'stay_period' => dateFormat($promo->periode_start) . ' - ' . dateFormat($promo->periode_end),
+                                            ];
+                                        })->values();
+
+                                        $roomPackages = $room->packages->map(function ($package) {
+                                            return [
+                                                'name' => $package->name,
+                                                'stay_period' => dateFormat($package->stay_period_start) . ' - ' . dateFormat($package->stay_period_end),
+                                                'duration' => $package->duration . ' ' . ($package->duration > 1 ? __('messages.Nights') : __('messages.Night')),
+                                            ];
+                                        })->values();
+                                    @endphp
                                     <article
                                         class="accommodation-room-card"
                                         data-bs-toggle="modal"
                                         data-bs-target="#roomModal"
                                         data-image="{{ asset('storage/hotels/hotels-room/' . $room->cover) }}"
                                         data-room-name="{{ $room->rooms }}"
+                                        data-room-promos='@json($roomPromos)'
+                                        data-room-packages='@json($roomPackages)'
                                     >
                                         <div class="accommodation-room-card__image">
                                             <img
@@ -227,10 +246,27 @@
                                                 alt="{{ $room->rooms }}"
                                                 loading="lazy"
                                             >
+                                            @if ($room->active_promos_count > 0 || $room->active_packages_count > 0)
+                                                <div class="accommodation-room-card__media-offers">
+                                                    @if ($room->active_promos_count > 0)
+                                                        <span class="accommodation-room-card__offer accommodation-room-card__offer--promo">
+                                                            <i class="fa fa-bolt" aria-hidden="true"></i>
+                                                            {{ $room->active_promos_count }} @lang('accommodations.results.promos_short')
+                                                        </span>
+                                                    @endif
+                                                    @if ($room->active_packages_count > 0)
+                                                        <span class="accommodation-room-card__offer accommodation-room-card__offer--package">
+                                                            <i class="fa fa-gift" aria-hidden="true"></i>
+                                                            {{ $room->active_packages_count }} @lang('accommodations.results.packages_short')
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </div>
                                         <div class="accommodation-room-card__body">
-                                            <h3 class="accommodation-room-card__title">{{ $room->rooms }}</h3>
-                                            <div class="accommodation-room-card__link">@lang('messages.View room preview')</div>
+                                            <div>
+                                                <h3 class="accommodation-room-card__title">{{ $room->rooms }}</h3>
+                                            </div>
                                         </div>
                                     </article>
                                 @endforeach
@@ -243,13 +279,13 @@
 
                 <aside class="accommodation-sidebar">
                     @if ($canUseCheckPriceForm)
-                        <div id="check-price-panel" class="hotel-detail-check-price-panel">
+                        <div id="check-price-panel" class="hotel-detail-check-price-panel frontend-sticky-panel">
                             @include('partials.hotel-check-price-card', [
                                 'formId' => 'accommodationDetailCheckPrice',
                             ])
                         </div>
                     @else
-                        <div class="accommodation-cta frontend-surface-card">
+                        <div class="accommodation-cta frontend-surface-card frontend-sticky-panel">
                             <h2 class="accommodation-cta__title">@lang('messages.Check Price')</h2>
                             <p class="accommodation-cta__text">
                                 {{ $checkPriceCta['text'] }}
@@ -267,6 +303,6 @@
     </div>
 
     @push('scripts')
-        <script src="{{ asset('frontend/js/pages/accommodation-detail.js') }}?v={{ filemtime(public_path('frontend/js/pages/accommodation-detail.js')) }}"></script>
+        <script src="{{ mix('build/frontend/js/pages/accommodation-detail.js') }}" defer></script>
     @endpush
 @endsection

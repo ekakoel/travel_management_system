@@ -1,0 +1,16 @@
+// Frontend entry point.
+//
+// Global frontend design system lives here so the main frontend layout
+// can be powered by a dedicated bundle instead of direct legacy files
+// inside public/css/components.
+
+@import 'components/frontend-tokens';
+@import 'components/frontend-base';
+@import 'components/frontend-page-shell';
+@import 'components/frontend-layout';
+@import 'components/frontend-components';
+@import 'components/frontend-forms';
+@import 'components/frontend-swiper';
+@import 'components/frontend-availability-family';
+@import 'components/frontend-footer';
+@import 'components/hotel-check-price-card';

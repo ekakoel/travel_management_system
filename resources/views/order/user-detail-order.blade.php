@@ -1,5 +1,5 @@
 @if ($order->service == "Hotel" or $order->service == "Hotel Promo" or $order->service == "Hotel Package")
-    @include('order.detail-order-hotel')
+    @include('order.partials.hotel-detail-modern')
 @elseif($order->service == "Private Villa")
     @include('order.detail-order-villa')
 @elseif($order->service == "Tour Package")

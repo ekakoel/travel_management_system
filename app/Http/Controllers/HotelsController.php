@@ -534,12 +534,16 @@ class HotelsController extends Controller
             'rooms',
             'status',
             'cover',
-            'include',
             'capacity_adult',
             'capacity_child',
+            'view',
+            'beds',
+            'size',
+            'amenities',
+            'additional_info',
         ];
 
-        foreach (['include_traditional', 'include_simplified'] as $optionalColumn) {
+        foreach (['include', 'include_traditional', 'include_simplified', 'amenities_traditional', 'amenities_simplified', 'additional_info_traditional', 'additional_info_simplified'] as $optionalColumn) {
             if (Schema::hasColumn('hotel_rooms', $optionalColumn)) {
                 $columns[] = $optionalColumn;
             }
@@ -565,6 +569,7 @@ class HotelsController extends Controller
             'room' => $promoDetails['room'],
             'room_name' => $promoDetails['room']->rooms,
             'room_cover' => $promoDetails['room']->cover,
+            'room_detail' => $this->buildRoomDetailData($promoDetails['room']),
             'occupancy' => $this->buildOccupancyMeta($promoDetails['room']),
             'meta_label' => count($promoDetails['price_list']) . ' ' . __('messages.nightly rates'),
             'badges' => $promotions
@@ -639,6 +644,7 @@ class HotelsController extends Controller
             'room' => $package->room,
             'room_name' => $package->room->rooms,
             'room_cover' => $package->room->cover,
+            'room_detail' => $this->buildRoomDetailData($package->room),
             'occupancy' => $this->buildOccupancyMeta($package->room),
             'meta_label' => $package->duration . ' ' . __('messages.nights'),
             'badges' => [
@@ -726,6 +732,7 @@ class HotelsController extends Controller
             'room' => $room,
             'room_name' => $room->rooms,
             'room_cover' => $room->cover,
+            'room_detail' => $this->buildRoomDetailData($room),
             'occupancy' => $this->buildOccupancyMeta($room),
             'meta_label' => count($nightlyRates) . ' ' . __('messages.nightly rates'),
             'badges' => array_values(array_filter([
@@ -790,6 +797,39 @@ class HotelsController extends Controller
                     'bookingcode' => session('bookingcode.code'),
                 ],
             ],
+        ];
+    }
+
+    private function buildRoomDetailData($room): array
+    {
+        $occupancy = $this->buildOccupancyMeta($room);
+
+        return [
+            'facts' => array_values(array_filter([
+                [
+                    'label' => __('messages.Capacity'),
+                    'value' => $occupancy['label'],
+                    'icon' => 'fa-users',
+                ],
+                trim((string) ($room->beds ?? '')) !== '' ? [
+                    'label' => __('messages.Beds'),
+                    'value' => trim((string) $room->beds),
+                    'icon' => 'fa-bed',
+                ] : null,
+                trim((string) ($room->size ?? '')) !== '' ? [
+                    'label' => __('messages.Size'),
+                    'value' => trim((string) $room->size),
+                    'icon' => 'fa-expand',
+                ] : null,
+                trim((string) ($room->view ?? '')) !== '' ? [
+                    'label' => __('messages.View'),
+                    'value' => $this->translateMessageLabel($room->view),
+                    'icon' => 'fa-eye',
+                ] : null,
+            ])),
+            'amenities' => $this->localizedModelField($room, 'amenities'),
+            'include' => $this->localizedModelField($room, 'include'),
+            'additional_info' => $this->localizedModelField($room, 'additional_info'),
         ];
     }
 

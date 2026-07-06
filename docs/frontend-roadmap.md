@@ -77,6 +77,349 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
 
 ## Frontend Change Log
 
+## 2026-07-06 - Hotel Order Detail Frontend Redesign
+- Status: done
+- Area: frontend UI/UX, order hotel detail page, asset separation
+- Summary: Halaman detail order hotel di-redesign menjadi tampilan frontend modern dengan hero status, summary metrics, section cards, sticky payment sidebar, receipt/payment modal Bootstrap 5, dan asset CSS/JS khusus halaman.
+- Impact: UI detail order lebih profesional, mobile-friendly, readable, dan lebih ringan dirawat karena markup besar dipecah ke partial kecil serta inline script dipindahkan ke asset page-level.
+- Files:
+  - `resources/views/order/user-detail-order.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern-addons.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern-price.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern-sidebar.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern-modals.blade.php`
+  - `resources/frontend/scss/pages/order-detail.scss`
+  - `resources/frontend/scss/pages/order-detail-entry.scss`
+  - `resources/frontend/js/pages/order-detail.js`
+  - `webpack.mix.js`
+  - `public/mix-manifest.json`
+- Follow-up: lakukan browser pass untuk DOKU checkout dan upload receipt memakai kredensial/payment data aktif jika tersedia.
+
+## 2026-07-06 - Hotel Booking Airport Shuttle Default Flight Dates
+- Status: done
+- Area: order hotel frontend UX, airport shuttle date-time defaults
+- Summary: Menambahkan default tanggal flight time berdasarkan type Airport Shuttle: `Arrival` memakai tanggal check-in dan `Departure` memakai tanggal check-out, dengan waktu default 11:00.
+- Impact: Agent lebih cepat mengisi flight detail karena tanggal awal sudah sesuai konteks stay, namun field tetap editable sehingga tanggal dan waktu masih bisa disesuaikan manual.
+- Files:
+  - `resources/frontend/js/pages/hotel-booking.js`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Frontend International Date Time Format Standard
+- Status: done
+- Area: frontend consistency, date and time display
+- Summary: Mengubah default helper `dateFormat()` menjadi `YYYY-MM-DD`, `dateTimeFormat()` menjadi `YYYY-MM-DD HH:mm`, serta menyelaraskan formatter JS booking dan check price agar memakai format internasional yang sama.
+- Impact: Tampilan tanggal dan waktu pada halaman frontend yang memakai helper/asset utama menjadi tidak ambigu dan konsisten lintas bahasa serta lintas halaman.
+- Files:
+  - `app/Helpers/helpers.php`
+  - `app/Helpers/dateTimeFormat.php`
+  - `resources/frontend/js/pages/hotel-booking.js`
+  - `resources/frontend/js/components/frontend-hotel-check-price.js`
+  - `docs/frontend-ui-standards.md`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Sweep bertahap direct `date(...)` di Blade legacy frontend agar seluruh file lama berpindah ke helper standar.
+
+## 2026-07-06 - Hotel Booking Back Navigation Duplicate Guard
+- Status: done
+- Area: order hotel frontend UX, duplicate order prevention
+- Summary: Menambahkan guard saat user kembali ke form order hotel setelah submit: form lama di-reset, tombol submit dinonaktifkan, dan pesan peringatan ditampilkan agar user memulai booking baru dari availability page.
+- Impact: Mengurangi risiko agent membuat order duplikat dari browser Back atau bfcache, selaras dengan backend guard yang mengarahkan order number existing ke detail order.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/frontend/js/pages/hotel-booking.js`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Hotel Booking Full Page Submit Lock Overlay
+- Status: done
+- Area: order hotel frontend UX, submit loading state
+- Summary: Memperkuat spinner submit create order hotel agar overlay dipindahkan ke `body`, menutupi seluruh viewport, dan mengunci scroll halaman selama proses submit berjalan.
+- Impact: User tidak dapat scroll atau berinteraksi dengan halaman saat order sedang dibuat, sehingga risiko double action dan kebingungan saat proses submit berkurang tanpa mengubah flow backend.
+- Files:
+  - `resources/frontend/js/pages/hotel-booking.js`
+  - `resources/frontend/scss/pages/hotel-booking.scss`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Hotel Booking Airport Shuttle Stay Date Reminder
+- Status: done
+- Area: order hotel frontend UI/UX, airport shuttle tab
+- Summary: Menambahkan ringkasan tanggal check-in dan check-out pada tab Airport Shuttle di halaman order hotel normal, package, dan promo melalui partial transfer yang sama.
+- Impact: User dan agent memiliki referensi tanggal stay yang jelas saat mengisi flight time dan shuttle request tanpa mengubah field booking yang sudah berjalan.
+- Files:
+  - `resources/views/partials/hotel-booking-transfer-fields.blade.php`
+  - `resources/frontend/scss/pages/hotel-booking.scss`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Hotel Availability Modal Image Cache Reuse
+- Status: done
+- Area: hotel availability frontend performance, room detail modal
+- Summary: Menambahkan in-memory loaded image source cache dan mencegah re-render modal content ketika user membuka room detail yang sama berulang kali.
+- Impact: Image yang sudah pernah selesai dimuat langsung tampil tanpa skeleton ulang, modal terasa lebih responsif, dan browser tidak dipaksa membuat ulang elemen gambar untuk room yang sama.
+- Files:
+  - `resources/frontend/js/pages/hotel-availability.js`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Untuk caching lintas page load yang lebih agresif, audit header `Cache-Control` static asset di web server.
+
+## 2026-07-06 - Hotel Availability Progressive Room Image Loading
+- Status: done
+- Area: hotel availability frontend performance, image loading UX
+- Summary: Menambahkan progressive loading state untuk image room pada availability card dan modal detail room dengan skeleton shimmer, lazy loading, async decoding, dan fade-in setelah image siap.
+- Impact: Pengalaman loading image terasa lebih halus, layout tetap stabil saat image belum selesai dimuat, dan gambar tidak muncul mendadak atau menyebabkan jank visual.
+- Files:
+  - `resources/views/partials/hotel-availability-rate-card.blade.php`
+  - `resources/views/partials/hotel-room-detail-modal-content.blade.php`
+  - `resources/frontend/js/pages/hotel-availability.js`
+  - `resources/frontend/scss/pages/hotel-availability.scss`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Hotel Availability Room Modal Image Ratio
+- Status: done
+- Area: hotel availability frontend UI/UX, room detail modal image
+- Summary: Menyetel image pada modal detail room agar memakai aspect ratio stabil `16 / 10` dengan `object-fit: cover`.
+- Impact: Foto room tampil lebih profesional, memenuhi area modal tanpa stretch, dan tidak melebar atau menipis saat ukuran gambar sumber berbeda.
+- Files:
+  - `resources/frontend/scss/pages/hotel-availability.scss`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Hotel Availability Room Modal Width Polish
+- Status: done
+- Area: hotel availability frontend UI/UX, room detail modal
+- Summary: Merapikan layout informasi modal room agar container, facts, section detail, dan rich text content memakai width penuh di dalam modal.
+- Impact: Modal detail room terlihat lebih profesional, informasi lebih mudah dibaca, dan konten seperti table atau image dari rich text tidak terasa sempit.
+- Files:
+  - `resources/frontend/scss/pages/hotel-availability.scss`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Hotel Availability Room Image Detail Modal
+- Status: done
+- Area: hotel availability frontend UI/UX, room detail interaction
+- Summary: Menambahkan interaksi klik pada image room di setiap availability card untuk membuka modal detail room berisi image full-size, kapasitas, bed, size, view, amenities, inclusions, dan additional info yang relevan.
+- Impact: Agent dapat memeriksa konteks room langsung dari halaman `hotel-price-{code}` tanpa meninggalkan pricing flow, sambil tetap memakai modal pattern shared availability yang sudah ada.
+- Files:
+  - `app/Http/Controllers/HotelsController.php`
+  - `resources/views/partials/hotel-availability-rate-card.blade.php`
+  - `resources/views/partials/hotel-room-detail-modal-content.blade.php`
+  - `resources/frontend/scss/pages/hotel-availability.scss`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Pertimbangkan galeri multi-image jika data room image tambahan tersedia di backend.
+
+## 2026-07-06 - Accommodation Filter Search Button Removal
+- Status: done
+- Area: accommodation service frontend filter interaction
+- Summary: Menghapus tombol `Search` dari panel filter accommodation karena filter sudah berjalan otomatis melalui AJAX saat input berubah.
+- Impact: Panel filter menjadi lebih ringan dan alur interaksi lebih natural, sementara submit form via Enter dan fallback server-side tetap tersedia.
+- Files:
+  - `resources/views/frontend/accommodations/index.blade.php`
+  - `resources/frontend/scss/pages/accommodations-index.scss`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-06 - Accommodation Directory AJAX Filtering
+- Status: done
+- Area: accommodation service frontend filter interaction, pagination UX
+- Summary: Mengubah filter directory accommodation menjadi progressive AJAX flow sehingga search, region, promo availability, reset, dan pagination dapat memperbarui hasil tanpa reload halaman penuh.
+- Impact: Pengalaman browsing hotel terasa lebih smooth, URL query tetap shareable, dan fallback submit server-side tetap tersedia bila JavaScript gagal atau dimatikan.
+- Files:
+  - `resources/views/frontend/accommodations/index.blade.php`
+  - `resources/frontend/js/pages/accommodations-index.js`
+  - `resources/frontend/scss/pages/accommodations-index.scss`
+  - `webpack.mix.js`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Ekstrak pola AJAX filtering ini menjadi helper shared jika halaman service lain membutuhkan behavior filter yang sama.
+
+## 2026-07-06 - Accommodation Directory Promo Availability Filter
+- Status: done
+- Area: accommodation service frontend UI/UX, directory filter flow
+- Summary: Menambahkan filter `Promo available` pada directory accommodation agar agent dapat menampilkan hanya hotel yang memiliki promo aktif dan masih valid untuk booking.
+- Impact: Pencarian hotel menjadi lebih cepat untuk kebutuhan promo-led selling, active filter state lebih informatif, dan hasil pagination tetap mengikuti query filter yang shareable.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `resources/views/frontend/accommodations/index.blade.php`
+  - `resources/frontend/scss/pages/accommodations-index.scss`
+  - `resources/lang/en/accommodations.php`
+  - `resources/lang/zh/accommodations.php`
+  - `resources/lang/zh-CN/accommodations.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Jika diperlukan, tambahkan filter serupa untuk hotel yang memiliki package aktif agar kedua offer type bisa dipilah secara terpisah.
+
+## 2026-07-03 - Accommodation Directory Pagination and Offer Visibility
+- Status: done
+- Area: accommodation service frontend UI/UX, performance, listing scalability
+- Summary: Menyempurnakan halaman `/accommodations` dengan server-side pagination, grid tiga kolom pada desktop, serta badge promo dan package aktif per hotel agar list tetap ringan sekaligus lebih informatif ketika data bertambah besar.
+- Impact: Directory accommodation kini tidak memuat seluruh hotel dalam satu halaman saat data besar, filter tetap shareable melalui query string, dan agent dapat langsung melihat hotel mana yang memiliki offer aktif sebelum membuka detail.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `resources/views/frontend/accommodations/index.blade.php`
+  - `resources/frontend/scss/pages/accommodations-index.scss`
+  - `resources/lang/en/accommodations.php`
+  - `resources/lang/zh/accommodations.php`
+  - `resources/lang/zh-CN/accommodations.php`
+  - `webpack.mix.js`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Jika volume inventory terus bertambah, pertimbangkan penambahan sorting resmi dan filter tambahan seperti minimum stay atau presence of active offers.
+
+## 2026-07-03 - Accommodation Directory Redesign and Page Asset Migration
+- Status: done
+- Area: accommodation service frontend UI/UX, page-level asset migration, translation coverage
+- Summary: Mendesain ulang halaman `/accommodations` agar mengikuti shell frontend modern project, memindahkan filter logic ke JS page-level terpisah, serta menambahkan translation file modular khusus directory accommodation.
+- Impact: Halaman directory accommodation kini konsisten dengan baseline frontend lain, hasil filter server-side menjadi benar, asset halaman keluar dari inline script lama, dan copy halaman siap dipakai lintas bahasa dengan struktur yang lebih rapi.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `resources/views/frontend/accommodations/index.blade.php`
+  - `resources/frontend/scss/pages/accommodations-index.scss`
+  - `resources/frontend/scss/pages/accommodations-index-entry.scss`
+  - `resources/frontend/js/pages/accommodations-index.js`
+  - `resources/lang/en/accommodations.php`
+  - `resources/lang/zh/accommodations.php`
+  - `resources/lang/zh-CN/accommodations.php`
+  - `webpack.mix.js`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Lanjutkan browser pass pada halaman service frontend lain yang masih memakai layout landing lama agar family service pages semakin seragam.
+
+## 2026-07-03 - Legacy Frontend Asset Cleanup Audit
+- Status: in progress
+- Area: frontend asset cleanup, legacy asset retirement
+- Summary: Melakukan audit referensi setelah migrasi asset frontend utama selesai dan memastikan bahwa legacy CSS component/page serta legacy frontend JS component/page yang telah digantikan oleh bundle baru sudah tidak memiliki referensi aktif lagi di codebase.
+- Impact: Tim kini memiliki daftar orphan asset yang jelas dan terverifikasi, sehingga cleanup fisik bisa dilakukan dengan aman tanpa mengulang audit referensi dari nol.
+- Files:
+  - `docs/asset-migration-inventory.md`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Hapus file orphan legacy frontend dari `public/*` saat filesystem mengizinkan operasi delete, lalu lanjut audit service family frontend lain yang belum dipindahkan ke `resources/frontend/*`.
+
+## 2026-07-03 - Hotel Booking Family Asset Migration
+- Status: done
+- Area: hotel booking frontend asset architecture, page-level CSS migration, shared booking JS migration
+- Summary: Memindahkan family halaman `order-hotel-normal`, `order-hotel-package`, dan `order-hotel-promo` ke bundle CSS/JS frontend baru dengan entry page khusus `hotel-booking`, lalu mengalihkan ketiga Blade booking agar memakai hasil build `mix()`.
+- Impact: Flow utama family accommodation kini jauh lebih konsisten karena jalur `detail -> check price -> booking` seluruhnya sudah memakai source asset frontend baru, sehingga pengembangan dan maintenance berikutnya bisa fokus di `resources/frontend/*` tanpa kembali menambah ketergantungan ke file legacy `public/*`.
+- Files:
+  - `resources/frontend/scss/pages/hotel-booking.scss`
+  - `resources/frontend/scss/pages/hotel-booking-entry.scss`
+  - `resources/frontend/js/pages/hotel-booking.js`
+  - `webpack.mix.js`
+  - `resources/views/form/order-hotel-normal.blade.php`
+  - `resources/views/form/order-hotel-package.blade.php`
+  - `resources/views/form/order-hotel-promo.blade.php`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Audit asset legacy yang kini sudah tergantikan pada family accommodation lalu lanjutkan migrasi frontend service family lain yang masih memanggil CSS/JS page dari `public/*` secara langsung.
+
+## 2026-07-03 - Accommodation Detail Page-Level Asset Migration
+- Status: done
+- Area: accommodation detail frontend asset architecture, page-level CSS migration, page-level JS migration
+- Summary: Memindahkan asset halaman `accommodation detail` ke source bundle baru dengan entry CSS khusus dan JS page-level terpisah, lalu mengalihkan Blade agar memakai hasil build `mix()` daripada file legacy langsung dari `public/*`.
+- Impact: Family halaman accommodation kini semakin konsisten karena detail page dan hotel availability sudah sama-sama memakai jalur asset frontend baru, sehingga refactor berikutnya untuk hotel booking bisa dilakukan dalam satu family source asset yang lebih bersih.
+- Files:
+  - `resources/frontend/scss/pages/accommodation-detail.scss`
+  - `resources/frontend/scss/pages/accommodation-detail-entry.scss`
+  - `resources/frontend/js/pages/accommodation-detail.js`
+  - `webpack.mix.js`
+  - `resources/views/frontend/accommodations/detail.blade.php`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Lanjutkan ke `hotel booking` family agar flow `detail -> check price -> booking` seluruhnya memakai source asset frontend baru yang sama.
+
+## 2026-07-03 - Hotel Availability Page-Level Asset Migration
+- Status: done
+- Area: hotel availability frontend asset architecture, page-level CSS migration, page-level JS migration
+- Summary: Memindahkan asset halaman `hotelavailability` ke jalur source bundle baru dengan membuat entry CSS khusus dan membangun JS halaman dari `resources/frontend/js/pages/hotel-availability.js`, lalu mengalihkan Blade ke hasil `mix()` yang baru.
+- Impact: Baseline frontend resmi project kini tidak lagi bergantung pada asset page legacy langsung dari `public/css/pages` dan `public/frontend/js/pages`, sehingga pola migrasi asset baru menjadi semakin konsisten pada halaman yang paling strategis.
+- Files:
+  - `resources/frontend/scss/pages/hotel-availability.scss`
+  - `resources/frontend/scss/pages/hotel-availability-entry.scss`
+  - `resources/frontend/js/pages/hotel-availability.js`
+  - `webpack.mix.js`
+  - `resources/views/main/hotelavailability.blade.php`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Lanjutkan migrasi ke `accommodation detail` dan `hotel booking` agar family halaman accommodation frontend seluruhnya berada pada source asset baru yang sama.
+
+## 2026-07-03 - Orders Page-Level Asset Migration
+- Status: done
+- Area: orders frontend asset architecture, page-level CSS migration, page-level JS migration
+- Summary: Memindahkan CSS halaman `orders` ke source `resources/frontend/scss/pages/*`, membuat entry page bundle khusus `orders`, dan memindahkan logic filter/search order dari inline script Blade ke file JS page-level terpisah.
+- Impact: Halaman `orders` kini keluar dari ketergantungan ke file legacy `public/css/pages/frontend-orders.css`, inline JavaScript di Blade berkurang, dan standard asset separation untuk halaman frontend penting ini menjadi lebih rapi dan reusable.
+- Files:
+  - `resources/frontend/scss/pages/frontend-orders.scss`
+  - `resources/frontend/scss/pages/frontend-orders-entry.scss`
+  - `resources/frontend/js/pages/frontend-orders.js`
+  - `webpack.mix.js`
+  - `resources/views/main/order.blade.php`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Lanjutkan pola yang sama ke `hotelavailability`, `accommodation detail`, dan `hotel booking` agar page-level asset family frontend utama seluruhnya berpindah ke source bundle baru.
+
+## 2026-07-03 - Homepage Page-Level Asset Migration
+- Status: done
+- Area: homepage frontend asset architecture, page-level CSS migration
+- Summary: Memindahkan CSS page-level homepage dari path legacy `public/css/pages/frontend-home.css` dan `public/css/pages/frontend-home-services.css` ke source `resources/frontend/scss/pages/*`, lalu membangun entry bundle khusus homepage agar halaman home mulai memakai source asset baru secara page-specific.
+- Impact: Homepage tidak lagi bergantung pada include CSS page legacy langsung dari `public/css/pages`, sementara pemisahan antara bundle global frontend dan bundle khusus halaman tetap terjaga sehingga struktur asset baru lebih scalable.
+- Files:
+  - `resources/frontend/scss/pages/frontend-home.scss`
+  - `resources/frontend/scss/pages/frontend-home-services.scss`
+  - `resources/frontend/scss/pages/frontend-home-entry.scss`
+  - `webpack.mix.js`
+  - `resources/views/frontend/home/index.blade.php`
+  - `resources/views/frontend/home/partials/services.blade.php`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Lanjutkan pola page entry yang sama untuk `orders`, `hotelavailability`, `accommodation detail`, dan `hotel booking` agar seluruh page-level frontend asset keluar bertahap dari folder legacy `public/css/pages`.
+
+## 2026-07-03 - Frontend Global Asset Migration to New Source Bundle
+- Status: done
+- Area: frontend asset architecture, shared CSS/JS migration, layout integration
+- Summary: Memindahkan global frontend design system CSS dan reusable frontend JS component dari folder legacy `public/css/components` serta `public/frontend/js/components` ke `resources/frontend/*`, lalu menghubungkan layout frontend utama ke bundle `mix('build/frontend/*')`.
+- Impact: Frontend kini mulai benar-benar memakai source asset baru sebagai jalur utama untuk global styling dan reusable behavior, sehingga migrasi dari asset legacy tidak lagi hanya berhenti di level pipeline tetapi sudah aktif dipakai oleh layout frontend.
+- Files:
+  - `resources/frontend/scss/app.scss`
+  - `resources/frontend/scss/components/*`
+  - `resources/frontend/scss/pages/*`
+  - `resources/frontend/js/app.js`
+  - `resources/frontend/js/components/*`
+  - `resources/frontend/js/pages/*`
+  - `resources/views/frontend/layouts/app.blade.php`
+  - `resources/views/frontend/layouts/footer-modern.blade.php`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Lanjutkan migrasi page-level frontend CSS dan JS agar halaman seperti home, orders, hotel availability, accommodation detail, dan hotel booking tidak lagi bergantung pada file page legacy di `public/*`.
+
+## 2026-07-03 - Frontend and Backend Asset Pipeline Split Foundation
+- Status: done
+- Area: frontend asset architecture, build pipeline, shared layout integration
+- Summary: Menetapkan fondasi pemisahan asset frontend dan backend melalui blueprint arsitektur baru, struktur folder target `resources/frontend` dan `resources/backend`, entry bundle Laravel Mix terpisah, serta mulai menghubungkan bundle baru ke layout frontend utama dan `master-login`.
+- Impact: Pengembangan asset kini punya jalur resmi yang lebih terstruktur, output build frontend dan backend sudah dipisah, dan migrasi dari folder legacy `public/*` bisa dilakukan bertahap tanpa memutus aplikasi yang sedang berjalan.
+- Files:
+  - `docs/asset-architecture-blueprint.md`
+  - `docs/asset-migration-inventory.md`
+  - `webpack.mix.js`
+  - `resources/frontend/js/app.js`
+  - `resources/frontend/scss/app.scss`
+  - `resources/backend/js/app.js`
+  - `resources/backend/scss/app.scss`
+  - `resources/views/frontend/layouts/app.blade.php`
+  - `resources/views/layouts/master-login.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Migrasikan asset frontend aktif dari `public/css/*` dan `public/frontend/js/*` ke `resources/frontend/*`, lalu rapikan layout backend utama agar juga memakai bundle terpisah dan mulai mengurangi ketergantungan ke folder legacy.
+
 ## 2026-07-02 - Shared Infinite Swiper Standard
 - Status: done
 - Area: frontend UI/UX, shared component, reusable asset system

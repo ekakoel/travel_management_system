@@ -1,0 +1,69 @@
+.frontend-page-shell {
+    color: var(--frontend-shell-text);
+}
+
+.frontend-page-shell img {
+    max-width: 100%;
+}
+
+.frontend-page-shell a {
+    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.frontend-page-shell h1,
+.frontend-page-shell h2,
+.frontend-page-shell h3,
+.frontend-page-shell h4 {
+    letter-spacing: -0.02em;
+}
+
+.frontend-page-shell .btn {
+    min-height: var(--frontend-shell-button-height);
+    border-radius: var(--frontend-shell-radius-sm);
+    font-weight: 700;
+}
+
+.frontend-page-shell .btn-primary {
+    border-color: var(--frontend-shell-primary);
+    background: linear-gradient(135deg, var(--frontend-shell-primary) 0%, var(--frontend-shell-secondary) 100%);
+}
+
+.frontend-page-shell .btn-primary:hover,
+.frontend-page-shell .btn-primary:focus {
+    border-color: var(--frontend-shell-primary);
+    box-shadow: var(--frontend-shell-shadow-sm);
+}
+
+.frontend-page-shell .form-control,
+.frontend-page-shell .custom-select,
+.frontend-page-shell textarea {
+    min-height: var(--frontend-shell-form-height);
+    border: 1px solid #d6dfeb;
+    border-radius: var(--frontend-shell-radius-sm);
+    background: #fff;
+    color: var(--frontend-shell-text);
+    box-shadow: none;
+}
+
+.frontend-page-shell textarea.form-control {
+    min-height: 132px;
+}
+
+.frontend-page-shell .form-control:focus,
+.frontend-page-shell .custom-select:focus,
+.frontend-page-shell textarea:focus {
+    border-color: var(--frontend-shell-primary);
+    box-shadow: 0 0 0 4px rgba(15, 95, 168, 0.10);
+}
+
+.frontend-page-shell label {
+    margin-bottom: 0.45rem;
+    color: #334155;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.frontend-page-shell .alert,
+.frontend-page-shell .alert-form {
+    border-radius: var(--frontend-shell-radius-sm);
+}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Tours;
 use App\Models\Hotels;
+use App\Models\HotelPackage;
 use Illuminate\Support\Facades\Log;
 use App\Models\HotelPromo;
 use App\Models\Transports;
@@ -84,21 +85,108 @@ class FrontEndController extends Controller
 
     public function accommodation_service(Request $request)
     {
+        $now = Carbon::now()->toDateString();
         $searchName = $request->input('search_name');
         $searchRegion = $request->input('search_region');
-        $hotels = Hotels::where('status','Active')->get();
-        if ($searchName) {
-            $hotels->where('name', 'LIKE', "%{$searchName}%");
-        }
-        if ($searchRegion) {
-            $hotels->where('region', 'LIKE', "%{$searchRegion}%");
-        }
-        $regions = $hotels->pluck('region')->unique();
-        return view('frontend.accommodations.index', compact('hotels','regions', 'searchName', 'searchRegion'));
+        $promoAvailable = $request->boolean('promo_available');
+        $baseHotelsQuery = Hotels::query()
+            ->where('status', 'Active')
+            ->select([
+                'id',
+                'code',
+                'name',
+                'region',
+                'cover',
+                'min_stay',
+                'airport_duration',
+                'airport_distance',
+                'map',
+            ])
+            ->withCount([
+                'promos as active_promos_count' => function ($query) use ($now) {
+                    $query->active()->validForBooking($now);
+                },
+                'packages as active_packages_count' => function ($query) use ($now) {
+                    $query->where('status', 'Active')
+                        ->whereDate('stay_period_end', '>=', $now);
+                },
+            ]);
+
+        $regionOptions = (clone $baseHotelsQuery)
+            ->whereNotNull('region')
+            ->where('region', '!=', '')
+            ->orderBy('region')
+            ->pluck('region')
+            ->unique()
+            ->values();
+
+        $topRegion = (clone $baseHotelsQuery)
+            ->whereNotNull('region')
+            ->where('region', '!=', '')
+            ->get()
+            ->groupBy('region')
+            ->sortByDesc(function ($items) {
+                return $items->count();
+            })
+            ->map(function ($items, $region) {
+                return [
+                    'name' => $region,
+                    'count' => $items->count(),
+                ];
+            })
+            ->first();
+
+        $minimumStayNights = (clone $baseHotelsQuery)
+            ->whereNotNull('min_stay')
+            ->min('min_stay');
+
+        $hotelsQuery = (clone $baseHotelsQuery)
+            ->when($searchName, function ($query, $value) {
+                $query->where('name', 'LIKE', '%' . $value . '%');
+            })
+            ->when($searchRegion, function ($query, $value) {
+                $query->where('region', 'LIKE', '%' . $value . '%');
+            })
+            ->when($promoAvailable, function ($query) use ($now) {
+                $query->whereHas('promos', function ($promoQuery) use ($now) {
+                    $promoQuery->active()->validForBooking($now);
+                });
+            });
+
+        $hotels = $hotelsQuery
+            ->orderBy('name')
+            ->paginate(12)
+            ->withQueryString();
+
+        $featuredHotel = $hotels->first() ?: (clone $baseHotelsQuery)
+            ->whereNotNull('cover')
+            ->where('cover', '!=', '')
+            ->orderBy('name')
+            ->first();
+
+        $directoryStats = [
+            'total_hotels' => $hotels->total(),
+            'page_hotels' => $hotels->count(),
+            'total_regions' => $regionOptions->count(),
+            'top_region_name' => $topRegion['name'] ?? null,
+            'top_region_count' => $topRegion['count'] ?? 0,
+            'minimum_stay_nights' => $minimumStayNights ?: 1,
+        ];
+
+        return view('frontend.accommodations.index', [
+            'hotels' => $hotels,
+            'regions' => $regionOptions,
+            'searchName' => $searchName,
+            'searchRegion' => $searchRegion,
+            'promoAvailable' => $promoAvailable,
+            'featuredHotel' => $featuredHotel,
+            'directoryStats' => $directoryStats,
+        ]);
     }
 
     public function accommodation_detail(Request $request, $code)
     {
+        $now = Carbon::now()->toDateString();
         $columns = [
             'id',
             'name',
@@ -129,8 +217,47 @@ class FrontEndController extends Controller
             ->active()
             ->where('code', $code)
             ->with([
-                'rooms' => function ($query) {
+                'rooms' => function ($query) use ($now) {
                     $query->select(['id', 'hotels_id', 'rooms', 'cover'])
+                        ->withCount([
+                            'promos as active_promos_count' => function ($promoQuery) use ($now) {
+                                $promoQuery->active()->validForBooking($now);
+                            },
+                            'packages as active_packages_count' => function ($packageQuery) use ($now) {
+                                $packageQuery->where('status', 'Active')
+                                    ->whereDate('stay_period_end', '>=', $now);
+                            },
+                        ])
+                        ->with([
+                            'promos' => function ($promoQuery) use ($now) {
+                                $promoQuery->select([
+                                    'id',
+                                    'rooms_id',
+                                    'name',
+                                    'promotion_type',
+                                    'book_periode_start',
+                                    'book_periode_end',
+                                    'periode_start',
+                                    'periode_end',
+                                ])
+                                    ->active()
+                                    ->validForBooking($now)
+                                    ->orderBy('book_periode_start');
+                            },
+                            'packages' => function ($packageQuery) use ($now) {
+                                $packageQuery->select([
+                                    'id',
+                                    'rooms_id',
+                                    'name',
+                                    'stay_period_start',
+                                    'stay_period_end',
+                                    'duration',
+                                ])
+                                    ->where('status', 'Active')
+                                    ->whereDate('stay_period_end', '>=', $now)
+                                    ->orderBy('stay_period_start');
+                            },
+                        ])
                         ->active()
                         ->orderBy('rooms');
                 },
@@ -180,7 +307,7 @@ class FrontEndController extends Controller
             ]) . '#check-price-panel';
 
             return [false, [
-                'text' => __('messages.Login to continue to live accommodation pricing.'),
+                'text' => __('messages.Login to continue to live hotel pricing.'),
                 'url' => route('login', ['redirect' => $redirectTarget]),
                 'button_label' => __('messages.Login to Check Price'),
             ]];
@@ -190,7 +317,7 @@ class FrontEndController extends Controller
 
         if (is_null($user->email_verified_at)) {
             return [false, [
-                'text' => __('messages.Verify your email to continue to live accommodation pricing.'),
+                'text' => __('messages.Verify your email to continue to live hotel pricing.'),
                 'url' => route('verification.notice'),
                 'button_label' => __('messages.Verify Email'),
             ]];
@@ -198,7 +325,7 @@ class FrontEndController extends Controller
 
         if (!$this->isProfileComplete($user) || $user->status !== 'Active') {
             return [false, [
-                'text' => __('messages.Complete your profile to continue to live accommodation pricing.'),
+                'text' => __('messages.Complete your profile to continue to live hotel pricing.'),
                 'url' => route('profile'),
                 'button_label' => __('messages.Complete Profile'),
             ]];
@@ -206,14 +333,14 @@ class FrontEndController extends Controller
 
         if (!$user->is_approved) {
             return [false, [
-                'text' => __('messages.Your account approval is still pending. Open your profile to continue the approval flow before checking live accommodation pricing.'),
+                'text' => __('messages.Your account approval is still pending. Open your profile to continue the approval flow before checking live hotel pricing.'),
                 'url' => route('approval.pending'),
                 'button_label' => __('messages.Profile'),
             ]];
         }
 
         return [true, [
-            'text' => __('messages.Continue to the dedicated accommodation check price page to view contract pricing, active promotions, and matching packages for your selected stay dates.'),
+            'text' => __('messages.Continue to the dedicated hotel check price page to view contract pricing, active promotions, and matching packages for your selected stay dates.'),
             'url' => route('view.accommodation-check-price', ['code' => $hotelCode]),
             'button_label' => __('messages.Check Price'),
         ]];

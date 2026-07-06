@@ -1,9 +1,3 @@
-@push('styles')
-    @once
-        <link rel="stylesheet" href="{{ asset('css/pages/frontend-home-services.css') }}">
-    @endonce
-@endpush
-
 @php
     $services = [
         [

@@ -138,6 +138,14 @@ Untuk booking form, pola default yang harus diutamakan adalah:
 4. Deskripsi panjang harus ditempatkan pada section yang memang relevan.
 5. Gunakan CTA copy yang action-oriented dan mudah dipahami.
 
+## Standar Tanggal dan Waktu
+
+1. Semua tanggal yang ditampilkan di halaman frontend harus memakai format internasional `YYYY-MM-DD`.
+2. Semua tanggal dengan waktu harus memakai format `YYYY-MM-DD HH:mm` dengan jam 24-hour.
+3. Blade frontend harus memakai helper `dateFormat()` dan `dateTimeFormat()` kecuali ada alasan teknis yang jelas.
+4. JavaScript frontend harus memakai format Moment/display `YYYY-MM-DD` dan `YYYY-MM-DD HH:mm`.
+5. Hindari format ambigu seperti `MM/DD/YYYY`, `DD/MM/YYYY`, `d M Y`, atau format 12-hour AM/PM untuk tampilan frontend baru.
+
 ## Standar Card dan Surface
 
 1. Surface card harus memakai family style yang konsisten:

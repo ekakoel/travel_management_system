@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('panel/styles/icon-font.min.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="{{ asset('css/pages/hotel-booking.css') }}">
+    <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/hotel-booking-entry.css') }}">
 @endpush
 
 @push('scripts')
@@ -13,7 +13,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ asset('panel/script/core.js') }}"></script>
-    <script src="{{ asset('frontend/js/pages/hotel-booking.js') }}"></script>
+    <script src="{{ mix('build/frontend/js/pages/hotel-booking.js') }}" defer></script>
 @endpush
 
 @section('content')
@@ -254,11 +254,18 @@
                                     <input type="hidden" name="var_promotions_discount" id='var_promotions_discount' value="{{ $total_promotions_discount }}">
                                     <div class="booking-wizard__actions">
                                         <button type="button" class="btn btn-danger" data-wizard-prev>@lang('messages.Back')</button>
-                                        <button type="submit" form="create-order" id="normal-reserve" class="btn btn-primary"><i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i> @lang('messages.Order')</button>
+                                        <button
+                                            type="submit"
+                                            form="create-order"
+                                            id="normal-reserve"
+                                            class="btn btn-primary"
+                                            data-processing-label="@lang('messages.Processing')..."
+                                        ><i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i> @lang('messages.Order')</button>
                                         <button type="button" onclick="goBack()" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                     </div>
                                 </section>
                             </div>
+                            @include('partials.form-submit-overlay')
                         </form>
                     </div>
                 </div>

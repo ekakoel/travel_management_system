@@ -1,12 +1,33 @@
+@php
+    $roomModalId = 'availability-room-detail-' . $card['category'] . '-' . $card['room']->id . '-' . md5($card['room_name'] . $card['sort_price']);
+    $roomImageFull = $card['room_cover'] ? asset('storage/hotels/hotels-room/' . $card['room_cover']) : asset('storage/images/default.webp');
+    $roomImageThumb = $card['room_cover'] ? getThumbnail('/hotels/hotels-room/' . $card['room_cover'], 380, 200) : asset('storage/images/default.webp');
+@endphp
+
 <article class="availability-rate-card">
     <div class="availability-rate-card__image">
-        <img
-            src="{{ $card['room_cover'] ? getThumbnail('/hotels/hotels-room/' . $card['room_cover'], 380, 200) : asset('storage/images/default.webp') }}"
-            class="img-fluid rounded thumbnail-image"
-            alt="{{ $card['room_name'] }}"
-            loading="lazy"
-            decoding="async"
+        <button
+            type="button"
+            class="availability-room-preview"
+            data-detail-trigger="hotel-rate-detail"
+            data-detail-source="#{{ $roomModalId }}"
+            data-bs-toggle="modal"
+            data-bs-target="#hotelRateDetailModal"
+            aria-label="@lang('messages.Room Details'): {{ $card['room_name'] }}"
         >
+            <img
+                src="{{ $roomImageThumb }}"
+                class="img-fluid rounded thumbnail-image availability-progressive-image"
+                alt="{{ $card['room_name'] }}"
+                loading="lazy"
+                decoding="async"
+                onerror="this.onerror=null;this.src='{{ asset('storage/images/default.webp') }}';"
+            >
+            <span class="availability-room-preview__hint">
+                <i class="fa fa-search-plus" aria-hidden="true"></i>
+                @lang('messages.Room Details')
+            </span>
+        </button>
 
         @if (!empty($card['badges']))
             <div class="availability-badges">
@@ -16,6 +37,19 @@
             </div>
         @endif
     </div>
+
+    <template id="{{ $roomModalId }}">
+        <div
+            data-detail-eyebrow="@lang('messages.Room Details')"
+            data-detail-title="{{ $card['room_name'] }}"
+            data-detail-icon="fa-bed"
+        >
+            @include('partials.hotel-room-detail-modal-content', [
+                'card' => $card,
+                'roomImageFull' => $roomImageFull,
+            ])
+        </div>
+    </template>
 
     <div class="availability-rate-card__body">
         <div class="availability-rate-card__main">
@@ -122,10 +156,6 @@
                         <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
                         {{ $bookingAction['label'] }}
                     </button>
-
-                    @if (!empty($bookingAction['helper']))
-                        <p class="availability-booking-cta__helper">{{ $bookingAction['helper'] }}</p>
-                    @endif
                 </div>
             @endif
         </aside>

@@ -1,0 +1,228 @@
+.hotel-availability-page,
+.frontend-availability-family-page {
+    background:
+        radial-gradient(circle at top left, rgba(15, 95, 168, 0.10), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
+}
+
+.availability-topband,
+.frontend-availability-family-topband {
+    margin-bottom: 1.5rem;
+}
+
+.availability-hero,
+.frontend-availability-family-hero {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    gap: 1.75rem;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid #d8e4f0;
+    border-radius: 24px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.10);
+    overflow: hidden;
+}
+
+.availability-hero--merged,
+.frontend-availability-family-hero--merged {
+    margin-top: 1.75rem;
+    margin-bottom: 0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 20px 50px rgba(8, 47, 73, 0.18);
+}
+
+.availability-hero__media img,
+.frontend-availability-family-hero__media img,
+.frontend-availability-family-hero .hotel-booking-hero__media img {
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    object-fit: cover;
+    border-radius: 18px;
+}
+
+.availability-hero__content,
+.frontend-availability-family-hero__content,
+.frontend-availability-family-hero .hotel-booking-hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.availability-hero--merged .availability-title,
+.availability-hero--merged .availability-subtitle,
+.availability-hero--merged .availability-description,
+.availability-hero--merged .availability-meta__item strong,
+.frontend-availability-family-hero--merged .frontend-availability-family-title,
+.frontend-availability-family-hero--merged .frontend-availability-family-subtitle,
+.frontend-availability-family-hero--merged .frontend-availability-family-description,
+.frontend-availability-family-hero--merged .hotel-booking-hero__title,
+.frontend-availability-family-hero--merged .hotel-booking-hero__text,
+.frontend-availability-family-hero--merged .hotel-booking-meta__item strong,
+.frontend-availability-family-hero--merged .hotel-booking-offer-note {
+    color: #fff;
+}
+
+.availability-hero--merged .availability-kicker,
+.frontend-availability-family-hero--merged .frontend-availability-family-kicker,
+.frontend-availability-family-hero--merged .hotel-booking-kicker {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+.availability-hero--merged .availability-subtitle,
+.availability-hero--merged .availability-description,
+.availability-hero--merged .availability-meta__label,
+.frontend-availability-family-hero--merged .frontend-availability-family-subtitle,
+.frontend-availability-family-hero--merged .frontend-availability-family-description,
+.frontend-availability-family-hero--merged .hotel-booking-hero__text,
+.frontend-availability-family-hero--merged .hotel-booking-meta__item span {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.availability-kicker,
+.frontend-availability-family-kicker,
+.frontend-availability-family-hero .hotel-booking-kicker {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.45rem 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #0f5fa8;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.availability-title,
+.frontend-availability-family-title,
+.frontend-availability-family-hero .hotel-booking-hero__title {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(1.55rem, 2.2vw, 2.15rem);
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.availability-subtitle,
+.frontend-availability-family-subtitle,
+.frontend-availability-family-hero .hotel-booking-hero__text {
+    margin: 0 0 1rem;
+    color: #ffffff;
+    font-size: 1rem;
+    max-width: 720px;
+}
+
+.availability-description,
+.frontend-availability-family-description {
+    margin: 1rem 0 0;
+    color: #64748b;
+    font-size: 0.94rem;
+    line-height: 1.7;
+    max-width: 760px;
+}
+
+.frontend-availability-family-page .hotel-booking-layout .card-box {
+    padding: 1.25rem;
+    border: 1px solid #dbe4ee;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 20px 46px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.frontend-availability-family-page .booking-wizard__step {
+    border-color: #d8e1ec;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.08), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+}
+
+.frontend-availability-family-page .booking-wizard__step:hover,
+.frontend-availability-family-page .booking-wizard__step:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 12px 28px rgba(14, 116, 144, 0.12);
+}
+
+.frontend-availability-family-page .booking-wizard__step.is-active {
+    border-color: #0f5fa8;
+    box-shadow: 0 18px 36px rgba(15, 95, 168, 0.10);
+}
+
+.frontend-availability-family-page .booking-wizard__step-index {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.frontend-availability-family-page .booking-wizard__step.is-active .booking-wizard__step-index {
+    background: #0f5fa8;
+    color: #fff;
+}
+
+.frontend-availability-family-page .booking-wizard__panel,
+.frontend-availability-family-page .room-container,
+.frontend-availability-family-page .box-price-kicked,
+.frontend-availability-family-page .page-note {
+    border: 1px solid #dbe4ee;
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.08), transparent 34%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+}
+
+.frontend-availability-family-page .booking-wizard__panel {
+    padding: 1.25rem;
+}
+
+.frontend-availability-family-page .page-note,
+.frontend-availability-family-page .box-price-kicked {
+    padding: 1rem 1.05rem;
+}
+
+.frontend-availability-family-page .booking-wizard__eyebrow {
+    color: #0f5fa8;
+}
+
+.frontend-availability-family-page .booking-wizard__title,
+.frontend-availability-family-page .page-subtitle,
+.frontend-availability-family-page #optional_service {
+    color: #0f172a;
+}
+
+.frontend-availability-family-page .booking-wizard__text,
+.frontend-availability-family-page .checkbox-left p,
+.frontend-availability-family-page .page-note {
+    color: #64748b;
+}
+
+.frontend-availability-family-page .card-box-footer,
+.frontend-availability-family-page .booking-wizard__actions {
+    border-top-color: #dbe4ee;
+}
+
+@media (max-width: 1199.98px) {
+    .availability-hero,
+    .frontend-availability-family-hero {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .availability-hero,
+    .frontend-availability-family-hero,
+    .frontend-availability-family-page .hotel-booking-layout .card-box,
+    .frontend-availability-family-page .booking-wizard__panel {
+        padding: 1rem;
+        border-radius: 18px;
+    }
+}

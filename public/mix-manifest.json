@@ -1,5 +1,21 @@
 {
-    "/js/app.js": "/js/app.js?id=ef6e99ba8af636a97703c7feee8adccf",
+    "/js/app.js": "/js/app.js?id=d8c22c854d1457497120a50d16939afe",
+    "/build/backend/js/app.js": "/build/backend/js/app.js?id=49cd01b15ff54aeb107ad5962ca14e55",
+    "/build/frontend/js/app.js": "/build/frontend/js/app.js?id=86f6c53c5f260a203411df480c5cc832",
+    "/build/frontend/js/pages/frontend-orders.js": "/build/frontend/js/pages/frontend-orders.js?id=33da963255b25e1e64a9014507c0a233",
+    "/build/frontend/js/pages/accommodations-index.js": "/build/frontend/js/pages/accommodations-index.js?id=db4a133763cdc94f00602dbae0fd8683",
+    "/build/frontend/js/pages/hotel-availability.js": "/build/frontend/js/pages/hotel-availability.js?id=81bb7d58ddc38ddfda86443a9f57db3b",
+    "/build/frontend/js/pages/accommodation-detail.js": "/build/frontend/js/pages/accommodation-detail.js?id=e796626cc9e3eba22ad7dfc9d0abd97b",
+    "/build/frontend/js/pages/hotel-booking.js": "/build/frontend/js/pages/hotel-booking.js?id=cc2d5984dd97b23afcc17261fb076b41",
+    "/build/frontend/js/pages/order-detail.js": "/build/frontend/js/pages/order-detail.js?id=913e4c57aa24269c5f99e9c6ab36dc2b",
+    "/build/backend/css/app.css": "/build/backend/css/app.css?id=1b43be08089274a2217fd55d06c9a95c",
     "/css/app.css": "/css/app.css?id=1b43be08089274a2217fd55d06c9a95c",
-    "/panel/ckeditor/ckeditor.js": "/panel/ckeditor/ckeditor.js?id=24f0d1ae4a02a272acb8914ee77bff1f"
+    "/build/frontend/css/pages/frontend-home-entry.css": "/build/frontend/css/pages/frontend-home-entry.css?id=6e8fcefc0c65629703fcf04c594e6c0b",
+    "/build/frontend/css/app.css": "/build/frontend/css/app.css?id=1a01c6dc1f9b437b0487762654bca7c7",
+    "/build/frontend/css/pages/order-detail-entry.css": "/build/frontend/css/pages/order-detail-entry.css?id=33e8e59ae0598df6711cb748ed590ae9",
+    "/build/frontend/css/pages/hotel-booking-entry.css": "/build/frontend/css/pages/hotel-booking-entry.css?id=a7b6a63bc8753e9a9d696ec259121a5f",
+    "/build/frontend/css/pages/accommodation-detail-entry.css": "/build/frontend/css/pages/accommodation-detail-entry.css?id=bb70077af71508cb3f01c1778fc93d72",
+    "/build/frontend/css/pages/hotel-availability-entry.css": "/build/frontend/css/pages/hotel-availability-entry.css?id=84df61d848c265a75f2159bedda3d261",
+    "/build/frontend/css/pages/accommodations-index-entry.css": "/build/frontend/css/pages/accommodations-index-entry.css?id=2db7783a75ab6ff1254c02266ebcbe6b",
+    "/build/frontend/css/pages/frontend-orders-entry.css": "/build/frontend/css/pages/frontend-orders-entry.css?id=ac1b28d16f25b06a52812ea1dfcb9539"
 }

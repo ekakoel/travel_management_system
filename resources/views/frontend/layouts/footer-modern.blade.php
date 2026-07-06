@@ -1,9 +1,3 @@
-@push('scripts')
-    @once
-        <script src="{{ asset('frontend/js/components/frontend-footer-subscribe.js') }}?v={{ filemtime(public_path('frontend/js/components/frontend-footer-subscribe.js')) }}"></script>
-    @endonce
-@endpush
-
 <footer class="site-footer footer wow fadeIn" data-wow-delay="0.1s">
     <div class="container site-footer__container">
         <div class="site-footer__top">
@@ -33,7 +27,6 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="site-footer__section">
                         <span class="site-footer__eyebrow">@lang('messages.Get In Touch')</span>
-                        <h2 class="site-footer__title">@lang('messages.Get In Touch')</h2>
 
                         <ul class="site-footer__contact-list">
                             <li>
@@ -55,7 +48,6 @@
                 <div class="col-sm-6 col-lg-4">
                     <div class="site-footer__section">
                         <span class="site-footer__eyebrow">@lang('messages.Newsletter')</span>
-                        <h2 class="site-footer__title">@lang('messages.Newsletter')</h2>
 
                         <p class="site-footer__newsletter-copy">
                             @lang('messages.Stay informed with partner updates, curated offers, and service announcements.')
@@ -112,7 +104,6 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="site-footer__section">
                         <span class="site-footer__eyebrow">@lang('messages.Our Services')</span>
-                        <h2 class="site-footer__title">@lang('messages.Our Services')</h2>
                         <nav class="site-footer__nav-list" aria-label="Footer services">
                             <a href="{{ route('view.accommodation-service') }}">@lang('messages.Accommodations')</a>
                             <a href="{{ route('view.transport-service') }}">@lang('messages.Transports')</a>
@@ -124,7 +115,6 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="site-footer__section">
                         <span class="site-footer__eyebrow">@lang('messages.Quick Links')</span>
-                        <h2 class="site-footer__title">@lang('messages.Quick Links')</h2>
                         <nav class="site-footer__nav-list" aria-label="Footer quick links">
                             <a href="{{ route('about-us') }}">@lang('messages.About Us')</a>
                             <a href="{{ route('contact-us') }}">@lang('messages.Contact Us')</a>
@@ -136,7 +126,6 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="site-footer__section">
                         <span class="site-footer__eyebrow">@lang('messages.Policies')</span>
-                        <h2 class="site-footer__title">@lang('messages.Policies')</h2>
                         <nav class="site-footer__nav-list" aria-label="Footer policies">
                             <a href="{{ route('terms-and-conditions') }}">@lang('messages.Terms & Conditions')</a>
                             <a href="{{ route('privacy-policy') }}">@lang('messages.Privacy Policy')</a>
@@ -147,7 +136,6 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="site-footer__section">
                         <span class="site-footer__eyebrow">@lang('messages.Platform')</span>
-                        <h2 class="site-footer__title">@lang('messages.Platform')</h2>
                         <p class="site-footer__small-copy">
                             {{ __('home.footer.platform_copy') }}
                         </p>

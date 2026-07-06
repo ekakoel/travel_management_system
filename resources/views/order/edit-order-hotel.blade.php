@@ -1,6 +1,28 @@
 @php
     $no = 0;
+    $transferRows = $airport_shuttles
+        ->sortBy('date')
+        ->values()
+        ->map(function ($shuttle) {
+            return [
+                'type' => $shuttle->nav === 'Out' ? 'departure' : 'arrival',
+                'flight_number' => $shuttle->flight_number ?? '',
+                'flight_time' => $shuttle->date ? date('Y-m-d H:i', strtotime($shuttle->date)) : '',
+                'transport_id' => $shuttle->transport_id,
+            ];
+        })
+        ->all();
+
+    if (empty($transferRows)) {
+        $transferRows = [[
+            'type' => '',
+            'flight_number' => '',
+            'flight_time' => '',
+            'transport_id' => null,
+        ]];
+    }
 @endphp
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <div class="col-md-8">
     <div class="card-box">
         <div class="card-box-title">
@@ -316,77 +338,77 @@
                 @endif
             @endif
             {{-- AIRPORT SHUTTLE ========================================================================================================================================= --}}
+            
             <div class="page-subtitle">@lang('messages.Airport Shuttle')</div>
-            <div class="row">
-                <!-- Arrival Flight -->
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="opInputArrivalFlight">@lang('messages.Arrival Flight')</label>
-                        <input type="text" id="opInputArrivalFlight" name="arrival_flight" class="form-control @error('arrival_flight') is-invalid @enderror" placeholder="@lang('messages.Arrival Flight')" value="{{ $airport_shuttle_in->flight_number ?? '' }}">
-                        @error('arrival_flight') <div class="alert alert-danger">{{ $message }}</div> @enderror
+            <div class="row" id="airportShuttleEditor">
+                <div class="col-md-12">
+                    <div id="airportShuttleRows">
+                        @foreach ($transferRows as $index => $transferRow)
+                            <div class="row align-items-end airport-shuttle-row m-b-12" data-transfer-row>
+                                <div class="col-xl-2 col-lg-3 col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('messages.Type')</label>
+                                        <select name="flight_type[]" class="custom-select" data-flight-type>
+                                            <option value="">@lang('messages.Select Type')</option>
+                                            <option value="arrival" {{ $transferRow['type'] === 'arrival' ? 'selected' : '' }}>@lang('messages.Arrival')</option>
+                                            <option value="departure" {{ $transferRow['type'] === 'departure' ? 'selected' : '' }}>@lang('messages.Departure')</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xl-2 col-lg-3 col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('messages.Flight Number')</label>
+                                        <input
+                                            type="text"
+                                            name="flight_number[]"
+                                            class="form-control"
+                                            placeholder="@lang('messages.Insert flight number')"
+                                            value="{{ $transferRow['flight_number'] }}"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('messages.Date and time')</label>
+                                        <input
+                                            readonly
+                                            type="text"
+                                            name="flight_time[]"
+                                            class="form-control booking-datetime-input"
+                                            placeholder="@lang('messages.Select date and time')"
+                                            value="{{ $transferRow['flight_time'] }}"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-lg-8 col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('messages.Airport Shuttle') <i style="color: #7e7e7e;" data-toggle="tooltip" data-placement="top" title="@lang('messages.Request')" class="icon-copy fa fa-info-circle" aria-hidden="true"></i></label>
+                                        <select name="flight_transport_id[]" class="custom-select booking-transfer-select" data-flight-transport>
+                                            <option value="" data-transport-price="0" data-transport-price-id="">@lang('messages.Select Transport')</option>
+                                            @foreach ($transports as $transport)
+                                                <option
+                                                    value="{{ $transport->id }}"
+                                                    data-transport-price="{{ $transport->calculated_price }}"
+                                                    data-transport-price-id="{{ $transport->calculated_price_id }}"
+                                                    {{ (string) $transferRow['transport_id'] === (string) $transport->id ? 'selected' : '' }}
+                                                >
+                                                    {{ $transport->brand }} {{ $transport->name }} - ({{ $transport->capacity }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xl-1 col-lg-1 col-md-12">
+                                    <button type="button" class="btn btn-danger airport-shuttle-row__remove w-100" data-remove-flight {{ count($transferRows) === 1 && $index === 0 ? 'disabled' : '' }}>
+                                        <i class="icon-copy fa fa-close" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                </div>
-                <!-- Arrival Date and Time -->
-                <div class="col-md-5">
-                    <div class="form-group">
-                        <label for="opInputArrivalTime">@lang('messages.Arrival Date and Time')</label>
-                        <input readonly type="text" id="opInputArrivalTime" name="arrival_time" class="form-control datetimepicker @error('arrival_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" value="{{ $airport_shuttle_in ? date('d F Y h:i a', strtotime($airport_shuttle_in->date)) : '' }}">
-                        @error('arrival_time') <div class="alert alert-danger">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-                <!-- Airport Shuttle In -->
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="airportShuttleIn">@lang('messages.Airport Shuttle') <i style="color: #7e7e7e;" data-toggle="tooltip" data-placement="top" title="@lang('messages.Request')" class="icon-copy fa fa-info-circle" aria-hidden="true"></i></label>
-                        <select name="airport_shuttle_in" id="airportShuttleIn" class="custom-select @error('airport_shuttle_in') is-invalid @enderror">
-                            <option value="">@lang('messages.None')</option>
-                            @foreach ($transports as $transport)
-                                <option value="{{ $transport->id }}" 
-                                    data-transportin="1" 
-                                    data-transporpricein="{{ $transport->calculated_price }}"
-                                    data-idtransporpricein="{{ $transport->calculated_price_id }}"
-                                    {{ $airport_shuttle_in && $airport_shuttle_in->transport_id == $transport->id ? 'selected' : '' }}>
-                                    {{ $transport->brand }} {{ $transport->name }} - ({{ $transport->capacity }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('airport_shuttle_in') <span class="invalid-feedback"><strong>{{ $message }}</strong></span> @enderror
-                    </div>
-                </div>
-                <!-- Departure Flight -->
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="opInputDepartureFlight">@lang('messages.Departure Flight')</label>
-                        <input type="text" id="opInputDepartureFlight" name="departure_flight" class="form-control @error('departure_flight') is-invalid @enderror" placeholder="@lang('messages.Departure Flight')" value="{{ $airport_shuttle_out->flight_number ?? '' }}">
-                        @error('departure_flight') <div class="alert alert-danger">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-                <!-- Departure Date and Time -->
-                <div class="col-md-5">
-                    <div class="form-group">
-                        <label for="opInputDepartureTime">@lang('messages.Departure Date and Time')</label>
-                        <input readonly type="text" id="opInputDepartureTime" name="departure_time" class="form-control datetimepicker @error('departure_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" value="{{ $airport_shuttle_out ? date('d F Y h:i a', strtotime($airport_shuttle_out->date)) : '' }}">
-                        @error('departure_time') <div class="alert alert-danger">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-                <!-- Airport Shuttle Out -->
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="airportShuttleOut">@lang('messages.Airport Shuttle') <i style="color: #7e7e7e;" data-toggle="tooltip" data-placement="top" title="@lang('messages.Request')" class="icon-copy fa fa-info-circle" aria-hidden="true"></i></label>
-                        <select name="airport_shuttle_out" id="airportShuttleOut" class="custom-select @error('airport_shuttle_out') is-invalid @enderror">
-                            <option value="">@lang('messages.None')</option>
-                            @foreach ($transports as $transport_out)
-                                <option value="{{ $transport_out->id }}" 
-                                    data-transportout="1" 
-                                    data-transporpriceout="{{ $transport_out->calculated_price }}"
-                                    data-idtransporpriceout="{{ $transport_out->calculated_price_id }}"
-                                    {{ $airport_shuttle_out && $airport_shuttle_out->transport_id == $transport_out->id ? 'selected' : '' }}>
-                                    {{ $transport_out->brand }} {{ $transport_out->name }} - ({{ $transport_out->capacity }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('airport_shuttle_out') <span class="invalid-feedback"><strong>{{ $message }}</strong></span> @enderror
-                    </div>
+                    <button type="button" class="btn btn-primary m-b-16" id="addAirportShuttleRow">
+                        <i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Add More Flight')
+                    </button>
                 </div>
                 {{-- Total Airport Shuttle Price --}}
                 <div id="total_airport_shuttle_text" class="col-md-12">
@@ -570,6 +592,7 @@
 
 @include('partials.loading-form', ['id' => 'submitOrder'])
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const formatCurrency = amount => new Intl.NumberFormat('en-US', { 
@@ -578,8 +601,8 @@
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(amount);
-        const transportIn = document.querySelector("#airportShuttleIn");
-        const transportOut = document.querySelector("#airportShuttleOut");
+        const rowContainer = document.querySelector("#airportShuttleRows");
+        const addRowButton = document.querySelector("#addAirportShuttleRow");
         const totalPriceElement = document.querySelector("#total_airport_shuttle_price");
         const totalShuttleText = document.querySelector("#total_airport_shuttle_text");
         const textAirportShuttle = document.querySelector("#airportShuttle");
@@ -593,56 +616,215 @@
         const priceOptionalRate = document.querySelector("#totalPriceOptionalRate");
         const priceSuitesAndVillas = document.querySelector("#totalPriceSuitesAndVillas");
         const pricePromotionDiscounts = document.querySelector("#promotionDiscountsTotal");
-        const airportShuttleAnyZero = document.querySelector("#airport_shuttle_any_zero");
+        const inputFinalPrice = document.querySelector("#inputFinalPrice");
+
+        function initDatePickers(scope) {
+            if (typeof flatpickr !== "function") {
+                return;
+            }
+
+            scope.querySelectorAll(".booking-datetime-input").forEach(function (input) {
+                if (input._flatpickr) {
+                    input._flatpickr.destroy();
+                }
+
+                flatpickr(input, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    minuteIncrement: 5,
+                    minDate: "today",
+                    defaultDate: input.value || new Date(),
+                    allowInput: false,
+                    clickOpens: true,
+                    disableMobile: true,
+                });
+            });
+        }
+
+        function getRows() {
+            return Array.from(rowContainer.querySelectorAll("[data-transfer-row]"));
+        }
+
+        function updateRemoveButtons() {
+            const rows = getRows();
+            rows.forEach(function (row) {
+                const button = row.querySelector("[data-remove-flight]");
+                if (button) {
+                    button.disabled = rows.length === 1;
+                }
+            });
+        }
+
+        function createRow() {
+            const row = document.createElement("div");
+            row.className = "row align-items-end airport-shuttle-row m-b-12";
+            row.setAttribute("data-transfer-row", "");
+            row.innerHTML = `
+                <div class="col-xl-2 col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <label>@lang('messages.Type')</label>
+                        <select name="flight_type[]" class="custom-select" data-flight-type>
+                            <option value="">@lang('messages.Select Type')</option>
+                            <option value="arrival">@lang('messages.Arrival')</option>
+                            <option value="departure">@lang('messages.Departure')</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <label>@lang('messages.Flight Number')</label>
+                        <input type="text" name="flight_number[]" class="form-control" placeholder="@lang('messages.Insert flight number')">
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <label>@lang('messages.Date and time')</label>
+                        <input readonly type="text" name="flight_time[]" class="form-control booking-datetime-input" placeholder="@lang('messages.Select date and time')">
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-8 col-md-6">
+                    <div class="form-group">
+                        <label>@lang('messages.Airport Shuttle') <i style="color: #7e7e7e;" data-toggle="tooltip" data-placement="top" title="@lang('messages.Request')" class="icon-copy fa fa-info-circle" aria-hidden="true"></i></label>
+                        <select name="flight_transport_id[]" class="custom-select booking-transfer-select" data-flight-transport>
+                            <option value="" data-transport-price="0" data-transport-price-id="">@lang('messages.Select Transport')</option>
+                            @foreach ($transports as $transport)
+                                <option value="{{ $transport->id }}" data-transport-price="{{ $transport->calculated_price }}" data-transport-price-id="{{ $transport->calculated_price_id }}">
+                                    {{ $transport->brand }} {{ $transport->name }} - ({{ $transport->capacity }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-1 col-lg-1 col-md-12">
+                    <button type="button" class="btn btn-danger airport-shuttle-row__remove w-100" data-remove-flight>
+                        <i class="icon-copy fa fa-close" aria-hidden="true"></i>
+                    </button>
+                </div>
+            `;
+
+            rowContainer.appendChild(row);
+            initDatePickers(row);
+            updateRemoveButtons();
+            updateTotalPrice();
+        }
+
+        function syncPrimaryLegacyFields() {
+            let primaryIn = null;
+            let primaryOut = null;
+
+            getRows().forEach(function (row) {
+                const type = row.querySelector('[name="flight_type[]"]')?.value || "";
+                const transport = row.querySelector('[name="flight_transport_id[]"]');
+                const flightNumber = row.querySelector('[name="flight_number[]"]')?.value?.trim() || "";
+
+                if (!primaryIn && type === "arrival" && transport && transport.value) {
+                    primaryIn = {
+                        price: parseFloat(transport.selectedOptions[0]?.dataset.transportPrice) || 0,
+                        priceId: transport.selectedOptions[0]?.dataset.transportPriceId || "",
+                        flightNumber: flightNumber
+                    };
+                }
+
+                if (!primaryOut && type === "departure" && transport && transport.value) {
+                    primaryOut = {
+                        price: parseFloat(transport.selectedOptions[0]?.dataset.transportPrice) || 0,
+                        priceId: transport.selectedOptions[0]?.dataset.transportPriceId || "",
+                        flightNumber: flightNumber
+                    };
+                }
+            });
+
+            inputAirportShuttleInPrice.value = primaryIn ? primaryIn.price : "";
+            inputAirportShuttleOutPrice.value = primaryOut ? primaryOut.price : "";
+            inputAirportShuttleInPriceId.value = primaryIn ? primaryIn.priceId : "";
+            inputAirportShuttleOutPriceId.value = primaryOut ? primaryOut.priceId : "";
+        }
+
         function updateTotalPrice() {
-            const valueIn = transportIn.value.trim();
-            const valueOut = transportOut.value.trim();
             const totalPriceOptionalRate = parseFloat(priceOptionalRate.value) || 0;
             const totalPriceSuitesAndVillas = parseFloat(priceSuitesAndVillas.value) || 0;
             const promotionDiscountsTotal = parseFloat(pricePromotionDiscounts.value) || 0;
-            const priceIn = parseFloat(transportIn.selectedOptions[0]?.dataset.transporpricein) || 0;
-            const priceInId = parseFloat(transportIn.selectedOptions[0]?.dataset.idtransporpricein) || 0;
-            const priceOut = parseFloat(transportOut.selectedOptions[0]?.dataset.transporpriceout) || 0;
-            const priceOutId = parseFloat(transportOut.selectedOptions[0]?.dataset.idtransporpriceout) || 0;
-            const totalAirportShuttlePrice = priceIn + priceOut;
+            let hasSelectedTransport = false;
+            let hasZeroPrice = false;
+            let totalAirportShuttlePrice = 0;
+
+            getRows().forEach(function (row) {
+                const transport = row.querySelector('[name="flight_transport_id[]"]');
+                if (!transport || !transport.value) {
+                    return;
+                }
+
+                hasSelectedTransport = true;
+                const selected = transport.selectedOptions[0];
+                const rowPrice = parseFloat(selected?.dataset.transportPrice) || 0;
+                totalAirportShuttlePrice += rowPrice;
+
+                if (rowPrice === 0) {
+                    hasZeroPrice = true;
+                }
+            });
+
             const finalPriceOrder = totalPriceOptionalRate + totalPriceSuitesAndVillas + totalAirportShuttlePrice - promotionDiscountsTotal;
-            if ( !valueIn && !valueOut) {
+
+            syncPrimaryLegacyFields();
+
+            if (!hasSelectedTransport) {
                 [totalShuttleText, totalAirportShuttleOutPrice, textAirportShuttle].forEach(el => el.style.display = "none");
                 hiddenTotalInput.value = "";
-                inputAirportShuttleInPrice.value = "";
-                inputAirportShuttleOutPrice.value = "";
-                inputAirportShuttleInPriceId.value = "";
-                inputAirportShuttleOutPriceId.value = "";
                 finalPriceValue.textContent = formatCurrency(finalPriceOrder);
                 inputFinalPrice.value = finalPriceOrder;
                 return;
             }
+
             [totalShuttleText, totalAirportShuttleOutPrice, textAirportShuttle].forEach(el => el.style.display = "block");
-            if (priceIn === 0 && valueIn || priceOut === 0 && valueOut) {
+
+            if (hasZeroPrice) {
                 totalPriceElement.textContent = totalAirportShuttleOutPrice.textContent = finalPriceValue.textContent = "{{ __('messages.To be advised') }}";
-                inputAirportShuttleInPrice.value = priceIn;
-                inputAirportShuttleOutPrice.value = priceOut;
                 hiddenTotalInput.value = totalAirportShuttlePrice;
-                inputAirportShuttleInPriceId.value = priceInId;
-                inputAirportShuttleOutPriceId.value = priceOutId;
                 inputFinalPrice.value = finalPriceOrder;
             } else {
                 const formattedTotal = formatCurrency(totalAirportShuttlePrice);
                 totalPriceElement.textContent = totalAirportShuttleOutPrice.textContent = formattedTotal;
                 hiddenTotalInput.value = totalAirportShuttlePrice;
-                inputAirportShuttleInPriceId.value = priceInId;
-                inputAirportShuttleOutPriceId.value = priceOutId;
-                inputAirportShuttleInPrice.value = priceIn;
-                inputAirportShuttleOutPrice.value = priceOut;
                 inputFinalPrice.value = finalPriceOrder;
                 finalPriceValue.textContent = formatCurrency(finalPriceOrder);
             }
         }
-        document.addEventListener("change", function (event) {
-            if (event.target === transportIn || event.target === transportOut) {
+
+        rowContainer.addEventListener("click", function (event) {
+            const removeButton = event.target.closest("[data-remove-flight]");
+            if (!removeButton) {
+                return;
+            }
+
+            const rows = getRows();
+            if (rows.length <= 1) {
+                return;
+            }
+
+            removeButton.closest("[data-transfer-row]").remove();
+            updateRemoveButtons();
+            updateTotalPrice();
+        });
+
+        rowContainer.addEventListener("change", function (event) {
+            if (event.target.matches('[name="flight_type[]"], [name="flight_transport_id[]"], [name="flight_time[]"]')) {
                 updateTotalPrice();
             }
         });
+
+        rowContainer.addEventListener("input", function (event) {
+            if (event.target.matches('[name="flight_number[]"]')) {
+                syncPrimaryLegacyFields();
+            }
+        });
+
+        addRowButton.addEventListener("click", function () {
+            createRow();
+        });
+
+        initDatePickers(document);
+        updateRemoveButtons();
         updateTotalPrice();
     });
 </script>

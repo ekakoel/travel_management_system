@@ -168,7 +168,7 @@ return [
     ],
     'footer' => [
         'logo_aria' => 'Bali Kami Tour Home',
-        'tagline' => 'Bali Kami Tour is a Bali-based B2B travel partner supporting professional travel agents and buyers from around the world.',
+        'tagline' => 'Bali Kami Tour is a Bali based B2B travel partner supporting professional travel agents and buyers from around the world.',
         'description' => 'Bali Kami Tour specializes in premium Indonesia travel services for professional B2B partners, with curated accommodation, executive transportation, and tailored journeys for agencies and operators across global markets.',
         'highlights_aria' => 'Bali Kami Tour highlights',
         'highlights' => [

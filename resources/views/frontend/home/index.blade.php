@@ -2,7 +2,7 @@
 @section('title', __('messages.Home'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/pages/frontend-home.css') }}">
+    <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/frontend-home-entry.css') }}">
 @endpush
 
 @section('content')

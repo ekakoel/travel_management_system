@@ -78,6 +78,56 @@
         return value;
     }
 
+    function getSubmitButtons($form) {
+        var $buttons = $form.find('button[type="submit"], input[type="submit"]');
+        var formId = $form.attr('id');
+
+        if (formId) {
+            $buttons = $buttons.add($('[form="' + formId + '"]'));
+        }
+
+        return $buttons;
+    }
+
+    function setSubmittingState($form, submitting) {
+        var processingLabel = $form.data('processingLabel') || 'Processing...';
+        var $overlay = $form.find('[data-form-submit-overlay]').first();
+
+        $form.data('isSubmitting', !!submitting);
+        $form.attr('aria-busy', submitting ? 'true' : 'false');
+
+        if ($overlay.length) {
+            $overlay.toggleClass('hidden', !submitting);
+            $overlay.attr('aria-hidden', submitting ? 'false' : 'true');
+        }
+
+        getSubmitButtons($form).each(function () {
+            var $button = $(this);
+            var originalHtml = $button.data('originalHtml');
+            var buttonProcessingLabel = $button.data('processingLabel') || processingLabel;
+
+            if (typeof originalHtml === 'undefined') {
+                originalHtml = $button.is('input') ? $button.val() : $button.html();
+                $button.data('originalHtml', originalHtml);
+            }
+
+            $button.prop('disabled', !!submitting)
+                .toggleClass('is-processing', !!submitting)
+                .attr('aria-disabled', submitting ? 'true' : 'false');
+
+            if ($button.is('input')) {
+                $button.val(submitting ? buttonProcessingLabel : originalHtml);
+                return;
+            }
+
+            $button.html(
+                submitting
+                    ? '<span class="booking-submit-button__spinner" aria-hidden="true"></span><span>' + escapeHtml(buttonProcessingLabel) + '</span>'
+                    : originalHtml
+            );
+        });
+    }
+
     function initWizard($wizard) {
         var $panels = $wizard.find('[data-wizard-panel]');
         var $steps = $wizard.find('[data-wizard-step-target]');
@@ -219,8 +269,11 @@
             ? moment().add(7, 'days').format('Y-m-d')
             : '';
         var defaultDateTime = typeof moment !== 'undefined'
-            ? moment().add(7, 'days').format('Y-m-d H:i')
+            ? moment().format('Y-m-d H:i')
             : '';
+        var minDateTime = typeof moment !== 'undefined'
+            ? moment().startOf('day').format('Y-m-d H:i')
+            : 'today';
 
         function createFlatpickrConfig(options) {
             return $.extend({
@@ -255,6 +308,7 @@
                 enableTime: true,
                 dateFormat: 'Y-m-d H:i',
                 minuteIncrement: 5,
+                minDate: minDateTime,
                 defaultDate: this.value || defaultDateTime
             });
         });
@@ -314,6 +368,7 @@
         var guestNamesMissingLabel = $form.data('label-guest-names-missing') || 'Guest names not filled yet';
         var reviewEmptyLabel = $form.data('label-review-empty') || 'Add guest names and rooming details to review them here.';
         var noRemarkLabel = $form.data('label-no-remark') || 'No remark added.';
+        var processingLabel = $form.find('button[type="submit"]').first().data('processingLabel') || 'Processing...';
         var $roomList = $form.find('#dynamic_field');
         var $addButton = $form.find('#add');
         var $transportIn = $form.find('#airportShuttleIn');
@@ -413,6 +468,7 @@
             getTransferItems().each(function () {
                 var $item = $(this);
                 var type = $item.find('select[name="flight_type[]"]').val();
+                var flightNumber = $.trim($item.find('input[name="flight_number[]"]').val());
                 var time = $.trim($item.find('input[name="flight_time[]"]').val());
                 var $transportSelect = $item.find('select[name="flight_transport_id[]"]');
                 var transportValue = $transportSelect.val();
@@ -424,12 +480,13 @@
                 );
 
                 if (type === 'arrival' || type === 'departure') {
-                    var hasCurrentValue = !!time || !!transportValue;
+                    var hasCurrentValue = !!flightNumber || !!time || !!transportValue;
                     var existingTransfer = primaryTransfer[type];
-                    var existingHasValue = existingTransfer && (existingTransfer.time || existingTransfer.transport);
+                    var existingHasValue = existingTransfer && (existingTransfer.flightNumber || existingTransfer.time || existingTransfer.transport);
 
                     if (!existingTransfer || (!existingHasValue && hasCurrentValue)) {
                         primaryTransfer[type] = {
+                            flightNumber: flightNumber,
                             time: time,
                             transport: transportValue || ''
                         };
@@ -438,11 +495,13 @@
             });
 
             if (primaryTransfer.arrival) {
+                setValue($form.find('input[name="arrival_flight"]'), primaryTransfer.arrival.flightNumber || '');
                 setValue($form.find('input[name="arrival_time"]'), primaryTransfer.arrival.time || '');
                 setValue($transportIn, primaryTransfer.arrival.transport || '');
             }
 
             if (primaryTransfer.departure) {
+                setValue($form.find('input[name="departure_flight"]'), primaryTransfer.departure.flightNumber || '');
                 setValue($form.find('input[name="departure_time"]'), primaryTransfer.departure.time || '');
                 setValue($transportOut, primaryTransfer.departure.transport || '');
             }
@@ -455,17 +514,22 @@
                 var $item = $(this);
                 var typeValue = $item.find('select[name="flight_type[]"]').val();
                 var typeText = $.trim($item.find('select[name="flight_type[]"] option:selected').text());
+                var flightNumber = $.trim($item.find('input[name="flight_number[]"]').val());
                 var flightTime = $.trim($item.find('input[name="flight_time[]"]').val());
                 var transportValue = $item.find('select[name="flight_transport_id[]"]').val();
                 var transportText = $.trim($item.find('select[name="flight_transport_id[]"] option:selected').text());
                 var parts = [];
 
-                if (!typeValue && !flightTime && !transportValue) {
+                if (!typeValue && !flightNumber && !flightTime && !transportValue) {
                     return;
                 }
 
                 if (typeValue && typeText) {
                     parts.push(typeText);
+                }
+
+                if (flightNumber) {
+                    parts.push(flightNumber);
                 }
 
                 if (flightTime) {
@@ -478,7 +542,7 @@
 
                 if (parts.length > 0) {
                     items.push({
-                        title: typeValue && typeText ? typeText : (flightPrefixLabel + ' ' + (items.length + 1)),
+                        title: flightPrefixLabel + ' ' + (items.length + 1),
                         meta: parts.join(' | ')
                     });
                 }
@@ -780,10 +844,21 @@
             updateReviewSummary();
         });
 
-        $form.on('input change', 'input[name="number_of_guests[]"], input[name="guest_detail[]"], input[name="special_day[]"], input[name="special_date[]"], input[name="flight_time[]"], select[name="flight_type[]"], select[name="flight_transport_id[]"], select[name="extra_bed_id[]"], textarea[name="note"]', function () {
+        $form.on('input change', 'input[name="number_of_guests[]"], input[name="guest_detail[]"], input[name="special_day[]"], input[name="special_date[]"], input[name="flight_number[]"], input[name="flight_time[]"], select[name="flight_type[]"], select[name="flight_transport_id[]"], select[name="extra_bed_id[]"], textarea[name="note"]', function () {
             toggleExtraBedSelection();
             updatePriceSummary();
             updateReviewSummary();
+        });
+
+        $form.data('processingLabel', processingLabel);
+        $form.on('submit', function (event) {
+            if ($form.data('isSubmitting')) {
+                event.preventDefault();
+                return false;
+            }
+
+            setSubmittingState($form, true);
+            return true;
         });
 
         syncLegacyTransferFields();

@@ -1,5 +1,12 @@
 @php
     $logoColor = config('app.logo_img_color');
+    $currentUser = Auth::user();
+    $currentPosition = $currentUser?->position;
+    $frontendOnlyPositions = ['agent'];
+    $coreOpsPositions = ['developer', 'author', 'reservation'];
+    $weddingOpsPositions = ['weddingRsv', 'weddingDvl', 'weddingAuthor', 'weddingSls'];
+    $canAccessWorkspace = in_array($currentPosition, array_merge($coreOpsPositions, $weddingOpsPositions), true);
+    $canAccessReservations = in_array($currentPosition, ['developer', 'reservation', 'weddingRsv'], true);
 @endphp
 
 <nav id="mainNavbar" class="navbar navbar-expand-lg p-0 px-4 px-lg-5">
@@ -35,8 +42,6 @@
             <a href="{{ url('contact-us') }}" class="nav-item nav-link {{ request()->is('contact-us') ? 'active' : '' }}">
                 @lang('messages.Contact Us')
             </a>
-
-            
         </div>
         <div class="navbar-nav ms-auto py-4 py-lg-0">
             <div class="nav-item dropdown">
@@ -61,25 +66,43 @@
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fa fa-user-circle"></i> {{ Auth::user()->name }}
                     </a>
-                    <div class="dropdown-menu shadow-sm m-0">
-                        @canany(['posDev','posAuthor','posRsv','weddingRsv','weddingSls','weddingAuthor','weddingDvl'])
-                            <a class="dropdown-item" href="{{ route('view.admin-panel-main') }}"><i class="fas fa-user-tie"></i>@lang('messages.Admin Panel')</a>
-                        @endcanany
-                        <a class="dropdown-item" href="{{ route('dashboard.index') }}"><i class="fas fa-tachometer-alt"></i>@lang('messages.Dashboard')</a>
+                    <div class="dropdown-menu dropdown-menu-end shadow-sm m-0">
+                        <div class="px-3 py-2 border-bottom">
+                            <div class="fw-semibold text-dark">{{ $currentUser->name }}</div>
+                            <div class="small text-muted">{{ ucfirst((string) $currentPosition) }}</div>
+                        </div>
+
+                        <div class="dropdown-header">@lang('messages.Account')</div>
+                        <a class="dropdown-item" href="{{ route('profile') }}"><i class="dw dw-user1 me-2"></i>@lang('messages.Profile')</a>
+                        <a class="dropdown-item" href="{{ route('view.orders') }}"><i class="icon-copy fa fa-tags me-2" aria-hidden="true"></i>@lang('messages.Order')</a>
+                        <a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fa fa-history me-2" aria-hidden="true"></i>@lang('messages.Order History')</a>
+                        <a class="dropdown-item" href="{{ url('/manual-book') }}"><i class="icon-copy fa fa-book me-2" aria-hidden="true"></i>@lang('messages.Manual Book')</a>
+
+                        @if ($canAccessWorkspace)
+                            <hr class="dropdown-divider">
+                            <div class="dropdown-header">@lang('messages.Dashboard')</div>
+                            <a class="dropdown-item" href="{{ route('dashboard.index') }}"><i class="fas fa-tachometer-alt me-2"></i>@lang('messages.Dashboard')</a>
+                            <a class="dropdown-item" href="{{ route('view.admin-panel-main') }}"><i class="fas fa-briefcase me-2"></i>@lang('messages.Admin Panel')</a>
+                            @if ($canAccessReservations)
+                                <a class="dropdown-item" href="{{ url('/reservation') }}"><i class="fa fa-calendar-check me-2" aria-hidden="true"></i>@lang('messages.Reservations')</a>
+                            @endif
+                        @endif
+
+                        <hr class="dropdown-divider">
+                        <div class="dropdown-header">@lang('messages.General Terms')</div>
+                        <a class="dropdown-item" href="{{ url('/terms-and-conditions') }}"><i class="fa fa-info-circle me-2" aria-hidden="true"></i>@lang('messages.Terms and Conditions')</a>
+                        <a class="dropdown-item" href="{{ url('/privacy-policy') }}"><i class="fa fa-shield-alt me-2" aria-hidden="true"></i>@lang('messages.Privacy Policy')</a>
+
                         <hr class="dropdown-divider">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
-                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt"></i>@lang('messages.Logout')</button>
+                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>@lang('messages.Logout')</button>
                         </form>
                     </div>
                 </div>
             @else
                 <a class="nav-link" href="{{ route('login') }}"><i class="fas fa-sign-in-alt"></i> @lang('messages.Login')</a>
             @endif
-            {{-- <a class="nav-item nav-link btn btn-square rounded-circle bg-light text-primary me-2" href="https://www.facebook.com/BALIKAMITOUR/"><i class="fab fa-facebook-f"></i></a>
-            <a class="nav-item nav-link btn btn-square rounded-circle bg-light text-primary me-2" href="https://www.instagram.com/balikamitour"><i class="fab fa-instagram"></i></a>
-            <a class="nav-item nav-link btn btn-square rounded-circle bg-light text-primary me-2" href="https://www.youtube.com/@balikamichannel"><i class="fab fa-youtube"></i></a>
-            <a class="nav-item nav-link btn btn-square rounded-circle bg-light text-primary me-2" href="https://id.linkedin.com/company/bali-kami-group"><i class="fab fa-linkedin-in"></i></a> --}}
         </div>
     </div>
 </nav>

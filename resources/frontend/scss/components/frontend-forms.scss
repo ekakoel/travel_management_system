@@ -1,0 +1,284 @@
+.booking-wizard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.booking-wizard__nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.booking-wizard__step {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    width: 100%;
+    padding: 1rem 1.05rem;
+    border: 1px solid #d8e1ec;
+    border-radius: var(--frontend-shell-radius-md);
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.08), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+    color: #334155;
+    text-align: left;
+    box-shadow: var(--frontend-shell-shadow-md);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.booking-wizard__step:hover,
+.booking-wizard__step:focus {
+    border-color: #93c5fd;
+    box-shadow: var(--frontend-shell-shadow-sm);
+    transform: translateY(-1px);
+}
+
+.booking-wizard__step.is-active {
+    border-color: var(--frontend-shell-primary);
+    box-shadow: 0 18px 36px rgba(15, 95, 168, 0.10);
+}
+
+.booking-wizard__step.is-complete {
+    border-color: var(--frontend-shell-accent);
+    background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.booking-wizard__step-index {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    border-radius: var(--frontend-shell-radius-pill);
+    background: var(--frontend-shell-primary-soft);
+    color: #0369a1;
+    font-size: 0.92rem;
+    font-weight: 800;
+}
+
+.booking-wizard__step.is-active .booking-wizard__step-index,
+.booking-wizard__step.is-complete .booking-wizard__step-index {
+    color: #fff;
+}
+
+.booking-wizard__step.is-active .booking-wizard__step-index {
+    background: var(--frontend-shell-primary);
+}
+
+.booking-wizard__step.is-complete .booking-wizard__step-index {
+    background: var(--frontend-shell-accent);
+}
+
+.booking-wizard__step-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    min-width: 0;
+}
+
+.booking-wizard__step-copy strong {
+    color: var(--frontend-shell-text);
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.booking-wizard__step-copy span,
+.booking-wizard__text,
+.booking-review__fact span,
+.booking-review__transport-label,
+.booking-review__room-top span {
+    color: var(--frontend-shell-muted);
+    line-height: 1.55;
+}
+
+.booking-wizard__step-copy span {
+    font-size: 0.82rem;
+}
+
+.booking-wizard__panel,
+.room-container,
+.box-price-kicked,
+.page-note {
+    padding: 1.15rem;
+    border: 1px solid var(--frontend-shell-border);
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.08), transparent 34%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+    box-shadow: var(--frontend-shell-shadow-md);
+}
+
+.booking-wizard__panel {
+    display: none;
+}
+
+.booking-wizard__panel.is-active {
+    display: block;
+}
+
+.booking-wizard__heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.booking-wizard__text {
+    max-width: 520px;
+    margin: 0;
+}
+
+.booking-wizard__actions,
+.card-box-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.85rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--frontend-shell-border);
+}
+
+.booking-review {
+    margin-bottom: 1.4rem;
+}
+
+.booking-review__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.booking-review__card {
+    padding: 1rem 1.05rem;
+    border: 1px solid var(--frontend-shell-border);
+    border-radius: 20px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    box-shadow: var(--frontend-shell-shadow-md);
+}
+
+.booking-review__card-head {
+    margin-bottom: 0.85rem;
+}
+
+.booking-review__eyebrow {
+    font-size: 0.72rem;
+}
+
+.booking-review__title {
+    font-size: 1rem;
+}
+
+.booking-review__facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.booking-review__fact,
+.booking-review__room-item,
+.booking-review__transport-block {
+    padding: 0.85rem 0.9rem;
+}
+
+.booking-review__fact span,
+.booking-review__transport-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.booking-review__fact strong,
+.booking-review__transport-value,
+.booking-review__room-top strong {
+    color: var(--frontend-shell-text);
+}
+
+.booking-review__rooms,
+.booking-review__transport {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.booking-review__room-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.45rem;
+}
+
+.booking-review__empty {
+    padding: 0.9rem;
+    border-style: dashed;
+}
+
+.checkbox-left {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 11px 18px;
+    border: 1px dashed #cbd5e1;
+    border-radius: var(--frontend-shell-radius-md);
+    background: var(--frontend-shell-surface-muted);
+}
+
+.checkbox-left input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 0.2rem;
+}
+
+.checkbox-left p {
+    margin: 0;
+}
+
+.hotel-check-form-group .form-control {
+    min-height: 50px;
+    padding-left: 2.7rem;
+    font-weight: 600;
+}
+
+.hotel-check-warning {
+    margin: 0.8rem 0 0;
+    color: var(--frontend-shell-danger);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+@media (max-width: 1199.98px) {
+    .booking-wizard__nav {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .booking-wizard__heading {
+        flex-direction: column;
+    }
+
+    .booking-review__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .booking-wizard__actions,
+    .card-box-footer {
+        flex-direction: column-reverse;
+    }
+
+    .booking-wizard__actions .btn,
+    .card-box-footer .btn,
+    .booking-wizard__step {
+        width: 100%;
+    }
+
+    .booking-review__facts {
+        grid-template-columns: 1fr;
+    }
+}

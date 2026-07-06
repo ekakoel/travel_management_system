@@ -4,13 +4,13 @@
 @push('styles')
     <link rel="stylesheet" type="text/css" href="{{ asset('panel/styles/icon-font.min.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-    <link rel="stylesheet" href="{{ asset('css/pages/hotel-availability.css') }}">
+    <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/hotel-availability-entry.css') }}">
 @endpush
 
 @push('scripts')
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="{{ asset('frontend/js/pages/hotel-availability.js') }}?v={{ filemtime(public_path('frontend/js/pages/hotel-availability.js')) }}"></script>
+    <script src="{{ mix('build/frontend/js/pages/hotel-availability.js') }}" defer></script>
 @endpush
 
 @section('content')
@@ -30,7 +30,7 @@
                     <div class="frontend-page-intro__copy">
                         <h1 class="frontend-page-intro__title">{{ $hotel->name }}</h1>
                         <p class="frontend-page-intro__text">
-                            @lang('messages.Live accommodation pricing for partner agents, calculated from standard contract rates, hotel promotions, and active packages based on the dates selected by the user.')
+                            @lang('messages.Live hotel pricing for partner agents, calculated from standard contract rates, hotel promotions, and active packages based on the dates selected by the user.')
                         </p>
                     </div>
                     <div class="frontend-page-summary">
@@ -66,11 +66,11 @@
                         <div class="availability-kicker">@lang('messages.Selected Stay')</div>
                         <h2 class="availability-title">@lang('messages.Choose dates and compare available room rates')</h2>
                         <p class="availability-subtitle">
-                            @lang('messages.Partner-facing accommodation pricing from contract rates, promotions, and packages for the selected stay window.')
+                            @lang('messages.Partner-facing hotel pricing from contract rates, promotions, and packages for the selected stay window.')
                         </p>
 
                         <p class="availability-description">
-                            @lang('messages.This page shows accommodation rates pulled from hotel contract prices, hotel promotions, and hotel packages based on the stay dates you selected.')
+                            @lang('messages.This page shows hotel rates pulled from hotel contract prices, hotel promotions, and hotel packages based on the stay dates you selected.')
                         </p>
                     </div>
                 </section>

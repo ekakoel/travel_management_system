@@ -84,26 +84,18 @@
         <div class="menu-icon dw dw-menu"></div>
     </div>
     <div class="header-right">
-        {{-- <div><p>{{ count($adm_order_wedding_draft) }}</p></div> --}}
-        {{-- @if (app()->getLocale() == 'en')
-                        English
-                    @elseif (app()->getLocale() == 'zh')
-                        繁體中文
-                    @else
-                        简体中文
-                    @endif --}}
         @if (!request()->isMethod('post'))
             <a class="dropdown-togle" href="#" role="button" data-toggle="dropdown">
                 <div class="lang-dropdown m-r-18">
                     <div class="dropdown">
                         <div class="lang-icon">
                             @if (app()->getLocale() == 'en')
-                        English
-                    @elseif (app()->getLocale() == 'zh')
-                        繁體中文
-                    @else
-                        简体中文
-                    @endif
+                                English
+                            @elseif (app()->getLocale() == 'zh')
+                                繁體中文
+                            @else
+                                简体中文
+                            @endif
                         </div>
                         
                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
@@ -293,7 +285,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
                     <a class="dropdown-item" href="/profile"><i class="dw dw-user1"></i>{{ Auth::user()->name }}</a>
-                    {{-- <a class="dropdown-item" href="/orders"><i class="icon-copy fa fa-tags" aria-hidden="true"></i> @lang('messages.Order')</a> --}}
+                    <a class="dropdown-item" href="/orders"><i class="icon-copy fa fa-tags" aria-hidden="true"></i> @lang('messages.Order')</a>
                     <a class="dropdown-item" href="/manual-book"><i class="icon-copy fa fa-book" aria-hidden="true"></i> @lang('messages.Manual Book')</a>
                     <a class="dropdown-item" href="/terms-and-conditions"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Term And Condition')</a>
                     <a class="dropdown-item" href="/privacy-policy"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Privacy Policy')</a>

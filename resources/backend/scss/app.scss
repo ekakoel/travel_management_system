@@ -1,0 +1,6 @@
+// Backend entry point.
+//
+// This imports the current legacy panel stylesheet so the backend
+// can start using a dedicated bundle while migration stays compatible.
+
+@import '../../sass/app';

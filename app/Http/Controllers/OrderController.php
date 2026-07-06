@@ -72,6 +72,87 @@ class OrderController extends Controller
             ->get();
     }
 
+    private function submitCreatedHotelOrder(Request $request, Orders $order, User $agent)
+    {
+        $requestQuotation = $request->request_quotation ? 1 : null;
+
+        DB::transaction(function () use ($request, $order, $agent, $requestQuotation) {
+            $order->update([
+                'request_quotation' => $requestQuotation,
+                'status' => 'Pending',
+            ]);
+
+            OrderLog::create([
+                'order_id' => $order->id,
+                'action' => 'Submit Order '.$order->service,
+                'url' => $request->ip(),
+                'method' => 'Submit',
+                'agent' => $agent->name,
+                'admin' => Auth::id(),
+            ]);
+
+            Mail::to(config('app.reservation_mail'))->send(new ReservationMail($order->id, $requestQuotation));
+        });
+    }
+
+    private function generateUniqueHotelOrderNumber(string $prefix, Carbon $now): string
+    {
+        $baseNumber = $prefix . $now->format('ymd') . '-';
+        $lastSuffix = Orders::where('orderno', 'like', $baseNumber . '%')
+            ->pluck('orderno')
+            ->map(function ($orderNumber) use ($baseNumber) {
+                $suffix = str_replace($baseNumber, '', $orderNumber);
+
+                return ctype_digit($suffix) ? (int) $suffix : 0;
+            })
+            ->max() ?? 0;
+
+        do {
+            $lastSuffix++;
+            $orderNumber = $baseNumber . $lastSuffix;
+        } while (Orders::where('orderno', $orderNumber)->exists());
+
+        return $orderNumber;
+    }
+
+    private function hasDuplicateHotelOrderNumber(Request $request): bool
+    {
+        if (!$request->filled('orderno')) {
+            return false;
+        }
+
+        return Orders::where('orderno', $request->orderno)
+            ->exists();
+    }
+
+    private function flashDuplicateOrderNumberRefresh(): void
+    {
+        session()->flash('warning', __('messages.Order number already exists. The form has been refreshed with a new order number.'));
+    }
+
+    private function resolveAirportShuttlePriceForTransport($transport, $hotel)
+    {
+        $prices = collect($transport->prices ?? [])
+            ->where('type', 'Airport Shuttle')
+            ->sortBy('duration')
+            ->values();
+
+        if ($prices->isEmpty()) {
+            return null;
+        }
+
+        $targetDuration = (int) (optional($hotel)->airport_duration ?? 0);
+        $selectedPrice = $prices->first(function ($price) use ($targetDuration) {
+            return (int) $price->duration >= $targetDuration;
+        });
+
+        if (! $selectedPrice) {
+            $selectedPrice = $prices->last();
+        }
+
+        return $selectedPrice;
+    }
+
     private function buildHotelBookingTransportOptions($hotel, $usdrates, $tax)
     {
         return Transports::with('prices')
@@ -80,13 +161,7 @@ class OrderController extends Controller
             ->orderByDesc('capacity')
             ->get()
             ->map(function ($transport) use ($hotel, $usdrates, $tax) {
-                $selectedPrice = optional($transport->prices)
-                    ->sortBy('duration')
-                    ->firstWhere('duration', '>=', optional($hotel)->airport_duration);
-
-                if (! $selectedPrice && $transport->prices->isNotEmpty()) {
-                    $selectedPrice = $transport->prices->sortByDesc('duration')->first();
-                }
+                $selectedPrice = $this->resolveAirportShuttlePriceForTransport($transport, $hotel);
 
                 return [
                     'id' => $transport->id,
@@ -198,17 +273,19 @@ class OrderController extends Controller
     private function buildAdditionalFlightsSummary(Request $request): ?string
     {
         $types = (array) $request->input('flight_type', []);
+        $flightNumbers = (array) $request->input('flight_number', []);
         $times = (array) $request->input('flight_time', []);
         $transportLabels = (array) $request->input('flight_transport_label', []);
-        $entryCount = max(count($types), count($times), count($transportLabels));
+        $entryCount = max(count($types), count($flightNumbers), count($times), count($transportLabels));
         $entries = [];
 
         for ($index = 0; $index < $entryCount; $index++) {
             $type = trim((string) ($types[$index] ?? ''));
+            $flightNumber = trim((string) ($flightNumbers[$index] ?? ''));
             $time = trim((string) ($times[$index] ?? ''));
             $transportLabel = trim((string) ($transportLabels[$index] ?? ''));
 
-            if ($type === '' && $time === '' && $transportLabel === '') {
+            if ($type === '' && $flightNumber === '' && $time === '' && $transportLabel === '') {
                 continue;
             }
 
@@ -216,6 +293,10 @@ class OrderController extends Controller
 
             if ($type !== '') {
                 $parts[] = $type === 'departure' ? __('messages.Departure') : __('messages.Arrival');
+            }
+
+            if ($flightNumber !== '') {
+                $parts[] = $flightNumber;
             }
 
             if ($time !== '') {
@@ -237,6 +318,131 @@ class OrderController extends Controller
         }
 
         return __('messages.Flight and transport detail') . ":\n" . implode("\n", $entries);
+    }
+
+    private function buildAirportShuttleRowsFromRequest(Request $request, $hotel, int $numberOfGuests, $checkin, $checkout)
+    {
+        $types = (array) $request->input('flight_type', []);
+        $flightNumbers = (array) $request->input('flight_number', []);
+        $times = (array) $request->input('flight_time', []);
+        $transportIds = (array) $request->input('flight_transport_id', []);
+        $entryCount = max(count($types), count($flightNumbers), count($times), count($transportIds));
+        $transportMap = Transports::with('prices')
+            ->whereIn('id', collect($transportIds)->filter()->map(fn ($id) => (int) $id)->unique()->values())
+            ->get()
+            ->keyBy('id');
+        $rows = collect();
+
+        for ($index = 0; $index < $entryCount; $index++) {
+            $type = trim((string) ($types[$index] ?? ''));
+            $flightNumber = trim((string) ($flightNumbers[$index] ?? ''));
+            $time = trim((string) ($times[$index] ?? ''));
+            $transportId = (int) ($transportIds[$index] ?? 0);
+
+            if ($type === '' && $flightNumber === '' && $time === '' && $transportId === 0) {
+                continue;
+            }
+
+            if (!in_array($type, ['arrival', 'departure'], true) || $transportId <= 0) {
+                continue;
+            }
+
+            $transport = $transportMap->get($transportId);
+            if (! $transport) {
+                continue;
+            }
+
+            $selectedPrice = $this->resolveAirportShuttlePriceForTransport($transport, $hotel);
+            $fallbackDate = $type === 'departure' ? $checkout : $checkin;
+            $date = $this->normalizeBookingDate($time, $fallbackDate . ' 11:00:00', true);
+
+            $rows->push([
+                'date' => $date,
+                'flight_number' => $flightNumber !== '' ? $flightNumber : 'Insert flight number',
+                'number_of_guests' => $numberOfGuests,
+                'transport_id' => $transport->id,
+                'price_id' => $selectedPrice->id ?? null,
+                'src' => $type === 'departure' ? $hotel->name : 'Airport',
+                'dst' => $type === 'departure' ? 'Airport' : $hotel->name,
+                'duration' => $hotel->airport_duration,
+                'distance' => $hotel->airport_distance,
+                'price' => $selectedPrice ? $selectedPrice->calculatePrice(
+                    Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first()),
+                    Cache::remember('tax_1', 3600, fn() => Tax::find(1))
+                ) : 0,
+                'nav' => $type === 'departure' ? 'Out' : 'In',
+            ]);
+        }
+
+        $rows = $rows->values();
+
+        if ($rows->isNotEmpty()) {
+            return $rows;
+        }
+
+        if ($request->filled('airport_shuttle_in')) {
+            $transportIn = Transports::with('prices')->find((int) $request->airport_shuttle_in);
+            if ($transportIn) {
+                $selectedPrice = $this->resolveAirportShuttlePriceForTransport($transportIn, $hotel);
+                $rows->push([
+                    'date' => $this->normalizeBookingDate($request->arrival_time, $checkin . ' 11:00:00', true),
+                    'flight_number' => trim((string) $request->arrival_flight) !== '' ? trim((string) $request->arrival_flight) : 'Insert flight number',
+                    'number_of_guests' => $numberOfGuests,
+                    'transport_id' => $transportIn->id,
+                    'price_id' => $request->input('transport_in_price_id', $selectedPrice->id ?? null),
+                    'src' => 'Airport',
+                    'dst' => $hotel->name,
+                    'duration' => $hotel->airport_duration,
+                    'distance' => $hotel->airport_distance,
+                    'price' => (float) $request->input('airport_shuttle_in_price', $selectedPrice ? $selectedPrice->calculatePrice(
+                        Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first()),
+                        Cache::remember('tax_1', 3600, fn() => Tax::find(1))
+                    ) : 0),
+                    'nav' => 'In',
+                ]);
+            }
+        }
+
+        if ($request->filled('airport_shuttle_out')) {
+            $transportOut = Transports::with('prices')->find((int) $request->airport_shuttle_out);
+            if ($transportOut) {
+                $selectedPrice = $this->resolveAirportShuttlePriceForTransport($transportOut, $hotel);
+                $rows->push([
+                    'date' => $this->normalizeBookingDate($request->departure_time, $checkout . ' 11:00:00', true),
+                    'flight_number' => trim((string) $request->departure_flight) !== '' ? trim((string) $request->departure_flight) : 'Insert flight number',
+                    'number_of_guests' => $numberOfGuests,
+                    'transport_id' => $transportOut->id,
+                    'price_id' => $request->input('transport_out_price_id', $selectedPrice->id ?? null),
+                    'src' => $hotel->name,
+                    'dst' => 'Airport',
+                    'duration' => $hotel->airport_duration,
+                    'distance' => $hotel->airport_distance,
+                    'price' => (float) $request->input('airport_shuttle_out_price', $selectedPrice ? $selectedPrice->calculatePrice(
+                        Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first()),
+                        Cache::remember('tax_1', 3600, fn() => Tax::find(1))
+                    ) : 0),
+                    'nav' => 'Out',
+                ]);
+            }
+        }
+
+        return $rows->values();
+    }
+
+    private function getPrimaryAirportShuttleFields($rows): array
+    {
+        $collection = collect($rows);
+        $arrival = $collection->firstWhere('nav', 'In');
+        $departure = $collection->firstWhere('nav', 'Out');
+
+        return [
+            'arrival_flight' => $arrival['flight_number'] ?? null,
+            'arrival_time' => $arrival['date'] ?? null,
+            'airport_shuttle_in' => $arrival['transport_id'] ?? null,
+            'departure_flight' => $departure['flight_number'] ?? null,
+            'departure_time' => $departure['date'] ?? null,
+            'airport_shuttle_out' => $departure['transport_id'] ?? null,
+        ];
     }
 
     private function mergeOrderNoteWithAdditionalFlights(?string $note, Request $request): ?string
@@ -443,8 +649,7 @@ class OrderController extends Controller
         $checkin = session('booking_dates.checkin');
         $checkout = session('booking_dates.checkout');
         $service = "Hotel Promo";
-        $order_value = Orders::count();
-        $orderNumber = "HPP" . date('ymd', strtotime($now)) . "-" . $order_value;
+        $orderNumber = $this->generateUniqueHotelOrderNumber('HPP', $now);
         $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
         $room_capacity = $room->capacity_adult + $room->capacity_child;
         $room->localized_include = localized_model_field($room, 'include');
@@ -1218,16 +1423,16 @@ class OrderController extends Controller
         $checkin = session('booking_dates.checkin');
         $checkout = session('booking_dates.checkout');
         $service = "Hotel Package";
-        $order_value = Orders::count();
-        $orderNumber = "HPA" . date('ymd', strtotime($now)) . "-" . $order_value;
+        $orderNumber = $this->generateUniqueHotelOrderNumber('HPA', $now);
         $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
-        $bedroom = $room->capacity / 2;
-        $room_capacity = $room->capacity + $bedroom;
         $package = HotelPackage::find($request->package_id);
         $room->localized_include = localized_model_field($room, 'include');
         $room->localized_amenities = localized_model_field($room, 'amenities');
+        $adultCapacity = $this->getRoomAdultCapacity($room);
+        $childCapacity = (int) ($room->capacity_child ?? max(((int) $room->capacity) - $adultCapacity, 0));
+        $room_capacity = $adultCapacity + $childCapacity;
         $transportOptions = $this->buildHotelBookingTransportOptions($hotel, $usdrates, $tax);
-        $roomForm = $this->buildHotelBookingRoomFormData($hotel, $room, $room_capacity, $duration, $usdrates, $tax, 'nightly', $this->getRoomAdultCapacity($room));
+        $roomForm = $this->buildHotelBookingRoomFormData($hotel, $room, $room_capacity, $duration, $usdrates, $tax, 'nightly', $adultCapacity);
         $agents = $this->getBookingAgents();
         $final_price = $package->calculatePrice($usdrates,$tax);
         $package->localized_name = localized_model_field($package, 'name');
@@ -1270,8 +1475,7 @@ class OrderController extends Controller
         $promotions_discount = json_encode($promotions->pluck('discounts'));
         $total_promotions_discount = $promotions->sum('discounts');
         $orders = Orders::where('sales_agent', $user_id)->pluck('booking_code');
-        $order_value = Orders::count() + 1;
-        $orderNumber = "HNP" . date('ymd', strtotime($now)) . "-" . $order_value;
+        $orderNumber = $this->generateUniqueHotelOrderNumber('HNP', $now);
         $bk_code = BookingCode::where('code', $request->bookingcode)
             ->where('status', 'Active')
             ->first();
@@ -1329,6 +1533,13 @@ class OrderController extends Controller
             $sales_agent = $user->id;
             $status = "Draft";
         }
+        if ($this->hasDuplicateHotelOrderNumber($request)) {
+            $this->flashDuplicateOrderNumberRefresh();
+            $package = HotelPackage::with('room')->findOrFail($id);
+            $request->merge(['package_id' => $id]);
+
+            return $this->order_hotel_package($request, $package->room->id);
+        }
         $user_id = $user->id;
         $email = $user->email;
         $name = $user->name;
@@ -1385,24 +1596,8 @@ class OrderController extends Controller
         $extra_bed_status = json_encode($extra_bed_proses);
         $total_extra_bed_price = array_sum($extra_bed_id_price);
 
-        if ($request->airport_shuttle_in) {
-            $transport_in_price = TransportPrice::find($request->airport_shuttle_in_price_id);
-            $price_in_id = $transport_in_price ? $transport_in_price->id : null;
-            $price_in = $transport_in_price ? $transport_in_price->calculatePrice($usdrates, $tax) : 0;
-        }else{
-            $price_in_id = null;
-            $price_in = 0;
-        }
-        if ($request->airport_shuttle_out) {
-            $transport_out_price = TransportPrice::find($request->airport_shuttle_out_price_id);
-            $price_out_id = $transport_out_price ? $transport_out_price->id : null;
-            $price_out = $transport_out_price ? $transport_out_price->calculatePrice($usdrates, $tax) : 0;
-        }else{
-            $price_out_id = null;
-            $price_out = 0;
-        }
-
-        $airport_shuttle_prices = $price_in + $price_out;
+        $airportShuttleRows = $this->buildAirportShuttleRowsFromRequest($request, $hotel, $number_of_guests, $checkin, $checkout);
+        $airport_shuttle_prices = $airportShuttleRows->sum('price');
 
         
         $price_pax = $package->calculatePrice($usdrates,$tax);
@@ -1465,8 +1660,8 @@ class OrderController extends Controller
         // dd($order);
         $order->save();
 
-        if ($request->airport_shuttle_in || $request->airport_shuttle_out) {
-            $order_airport_shuttle = $this->create_order_airport_shuttle($request, $hotel, $order, $price_in_id ,$price_out_id, $price_in, $price_out);
+        if ($airportShuttleRows->isNotEmpty()) {
+            $order_airport_shuttle = $this->create_order_airport_shuttle($order, $airportShuttleRows);
         }
 
         $note = "Created order hotel package with order no: ".$order->orderno;
@@ -1497,7 +1692,8 @@ class OrderController extends Controller
             ->send(new ReservationMail($order->id,$rquotation));
             return redirect()->route('view.detail-order-admin', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
         }else{
-            return redirect()->route('view.edit-order-hotel', ['id' => $order->id])->with('success', __('messages.Your order has been added to the order basket. Please ensure that all details are entered correctly before you confirm the order for further processing.'));
+            $this->submitCreatedHotelOrder($request, $order, $user);
+            return redirect()->route('view.detail-order-hotel', ['id' => $order->id])->with('success', __('messages.Your order has been submitted'));
         }
     }
     // FUNCTION USER CREATE ORDER HOTEL PROMO =======================================================================> OK
@@ -1510,6 +1706,11 @@ class OrderController extends Controller
         } else {
             $sales_agent = $user->id;
             $status = "Draft";
+        }
+        if ($this->hasDuplicateHotelOrderNumber($request)) {
+            $this->flashDuplicateOrderNumberRefresh();
+
+            return $this->order_hotel_promo($request, $request->room_id);
         }
         $checkin = Carbon::parse(session('booking_dates.checkin'))->format('Y-m-d');
         $checkout = Carbon::parse(session('booking_dates.checkout'))->format('Y-m-d');
@@ -1599,23 +1800,8 @@ class OrderController extends Controller
         $number_of_guests = array_sum($request->number_of_guests);
         
         
-        if ($request->airport_shuttle_in) {
-            $transport_in_price = TransportPrice::find($request->airport_shuttle_in_price_id);
-            $price_in_id = $transport_in_price ? $transport_in_price->id : null;
-            $price_in = $transport_in_price ? $transport_in_price->calculatePrice($usdrates, $tax) : 0;
-        }else{
-            $price_in_id = null;
-            $price_in = 0;
-        }
-        if ($request->airport_shuttle_out) {
-            $transport_out_price = TransportPrice::find($request->airport_shuttle_out_price_id);
-            $price_out_id = $transport_out_price ? $transport_out_price->id : null;
-            $price_out = $transport_out_price ? $transport_out_price->calculatePrice($usdrates, $tax) : 0;
-        }else{
-            $price_out_id = null;
-            $price_out = 0;
-        }
-        $airport_shuttle_prices = $price_in + $price_out;
+        $airportShuttleRows = $this->buildAirportShuttleRowsFromRequest($request, $hotel, $number_of_guests, $checkin, $checkout);
+        $airport_shuttle_prices = $airportShuttleRows->sum('price');
         
 
         // ini
@@ -1629,8 +1815,8 @@ class OrderController extends Controller
             'arrival_time' => $arrivalTime,
             'departure_time' => $departureTime,
         ]);
-        if ($request->airport_shuttle_in || $request->airport_shuttle_out) {
-            $order_airport_shuttle = $this->create_order_airport_shuttle($request, $hotel, $order, $price_in_id ,$price_out_id, $price_in, $price_out);
+        if ($airportShuttleRows->isNotEmpty()) {
+            $order_airport_shuttle = $this->create_order_airport_shuttle($order, $airportShuttleRows);
         }
 
         if ($optional_rates) {
@@ -1681,7 +1867,8 @@ class OrderController extends Controller
             ->send(new ReservationMail($order->id,$rquotation));
             return redirect()->route('view.detail-order-admin', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
         }else{
-            return redirect()->route('view.edit-order-hotel', ['id' => $order->id])->with('success', __('messages.Your order has been added to the order basket. Please ensure that all details are entered correctly before you confirm the order for further processing.'));
+            $this->submitCreatedHotelOrder($request, $order, $user);
+            return redirect()->route('view.detail-order-hotel', ['id' => $order->id])->with('success', __('messages.Your order has been submitted'));
         }
     }
     // FUNCTION USER CREATE ORDER HOTEL =============================================================================> OK
@@ -1694,6 +1881,11 @@ class OrderController extends Controller
         } else {
             $sales_agent = $user->id;
             $status = "Draft";
+        }
+        if ($this->hasDuplicateHotelOrderNumber($request)) {
+            $this->flashDuplicateOrderNumberRefresh();
+
+            return $this->order_hotel_normal($request, $request->room_id);
         }
         $user_id = $user->id;
         $email = $user->email;
@@ -1751,24 +1943,8 @@ class OrderController extends Controller
         $extra_bed_status = json_encode($extra_bed_proses);
         $total_extra_bed_price = array_sum($extra_bed_id_price);
 
-        if ($request->airport_shuttle_in) {
-            $transport_in_price = TransportPrice::find($request->airport_shuttle_in_price_id);
-            $price_in_id = $transport_in_price ? $transport_in_price->id : null;
-            $price_in = $transport_in_price ? $transport_in_price->calculatePrice($usdrates, $tax) : 0;
-        }else{
-            $price_in_id = null;
-            $price_in = 0;
-        }
-        if ($request->airport_shuttle_out) {
-            $transport_out_price = TransportPrice::find($request->airport_shuttle_out_price_id);
-            $price_out_id = $transport_out_price ? $transport_out_price->id : null;
-            $price_out = $transport_out_price ? $transport_out_price->calculatePrice($usdrates, $tax) : 0;
-        }else{
-            $price_out_id = null;
-            $price_out = 0;
-        }
-
-        $airport_shuttle_prices = $price_in + $price_out;
+        $airportShuttleRows = $this->buildAirportShuttleRowsFromRequest($request, $hotel, $number_of_guests, $checkin, $checkout);
+        $airport_shuttle_prices = $airportShuttleRows->sum('price');
         $total_kick_back = $request->var_kick_back_total;
         $total_promotions_discount = $request->var_promotions_discount;
         $price_pax = $request->var_normal_price;
@@ -1836,8 +2012,8 @@ class OrderController extends Controller
         // dd($order);
         $order->save();
 
-        if ($request->airport_shuttle_in || $request->airport_shuttle_out) {
-            $order_airport_shuttle = $this->create_order_airport_shuttle($request, $hotel, $order, $price_in_id ,$price_out_id, $price_in, $price_out);
+        if ($airportShuttleRows->isNotEmpty()) {
+            $order_airport_shuttle = $this->create_order_airport_shuttle($order, $airportShuttleRows);
         }
         $note = "Created order hotel promo with order no: ".$order->orderno;
         $user_log =new UserLog([
@@ -1867,7 +2043,8 @@ class OrderController extends Controller
             ->send(new ReservationMail($order->id,$rquotation));
             return redirect()->route('view.detail-order-admin', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
         }else{
-            return redirect()->route('view.edit-order-hotel', ['id' => $order->id])->with('success', __('messages.Your order has been added to the order basket. Please ensure that all details are entered correctly before you confirm the order for further processing.'));
+            $this->submitCreatedHotelOrder($request, $order, $user);
+            return redirect()->route('view.detail-order-hotel', ['id' => $order->id])->with('success', __('messages.Your order has been submitted'));
         }
     }
 
@@ -1969,54 +2146,27 @@ class OrderController extends Controller
     }
 
     // PRIVATE FUNCTION USER CREATE AIRPORT SHUTTLE ================================================================> OK
-    private function create_order_airport_shuttle($request, $hotel, $order, $price_in_id ,$price_out_id, $price_in, $price_out)
+    private function create_order_airport_shuttle($order, $shuttles)
     {
-        $shuttles = [];
-        $number_of_guests = array_sum($request->number_of_guests);
-        if ($request->airport_shuttle_in) {
-            $date_in = $this->normalizeBookingDate($request->arrival_time, session("booking_dates.checkin") . ' 11:00:00', true);
-            $flight_number_in = $request->arrival_flight ? $request->arrival_flight : "Insert flight number";
-            $shuttles[] = [
-                'date' => $date_in,
-                'flight_number' => $flight_number_in,
-                'number_of_guests' => $number_of_guests,
-                'order_id' => $order->id,
-                'transport_id' => $request->airport_shuttle_in,
-                'price_id' => $price_in_id,
-                'src' => "Airport",
-                'dst' => $hotel->name,
-                'duration' => $hotel->airport_duration,
-                'distance' => $hotel->airport_distance,
-                'price' => $price_in,
-                'nav' => "In",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        $rows = collect($shuttles)
+            ->map(function ($shuttle) use ($order) {
+                return array_merge($shuttle, [
+                    'order_id' => $order->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            })
+            ->values()
+            ->all();
+
+        AirportShuttle::where('order_id', $order->id)->delete();
+
+        if (!empty($rows)) {
+            AirportShuttle::insert($rows);
+            return $rows;
         }
-        if ($request->airport_shuttle_out) {
-            $date_out = $this->normalizeBookingDate($request->departure_time, session("booking_dates.checkout") . ' 11:00:00', true);
-            $flight_number_out = $request->departure_flight ? $request->departure_flight : "Insert flight number";
-            $shuttles[] = [
-                'date' => $date_out,
-                'flight_number' => $flight_number_out,
-                'number_of_guests' => $number_of_guests,
-                'order_id' => $order->id,
-                'transport_id' => $request->airport_shuttle_out,
-                'price_id' => $price_out_id,
-                'src' => $hotel->name,
-                'dst' => "Airport",
-                'duration' => $hotel->airport_duration,
-                'distance' => $hotel->airport_distance,
-                'price' => $price_out,
-                'nav' => "Out",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-        if (!empty($shuttles)) {
-            AirportShuttle::insert($shuttles);
-            return $shuttles;
-        }
+
+        return [];
     }
 
     private function check_booking_code($bk_code, $orders, $now)
@@ -2080,7 +2230,7 @@ class OrderController extends Controller
             ->orderByDesc('capacity')
             ->get()
             ->map(function ($transport) use ($hotel, $usdrates, $tax) {
-                $selectedPrice = optional($transport->prices->firstWhere('duration', '>=', optional($hotel)->airport_duration));
+                $selectedPrice = $this->resolveAirportShuttlePriceForTransport($transport, $hotel);
                 $transport->calculated_price = $selectedPrice ? $selectedPrice->calculatePrice($usdrates, $tax) : 0;
                 $transport->calculated_price_id = $selectedPrice->id ?? null;
                 return $transport;
@@ -2119,7 +2269,6 @@ class OrderController extends Controller
         $showExtraBedPrice = $order->extra_bed_total_price > 0;
         $multipleRooms = $order->number_of_room > 1;
         $canEditOrder = in_array($order->status, ["Draft", "Invalid"]);
-
         if ($canEditOrder) {
             return view('order.user-edit-order', array_merge([
                 'order' => $order,
@@ -2154,6 +2303,7 @@ class OrderController extends Controller
                 'agent' => $agent,
                 'extra_bed_test' => $extra_bed_test,
                 'extraBedPrices' => $extraBedPrices,
+                'airport_shuttles' => $airport_shuttles,
             ], $decodedData->toArray()));
         }
         return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
@@ -3182,7 +3332,7 @@ class OrderController extends Controller
         $tax = Cache::remember('tax_1', $cacheTTL, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', $cacheTTL, fn() => UsdRates::where('name', 'USD')->first());
         $agent = Auth::user();
-        $order = Orders::select('id', 'service_id', 'number_of_guests','price_total','optional_price','additional_service_price','airport_shuttle_price','discounts','bookingcode_disc','promotion_disc','final_price')
+        $order = Orders::select('id', 'service', 'service_id', 'checkin', 'checkout', 'number_of_guests','price_total','optional_price','additional_service_price','airport_shuttle_price','discounts','bookingcode_disc','promotion_disc','final_price')
             ->where('sales_agent', $agent->id)
             ->where(function ($query) {
                 $query->where('status', 'Draft')->orWhere('status', 'Invalid');
@@ -3198,65 +3348,22 @@ class OrderController extends Controller
         $number_of_guests = $order->number_of_guests;
 
         DB::transaction(function () use ($request, $order, $hotel, $number_of_guests, $agent) {
-            $price_in = 0;
-            $price_out = 0;
-            $date_in = $this->normalizeBookingDate($request->arrival_time, $order->checkin . ' 11:00:00', true);
-            $date_out = $this->normalizeBookingDate($request->departure_time, $order->checkout . ' 11:00:00', true);
-            if ($request->airport_shuttle_in) {
-                $price_in = $request->airport_shuttle_in_price ?: 0;
-                $arrival_flight = $request->arrival_flight ? $request->arrival_flight : "-";
-                AirportShuttle::updateOrCreate(
-                    ['order_id' => $order->id, 'nav' => "In"],
-                    [
-                        'date' => $date_in,
-                        'flight_number' => $arrival_flight,
-                        'number_of_guests' => $number_of_guests,
-                        'transport_id' => $request->airport_shuttle_in,
-                        'price_id' => $request->transport_in_price_id,
-                        'src' => "Airport",
-                        'dst' => $hotel->name,
-                        'duration' => $hotel->airport_duration,
-                        'distance' => $hotel->airport_distance,
-                        'price' => $price_in,
-                    ]
-                );
-            } else {
-                AirportShuttle::where('order_id', $order->id)->where('nav', 'In')->delete();
-            }
-            if ($request->airport_shuttle_out) {
-                $price_out = $request->airport_shuttle_out_price ?: 0;
-                $departure_flight = $request->departure_flight ? $request->departure_flight : "-";
-                AirportShuttle::updateOrCreate(
-                    ['order_id' => $order->id, 'nav' => "Out"],
-                    [
-                        'date' => $date_out,
-                        'flight_number' => $departure_flight,
-                        'number_of_guests' => $number_of_guests,
-                        'transport_id' => $request->airport_shuttle_out,
-                        'price_id' => $request->transport_out_price_id,
-                        'src' => $hotel->name,
-                        'dst' => "Airport",
-                        'duration' => $hotel->airport_duration,
-                        'distance' => $hotel->airport_distance,
-                        'price' => $price_out,
-                    ]
-                );
-            } else {
-                AirportShuttle::where('order_id', $order->id)->where('nav', 'Out')->delete();
-            }
+            $airportShuttleRows = $this->buildAirportShuttleRowsFromRequest($request, $hotel, $number_of_guests, $order->checkin, $order->checkout);
+            $primaryShuttleFields = $this->getPrimaryAirportShuttleFields($airportShuttleRows);
+            $this->create_order_airport_shuttle($order, $airportShuttleRows);
             $additional_service_price = $order->additional_service_price ? array_sum(json_decode($order->additional_service_price)) : 0;
-            $airport_shuttle_price = $price_in + $price_out;
+            $airport_shuttle_price = collect($airportShuttleRows)->sum('price');
             $promotion_disc = $order->promotion_disc ? array_sum(json_decode($order->promotion_disc)) : 0;
             $final_price = ($order->price_total + $order->optional_price + $additional_service_price + $airport_shuttle_price) - $order->discounts - $order->bookingcode_disc - $promotion_disc;
             $order->update([
                 "airport_shuttle_price" => $airport_shuttle_price ?: null,
                 "final_price" => $final_price,
-                "arrival_flight" => $request->arrival_flight,
-                "arrival_time" => $request->arrival_time ? $date_in : null,
-                "airport_shuttle_in" => $request->airport_shuttle_in,
-                "departure_flight" => $request->departure_flight,
-                "departure_time" => $request->departure_time ? $date_out : null,
-                "airport_shuttle_out" => $request->airport_shuttle_out,
+                "arrival_flight" => $primaryShuttleFields['arrival_flight'],
+                "arrival_time" => $primaryShuttleFields['arrival_time'],
+                "airport_shuttle_in" => $primaryShuttleFields['airport_shuttle_in'],
+                "departure_flight" => $primaryShuttleFields['departure_flight'],
+                "departure_time" => $primaryShuttleFields['departure_time'],
+                "airport_shuttle_out" => $primaryShuttleFields['airport_shuttle_out'],
                 "note" => $request->note,
                 "request_quotation" => $request->request_quotation,
                 "status" => 'Pending',

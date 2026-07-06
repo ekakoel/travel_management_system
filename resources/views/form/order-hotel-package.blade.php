@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('panel/styles/icon-font.min.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="{{ asset('css/pages/hotel-booking.css') }}">
+    <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/hotel-booking-entry.css') }}">
 @endpush
 
 @push('scripts')
@@ -13,7 +13,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ asset('panel/script/core.js') }}"></script>
-    <script src="{{ asset('frontend/js/pages/hotel-booking.js') }}"></script>
+    <script src="{{ mix('build/frontend/js/pages/hotel-booking.js') }}" defer></script>
 @endpush
 
 @section('content')
@@ -121,32 +121,6 @@
                                             @endif
                                         </div>
                                     </section>
-
-                                    @if ($package->benefits || $package->include || $package->additional_info)
-                                        <section>
-                                            <div class="frontend-detail-block__header">
-                                                <div>
-                                                    <div class="frontend-detail-block__eyebrow">@lang('messages.Package Details')</div>
-                                                    <h3 class="frontend-detail-block__title">@lang('messages.Benefits, inclusions, and package notes')</h3>
-                                                </div>
-                                            </div>
-                                            <div class="frontend-richtext">
-                                                @if ($package->benefits)
-                                                    <b>@lang('messages.Benefits') :</b>
-                                                    {!! $package->localized_benefits !!}
-                                                @endif
-                                                @if ($package->include)
-                                                    <b>@lang('messages.Include') :</b>
-                                                    {!! $package->localized_include !!}
-                                                @endif
-                                                @if ($package->additional_info)
-                                                    <b>@lang('messages.Additional Info') :</b>
-                                                    {!! $package->localized_additional_info !!}
-                                                @endif
-                                            </div>
-                                        </section>
-                                    @endif
-
                                     <section>
                                         <div class="frontend-detail-block__header p-t-18">
                                             <div>
@@ -264,16 +238,22 @@
                                     <input type="hidden" name="var_package_price" id='var_package_price' value="{{ $final_price }}">
                                     <div class="booking-wizard__actions">
                                         <button type="button" class="btn btn-danger" data-wizard-prev>@lang('messages.Back')</button>
-                                        <button type="submit" form="create-order" id="normal-reserve" class="btn btn-primary"><i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i> @lang('messages.Order')</button>
+                                        <button
+                                            type="submit"
+                                            form="create-order"
+                                            id="normal-reserve"
+                                            class="btn btn-primary"
+                                            data-processing-label="@lang('messages.Processing')..."
+                                        ><i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i> @lang('messages.Order')</button>
                                         <button type="button" onclick="goBack()" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                     </div>
                                 </section>
                             </div>
+                            @include('partials.form-submit-overlay')
                         </form>
                     </div>
                 </div>
             </div>
-            @include('partials.loading-form', ['id' => 'create-order'])
         </div>
     </div>
 @endsection
