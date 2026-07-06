@@ -77,6 +77,67 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
 
 ## Frontend Change Log
 
+## 2026-07-06 - Hotel Booking Quote Request for More Than 8 Rooms
+- Status: done
+- Area: order hotel frontend UX, quote request flow, backend consistency
+- Summary: Checkbox `Ask for quote rates for rooms more than 8 units` sekarang mengaktifkan quote mode, membuka limit room hingga batas quote, memberi highlight visual, menampilkan badge quote pada review/detail/history, dan backend otomatis menandai order sebagai quote jika jumlah room lebih dari 8.
+- Impact: Agent bisa membuat order hotel lebih dari 8 room dengan perlakuan quote yang jelas, konsisten, dan kompatibel dengan email/admin lama yang mengecek nilai `Yes`.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/form/order-hotel-normal.blade.php`
+  - `resources/views/form/order-hotel-promo.blade.php`
+  - `resources/views/form/order-hotel-package.blade.php`
+  - `resources/views/partials/hotel-booking-review-summary.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern.blade.php`
+  - `resources/views/layouts/order-history.blade.php`
+  - `resources/frontend/js/pages/hotel-booking.js`
+  - `resources/frontend/scss/pages/hotel-booking.scss`
+  - `resources/frontend/scss/pages/order-detail.scss`
+  - `resources/frontend/scss/pages/frontend-orders.scss`
+- Follow-up: jika bisnis membutuhkan batas quote lebih dari 30 room, ubah `data-quote-room-max` pada form terkait.
+
+## 2026-07-06 - Frontend Breadcrumb Dark Variant
+- Status: done
+- Area: frontend UI/UX, breadcrumb consistency
+- Summary: Menambahkan varian `frontend-breadcrumb--dark` pada partial breadcrumb global untuk halaman frontend yang tidak memakai hero/topband gelap, lalu menerapkannya pada detail order hotel dan order history.
+- Impact: Breadcrumb tetap konsisten dengan accommodation dari sisi struktur, namun lebih readable pada background terang.
+- Files:
+  - `resources/views/partials/breadcrumbs.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern.blade.php`
+  - `resources/views/layouts/order-history.blade.php`
+  - `resources/frontend/scss/components/frontend-layout.scss`
+  - `public/build/frontend/css/app.css`
+  - `public/mix-manifest.json`
+  - `docs/frontend-roadmap.md`
+- Follow-up: gunakan `variant => 'dark'` pada halaman frontend lain yang tidak berada di topband/hero gelap.
+
+## 2026-07-06 - Frontend Breadcrumb Consistency for Orders
+- Status: done
+- Area: frontend UI/UX, breadcrumb consistency
+- Summary: Breadcrumb detail order hotel dan order history disamakan dengan pola halaman accommodation menggunakan `frontend-breadcrumb-wrap`, `frontend-breadcrumb`, dan urutan navigasi dimulai dari Home.
+- Impact: Navigasi frontend lebih konsisten antar halaman, terutama accommodation, order detail, dan order history.
+- Files:
+  - `resources/views/partials/breadcrumbs.blade.php`
+  - `resources/views/order/partials/hotel-detail-modern.blade.php`
+  - `resources/views/layouts/order-history.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: audit halaman frontend lain yang masih memakai breadcrumb manual tanpa partial.
+
+## 2026-07-06 - Order History Frontend Redesign
+- Status: done
+- Area: frontend UI/UX, order history, performance
+- Summary: Halaman `/orders/history` dibuat menjadi halaman frontend standalone dengan server-side search/filter/sort, pagination, summary cards, direct order detail links, dan invoice PDF links tanpa modal embed berat.
+- Impact: Order history lebih profesional, shareable via query string, mobile-friendly, dan lebih optimal karena tidak lagi merender modal detail/PDF untuk seluruh histori pada initial load.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/layouts/order-history.blade.php`
+  - `resources/frontend/scss/pages/frontend-orders.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: evaluasi jika histori sudah sangat besar untuk dipindahkan ke query pagination union/database view penuh.
+
 ## 2026-07-06 - Hotel Order Detail Frontend Redesign
 - Status: done
 - Area: frontend UI/UX, order hotel detail page, asset separation
@@ -917,6 +978,42 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
   - `public/css/pages/hotel-availability.css`
   - `docs/frontend-roadmap.md`
 - Follow-up: Jika section related-content serupa muncul pada halaman frontend lain, ekstrak pola ini ke partial atau modifier shared agar tidak terjadi drift antar halaman.
+
+## 2026-07-06 - Transportation Directory Frontend Alignment
+- Status: done
+- Area: transportation directory, frontend consistency, progressive filtering
+- Summary: Mendesain ulang halaman `/transportations` ke standar frontend modern dengan topband, breadcrumb, summary metrics, sticky filter panel, responsive vehicle cards 3 kolom, empty state, pagination, dan filter GET/AJAX tanpa reload penuh.
+- Impact: Halaman transportation kini konsisten dengan accommodation directory, filter menjadi lebih smooth namun tetap memiliki fallback URL/query string, card menampilkan brand transport tanpa CTA detail tambahan, dan bug filter Collection lama yang tidak benar-benar menyaring data sudah diperbaiki di controller.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `resources/views/home/landing-page/transport.blade.php`
+  - `resources/frontend/scss/pages/transportations-index-entry.scss`
+  - `resources/frontend/scss/pages/transportations-index.scss`
+  - `resources/frontend/js/pages/transportations-index.js`
+  - `webpack.mix.js`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Setelah detail transport ikut direfactor, arahkan CTA directory ke detail transport modern agar pengalaman dari listing sampai booking sepenuhnya konsisten.
+
+## 2026-07-06 - Transport Detail Frontend Reservation Flow
+- Status: done
+- Area: transport detail, reservation entry, frontend consistency
+- Summary: Mendesain ulang halaman public `/transportation-{id}` ke frontend shell modern dengan hero vehicle profile, overview, included information, grouped transport rates modern, similar transports, sticky reservation CTA, dan sidebar rate picker untuk memilih transport price type serta destination `dst` saat Airport Shuttle.
+- Impact: User/agent dapat memilih rate transport dari detail page, melihat harga pilihan secara modern di sidebar, memfilter daftar rate berdasarkan type dan destination, lalu masuk ke form order transport yang sudah ada tanpa membuat sistem reservasi baru; label transport type, destination/source, dan CTA kini memiliki coverage multi-language yang lebih lengkap.
+- Files:
+  - `app/Http/Controllers/HomeController.php`
+  - `resources/views/home/transports/detail.blade.php`
+  - `resources/frontend/scss/pages/transport-detail-entry.scss`
+  - `resources/frontend/scss/pages/transport-detail.scss`
+  - `resources/frontend/js/pages/transport-detail.js`
+  - `webpack.mix.js`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Refactor halaman form `order-transport` agar tampilannya juga mengikuti wizard frontend modern seperti order hotel.
 
 ## Current Frontend Backlog
 

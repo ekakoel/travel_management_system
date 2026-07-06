@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Tours;
+use App\Models\Tax;
 use App\Models\Hotels;
+use App\Models\UsdRates;
 use App\Models\HotelPromo;
 use App\Models\Transports;
 use Illuminate\Http\Request;
@@ -86,8 +88,25 @@ class HomeController extends Controller
     }
     public function show_transport($id)
     {
-        $transport = Transports::findOrFail($id);
-        return view('home.transports.detail', compact('transport'));
+        $transport = Transports::with(['prices' => function ($query) {
+            $query->orderBy('type')->orderBy('src')->orderBy('dst');
+        }])->where('status', 'Active')->findOrFail($id);
+        $usdrates = UsdRates::where('name', 'USD')->first();
+        $tax = Tax::where('name', 'tax')->first() ?: Tax::find(1);
+
+        $prices = $transport->prices->map(function ($price) use ($usdrates, $tax) {
+            $price->final_price = ($usdrates && $tax) ? $price->calculatePrice($usdrates, $tax) : null;
+            return $price;
+        });
+        $priceGroups = $prices->groupBy('type');
+        $similarTransports = Transports::where('status', 'Active')
+            ->where('id', '!=', $transport->id)
+            ->where('type', $transport->type)
+            ->orderByDesc('capacity')
+            ->take(3)
+            ->get();
+
+        return view('home.transports.detail', compact('transport', 'priceGroups', 'similarTransports'));
     }
     public function show_tour_package($id)
     {

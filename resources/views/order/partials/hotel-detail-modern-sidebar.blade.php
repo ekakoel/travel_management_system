@@ -1,15 +1,4 @@
 <aside class="order-detail-sidebar">
-    @if (count($attentions) > 0)
-        <div class="order-detail-sidebar-card">
-            <h2 class="order-detail-sidebar-card__title">@lang('messages.Attention')</h2>
-            <div class="order-detail-receipt-list">
-                @foreach ($attentions as $attention)
-                    <div class="order-detail-alert">{!! $attention->attention !!}</div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
     <div class="order-detail-sidebar-card">
         <h2 class="order-detail-sidebar-card__title">@lang('messages.Payment Status')</h2>
         <p class="order-detail-sidebar-card__text">

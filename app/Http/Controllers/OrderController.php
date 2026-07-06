@@ -54,6 +54,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Notifications\NotifikasiWhatsApp;
 use Google\Service\ShoppingContent\Resource\Promotions;
 
@@ -74,7 +75,7 @@ class OrderController extends Controller
 
     private function submitCreatedHotelOrder(Request $request, Orders $order, User $agent)
     {
-        $requestQuotation = $request->request_quotation ? 1 : null;
+        $requestQuotation = $this->resolveHotelQuotationValue($request, $order);
 
         DB::transaction(function () use ($request, $order, $agent, $requestQuotation) {
             $order->update([
@@ -128,6 +129,142 @@ class OrderController extends Controller
     private function flashDuplicateOrderNumberRefresh(): void
     {
         session()->flash('warning', __('messages.Order number already exists. The form has been refreshed with a new order number.'));
+    }
+
+    private function resolveHotelQuotationValue(Request $request, ?Orders $order = null): ?string
+    {
+        $roomCount = is_array($request->number_of_guests ?? null)
+            ? count($request->number_of_guests)
+            : (int) optional($order)->number_of_room;
+
+        return $request->boolean('request_quotation') || $request->request_quotation === 'Yes' || $roomCount > 8
+            ? 'Yes'
+            : null;
+    }
+
+    private function resolveFrontendOrderDetailUrl(Orders $order): string
+    {
+        if (in_array($order->service, ['Hotel', 'Hotel Promo', 'Hotel Package', 'Activity'], true)) {
+            return route('view.detail-order-hotel', ['id' => $order->id]);
+        }
+
+        if ($order->service === 'Private Villa') {
+            return route('view.detail-order-villa', ['id' => $order->id]);
+        }
+
+        if ($order->service === 'Tour Package') {
+            return route('view.detail-order-tour', ['id' => $order->id]);
+        }
+
+        if ($order->service === 'Transport') {
+            return route('view.detail-order-transport', ['id' => $order->id]);
+        }
+
+        return route('view.detail-order', ['id' => $order->id]);
+    }
+
+    private function buildOrderHistoryInvoiceLinks(Orders $order): array
+    {
+        $invoiceNumber = optional(optional($order->reservations)->invoice)->inv_no;
+
+        if (!$invoiceNumber) {
+            return [];
+        }
+
+        return collect(['en' => 'EN', 'zh' => 'ZH'])
+            ->map(function ($label, $locale) use ($order, $invoiceNumber) {
+                $relativePath = "storage/document/invoice-{$invoiceNumber}-{$order->id}_{$locale}.pdf";
+
+                if (!File::exists(public_path($relativePath))) {
+                    return null;
+                }
+
+                return [
+                    'label' => $label,
+                    'url' => asset($relativePath),
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function buildStandardOrderHistoryItem(Orders $order): array
+    {
+        $serviceLabel = __('messages.' . $order->service) !== 'messages.' . $order->service ? __('messages.' . $order->service) : $order->service;
+        $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
+        $stayStart = $order->travel_date ?: $order->checkin;
+        $stayEnd = $order->travel_date ? null : $order->checkout;
+
+        return [
+            'key' => 'standard-' . $order->id,
+            'type' => 'standard',
+            'is_quote' => in_array($order->request_quotation, ['Yes', 1, '1', true], true),
+            'orderno' => $order->orderno,
+            'service' => $order->service,
+            'service_label' => $serviceLabel,
+            'status' => $order->status,
+            'status_label' => $statusLabel,
+            'title' => $order->servicename ?: $serviceLabel,
+            'subtitle' => $order->subservice ?: $order->location,
+            'location' => $order->location,
+            'date_start' => $stayStart,
+            'date_end' => $stayEnd,
+            'date_label' => $stayEnd ? dateFormat($stayStart) . ' - ' . dateFormat($stayEnd) : dateFormat($stayStart),
+            'created_label' => dateTimeFormat($order->created_at),
+            'updated_at' => optional($order->updated_at)->timestamp ?? optional($order->created_at)->timestamp ?? 0,
+            'price' => $order->final_price,
+            'guest_label' => (int) $order->number_of_guests > 0 ? $order->number_of_guests . ' ' . __('messages.Guests') : __('messages.To be advised'),
+            'detail_url' => $this->resolveFrontendOrderDetailUrl($order),
+            'invoice_links' => $order->status === 'Paid' ? $this->buildOrderHistoryInvoiceLinks($order) : [],
+            'search' => strtolower(implode(' ', array_filter([
+                $order->orderno,
+                $serviceLabel,
+                $statusLabel,
+                $order->servicename,
+                $order->subservice,
+                $order->location,
+                strip_tags((string) $order->guest_detail),
+            ]))),
+        ];
+    }
+
+    private function buildWeddingOrderHistoryItem(OrderWedding $order): array
+    {
+        $serviceLabel = __('messages.Wedding Order');
+        $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
+        $eventDate = $order->wedding_date ?: $order->reception_date_start ?: $order->created_at;
+        $coupleName = trim(collect([optional($order->bride)->groom, optional($order->bride)->bride])->filter()->implode(' & '));
+
+        return [
+            'key' => 'wedding-' . $order->id,
+            'type' => 'wedding',
+            'is_quote' => false,
+            'orderno' => $order->orderno,
+            'service' => 'Wedding',
+            'service_label' => $serviceLabel,
+            'status' => $order->status,
+            'status_label' => $statusLabel,
+            'title' => $coupleName ?: $serviceLabel,
+            'subtitle' => optional($order->hotel)->name ?: optional($order->wedding)->name,
+            'location' => optional($order->hotel)->region,
+            'date_start' => $eventDate,
+            'date_end' => null,
+            'date_label' => dateFormat($eventDate),
+            'created_label' => dateTimeFormat($order->created_at),
+            'updated_at' => optional($order->updated_at)->timestamp ?? optional($order->created_at)->timestamp ?? 0,
+            'price' => $order->final_price,
+            'guest_label' => (int) $order->number_of_guests > 0 ? $order->number_of_guests . ' ' . __('messages.Guests') : __('messages.To be advised'),
+            'detail_url' => route('view.detail-order-wedding', ['orderno' => $order->orderno]),
+            'invoice_links' => [],
+            'search' => strtolower(implode(' ', array_filter([
+                $order->orderno,
+                $serviceLabel,
+                $statusLabel,
+                $coupleName,
+                optional($order->hotel)->name,
+            ]))),
+        ];
     }
 
     private function resolveAirportShuttlePriceForTransport($transport, $hotel)
@@ -634,6 +771,160 @@ class OrderController extends Controller
         
         
     }
+
+    public function order_history(Request $request)
+    {
+        $userid = Auth::id();
+        $now = Carbon::now();
+        $query = trim((string) $request->query('q', ''));
+        $service = $request->query('service', 'all');
+        $status = $request->query('status', 'all');
+        $year = $request->query('year', 'all');
+        $sort = $request->query('sort', 'recent');
+        $perPage = 12;
+
+        $standardOrdersQuery = Orders::with(['reservations.invoice'])
+            ->where('sales_agent', $userid)
+            ->where('checkin', '<', $now)
+            ->whereNotIn('status', ['Removed', 'Archive']);
+
+        if ($service === 'Wedding') {
+            $standardOrdersQuery->whereRaw('1 = 0');
+        } elseif ($service !== 'all') {
+            $standardOrdersQuery->where('service', $service);
+        }
+
+        if ($status !== 'all') {
+            $standardOrdersQuery->where('status', $status);
+        }
+
+        if ($year !== 'all' && ctype_digit((string) $year)) {
+            $standardOrdersQuery->whereYear('checkin', (int) $year);
+        }
+
+        if ($query !== '') {
+            $standardOrdersQuery->where(function ($builder) use ($query) {
+                $builder->where('orderno', 'like', "%{$query}%")
+                    ->orWhere('servicename', 'like', "%{$query}%")
+                    ->orWhere('subservice', 'like', "%{$query}%")
+                    ->orWhere('location', 'like', "%{$query}%")
+                    ->orWhere('guest_detail', 'like', "%{$query}%");
+            });
+        }
+
+        $weddingOrdersQuery = OrderWedding::with(['bride', 'hotel', 'wedding'])
+            ->where('agent_id', $userid)
+            ->whereNotIn('status', ['Removed', 'Archive'])
+            ->where(function ($builder) use ($now) {
+                $builder->where('wedding_date', '<', $now)
+                    ->orWhere(function ($inner) use ($now) {
+                        $inner->whereNull('wedding_date')
+                            ->where('reception_date_start', '<', $now);
+                    });
+            });
+
+        if ($service !== 'all' && $service !== 'Wedding') {
+            $weddingOrdersQuery->whereRaw('1 = 0');
+        }
+
+        if ($status !== 'all') {
+            $weddingOrdersQuery->where('status', $status);
+        }
+
+        if ($year !== 'all' && ctype_digit((string) $year)) {
+            $weddingOrdersQuery->where(function ($builder) use ($year) {
+                $builder->whereYear('wedding_date', (int) $year)
+                    ->orWhere(function ($inner) use ($year) {
+                        $inner->whereNull('wedding_date')
+                            ->whereYear('reception_date_start', (int) $year);
+                    });
+            });
+        }
+
+        if ($query !== '') {
+            $weddingOrdersQuery->where(function ($builder) use ($query) {
+                $builder->where('orderno', 'like', "%{$query}%")
+                    ->orWhereHas('bride', function ($brideQuery) use ($query) {
+                        $brideQuery->where('groom', 'like', "%{$query}%")
+                            ->orWhere('bride', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('hotel', function ($hotelQuery) use ($query) {
+                        $hotelQuery->where('name', 'like', "%{$query}%");
+                    });
+            });
+        }
+
+        $standardItems = $standardOrdersQuery
+            ->orderByDesc('updated_at')
+            ->limit(600)
+            ->get()
+            ->map(fn ($order) => $this->buildStandardOrderHistoryItem($order));
+
+        $weddingItems = $weddingOrdersQuery
+            ->orderByDesc('updated_at')
+            ->limit(300)
+            ->get()
+            ->map(fn ($order) => $this->buildWeddingOrderHistoryItem($order));
+
+        $historyItems = $standardItems->concat($weddingItems);
+
+        $historyItems = match ($sort) {
+            'oldest' => $historyItems->sortBy('updated_at'),
+            'highest' => $historyItems->sortByDesc('price'),
+            'lowest' => $historyItems->sortBy('price'),
+            default => $historyItems->sortByDesc('updated_at'),
+        };
+
+        $historyItems = $historyItems->values();
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $paginatedItems = new LengthAwarePaginator(
+            $historyItems->forPage($currentPage, $perPage)->values(),
+            $historyItems->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => route('orders.history'),
+                'query' => $request->query(),
+            ]
+        );
+
+        $availableYears = Orders::where('sales_agent', $userid)
+            ->whereNotNull('checkin')
+            ->where('checkin', '<', $now)
+            ->whereNotIn('status', ['Removed', 'Archive'])
+            ->selectRaw('YEAR(checkin) as year')
+            ->pluck('year')
+            ->merge(
+                OrderWedding::where('agent_id', $userid)
+                    ->whereNotIn('status', ['Removed', 'Archive'])
+                    ->selectRaw('YEAR(COALESCE(wedding_date, reception_date_start)) as year')
+                    ->pluck('year')
+            )
+            ->filter()
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        $statusOptions = collect(['Paid', 'Approved', 'Confirmed', 'Active', 'Canceled', 'Rejected', 'Invalid', 'Pending']);
+        $serviceOptions = collect(['Hotel', 'Hotel Promo', 'Hotel Package', 'Tour Package', 'Activity', 'Transport', 'Private Villa', 'Wedding']);
+        $summary = [
+            'total' => $historyItems->count(),
+            'paid' => $historyItems->where('status', 'Paid')->count(),
+            'this_year' => $historyItems->filter(function ($item) use ($now) {
+                return $item['date_start'] && Carbon::parse($item['date_start'])->year === $now->year;
+            })->count(),
+            'with_invoice' => $historyItems->filter(fn ($item) => count($item['invoice_links']) > 0)->count(),
+        ];
+
+        return view('layouts.order-history', [
+            'historyItems' => $paginatedItems,
+            'summary' => $summary,
+            'filters' => compact('query', 'service', 'status', 'year', 'sort'),
+            'availableYears' => $availableYears,
+            'statusOptions' => $statusOptions,
+            'serviceOptions' => $serviceOptions,
+        ]);
+    }
     
     // VIEW USER ORDER HOTEL PROMO =================================================================================> OK
     public function order_hotel_promo(Request $request, $id)
@@ -778,7 +1069,6 @@ class OrderController extends Controller
             'number_of_adult' => $number_of_adult,
             'number_of_children' => $number_of_children,
             'now' => $now,
-            'business' => $business,
             'checkin' => session('booking_dates.checkin'),
             'checkout' => session('booking_dates.checkout'),
             'duration' => session('booking_dates.duration'),
@@ -789,9 +1079,6 @@ class OrderController extends Controller
             'tax' => $tax,
             'agents' => $agents,
             'orderNumber' => $orderNumber,
-            'attentions' => $attentions,
-            'logoDark' => $logoDark,
-            'altLogo' => $altLogo,
         ];
         return view('villas.order-villa',$data);
     }
@@ -1562,7 +1849,7 @@ class OrderController extends Controller
         $guest_detail = json_encode($request->guest_detail);
         $special_day = json_encode($request->special_day);
         $special_date = json_encode($request->special_date);
-        $request_quotation = $request->request_quotation ? 1 : NULL;
+        $request_quotation = $this->resolveHotelQuotationValue($request);
         $duration = $request->duration;
         $cancellation_policy = $hotel->cancellation_policy;
         $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
@@ -1687,7 +1974,7 @@ class OrderController extends Controller
         $order_log->save();
         session()->forget('booking_dates');
         if (Auth::user()->position == "developer" || Auth::user()->position == "reservation" || Auth::user()->position == "author") {
-            $rquotation = $request->request_quotation;
+            $rquotation = $request_quotation;
             Mail::to(config('app.reservation_mail'))
             ->send(new ReservationMail($order->id,$rquotation));
             return redirect()->route('view.detail-order-admin', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
@@ -1727,7 +2014,7 @@ class OrderController extends Controller
         $room = HotelRoom::with('hotels.extrabeds')->find($request->room_id);
         $hotel = $room->hotels;
         $hotel_id = $hotel->id;
-        $request_quotation = $request->request_quotation ? 1 : NULL;
+        $request_quotation = $this->resolveHotelQuotationValue($request);
         $agent_id = $sales_agent;
         $promo_ids = json_decode($request->promo_id);
         $promos = HotelPromo::whereIn('id', $promo_ids)->get()->keyBy('id');
@@ -1862,7 +2149,7 @@ class OrderController extends Controller
         $order_log->save();
         session()->forget('booking_dates');
         if (Auth::user()->position == "developer" || Auth::user()->position == "reservation" || Auth::user()->position == "author") {
-            $rquotation = $request->request_quotation;
+            $rquotation = $request_quotation;
             Mail::to(config('app.reservation_mail'))
             ->send(new ReservationMail($order->id,$rquotation));
             return redirect()->route('view.detail-order-admin', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
@@ -1909,7 +2196,7 @@ class OrderController extends Controller
         $guest_detail = json_encode($request->guest_detail);
         $special_day = json_encode($request->special_day);
         $special_date = json_encode($request->special_date);
-        $request_quotation = $request->request_quotation ? 1 : NULL;
+        $request_quotation = $this->resolveHotelQuotationValue($request);
         $duration = $request->duration;
         $cancellation_policy = $hotel->cancellation_policy;
         $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
@@ -2038,7 +2325,7 @@ class OrderController extends Controller
         $order_log->save();
         session()->forget('booking_dates');
         if (Auth::user()->position == "developer" || Auth::user()->position == "reservation" || Auth::user()->position == "author") {
-            $rquotation = $request->request_quotation;
+            $rquotation = $request_quotation;
             Mail::to(config('app.reservation_mail'))
             ->send(new ReservationMail($order->id,$rquotation));
             return redirect()->route('view.detail-order-admin', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
@@ -2096,7 +2383,7 @@ class OrderController extends Controller
             "subservice"=>$room->rooms,
             "subservice_id"=>$room->id,
             "package_name"=>$request->package_name,
-            "request_quotation"=>$request->request_quotation,
+            "request_quotation"=>$request_quotation,
             "location"=>$hotel->region,
             "capacity"=>$capacity,
             "airport_shuttle_in"=>$request->airport_shuttle_in,

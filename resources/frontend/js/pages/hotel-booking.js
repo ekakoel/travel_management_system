@@ -473,6 +473,7 @@
     function initBookingForm($form) {
         var variant = $form.data('booking-variant') || 'standard';
         var maxRooms = parseInt($form.data('room-max'), 10) || 8;
+        var quoteMaxRooms = parseInt($form.data('quote-room-max'), 10) || Math.max(maxRooms, 30);
         var currencyDigits = parseInt($form.data('currency-digits'), 10) || 0;
         var toBeAdvisedLabel = $form.data('label-to-be-advised') || 'To be advised';
         var roomLabel = $form.data('label-room') || 'Room';
@@ -491,9 +492,13 @@
         var guestNamesMissingLabel = $form.data('label-guest-names-missing') || 'Guest names not filled yet';
         var reviewEmptyLabel = $form.data('label-review-empty') || 'Add guest names and rooming details to review them here.';
         var noRemarkLabel = $form.data('label-no-remark') || 'No remark added.';
+        var quoteRequestLabel = $form.data('label-quote-request') || 'Quote request';
+        var quoteReviewLabel = $form.data('label-quote-review') || 'This order will be handled as a quote request because it contains more than 8 rooms.';
         var processingLabel = $form.find('button[type="submit"]').first().data('processingLabel') || 'Processing...';
         var $roomList = $form.find('#dynamic_field');
         var $addButton = $form.find('#add');
+        var $quoteCheckbox = $form.find('[data-quote-checkbox]');
+        var $quoteCard = $form.find('[data-quote-card]');
         var $transportIn = $form.find('#airportShuttleIn');
         var $transportOut = $form.find('#airportShuttleOut');
         var $duration = $form.find('#duration');
@@ -508,6 +513,32 @@
 
         function getRoomCount() {
             return $roomList.find('[data-room-item]').length || 1;
+        }
+
+        function isQuoteRequested() {
+            return $quoteCheckbox.length && $quoteCheckbox.is(':checked');
+        }
+
+        function getCurrentRoomLimit() {
+            return isQuoteRequested() ? quoteMaxRooms : maxRooms;
+        }
+
+        function syncQuotationState() {
+            var roomCount = getRoomCount();
+            var shouldForceQuote = roomCount > maxRooms;
+            var quoteRequested = isQuoteRequested() || shouldForceQuote;
+
+            if ($quoteCheckbox.length) {
+                $quoteCheckbox.prop('checked', quoteRequested);
+                $quoteCheckbox.prop('disabled', shouldForceQuote);
+            }
+
+            if ($quoteCard.length) {
+                $quoteCard.toggleClass('is-active', quoteRequested);
+                $quoteCard.toggleClass('is-locked', shouldForceQuote);
+            }
+
+            $addButton.prop('disabled', roomCount >= getCurrentRoomLimit());
         }
 
         function getGuestTotal() {
@@ -536,7 +567,7 @@
                 }
             });
 
-            $addButton.prop('disabled', getRoomCount() >= maxRooms);
+            syncQuotationState();
         }
 
         function toggleExtraBedSelection() {
@@ -771,6 +802,7 @@
             var transportOut = getTransportSelection($transportOut, 'out');
             var airportShuttleTotal = transportIn.price + transportOut.price;
             var airportNeedsAdvice = (transportIn.active && transportIn.price === 0) || (transportOut.active && transportOut.price === 0);
+            var quoteRequested = isQuoteRequested();
             var optionalChargeTotal = updateOptionalCharges();
             var suitesAndVillasTotal = 0;
             var promotionsDiscount = 0;
@@ -793,7 +825,10 @@
                 finalTotal = suitesAndVillasTotal + extraBedTotal + airportShuttleTotal;
             }
 
-            setText($form.find('#suitesAndVillasPriceLable'), formatCurrency(suitesAndVillasTotal, currencyDigits));
+            setText(
+                $form.find('#suitesAndVillasPriceLable'),
+                quoteRequested ? toBeAdvisedLabel : formatCurrency(suitesAndVillasTotal, currencyDigits)
+            );
             setText($form.find('#extraBedPriceTotal'), formatCurrency(extraBedTotal, currencyDigits));
             setText(
                 $form.find('#airportShuttleText'),
@@ -812,7 +847,7 @@
             setValue($form.find('#final_price'), finalTotal);
             setText(
                 $form.find('#finalprice'),
-                airportNeedsAdvice ? toBeAdvisedLabel : formatCurrency(finalTotal, currencyDigits)
+                quoteRequested || airportNeedsAdvice ? toBeAdvisedLabel : formatCurrency(finalTotal, currencyDigits)
             );
         }
 
@@ -825,6 +860,7 @@
             var checkout = $form.data('review-checkout') || '';
             var durationLabel = $form.data('review-duration') || '-';
             var $roomListReview = $form.find('[data-review-room-list]');
+            var $quoteReview = $form.find('[data-review-quote-status]');
             var roomItemsMarkup = '';
 
             setText($form.find('[data-review-hotel]'), hotelName);
@@ -833,6 +869,11 @@
             setText($form.find('[data-review-duration]'), durationLabel);
             setText($form.find('[data-review-room-count]'), roomCount);
             setText($form.find('[data-review-guest-count]'), guestTotal);
+            setVisibility($quoteReview, isQuoteRequested());
+            if (isQuoteRequested()) {
+                setText($quoteReview.find('span'), quoteRequestLabel);
+                setText($quoteReview.find('strong'), quoteReviewLabel);
+            }
 
             $roomList.find('[data-room-item]').each(function (index) {
                 var $item = $(this);
@@ -917,7 +958,7 @@
 
         function cloneRoom() {
             var roomCount = getRoomCount();
-            if (roomCount >= maxRooms) {
+            if (roomCount >= getCurrentRoomLimit()) {
                 return;
             }
 
@@ -934,6 +975,7 @@
 
             initDateInputs($clone);
             renumberRooms();
+            syncQuotationState();
             toggleExtraBedSelection();
             updatePriceSummary();
             updateReviewSummary();
@@ -1007,7 +1049,14 @@
 
             $(this).closest('[data-room-item]').remove();
             renumberRooms();
+            syncQuotationState();
             toggleExtraBedSelection();
+            updatePriceSummary();
+            updateReviewSummary();
+        });
+
+        $quoteCheckbox.on('change', function () {
+            syncQuotationState();
             updatePriceSummary();
             updateReviewSummary();
         });
@@ -1040,6 +1089,7 @@
         applyInitialTransferDateDefaults();
         syncLegacyTransferFields();
         renumberRooms();
+        syncQuotationState();
         toggleExtraBedSelection();
         updatePriceSummary();
         updateReviewSummary();

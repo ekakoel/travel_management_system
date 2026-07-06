@@ -6,6 +6,10 @@
                 <h3 class="booking-review__title">@lang('messages.Stay and guests')</h3>
             </div>
             <div class="booking-review__facts">
+                <div class="booking-review__fact booking-review__fact--quote d-none" data-review-quote-status>
+                    <span>@lang('messages.Quote request')</span>
+                    <strong>@lang('messages.More than 8 rooms')</strong>
+                </div>
                 <div class="booking-review__fact">
                     <span>@lang('messages.Hotel')</span>
                     <strong data-review-hotel>-</strong>

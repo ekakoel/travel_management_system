@@ -366,16 +366,65 @@ class FrontEndController extends Controller
 
     public function transport_service(Request $request)
     {
-        $searchName = $request->input('search_name');
-        $searchType = $request->input('search_region');
-        $transports = Transports::where('status','Active')->get();
-        if ($searchName) {
-            $transports->where('name', 'LIKE', "%{$searchName}%");
-        }
-        if ($searchType) {
-            $transports->where('region', 'LIKE', "%{$searchType}%");
-        }
-        $types = $transports->pluck('type')->unique();
-        return view('home.landing-page.transport', compact('transports','types', 'searchName', 'searchType'));
+        $searchName = trim((string) $request->input('search_name', ''));
+        $searchType = trim((string) $request->input('search_type', ''));
+        $searchBrand = trim((string) $request->input('search_brand', ''));
+        $minimumCapacity = $request->integer('minimum_capacity');
+
+        $baseQuery = Transports::query()->where('status', 'Active');
+        $types = (clone $baseQuery)
+            ->whereNotNull('type')
+            ->where('type', '!=', '')
+            ->orderBy('type')
+            ->pluck('type')
+            ->unique()
+            ->values();
+        $brands = (clone $baseQuery)
+            ->whereNotNull('brand')
+            ->where('brand', '!=', '')
+            ->orderBy('brand')
+            ->pluck('brand')
+            ->unique()
+            ->values();
+
+        $transports = Transports::query()
+            ->where('status', 'Active')
+            ->when($searchName, function ($query) use ($searchName) {
+                $query->where(function ($nested) use ($searchName) {
+                    $nested->where('name', 'LIKE', "%{$searchName}%")
+                        ->orWhere('brand', 'LIKE', "%{$searchName}%")
+                        ->orWhere('type', 'LIKE', "%{$searchName}%");
+                });
+            })
+            ->when($searchType, function ($query) use ($searchType) {
+                $query->where('type', $searchType);
+            })
+            ->when($searchBrand, function ($query) use ($searchBrand) {
+                $query->where('brand', $searchBrand);
+            })
+            ->when($minimumCapacity > 0, function ($query) use ($minimumCapacity) {
+                $query->where('capacity', '>=', $minimumCapacity);
+            })
+            ->orderBy('name')
+            ->paginate(9)
+            ->withQueryString();
+
+        $directoryStats = [
+            'total_transports' => (clone $baseQuery)->count(),
+            'total_types' => $types->count(),
+            'total_brands' => $brands->count(),
+            'max_capacity' => (clone $baseQuery)->max('capacity') ?: 0,
+        ];
+
+        return view('home.landing-page.transport', compact(
+            'transports',
+            'types',
+            'brands',
+            'directoryStats',
+            'searchName',
+            'searchType',
+            'searchBrand',
+            'minimumCapacity'
+        ));
     }
 }

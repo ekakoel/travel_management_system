@@ -337,13 +337,13 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             // ---------------------------------------------------
             Route::post('/fadd-promo',[HotelsAdminController::class,'func_add_promo'])->name('func.promo.add');
             Route::put('/fedit-promo-{id}',[HotelsAdminController::class,'func_edit_promo'])->name('func.promo.edit');
-            Route::delete('/delete-promo/{id}',[HotelsAdminController::Class, 'destroy_promo'])->name('func.promo.destroy');
+            Route::delete('/delete-promo/{id}',[HotelsAdminController::class, 'destroy_promo'])->name('func.promo.destroy');
             // ---------------------------------------------------
             //                   HOTELS PACKAGE
             // ---------------------------------------------------
             Route::post('/fadd-package',[HotelsAdminController::class,'func_add_package'])->name('func.package.add');
             Route::put('/fedit-package-{id}',[HotelsAdminController::class,'func_edit_package'])->name('func.package.update');
-            Route::delete('/delete-package/{id}',[HotelsAdminController::Class, 'destroy_package'])->name('func.package.delete');
+            Route::delete('/delete-package/{id}',[HotelsAdminController::class, 'destroy_package'])->name('func.package.delete');
             // ---------------------------------------------------
             //                 ADDITIONAL SERVICE
             // ---------------------------------------------------
@@ -528,10 +528,10 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             // ---------------------------------------------------
             //                WEDDING DINNER PACKAGE
             // ---------------------------------------------------
-            Route::get('/vadd-dinner-package-{id}',[WeddingDinnerController::class,'view_add_dinner_package']);
-            Route::post('/fcreate-dinner-package/{id}',[WeddingDinnerController::class,'func_add_dinner_package']);
-            Route::get('/update-dinner-package-{id}',[WeddingDinnerController::class,'view_update_dinner_package']);
-            Route::put('/fupdate-dinner-package-{id}',[WeddingDinnerController::class,'func_update_dinner_package']);
+            // Route::get('/vadd-dinner-package-{id}',[WeddingDinnerController::class,'view_add_dinner_package']);
+            // Route::post('/fcreate-dinner-package/{id}',[WeddingDinnerController::class,'func_add_dinner_package']);
+            // Route::get('/update-dinner-package-{id}',[WeddingDinnerController::class,'view_update_dinner_package']);
+            // Route::put('/fupdate-dinner-package-{id}',[WeddingDinnerController::class,'func_update_dinner_package']);
             // ---------------------------------------------------
             //               WEDDING FOOD AND BEVERAGE
             // ---------------------------------------------------

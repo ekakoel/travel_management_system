@@ -77,6 +77,13 @@
 .order-detail-status--rejected,
 .order-detail-status--invalid,
 .order-detail-status--canceled { color: var(--order-detail-danger); border-color: rgba(180, 35, 24, 0.24); }
+.order-detail-status--quote {
+    color: #92400e;
+    border-color: rgba(183, 121, 31, 0.32);
+    background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 36%),
+        rgba(255, 248, 235, 0.92);
+}
 
 .order-detail-summary {
     display: grid;
@@ -184,6 +191,16 @@
     line-height: 1.4;
 }
 
+.order-detail-info--quote {
+    border-color: rgba(183, 121, 31, 0.28);
+    background: linear-gradient(135deg, #fff8eb 0%, #ffffff 100%);
+}
+
+.order-detail-info--quote span,
+.order-detail-info--quote strong {
+    color: #92400e;
+}
+
 .order-detail-rich {
     color: #334155;
     line-height: 1.75;
@@ -279,7 +296,7 @@
 
 .order-detail-sidebar {
     position: sticky;
-    top: 1.25rem;
+    top: 6rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -390,6 +407,12 @@
     background: #fff8eb;
     color: #7c4a03;
     line-height: 1.65;
+}
+
+.order-detail-alert--quote {
+    border: 1px solid rgba(183, 121, 31, 0.24);
+    background: linear-gradient(135deg, #fff8eb 0%, #fffdf7 100%);
+    color: #92400e;
 }
 
 .order-detail-payment-preview {

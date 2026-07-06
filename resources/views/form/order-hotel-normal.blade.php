@@ -44,6 +44,7 @@
                             data-review-duration="{{ $duration }} {{ $duration > 1 ? __('messages.nights') : __('messages.Night') }}"
                             data-booking-variant="standard"
                             data-room-max="8"
+                            data-quote-room-max="30"
                             data-extra-bed-mode="stay"
                             data-currency-digits="0"
                             data-label-to-be-advised="@lang('messages.To be advised')"
@@ -63,6 +64,8 @@
                             data-label-guest-names-missing="@lang('messages.Guest names not filled yet')"
                             data-label-review-empty="@lang('messages.Add guest names and rooming details to review them here.')"
                             data-label-no-remark="@lang('messages.No remark added.')"
+                            data-label-quote-request="@lang('messages.Quote request')"
+                            data-label-quote-review="@lang('messages.This order will be handled as a quote request because it contains more than 8 rooms.')"
                         >
                             @csrf
                             @canany(['posDev','posAuthor','posRsv'])
@@ -130,9 +133,12 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-8">
-                                                <div class="checkbox-left">
-                                                    <input name="request_quotation" type="checkbox" class="checkbox-left__control" value="1">
-                                                    <p>@lang('messages.Ask for quote rates for rooms more than 8 units')</p>
+                                                <div class="checkbox-left hotel-booking-quote-card" data-quote-card>
+                                                    <input name="request_quotation" type="checkbox" class="checkbox-left__control" value="Yes" data-quote-checkbox>
+                                                    <div>
+                                                        <p>@lang('messages.Ask for quote rates for rooms more than 8 units')</p>
+                                                        <small>@lang('messages.Enable this when the booking needs more than 8 rooms. The order will be highlighted as a quote request.')</small>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-4 text-right">

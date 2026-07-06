@@ -21,7 +21,7 @@
     $statusTone = $statusToneMap[$order->status] ?? 'default';
     $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
     $serviceLabel = __('messages.' . $order->service) !== 'messages.' . $order->service ? __('messages.' . $order->service) : $order->service;
-    $isQuotation = (bool) $order->request_quotation;
+    $isQuotation = in_array($order->request_quotation, ['Yes', 1, '1', true], true);
     $mainTotalLabel = $isQuotation || $airport_shuttle_any_zero ? __('messages.To be advised') : currencyFormatUsd($order->final_price);
     $hotelName = optional($hotel)->name ?? $order->servicename;
     $roomName = optional($room)->rooms ?? $order->subservice;
@@ -47,9 +47,11 @@
                     <div>
                         @include('partials.breadcrumbs', [
                             'breadcrumbs' => [
+                                ['url' => route('home'), 'label' => __('messages.Home')],
                                 ['url' => route('view.orders'), 'label' => __('messages.Orders')],
                                 ['label' => $order->orderno],
-                            ]
+                            ],
+                            'variant' => 'dark',
                         ])
                         <div class="order-detail-eyebrow">
                             <i class="fa-solid fa-receipt" aria-hidden="true"></i>
@@ -65,6 +67,12 @@
                         <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                         {{ $statusLabel }}
                     </div>
+                    @if ($isQuotation)
+                        <div class="order-detail-status order-detail-status--quote">
+                            <i class="fa-solid fa-file-signature" aria-hidden="true"></i>
+                            @lang('messages.Quote request')
+                        </div>
+                    @endif
                 </div>
 
                 <div class="order-detail-summary">
@@ -137,6 +145,12 @@
                                         <span>@lang('messages.Location')</span>
                                         <strong>{{ optional($hotel)->region ?? $order->location }}</strong>
                                     </div>
+                                    @if ($isQuotation)
+                                        <div class="order-detail-info order-detail-info--quote">
+                                            <span>@lang('messages.Booking type')</span>
+                                            <strong>@lang('messages.Quote request')</strong>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 @foreach ([
@@ -164,7 +178,7 @@
                             </div>
                             <div class="order-detail-section__body">
                                 @if ($isQuotation)
-                                    <div class="order-detail-alert">@lang('messages.Requesting a quote for bookings of more than 8 rooms')</div>
+                                    <div class="order-detail-alert order-detail-alert--quote">@lang('messages.Requesting a quote for bookings of more than 8 rooms')</div>
                                 @elseif ($guestRows->isNotEmpty())
                                     <div class="order-detail-table-wrap">
                                         <table class="order-detail-table">

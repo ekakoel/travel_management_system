@@ -183,6 +183,45 @@
     margin: 0;
 }
 
+.hotel-booking-layout .checkbox-left small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #64748b;
+    line-height: 1.55;
+}
+
+.hotel-booking-quote-card {
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #dbe7f3;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.hotel-booking-quote-card.is-active {
+    border-color: rgba(183, 121, 31, 0.34);
+    background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 32%),
+        linear-gradient(135deg, #fff8eb 0%, #ffffff 100%);
+    box-shadow: 0 16px 38px rgba(183, 121, 31, 0.12);
+}
+
+.hotel-booking-quote-card.is-active p {
+    color: #92400e;
+    font-weight: 800;
+}
+
+.booking-review__fact--quote {
+    border-color: rgba(183, 121, 31, 0.28) !important;
+    background: linear-gradient(135deg, #fff8eb 0%, #fffdf7 100%) !important;
+}
+
+.booking-review__fact--quote span,
+.booking-review__fact--quote strong {
+    color: #92400e !important;
+}
+
 .hotel-booking-layout .box-price-kicked {
     background:
         radial-gradient(circle at top right, rgba(15, 95, 168, 0.10), transparent 28%),
