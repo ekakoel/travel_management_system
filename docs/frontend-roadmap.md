@@ -1936,7 +1936,7 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
 ## B2 - Developer-Focused Admin Panel Data Scope
 - Status: completed
 - Area: backend admin panel, developer dashboard, data relevance
-- Summary: Admin panel disesuaikan agar hanya menampilkan data yang relevan untuk role developer: service registry, draft/content health, UI configuration snapshot, currency readiness, platform health checks, dan developer notes.
+- Summary: Admin panel disesuaikan agar hanya menampilkan data yang relevan untuk role developer: service registry, draft/content health, currency readiness, platform health checks, dan developer notes.
 - Impact: Data order, revenue, dan reservation pipeline dihapus dari developer dashboard karena lebih tepat berada di area reservation/operations, sehingga halaman lebih ringan dan fokus pada konfigurasi platform.
 - Files:
   - `app/Http/Controllers/AdminPanelController.php`
@@ -1944,3 +1944,21 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
   - `resources/backend/scss/admin/panel/_index.scss`
   - `tests/Feature/ProjectStructureStandardTest.php`
 - Follow-up: Jika role reservation/operations membutuhkan dashboard order, buat halaman terpisah di domain `resources/views/backend/operations` agar scope role tetap bersih.
+
+## B3 - Runtime UI Toggle Feature Retirement
+- Status: completed
+- Area: backend admin panel, route access, authentication views, cleanup
+- Summary: Fitur UI Config dihapus dari runtime project, termasuk route `/ui-config`, controller, model, request, policy, middleware `page.access`, Blade directives, helper global, migration, factory, seeder, dan view manager lama.
+- Impact: Akses halaman kini kembali bergantung pada route middleware, policies, dan role/position yang eksplisit, bukan toggles berbasis database. Form login/register juga tidak lagi bergantung pada directive UI Config.
+- Files:
+  - `routes/web.php`
+  - `app/Http/Kernel.php`
+  - `app/Providers/AppServiceProvider.php`
+  - `app/Helpers/helpers.php`
+  - `app/Http/Controllers/AdminPanelController.php`
+  - `resources/views/auth/login.blade.php`
+  - `resources/views/auth/register.blade.php`
+  - `resources/views/welcome.blade.php`
+  - `resources/views/layouts/footjs.blade.php`
+  - `tests/Feature/ProjectStructureStandardTest.php`
+- Follow-up: Jika kedepannya dibutuhkan feature flag, gunakan package atau config-driven feature flag yang punya ownership jelas, audit trail, dan test coverage, bukan page toggle ad-hoc di admin panel.

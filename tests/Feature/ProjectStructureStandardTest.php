@@ -1790,6 +1790,9 @@ class ProjectStructureStandardTest extends TestCase
         $helpers = file_get_contents(app_path('Helpers/helpers.php'));
         $provider = file_get_contents(app_path('Providers/AppServiceProvider.php'));
         $footJs = file_get_contents(resource_path('views/layouts/footjs.blade.php'));
+        $loginView = file_get_contents(resource_path('views/auth/login.blade.php'));
+        $registerView = file_get_contents(resource_path('views/auth/register.blade.php'));
+        $welcomeView = file_get_contents(resource_path('views/welcome.blade.php'));
 
         $this->assertFileDoesNotExist(app_path('Http/Controllers/UiConfigController.php'));
         $this->assertFileDoesNotExist(app_path('Models/UiConfig.php'));
@@ -1811,5 +1814,10 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringNotContainsString('UiConfig', $helpers);
         $this->assertStringNotContainsString('uiEnabled', $provider);
         $this->assertStringNotContainsString('/ui-config/toggle', $footJs);
+        $this->assertStringNotContainsString('@uiEnabled', $loginView);
+        $this->assertStringNotContainsString('@uiEnabled', $registerView);
+        $this->assertStringNotContainsString('@uiEnabled', $welcomeView);
+        $this->assertStringNotContainsString('@elseUiEnabled', $registerView);
+        $this->assertStringNotContainsString('@endUiEnabled', $loginView . $registerView . $welcomeView);
     }
 }

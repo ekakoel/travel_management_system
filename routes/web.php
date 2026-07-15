@@ -902,7 +902,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('/weddings-admin-{id}',[WeddingsController::class,'view_wedding_admin_detail']);
         });
         // ========================================================================================================================================> (AGENT)
-        Route::group(function () {
+        Route::group([], function () {
             // ---------------------------------------------------
             //                      HOTELS 
             // ---------------------------------------------------
