@@ -170,7 +170,7 @@ class OrderWeddingController extends Controller
                 if ($orderWedding->status == "Draft") {
                     return redirect("/edit-order-wedding-$orderno")->with('warning','Order not found!');
                 }else{
-                    return view('order.detail-order-wedding',[
+                    return view('frontend.home.orders.weddings.detail',[
                         "business"=>$business,
                         "orderWedding"=>$orderWedding,
                         "hotel"=>$hotel,
@@ -302,7 +302,7 @@ class OrderWeddingController extends Controller
                     $additionalServicesPrices = $additionalServices->sum('price');
                     $additionalServicesPricesTba = $additionalServices->contains('price',0);
                     $guests = WeddingInvitations::where('order_wedding_id',$orderWedding->id)->get();
-                    return view('order.edit-order-wedding',[
+                    return view('frontend.home.orders.weddings.edit',[
                         "business"=>$business,
                         "orderWedding"=>$orderWedding,
                         "hotel"=>$hotel,

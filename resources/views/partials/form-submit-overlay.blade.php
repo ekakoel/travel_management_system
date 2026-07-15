@@ -1,4 +1,4 @@
-<div class="booking-submit-overlay hidden" data-form-submit-overlay aria-hidden="true">
+<div class="booking-submit-overlay frontend-order-modal__overlay hidden" data-form-submit-overlay aria-hidden="true">
     <div class="booking-submit-overlay__dialog" role="status" aria-live="assertive">
         <div class="booking-submit-overlay__spinner" aria-hidden="true"></div>
         <div class="booking-submit-overlay__content">

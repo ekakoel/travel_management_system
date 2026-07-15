@@ -88,16 +88,18 @@
                                 $rsv_order = $reservations->where('id',$tourorder->rsv_id)->first();
                             @endphp
                             <div class="table-action">
-                                @if ($tourorder->status == "Draft")
+                                @if (in_array($tourorder->status, ['Draft', 'Invalid']))
                                     <a href="{{ route('view.edit-order-tour',$tourorder->id) }}">
                                         <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
                                     </a>
-                                    <form class="display-content" action="/delete-order/{{ $tourorder->id }}" method="post">
-                                        @csrf
-                                        @method('delete')
-                                        <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                        <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i></button>
-                                    </form>
+                                    @if ($tourorder->status === 'Draft' || $tourorder->status === 'Invalid')
+                                        <form class="display-content" action="/delete-order/{{ $tourorder->id }}" method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <input type="hidden" name="author" value="{{ Auth::user()->id }}">
+                                            <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i></button>
+                                        </form>
+                                    @endif
                                 @elseif ($tourorder->status == "Rejected")
                                     <a href="{{ route('view.detail-order-tour',$tourorder->id) }}">
                                         <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
@@ -132,4 +134,3 @@
         </table>
     </div>
 </div>
-

@@ -106,7 +106,6 @@
                             </div>
                         </div>
                     @endif
-                    @include('form.wedding-planner-hotel') --}}
                 </div>
             </div>
             @include('layouts.footer')

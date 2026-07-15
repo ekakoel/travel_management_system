@@ -17,6 +17,8 @@ Reference implementation:
 
 Halaman frontend baru wajib mengikuti bahasa visual, hirarki informasi, spacing, dan interaction model dari baseline tersebut kecuali ada alasan bisnis yang jelas.
 
+Untuk modal form order layanan, baseline mutlak yang berlaku adalah modal order pada halaman Activity Detail. Kontrak implementasi lengkap berada di `docs/frontend-order-modal-standard.md`.
+
 ## Tujuan
 
 - Menyatukan bahasa visual halaman frontend.
@@ -122,6 +124,66 @@ Untuk booking form, pola default yang harus diutamakan adalah:
 2. `step 2`: transfer, arrival, departure, dan note hanya bila relevan
 3. `step 3`: price review dan final submit
 
+## Standar Submit Form
+
+Untuk seluruh form frontend yang membuat order, booking, reservation, inquiry, atau record penting lain, standar submit wajib mengikuti pola integritas submit project.
+
+Aturan minimumnya:
+
+1. Gunakan pola `POST -> Redirect -> GET`.
+2. Gunakan token submit sekali pakai melalui partial `resources/views/partials/form-submission-token.blade.php`.
+3. Saat submit berjalan, tampilkan processing state yang jelas dengan spinner atau overlay.
+4. Setelah submit sukses, redirect ke halaman detail final yang refresh-safe dan shareable.
+5. Tombol `Back` browser setelah submit sukses tidak boleh menyebabkan resubmit buta; gunakan history restore guard untuk reload halaman form lama.
+6. Validasi backend harus muncul sedekat mungkin ke field terkait.
+
+## Standar Loading Dan Spinner
+
+Aturan ini bersifat mutlak untuk seluruh frontend project.
+
+1. Setiap action yang membutuhkan proses dan tidak selesai instan wajib menampilkan loading state yang terlihat.
+2. Loading state wajib memakai spinner, processing indicator, atau overlay spinner yang jelas; tidak boleh hanya men-disable tombol tanpa feedback visual.
+3. Aturan ini wajib diterapkan minimal pada:
+   - create order
+   - edit order
+   - update profile
+   - change password
+   - upload image atau dokumen
+   - submit modal wizard
+   - async request yang mengganti data utama pada halaman
+4. Untuk submit form, spinner harus muncul sebelum request dikirim penuh atau sebelum `form.submit()` dipanggil.
+5. Untuk action berbasis modal, spinner harus tetap terlihat walau tinggi modal berubah atau konten di belakang terkunci.
+6. Untuk action full-page yang memblokir interaksi utama, gunakan overlay fullscreen yang menutupi seluruh viewport dan juga mengunci aksi ganda.
+7. Untuk action ringan pada satu tombol, minimal tampilkan spinner di dalam tombol dan ubah label ke state processing.
+8. Tombol atau kontrol yang sedang memproses wajib:
+   - disabled
+   - memiliki `aria-disabled="true"` bila relevan
+   - memiliki label processing yang jelas
+9. Jika request gagal dan user kembali ke state form, spinner/overlay wajib hilang dan semua kontrol harus kembali aktif.
+10. Dilarang merge flow create, update, submit, save, resend, confirm, checkout, reserve, atau sejenisnya jika belum memiliki processing state yang terlihat.
+11. Baseline visual spinner submit modal order adalah spinner pada Activity Detail melalui komponen `frontend-order-modal`.
+12. Jangan membuat variasi spinner baru per halaman untuk flow submit penting; gunakan `frontend-order-modal__overlay` agar pengalaman user tetap konsisten.
+13. Untuk flow submit penting, posisi overlay harus selalu:
+   - `position: fixed`
+   - menutupi seluruh area layar (`inset: 0`)
+   - spinner/card diposisikan tepat di tengah viewport
+   - tetap terlihat di atas modal, drawer, atau konten page lain
+
+Standar implementasi detail:
+
+- `docs/form-submit-standard.md`
+- `docs/frontend-order-modal-standard.md`
+
+## Standar Modal Form Order
+
+1. Modal order Activity Detail adalah reference implementation mutlak.
+2. Semua modal order layanan frontend wajib memakai komponen `resources/frontend/scss/components/frontend-order-modal.scss`.
+3. Detail layanan, image, name, metadata, dan price harus berada di atas tab navigation.
+4. Setiap tab hanya memiliki satu title, satu penjelasan singkat, input area, lalu action area.
+5. Gunakan kontrak class `frontend-order-modal*`; dilarang membuat shell modal order baru dengan style page-level yang terpisah.
+6. Field dan behavior domain boleh berbeda, tetapi hierarchy, surface, spacing, navigation, action, responsive behavior, dan submit overlay harus konsisten.
+7. Modal dokumen, invoice, receipt, gallery, dan konfirmasi pembayaran tidak termasuk modal form order layanan.
+
 ## Standar Breadcrumb
 
 1. Breadcrumb frontend harus memakai style reusable, bukan default plain Bootstrap.
@@ -224,4 +286,6 @@ Sebelum merge perubahan frontend, pastikan:
 7. Apakah CTA utama jelas?
 8. Apakah style dan script sudah dipisah ke file reusable atau file page yang benar?
 9. Apakah data shaping sudah dipindah ke controller jika kompleks?
-10. Apakah perubahan ini sudah dicatat di `docs/frontend-roadmap.md`?
+10. Apakah setiap action yang memproses data sudah memiliki spinner/loading state yang terlihat?
+11. Apakah perubahan ini sudah dicatat di `docs/frontend-roadmap.md`?
+12. Jika halaman memiliki modal order, apakah sudah mengikuti `docs/frontend-order-modal-standard.md`?

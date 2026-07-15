@@ -1,3 +1,5 @@
+@include('privacy-policy.partials.policy-manager')
+@php return; @endphp
 @section('title', __('messages.Term and Condition'))
 @section('content')
     @extends('layouts.head')

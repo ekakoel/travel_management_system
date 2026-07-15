@@ -54,8 +54,6 @@
                                 @include('partials.admin-order-status-sidebar',['device' => "mobile"])
                                 {{-- ORDER NOTE --}}
                                 @include('partials.admin-order-note-sidebar',['device' => "mobile"])
-                                {{-- DOKU --}}
-                                @include('partials.admin-order-doku-report-sidebar',['device' => "mobile"])
                                 {{-- RECEIPT --}}
                                 @include('partials.admin-order-receipt-report-sidebar',['device' => "mobile"])
                             </div>
@@ -1370,13 +1368,7 @@
                                                                 <div class="ptext-title">Start </div>
                                                                 <div class="ptext-value">{{ dateTimeFormat($order->pickup_date) }}</div>
                                                                 <div class="ptext-title">End </div>
-                                                                <div class="ptext-value">
-                                                                    <?php 
-                                                                        $duration = $order->duration;
-                                                                        $return_date=date('d F Y (H:i)', strtotime( '+'.$duration.'hours', strtotime($order->dropoff_date)));
-                                                                    ?>
-                                                                    {{ dateTimeFormat($return_date) }}
-                                                                </div>
+                                                                <div class="ptext-value">{{ dateTimeFormat($order->dropoff_date) }}</div>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -2432,17 +2424,6 @@
                                                         <button type="submit" form="sendApprovalEmail" class="btn btn-warning"><i class="icon-copy fa fa-exclamation-circle" aria-hidden="true"></i> Send Approval Email</button>
                                                     @endif
                                                 @endif
-                                                @uiEnabled('doku-payment')
-                                                    @if ($invoice && $order->status === "Approved")
-                                                        <form id="generateDokuPayment" class="hidden" action="/generate-doku-payment/{{ $order->id }}" method="post" enctype="multipart/form-data">
-                                                            @csrf
-                                                        </form>
-                                                        <button type="submit" form="generateDokuPayment" class="btn btn-img-doku">
-                                                            <img src="{{ asset('vendors/DOKU/DOKU Payment.png') }}" alt="Logo DOKU">
-                                                            Generate Doku Payment
-                                                        </button>
-                                                    @endif
-                                                @endUiEnabled
                                             @endif
                                         @else 
                                             @if ($order->status !== "Archive" or $order->status !== "Paid")
@@ -2494,6 +2475,13 @@
                                                     <button type="submit" form="generateInvoice" class="btn btn-primary"><i class="icon-copy fa fa-file-pdf-o" aria-hidden="true"></i> Generate Invoice</button>
                                                 @endif
                                                 @if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf") or File::exists("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf"))
+                                                    @if ($order->status == "Approved")
+                                                        <form id="regenerateInvoicePdf-{{ $order->id }}" class="hidden" action="/fregenerate-invoice-pdf-{{ $order->id }}" method="post" enctype="multipart/form-data">
+                                                            @csrf
+                                                            @method('put')
+                                                        </form>
+                                                        <button type="submit" form="regenerateInvoicePdf-{{ $order->id }}" class="btn btn-primary"><i class="icon-copy fa fa-refresh" aria-hidden="true"></i> Regenerate Invoice PDF</button>
+                                                    @endif
                                                     @if ($reservation->send == "")
                                                         <button type="submit" form="sendConfirmation" class="btn btn-primary"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> Send Confirmation</button>
                                                         <div class="loading-icon hidden pre-loader">
@@ -2822,8 +2810,6 @@
                                 @include('partials.admin-order-status-sidebar',['device' => "desktop"])
                                 {{-- ORDER NOTE --}}
                                 @include('partials.admin-order-note-sidebar',['device' => "desktop"])
-                                {{-- DOKU --}}
-                                @include('partials.admin-order-doku-report-sidebar',['device' => "desktop"])
                                 {{-- RECEIPT --}}
                                 @include('partials.admin-order-receipt-report-sidebar',['device' => "desktop"])
                             </div>
@@ -2836,4 +2822,3 @@
         @include('partials.loading-form', ['id' => 'factivate-order-{{ $order->id }}'])
     @endcan
 @endsection
-

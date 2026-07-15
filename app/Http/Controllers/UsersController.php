@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUsersRequest;
 
@@ -38,7 +40,7 @@ class UsersController extends Controller
     {
         $adminusers=User::where('type', '=','admin')->paginate(8);
         $userusers=User::where('type', '=','user')->get();
-        return view('admin.users', compact('adminusers'),[
+        return view('backend.admin.users.index', compact('adminusers'),[
             "userusers" => User::where('type', '=',"user"),
             "adminusers" => User::where('type', '=',"admin"),
             "adminusers" => $adminusers,
@@ -49,7 +51,7 @@ class UsersController extends Controller
     // VIEW PROFILE =============================================================================================================>
     public function userdetail($id){
         $duser = User::find($id);
-        return view('admin.userdetail',[
+        return view('backend.admin.users.show',[
                 'dusers'=>$duser,
             ]);
         } 
@@ -65,18 +67,61 @@ class UsersController extends Controller
     // FUNCTION UPDATE PROFILE =============================================================================================================>
     public function func_update_profile(Request $request,$id)
     {
+        abort_unless((int) $id === (int) Auth::id(), 403);
+
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:50'],
+            'job_title' => ['required', 'string', 'max:120'],
+            'office' => ['required', 'string', 'max:255'],
+            'company_legal_name' => ['nullable', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:500'],
+            'city' => ['required', 'string', 'max:120'],
+            'state_region' => ['nullable', 'string', 'max:120'],
+            'postal_code' => ['nullable', 'string', 'max:40'],
+            'country' => ['required', 'string', 'max:120'],
+            'website' => ['nullable', 'url', 'max:255'],
+            'preferred_language' => ['required', Rule::in(['en', 'zh', 'zh-CN'])],
+            'timezone' => ['nullable', 'timezone'],
+            'company_registration_number' => ['nullable', 'string', 'max:120'],
+            'contact_channels' => ['nullable', 'array', 'max:10'],
+            'contact_channels.*.platform' => ['nullable', Rule::in(User::supportedContactChannelPlatforms())],
+            'contact_channels.*.value' => ['nullable', 'string', 'max:180'],
+        ]);
+
+        $validator->after(function ($validator) use ($request) {
+            foreach ((array) $request->input('contact_channels', []) as $index => $channel) {
+                if (!is_array($channel)) {
+                    continue;
+                }
+
+                $platform = trim((string) ($channel['platform'] ?? ''));
+                $value = trim((string) ($channel['value'] ?? ''));
+
+                if ($platform === '' && $value === '') {
+                    continue;
+                }
+
+                if ($platform === '') {
+                    $validator->errors()->add("contact_channels.$index.platform", __('messages.Select a social or chat platform.'));
+                }
+
+                if ($value === '') {
+                    $validator->errors()->add("contact_channels.$index.value", __('messages.Enter the profile link, username, or phone number.'));
+                }
+            }
+        });
+
+        $validated = $validator->validateWithBag('profileUpdate');
+        $contactChannels = User::sanitizeContactChannels($validated['contact_channels'] ?? []);
+        unset($validated['contact_channels']);
+
         $user=User::findOrFail($id);
         $now = Carbon::now();
-        $user->update([
-            "name" =>$request->name, 
-            "phone"=>$request->phone,
-            "address"=>$request->address,
-            "country"=>$request->country,
-            "office"=>$request->office,
-        ]);
+        $user->update(array_merge($validated, User::syncLegacyContactChannelAttributes($contactChannels)));
         Mail::to(config('app.reservation_mail'))
         ->send(new RegistrationUserMail($id,$now));
-        return redirect("/profile");
+        return redirect("/profile")->with('success', __('messages.Profile has been updated successfully.'));
     }
     // FUNCTION VERIFIED USER =============================================================================================================>
     public function func_verified_user(Request $request,$id)
@@ -93,10 +138,16 @@ class UsersController extends Controller
     // FUNCTION UPDATE PROFILE IMAGE =============================================================================================================>
     public function func_update_profileimg(Request $request,$id)
     {
+        abort_unless((int) $id === (int) Auth::id(), 403);
+
+        $request->validateWithBag('profilePhoto', [
+            'profileimg' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
         $user=User::findOrFail($id);
         if($request->hasFile("profileimg")){
             if (File::exists("storage/user/profile/".$user->profileimg)) {
-                File::delete("images/user/profile/".$user->profileimg);
+                File::delete("storage/user/profile/".$user->profileimg);
             }
             $file=$request->file("profileimg");
             $user->profileimg=time()."_".$file->getClientOriginalName();
@@ -106,7 +157,7 @@ class UsersController extends Controller
         $user->update([
             "profileimg"=>$user->profileimg,
         ]);
-        return redirect("/profile");
+        return redirect("/profile")->with('success', __('messages.Profile picture has been updated successfully.'));
     }
 
     // VIEW USER MANAGER =============================================================================================================>
@@ -120,7 +171,7 @@ class UsersController extends Controller
             ->whereNotNull('session_id')
             ->orderBy('session_id', 'DESC')
             ->paginate(10);
-        return view('admin.user-manager',[
+        return view('backend.admin.users.manager',[
             'attentions'=>$attentions,
             'users'=>$users,
             'uson'=>$uson,
@@ -219,13 +270,15 @@ class UsersController extends Controller
 // FUNCTION UPDATE PASSWORD =============================================================================================================>
     public function updatePassword(Request $request){
         # Validation
-        $request->validate([
+        $request->validateWithBag('profilePassword', [
             'old_password' => 'required',
-            'new_password' => 'required|confirmed',
+            'new_password' => 'required|min:8|confirmed',
         ]);
         #Match The Old Password
         if(!Hash::check($request->old_password, auth()->user()->password)){
-            return redirect("/profile")->with("error", "Old Password Doesn't match!");
+            return redirect("/profile")
+                ->withErrors(['old_password' => "Old Password Doesn't match!"], 'profilePassword')
+                ->withInput();
         }
         #Update the new Password
         User::whereId(auth()->user()->id)->update([

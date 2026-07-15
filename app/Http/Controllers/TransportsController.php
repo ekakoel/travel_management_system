@@ -399,7 +399,7 @@ class TransportsController extends Controller
     public function view_edit_galery_transport($id)
     {
         $transports=Transports::findOrFail($id);
-        return view('form.transportgaleryedit')->with('transports',$transports);
+        return view('backend.operations.transports.forms.gallery-edit')->with('transports',$transports);
     }
 
 // Function Transport delete =============================================================================================================>

@@ -13449,9 +13449,9 @@ function isnan (val) {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css":
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css":
 /*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -13473,9 +13473,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, "\n.action-link[data-v-397d14ca] {\n   
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css":
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css":
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css ***!
   \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -13497,9 +13497,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, "\n.action-link[data-v-1552a5b6] {\n   
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css":
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css":
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css ***!
   \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -42431,48 +42431,9 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ "./resources/frontend/scss/pages/frontend-orders-entry.scss":
-/*!******************************************************************!*\
-  !*** ./resources/frontend/scss/pages/frontend-orders-entry.scss ***!
-  \******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
-/***/ "./resources/frontend/scss/pages/accommodations-index-entry.scss":
-/*!***********************************************************************!*\
-  !*** ./resources/frontend/scss/pages/accommodations-index-entry.scss ***!
-  \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
-/***/ "./resources/frontend/scss/pages/transportations-index-entry.scss":
-/*!************************************************************************!*\
-  !*** ./resources/frontend/scss/pages/transportations-index-entry.scss ***!
-  \************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
-/***/ "./resources/frontend/scss/pages/hotel-availability-entry.scss":
+/***/ "./resources/frontend/scss/landing-page/about/index-entry.scss":
 /*!*********************************************************************!*\
-  !*** ./resources/frontend/scss/pages/hotel-availability-entry.scss ***!
+  !*** ./resources/frontend/scss/landing-page/about/index-entry.scss ***!
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -42483,9 +42444,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/frontend/scss/pages/accommodation-detail-entry.scss":
+/***/ "./resources/frontend/scss/landing-page/contact/index-entry.scss":
 /*!***********************************************************************!*\
-  !*** ./resources/frontend/scss/pages/accommodation-detail-entry.scss ***!
+  !*** ./resources/frontend/scss/landing-page/contact/index-entry.scss ***!
   \***********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -42496,10 +42457,179 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/frontend/scss/pages/transport-detail-entry.scss":
+/***/ "./resources/frontend/scss/home/profile/index-entry.scss":
+/*!***************************************************************!*\
+  !*** ./resources/frontend/scss/home/profile/index-entry.scss ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/home/orders/index-entry.scss":
+/*!**************************************************************!*\
+  !*** ./resources/frontend/scss/home/orders/index-entry.scss ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/home/manual-book/index-entry.scss":
 /*!*******************************************************************!*\
-  !*** ./resources/frontend/scss/pages/transport-detail-entry.scss ***!
+  !*** ./resources/frontend/scss/home/manual-book/index-entry.scss ***!
   \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/pages/auth-entry.scss":
+/*!*******************************************************!*\
+  !*** ./resources/frontend/scss/pages/auth-entry.scss ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/policies/index-entry.scss":
+/*!************************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/policies/index-entry.scss ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/accommodations/index-entry.scss":
+/*!******************************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/accommodations/index-entry.scss ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/activities/index-entry.scss":
+/*!**************************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/activities/index-entry.scss ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/tours/index-entry.scss":
+/*!*********************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/tours/index-entry.scss ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/transports/index-entry.scss":
+/*!**************************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/transports/index-entry.scss ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/home/booking/hotel-availability-entry.scss":
+/*!****************************************************************************!*\
+  !*** ./resources/frontend/scss/home/booking/hotel-availability-entry.scss ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/accommodations/detail-entry.scss":
+/*!*******************************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/accommodations/detail-entry.scss ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/activities/detail-entry.scss":
+/*!***************************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/activities/detail-entry.scss ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/tours/detail-entry.scss":
+/*!**********************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/tours/detail-entry.scss ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/landing-page/transports/detail-entry.scss":
+/*!***************************************************************************!*\
+  !*** ./resources/frontend/scss/landing-page/transports/detail-entry.scss ***!
+  \***************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -42522,9 +42652,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/frontend/scss/pages/order-detail-entry.scss":
+/***/ "./resources/frontend/scss/pages/transport-booking-entry.scss":
+/*!********************************************************************!*\
+  !*** ./resources/frontend/scss/pages/transport-booking-entry.scss ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./resources/frontend/scss/home/orders/detail-entry.scss":
 /*!***************************************************************!*\
-  !*** ./resources/frontend/scss/pages/order-detail-entry.scss ***!
+  !*** ./resources/frontend/scss/home/orders/detail-entry.scss ***!
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -67002,9 +67145,9 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css":
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css":
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css ***!
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css ***!
   \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -67015,7 +67158,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css");
 
             
 
@@ -67024,17 +67167,17 @@ var options = {};
 options.insert = "head";
 options.singleton = false;
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css":
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css":
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css ***!
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css ***!
   \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -67045,7 +67188,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css");
 
             
 
@@ -67054,17 +67197,17 @@ var options = {};
 options.insert = "head";
 options.singleton = false;
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css":
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css ***!
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -67075,7 +67218,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css");
 
             
 
@@ -67084,11 +67227,11 @@ var options = {};
 options.insert = "head";
 options.singleton = false;
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
@@ -72459,7 +72602,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css");
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AuthorizedClients_vue_vue_type_style_index_0_id_397d14ca_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css");
 
 
 /***/ }),
@@ -72472,7 +72615,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css");
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Clients_vue_vue_type_style_index_0_id_1552a5b6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/Clients.vue?vue&type=style&index=0&id=1552a5b6&scoped=true&lang=css");
 
 
 /***/ }),
@@ -72485,7 +72628,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_20_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_20_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-20.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-20.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css");
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_31_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_31_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PersonalAccessTokens_vue_vue_type_style_index_0_id_49962cc0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-31.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-31.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/passport/PersonalAccessTokens.vue?vue&type=style&index=0&id=49962cc0&scoped=true&lang=css");
 
 
 /***/ }),
@@ -91617,13 +91760,24 @@ module.exports = axios;
 /******/ 			"build/frontend/css/pages/frontend-home-entry": 0,
 /******/ 			"build/frontend/css/app": 0,
 /******/ 			"build/frontend/css/pages/order-detail-entry": 0,
+/******/ 			"build/frontend/css/pages/transport-booking-entry": 0,
 /******/ 			"build/frontend/css/pages/hotel-booking-entry": 0,
 /******/ 			"build/frontend/css/pages/transport-detail-entry": 0,
+/******/ 			"build/frontend/css/pages/tour-detail-entry": 0,
+/******/ 			"build/frontend/css/pages/activity-detail-entry": 0,
 /******/ 			"build/frontend/css/pages/accommodation-detail-entry": 0,
 /******/ 			"build/frontend/css/pages/hotel-availability-entry": 0,
 /******/ 			"build/frontend/css/pages/transportations-index-entry": 0,
+/******/ 			"build/frontend/css/pages/tour-packages-index-entry": 0,
+/******/ 			"build/frontend/css/pages/activities-index-entry": 0,
 /******/ 			"build/frontend/css/pages/accommodations-index-entry": 0,
-/******/ 			"build/frontend/css/pages/frontend-orders-entry": 0
+/******/ 			"build/frontend/css/pages/public-policy-entry": 0,
+/******/ 			"build/frontend/css/pages/auth-entry": 0,
+/******/ 			"build/frontend/css/pages/manual-book-entry": 0,
+/******/ 			"build/frontend/css/pages/frontend-orders-entry": 0,
+/******/ 			"build/frontend/css/pages/profile-entry": 0,
+/******/ 			"build/frontend/css/pages/contact-page-entry": 0,
+/******/ 			"build/frontend/css/pages/about-page-entry": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -91678,19 +91832,30 @@ module.exports = axios;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/js/app.js")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/sass/app.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/backend/scss/app.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/app.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/frontend-home-entry.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/frontend-orders-entry.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/accommodations-index-entry.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/transportations-index-entry.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/hotel-availability-entry.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/accommodation-detail-entry.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/transport-detail-entry.scss")))
-/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/hotel-booking-entry.scss")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/frontend-orders-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/order-detail-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/js/app.js")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/sass/app.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/backend/scss/app.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/app.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/frontend-home-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/about/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/contact/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/home/profile/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/home/orders/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/home/manual-book/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/auth-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/policies/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/accommodations/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/activities/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/tours/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/transports/index-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/home/booking/hotel-availability-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/accommodations/detail-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/activities/detail-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/tours/detail-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/landing-page/transports/detail-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/hotel-booking-entry.scss")))
+/******/ 	__webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/pages/transport-booking-entry.scss")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["build/backend/css/app","css/app","build/frontend/css/pages/frontend-home-entry","build/frontend/css/app","build/frontend/css/pages/order-detail-entry","build/frontend/css/pages/transport-booking-entry","build/frontend/css/pages/hotel-booking-entry","build/frontend/css/pages/transport-detail-entry","build/frontend/css/pages/tour-detail-entry","build/frontend/css/pages/activity-detail-entry","build/frontend/css/pages/accommodation-detail-entry","build/frontend/css/pages/hotel-availability-entry","build/frontend/css/pages/transportations-index-entry","build/frontend/css/pages/tour-packages-index-entry","build/frontend/css/pages/activities-index-entry","build/frontend/css/pages/accommodations-index-entry","build/frontend/css/pages/public-policy-entry","build/frontend/css/pages/auth-entry","build/frontend/css/pages/manual-book-entry","build/frontend/css/pages/frontend-orders-entry","build/frontend/css/pages/profile-entry","build/frontend/css/pages/contact-page-entry","build/frontend/css/pages/about-page-entry"], () => (__webpack_require__("./resources/frontend/scss/home/orders/detail-entry.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

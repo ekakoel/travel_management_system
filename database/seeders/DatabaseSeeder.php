@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         $this->call(HotelPackageSeeder::class);
         $this->call(OrdersSeeder::class);
         $this->call(BusinessProfileSeeder::class);
+        $this->call(FooterSeeder::class);
         $this->call(ActivityTypeSeeder::class);
         $this->call(TransportTypeSeeder::class);
         $this->call(TourTypeSeeder::class);
@@ -43,6 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AgentSeeder::class);
         $this->call(AdditionalServiceSeeder::class);
         $this->call(AttentionSeeder::class);
+        $this->call(TermAndConditionSeeder::class);
         $this->call(MarkupSeeder::class);
         $this->call(UsdRatesSeeder::class);
         $this->call(OptionalRateSeeder::class);

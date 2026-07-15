@@ -2,12 +2,62 @@
     $logoColor = config('app.logo_img_color');
     $currentUser = Auth::user();
     $currentPosition = $currentUser?->position;
+    $currentUserAvatar = $currentUser && filled($currentUser->profileimg)
+        ? asset('storage/user/profile/' . $currentUser->profileimg)
+        : asset('storage/user/profile/default_user_img.png');
     $frontendOnlyPositions = ['agent'];
     $coreOpsPositions = ['developer', 'author', 'reservation'];
     $weddingOpsPositions = ['weddingRsv', 'weddingDvl', 'weddingAuthor', 'weddingSls'];
     $canAccessWorkspace = in_array($currentPosition, array_merge($coreOpsPositions, $weddingOpsPositions), true);
     $canAccessReservations = in_array($currentPosition, ['developer', 'reservation', 'weddingRsv'], true);
 @endphp
+
+<style>
+    .navbar-user-trigger {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .navbar-user-trigger__avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+        background: #ffffff;
+    }
+
+    .navbar-user-trigger__name {
+        display: inline-block;
+        max-width: 168px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .navbar-user-summary {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+    }
+
+    .navbar-user-summary__avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 991.98px) {
+        .navbar-user-trigger__name {
+            max-width: none;
+        }
+    }
+</style>
 
 <nav id="mainNavbar" class="navbar navbar-expand-lg p-0 px-4 px-lg-5">
     <a class="navbar-brand fw-bold" href="{{ url('/') }}">
@@ -32,6 +82,7 @@
                     <a class="dropdown-item" href="{{ route('view.accommodation-service') }}"><i class="fas fa-hotel"></i> @lang('messages.Accommodations')</a>
                     <a class="dropdown-item" href="{{ route('view.transport-service') }}"><i class="fas fa-car"></i> @lang('messages.Transports')</a>
                     <a class="dropdown-item" href="{{ route('tour-package-service') }}"><i class="fas fa-suitcase-rolling"></i> @lang('messages.Tour Packages')</a>
+                    <a class="dropdown-item" href="{{ route('view.activity-services') }}"><i class="fas fa-hiking"></i> @lang('messages.Activities')</a>
                 </div>
             </div>
 
@@ -63,17 +114,23 @@
             </div>
             @if (Auth::check())
                 <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <i class="fa fa-user-circle"></i> {{ Auth::user()->name }}
+                    <a class="nav-link dropdown-toggle navbar-user-trigger" href="#" data-bs-toggle="dropdown">
+                        <img src="{{ $currentUserAvatar }}" alt="{{ $currentUser->name }}" class="navbar-user-trigger__avatar">
+                        <span class="navbar-user-trigger__name">{{ Auth::user()->name }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end shadow-sm m-0">
                         <div class="px-3 py-2 border-bottom">
-                            <div class="fw-semibold text-dark">{{ $currentUser->name }}</div>
-                            <div class="small text-muted">{{ ucfirst((string) $currentPosition) }}</div>
+                            <div class="navbar-user-summary">
+                                <img src="{{ $currentUserAvatar }}" alt="{{ $currentUser->name }}" class="navbar-user-summary__avatar">
+                                <div>
+                                    <div class="fw-semibold text-dark">{{ $currentUser->name }}</div>
+                                    <div class="small text-muted">{{ ucfirst((string) $currentPosition) }}</div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="dropdown-header">@lang('messages.Account')</div>
-                        <a class="dropdown-item" href="{{ route('profile') }}"><i class="dw dw-user1 me-2"></i>@lang('messages.Profile')</a>
+                        <a class="dropdown-item" href="{{ route('profile') }}"><i class="fa fa-id-card me-2" aria-hidden="true"></i>@lang('messages.Profile')</a>
                         <a class="dropdown-item" href="{{ route('view.orders') }}"><i class="icon-copy fa fa-tags me-2" aria-hidden="true"></i>@lang('messages.Order')</a>
                         <a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fa fa-history me-2" aria-hidden="true"></i>@lang('messages.Order History')</a>
                         <a class="dropdown-item" href="{{ url('/manual-book') }}"><i class="icon-copy fa fa-book me-2" aria-hidden="true"></i>@lang('messages.Manual Book')</a>

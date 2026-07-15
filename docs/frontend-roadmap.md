@@ -38,6 +38,89 @@ Salin template ini setiap kali ada perubahan frontend baru:
 - Area: halaman / komponen / asset / flow
 - Summary: jelaskan apa yang diubah dalam 1-3 kalimat
 - Impact: jelaskan pengaruhnya terhadap UI, UX, consistency, reusability, atau performance
+```
+
+## 2026-07-15 - Footer Policies FAQ Link
+- Status: done
+- Area: shared frontend footer / database-driven footer links / public FAQ navigation
+- Summary: Link `FAQs` ditambahkan ke group `policies` pada default `FooterSeeder` dan migration upsert baru agar footer Policies menampilkan akses langsung ke halaman FAQ publik tanpa hardcode di Blade.
+- Impact: Footer modern tetap database-driven, cache footer dibersihkan setelah seed/migration, dan halaman FAQ lebih mudah ditemukan dari semua halaman frontend yang memakai footer standar.
+- Files: `database/seeders/FooterSeeder.php`, `database/migrations/2026_07_15_150000_add_faqs_to_footer_policy_links.php`, `tests/Feature/ProjectStructureStandardTest.php`
+
+## 2026-07-15 - Footer Manager Admin Redesign
+- Status: done
+- Area: backend admin / footer manager / footer content workflow
+- Summary: Halaman `Footer Manager` direstruktur menjadi workspace pengelolaan yang lebih jelas dengan overview stats, grouped accordion untuk copy settings, link groups yang mudah discan, dan modal Add/Edit Link yang lebih pendek serta memakai input group select.
+- Impact: Admin dapat mengelola footer copy dan navigation link per bagian tanpa form panjang yang melelahkan, sementara kontrak data `footer_settings` dan `footer_links` tetap sama agar aman untuk data existing.
+- Files: `resources/views/admin/footer-manager/index.blade.php`, `resources/views/admin/footer-manager/partials/link-modal.blade.php`
+
+## 2026-07-15 - Footer Link Checkbox Persistence Fix
+- Status: done
+- Area: backend admin / footer manager / link publishing options
+- Summary: Checkbox `Open in new tab` dan `Active` pada modal create/edit Footer Link distandarkan agar memakai id/label eksplisit, model `FooterLink` diberi boolean casts, dan controller menyimpan nilai checkbox memakai `$request->boolean()`.
+- Impact: Opsi publish dan target tab pada footer link kini tersimpan konsisten untuk create maupun edit, termasuk saat checkbox dimatikan.
+- Files: `app/Models/FooterLink.php`, `app/Http/Controllers/FooterManagerController.php`, `resources/views/admin/footer-manager/partials/link-modal.blade.php`, `tests/Feature/FooterManagerLinkBooleanTest.php`
+
+## 2026-07-15 - Footer Manager Checkbox Visibility Fix
+- Status: done
+- Area: backend admin / footer manager / modal form controls
+- Summary: Style checkbox Footer Manager diberi override scoped dan control modal create/edit diganti menjadi custom toggle agar tidak terkena rule global admin `input[type=checkbox]` yang memposisikan checkbox secara absolute.
+- Impact: Opsi `Open in new tab` dan `Active` pada modal create/edit Footer Link kini terlihat sebagai switch yang jelas, seluruh area toggle bisa diklik, dan input checkbox asli tetap mengirim data form dengan benar.
+- Files: `resources/views/admin/footer-manager/index.blade.php`, `resources/views/admin/footer-manager/partials/link-modal.blade.php`, `docs/frontend-roadmap.md`
+
+## 2026-07-15 - Footer Frontend Multi-Language Coverage
+- Status: done
+- Area: frontend footer / footer content service / database localized defaults
+- Summary: Semua teks footer modern distandarkan agar punya fallback multi-language untuk English, Chinese Traditional, dan Chinese Simplified. Default `FooterSeeder` dan migration localized content mengisi `footer_settings` serta `footer_links` dengan nilai translated, sementara `FooterContentService` tetap memberi localized fallback jika database lama belum lengkap.
+- Impact: Footer frontend tidak lagi jatuh ke English saat locale Chinese aktif dan kolom translation belum terisi, termasuk section title, newsletter copy, aria label, copyright suffix, dan label link seperti Accommodations, Policies, Privacy Policy, serta FAQs.
+- Files: `app/Services/FooterContentService.php`, `resources/views/frontend/layouts/footer-modern.blade.php`, `database/seeders/FooterSeeder.php`, `database/migrations/2026_07_15_161000_localize_footer_default_content.php`, `tests/Feature/FooterContentLocalizationTest.php`
+
+## 2026-07-15 - Manual Book Frontend Home Redesign
+- Status: done
+- Area: authenticated frontend / manual book / project structure cleanup
+- Summary: Halaman `Manual Book` dipindahkan dari legacy `resources/views/main` ke `resources/views/frontend/home/manual-book`, direfactor memakai layout frontend modern, topband standar, filter pencarian, card dokumen, preview modal PDF, dan asset page-level di folder frontend home.
+- Impact: Manual book tidak lagi terasa seperti halaman admin, lebih mudah dipahami user, responsive, searchable, dan ikut standar struktur frontend authenticated dengan guard test agar tidak kembali ke namespace legacy.
+- Files: `app/Http/Controllers/ManualBookController.php`, `resources/views/frontend/home/manual-book/index.blade.php`, `resources/frontend/js/home/manual-book/index.js`, `resources/frontend/scss/home/manual-book/*`, `webpack.mix.js`, `tests/Feature/ProjectStructureStandardTest.php`
+
+## 2026-07-14 - Activity Guest Count Decoupling Cleanup
+- Status: done
+- Area: activity detail / booking modal / frontend asset
+- Summary: Menghapus seluruh sisa copy dan fallback lama yang masih menampilkan aturan `Guest count and guest rows must match.` pada flow order activity. Helper text guest juga diperbarui agar tidak lagi mengikat jumlah row guest dengan field `number_of_guests`.
+- Impact: UX modal order activity menjadi konsisten dengan requirement terbaru, menghilangkan kebingungan saat jumlah guest total dan manifest detail tidak harus identik, serta mencegah bundle frontend lama menampilkan pesan yang sudah tidak berlaku.
+- Files: `resources/views/frontend/activities/detail.blade.php`, `resources/lang/en/messages.php`
+- Follow-up: rebuild asset frontend setiap ada perubahan copy atau validation-state yang dikonsumsi langsung oleh bundle browser.
+
+## 2026-07-14 - Activity Review Guest Table
+- Status: done
+- Area: activity detail / booking modal / review step
+- Summary: Mengubah ringkasan `Guest Details` pada tab `Review and submit` dari blok teks panjang menjadi tabel compact dengan kolom nomor, nama, age category, gender, dan phone number.
+- Impact: Review step menjadi jauh lebih hemat ruang, lebih profesional, dan lebih mudah discan saat guest bertambah banyak tanpa membuat modal terasa penuh.
+- Files: `resources/views/frontend/activities/detail.blade.php`, `resources/frontend/js/pages/activity-detail.js`, `resources/frontend/scss/pages/activity-detail.scss`
+- Follow-up: Pertahankan pola tabel ini jika nanti review step activity ditambah kolom guest lain.
+
+## 2026-07-14 - Mandatory Spinner Standard
+- Status: done
+- Area: frontend standards / submit UX / project rule
+- Summary: Menetapkan aturan mutlak bahwa setiap action yang membutuhkan proses wajib menampilkan spinner atau loading state yang terlihat, termasuk create order, edit order, update profile, change password, upload, dan submit modal wizard.
+- Impact: Standar UX project menjadi lebih konsisten, risiko user melakukan klik ganda berkurang, dan semua flow processing kini punya ekspektasi implementasi yang jelas sebelum dianggap selesai.
+- Files: `docs/frontend-ui-standards.md`, `docs/form-submit-standard.md`
+- Follow-up: Audit seluruh flow create/update existing agar semua sudah mematuhi standar spinner wajib ini.
+
+## 2026-07-14 - Activity Order Submit Spinner
+- Status: done
+- Area: activity detail / order submit / processing UX
+- Summary: Flow submit pada modal order Activity kini diselaraskan penuh ke spinner order transport, baik untuk overlay processing maupun spinner inline di tombol submit.
+- Impact: User mendapat feedback visual yang konsisten antar service saat order diproses, risiko double click berkurang, dan spinner transport kini benar-benar menjadi baseline visual submit project.
+- Files: `resources/views/frontend/activities/detail.blade.php`, `resources/frontend/js/pages/activity-detail.js`, `resources/frontend/scss/pages/activity-detail.scss`
+- Follow-up: Audit flow frontend lain yang belum memakai baseline spinner transport agar seluruh submit penting satu family visual.
+
+## 2026-07-14 - Fullscreen Centered Spinner Rule
+- Status: done
+- Area: frontend standards / processing overlay / UX consistency
+- Summary: Standar spinner submit diperjelas lagi agar overlay wajib menutupi seluruh viewport dan card spinner selalu berada tepat di tengah layar, termasuk saat dipakai di dalam modal atau wizard.
+- Impact: Tidak ada lagi interpretasi spinner lokal yang hanya menutupi sebagian area; feedback processing kini konsisten, tegas, dan mudah dikenali di seluruh project.
+- Files: `docs/frontend-ui-standards.md`, `docs/form-submit-standard.md`
+- Follow-up: Gunakan checklist ini saat audit flow submit lama yang masih memakai loading area parsial.
 - Files:
   - `path/file-1`
   - `path/file-2`
@@ -76,6 +159,694 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
 4. URL final harus shareable, refresh-safe, dan language-switch-safe.
 
 ## Frontend Change Log
+
+## 2026-07-14 - Activity Detail Sidebar CTA and Booking Wizard
+- Status: done
+- Area: public activity detail, sidebar CTA, booking interaction flow
+- Summary: Sidebar detail Activity dirapikan agar CTA tidak lagi menimpa facts list saat sticky. Tombol `Continue to Order` kini membuka modal booking modern berbasis wizard ketika akun user sudah memenuhi syarat, lalu submit order langsung diarahkan ke halaman detail order. Backend juga ditambah jalur order Activity modern yang menghitung harga, promotion snapshot, checkout otomatis dari durasi activity, dan redirect frontend yang konsisten.
+- Impact: Activity detail menjadi jauh lebih rapi secara visual, flow order terasa lebih product-like tanpa pindah ke halaman legacy lebih dulu, dan partner bisa membuat booking request Activity secara end-to-end langsung dari detail page.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Controllers/OrderController.php`
+  - `routes/web.php`
+  - `resources/views/frontend/activities/detail.blade.php`
+  - `resources/frontend/scss/pages/activity-detail.scss`
+  - `resources/frontend/js/pages/activity-detail.js`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `webpack.mix.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: modernisasi halaman detail order Activity agar setelah submit, visual halaman order juga sepenuhnya selevel dengan frontend shell terbaru.
+
+## 2026-07-14 - Booking Profile Gate Simplified to Email Only
+- Status: done
+- Area: profile completeness, booking/order access flow, frontend copy
+- Summary: Rule kelengkapan profile untuk memulai order, reservation, dan booking disederhanakan agar cukup mewajibkan email saja. Guard backend, CTA blocker di frontend service detail, progress messaging di halaman profile, dan warning pada halaman order ikut diselaraskan agar field lain tetap opsional.
+- Impact: Friction onboarding partner menjadi jauh lebih rendah, flow booking lebih cepat diakses, dan UI tidak lagi memberi sinyal salah bahwa phone, office, address, atau country wajib sebelum order bisa dilakukan.
+- Files:
+  - `app/Http/Middleware/CheckProfileCompleteness.php`
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Controllers/ProfileController.php`
+  - `resources/views/main/profile.blade.php`
+  - `resources/views/main/order.blade.php`
+  - `resources/views/main/orderdetail.blade.php`
+  - `resources/views/frontend/orders/detail-order-tour.blade.php`
+  - `resources/views/frontend/orders/detail-order-tour-modern.blade.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: audit order detail/service order page lain yang masih memakai copy legacy agar seluruh wording submit-order benar-benar seragam.
+
+## 2026-07-14 - Activities Frontend Directory Launch
+- Status: done
+- Area: public activities module, services ecosystem, frontend UI/UX
+- Summary: Menambahkan modul frontend `Activities` sebagai kategori service publik baru yang setara dengan Accommodations, Transports, dan Tour Packages. Halaman `/activity-services` dibuat dengan shell visual yang mengikuti halaman hotels/accommodations, lengkap dengan topband, hero preview, summary stats, sticky filters, AJAX filtering, pagination, dan result cards modern.
+- Impact: Struktur services frontend kini lebih lengkap, homepage dan services hub bisa menampilkan Activities sebagai pilar layanan baru, dan baseline UI/UX antar katalog service menjadi semakin konsisten. Implementasi ini juga menyiapkan fondasi yang bersih untuk detail page Activities di langkah berikutnya.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Controllers/HomeController.php`
+  - `routes/web.php`
+  - `resources/views/frontend/activities/index.blade.php`
+  - `resources/frontend/js/pages/activities-index.js`
+  - `resources/frontend/scss/pages/activities-index.scss`
+  - `resources/frontend/scss/pages/activities-index-entry.scss`
+  - `resources/views/frontend/layouts/navbar.blade.php`
+  - `resources/views/layouts/home/navbar.blade.php`
+  - `resources/views/frontend/home/partials/services.blade.php`
+  - `resources/views/home/landing-page/services.blade.php`
+  - `resources/views/home/partials/footer.blade.php`
+  - `resources/lang/en/activities.php`
+  - `resources/lang/zh/activities.php`
+  - `resources/lang/zh-CN/activities.php`
+  - `resources/lang/en/home.php`
+  - `resources/lang/zh/home.php`
+  - `resources/lang/zh-CN/home.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `webpack.mix.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: lanjutkan dengan membuat halaman detail Activities public yang memakai shell frontend modern yang sama, agar flow dari listing ke detail benar-benar setara dengan accommodations.
+
+## 2026-07-14 - Activity Detail Frontend Modernization
+- Status: done
+- Area: public activity detail, frontend UI/UX, activity discovery flow
+- Summary: Menambahkan halaman detail Activity public baru dengan route shareable yang stabil, shell frontend modern, hero overview, section detail terstruktur, gallery, info sidebar, CTA akses order berbasis status akun, dan rekomendasi activity terkait. Flow dari katalog Activities kini tidak lagi berhenti di card list, tetapi langsung masuk ke detail page profesional yang konsisten dengan baseline accommodation detail.
+- Impact: Modul Activities sekarang punya pengalaman discovery yang jauh lebih matang untuk partner B2B, lebih mudah dipindai secara internasional, dan sudah siap menjadi fondasi sebelum merapikan flow order activity lama di tahap berikutnya.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Controllers/HomeController.php`
+  - `routes/web.php`
+  - `resources/views/frontend/activities/index.blade.php`
+  - `resources/views/frontend/activities/detail.blade.php`
+  - `resources/frontend/scss/pages/activities-index.scss`
+  - `resources/frontend/scss/pages/activity-detail.scss`
+  - `resources/frontend/scss/pages/activity-detail-entry.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `webpack.mix.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: refactor legacy protected route `activity-{code}` agar flow order activity, booking code, dan pricing memakai halaman frontend modern yang sama tanpa harus berpindah ke layout legacy.
+
+## 2026-07-14 - Activity Detail Frontend Standards Alignment
+- Status: done
+- Area: public activity detail, frontend consistency, controller data shaping
+- Summary: Halaman detail Activity direfactor ulang agar lebih patuh ke standar frontend project. Data meta, section content, summary facts, dan sidebar facts kini dibentuk di controller lebih dulu, lalu Blade diringankan menjadi struktur section yang konsisten. Styling juga dirapikan agar tidak terasa seperti copy tempel dari page lain walau tetap satu family visual dengan accommodation detail dan baseline `hotelavailability`.
+- Impact: UI detail Activity sekarang lebih rapi, hierarchy informasi lebih jelas, CTA lebih mudah dikenali, dan implementasinya lebih maintainable karena data shaping berat tidak lagi tertinggal di Blade.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `resources/views/frontend/activities/detail.blade.php`
+  - `resources/frontend/scss/pages/activity-detail.scss`
+  - `docs/frontend-roadmap.md`
+- Follow-up: ketika flow order Activity legacy sudah direfactor, reuse struktur controller-driven yang sama agar halaman detail dan order tetap satu sistem desain dan satu pola data shaping.
+
+## 2026-07-13 - International Profile Redesign and Extended Partner Data
+- Status: done
+- Area: user profile, partner account center, profile data completeness
+- Summary: Halaman `/profile` didesain ulang lagi agar terasa seperti account center internasional yang lebih profesional, lengkap, dan siap dipakai oleh partner B2B. Layout sekarang menampilkan verification snapshot, core vs recommended completion, contact channels, business identity, operational location, dan account preferences. Form edit profile juga diperluas untuk mengumpulkan data baru seperti WhatsApp, job title, legal company name, website, city, state/region, postal code, timezone, preferred language, dan company registration number.
+- Impact: Profile tidak lagi hanya berfungsi sebagai biodata singkat, tetapi menjadi sumber data operasional partner yang lebih berguna untuk approval, komunikasi lintas negara, dan koordinasi booking. Rule `profile.complete` juga diselaraskan ke data inti baru agar akses protected flow lebih konsisten dengan kualitas data profile yang dibutuhkan.
+- Files:
+  - `database/migrations/2026_07_13_210000_add_extended_profile_fields_to_users_table.php`
+  - `app/Models/User.php`
+  - `app/Http/Controllers/ProfileController.php`
+  - `app/Http/Controllers/UsersController.php`
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Middleware/CheckProfileCompleteness.php`
+  - `resources/views/main/profile.blade.php`
+  - `resources/frontend/scss/pages/profile.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: bila tim ingin onboarding partner lebih ketat sejak awal, selaraskan juga register form public agar sebagian data profile inti sudah dikumpulkan sebelum user pertama kali login.
+
+## 2026-07-13 - Profile Contact Grouping Refinement
+- Status: done
+- Area: user profile, contact presentation, frontend clarity
+- Summary: Bagian contact pada `/profile` dirapikan agar lebih cerdas dan tidak repetitif. Email, Phone, dan WhatsApp kini ditampilkan sebagai `Primary Contact`, sedangkan WeChat, LINE, Telegram, dan akun chat lain hanya muncul bila terisi dan dikelompokkan sebagai `Additional Chat Channels`.
+- Impact: Card profile terasa lebih rapi, komunikasi utama lebih cepat dipindai, dan channel chat tambahan tetap tersedia tanpa membuat layout terasa penuh.
+- Files:
+  - `resources/views/main/profile.blade.php`
+  - `resources/frontend/scss/pages/profile.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika nantinya dibutuhkan, tambahkan icon per channel agar team reservation dapat mengenali preferensi komunikasi partner lebih cepat.
+
+## 2026-07-13 - Profile Modal UX Hardening
+- Status: done
+- Area: user profile, modal interaction, form feedback
+- Summary: Modal `Edit Profile`, `Change Profile Picture`, dan `Change Password` diselaraskan ke atribut Bootstrap 5, memakai named validation error bag terpisah, otomatis terbuka kembali saat submit gagal, dan menampilkan loading state saat submit berlangsung. Upload foto profile juga kini memiliki preview image langsung di dalam modal.
+- Impact: Flow edit profile dan change password menjadi lebih stabil, error tidak lagi bercampur antar modal, dan user tidak kehilangan konteks saat terjadi validasi gagal.
+- Files:
+  - `app/Http/Controllers/UsersController.php`
+  - `resources/views/main/profile.blade.php`
+  - `resources/frontend/js/pages/profile.js`
+  - `resources/frontend/scss/pages/profile.scss`
+  - `webpack.mix.js`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika nantinya ingin lebih halus lagi, tambahkan toast success per modal agar feedback sukses terasa lebih lokal tanpa harus selalu mengandalkan alert di atas halaman.
+
+## 2026-07-13 - Profile Page Frontend Shell Alignment
+- Status: done
+- Area: user profile, account center, frontend consistency
+- Summary: Halaman `/profile` direfactor agar memakai `frontend.layouts.app` dan shell frontend modern yang sama dengan About Us dan Contact Us. Hero profile sekarang mengikuti pattern `frontend-page-topband`, breadcrumb reusable, intro copy, dan summary cards, sementara body dipecah menjadi section modern untuk identity, readiness, partner details, dan support CTA. Data shaping seperti completion rate, account status, avatar URL, country options, dan hero stats juga dipindahkan dari Blade ke `ProfileController`.
+- Impact: Profile kini terasa satu keluarga visual dengan halaman frontend modern lain, Blade menjadi lebih ringan, dan halaman account user tampil lebih B2B-product-like daripada legacy panel hybrid.
+- Files:
+  - `app/Http/Controllers/ProfileController.php`
+  - `resources/views/main/profile.blade.php`
+  - `resources/frontend/scss/pages/profile.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: bila modal edit profile nantinya ikut dimodernisasi lebih jauh, pertimbangkan migrasi ke inline section atau drawer pattern agar interaksi account center sepenuhnya konsisten dengan frontend shell baru.
+
+## 2026-07-13 - Services Hub Category Preview
+- Status: done
+- Area: public services hub, frontend discovery, service previews
+- Summary: Halaman `/services` kini menampilkan minimal sample hingga 3 layanan aktif dari masing-masing kategori utama: accommodations, transports, dan tour packages. Query dibuat ringan dengan select field minimum, latest updated order, thumbnail lazy-load, dan fallback empty state bila data aktif belum tersedia. Setiap preview card mengarah ke detail layanan terkait, serta setiap section memiliki link ke full catalog.
+- Impact: Services Hub tidak hanya menjadi navigasi kategori, tetapi juga memberi gambaran langsung tentang layanan yang tersedia sehingga user/agent lebih cepat memahami inventory utama.
+- Files:
+  - `app/Http/Controllers/HomeController.php`
+  - `resources/views/home/landing-page/services.blade.php`
+  - `resources/frontend/scss/pages/contact-page.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika ingin benar-benar memaksa minimal 3 item setiap kategori, tambahkan data fallback curated/manual atau tampilkan inactive draft tertentu khusus preview.
+
+## 2026-07-13 - Contact Us Link Flow Completion
+- Status: done
+- Area: Contact Us CTA links, public services hub, route completeness
+- Summary: Semua CTA utama pada Contact Us diaudit agar mengarah ke target yang benar. Tombol `Explore Services` kini diarahkan ke route `/services`, dan route tersebut dilengkapi dengan halaman Services Hub modern yang menghubungkan user ke Accommodations, Transports, dan Tour Packages. Halaman services hub memakai layout frontend modern dan asset page-level yang sudah tersedia agar tidak menambah beban asset baru.
+- Impact: User tidak lagi berpotensi masuk ke route `/services` yang method/view-nya belum tersedia, dan alur Contact Us menjadi lengkap dari inquiry menuju katalog layanan utama.
+- Files:
+  - `app/Http/Controllers/HomeController.php`
+  - `resources/views/home/landing-page/contact.blade.php`
+  - `resources/views/home/landing-page/services.blade.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika nantinya ada service baru seperti Activities/Villas/Wedding yang ingin tampil di Services Hub, tambahkan card dan route aktifnya ke `HomeController::services`.
+
+## 2026-07-13 - Contact Map Embed URL Fix
+- Status: done
+- Area: Contact Us page, company profile map data
+- Summary: Contact Us map iframe diperbaiki agar hanya memakai Google Maps URL bertipe `/maps/embed`. URL Google Maps biasa seperti `/maps/place` kini otomatis fallback ke embed URL default agar tidak memunculkan error `refused to connect`. Kolom `business_profiles.map` juga diubah menjadi `TEXT` karena URL embed Google Maps lebih panjang dari batas `VARCHAR(255)`.
+- Impact: Office location map pada halaman Contact Us tampil normal, dan admin Company Profile dapat menyimpan embed URL Google Maps tanpa terpotong.
+- Files:
+  - `app/Http/Controllers/HomeController.php`
+  - `database/migrations/2026_07_13_174000_change_map_column_type_on_business_profiles_table.php`
+  - `database/seeders/BusinessProfileSeeder.php`
+  - `resources/views/admin/business-profile/edit.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: tambahkan validasi khusus di Company Profile agar field map memberi warning bila URL tidak mengandung `/maps/embed`.
+
+## 2026-07-13 - Contact Us Frontend Modernization
+- Status: done
+- Area: public Contact Us page, frontend UI/UX, database-driven company contact
+- Summary: Halaman Contact Us dipindahkan dari layout legacy ke `frontend.layouts.app` dengan page shell modern, topband, breadcrumb, hero summary, direct contact channel cards, support guidance, office map, dan CTA inquiry. Data perusahaan seperti nama, tipe bisnis, alamat, email, telepon, WhatsApp, website, dan map kini diambil dari `BusinessProfileService`, sementara form statis lama yang tidak memiliki action diganti dengan CTA email/phone/WhatsApp yang benar-benar berfungsi.
+- Impact: Contact Us sekarang konsisten dengan theme frontend project, lebih international-ready untuk agent/customer, tidak menampilkan form palsu, lebih responsive, dan asset CSS dimuat hanya pada halaman contact.
+- Files:
+  - `app/Http/Controllers/HomeController.php`
+  - `resources/views/home/landing-page/contact.blade.php`
+  - `resources/frontend/scss/pages/contact-page.scss`
+  - `resources/frontend/scss/pages/contact-page-entry.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `webpack.mix.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika dibutuhkan form inquiry yang benar-benar tersimpan, buat tabel `contact_inquiries` dan endpoint submit dengan email notification, captcha/throttle, dan admin inbox.
+
+## 2026-07-13 - Footer and Company Profile Data Integrity
+- Status: done
+- Area: database integrity, company profile, footer manager
+- Summary: Constraint data ditambahkan agar `business_profiles`, `footer_settings`, dan `footer_links` tidak menyimpan data duplicate. `business_profiles` sekarang memakai `profile_key` unik untuk record utama `primary`, `footer_settings` dijaga unik berdasarkan `key`, dan `footer_links` dijaga unik berdasarkan kombinasi `group + label`. Migration juga membersihkan duplicate existing sebelum unique index dibuat, dan Footer Manager kini memvalidasi duplicate link per group sebelum data disimpan.
+- Impact: Data company profile dan footer menjadi lebih stabil, seeder aman dijalankan berulang, dan admin tidak dapat membuat link footer duplicate pada group yang sama.
+- Files:
+  - `database/migrations/2026_07_13_173000_enforce_unique_business_profile_and_footer_data.php`
+  - `app/Models/BusinessProfile.php`
+  - `app/Services/BusinessProfileService.php`
+  - `app/Http/Controllers/BusinessProfileController.php`
+  - `app/Http/Controllers/FooterManagerController.php`
+  - `database/seeders/BusinessProfileSeeder.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: bila dibutuhkan aturan lebih ketat, tambahkan unique target untuk `footer_links` berdasarkan `group + route_name` dan `group + url` setelah semua link legacy ditinjau.
+
+## 2026-07-13 - Admin Footer Manager
+- Status: done
+- Area: backend admin settings, database-driven footer, footer content management
+- Summary: Halaman admin `Footer Manager` ditambahkan agar developer/admin dapat mengelola `footer_settings` dan `footer_links` dari dashboard. Settings footer bisa diedit untuk default English, Chinese Traditional, dan Chinese Simplified, sementara link footer bisa ditambah, diedit, dihapus, diurutkan, dinonaktifkan, diarahkan ke route internal atau external URL, dan dibuka di tab baru bila dibutuhkan. Setiap perubahan otomatis membersihkan cache `FooterContentService`.
+- Impact: Footer modern sekarang tidak hanya database-driven, tetapi juga bisa dikelola dari admin panel tanpa menyentuh database atau Blade.
+- Files:
+  - `app/Http/Controllers/FooterManagerController.php`
+  - `routes/web.php`
+  - `resources/views/admin/footer-manager/index.blade.php`
+  - `resources/views/admin/footer-manager/partials/link-modal.blade.php`
+  - `resources/views/layouts/left-navbar.blade.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika role non-developer seperti reservation/author perlu mengelola footer, buat permission khusus `manageFooter` supaya akses tidak bergantung pada role developer.
+
+## 2026-07-13 - Footer Modern Service and Database Refactor
+- Status: done
+- Area: shared frontend footer, database-driven content, view composer
+- Summary: Logic data pada `footer-modern` dipindahkan dari Blade ke `FooterContentService` dan `AppServiceProvider` view composer. Data footer kini disusun dari `business_profiles`, `footer_settings`, dan `footer_links`, lalu di-cache per locale. Blade footer hanya melakukan render `$footerData` tanpa resolver PHP untuk company profile, social links, logo, atau link navigasi.
+- Impact: Footer menjadi lebih maintainable, lebih perform karena data ter-cache, dan seluruh copy/link utama footer bisa disimpan di database. Pendekatan service/composer dipilih dibanding controller agar footer otomatis tersedia di semua halaman yang memakai layout modern tanpa duplikasi pada setiap controller.
+- Files:
+  - `database/migrations/2026_07_13_172000_create_footer_settings_table.php`
+  - `database/migrations/2026_07_13_172100_create_footer_links_table.php`
+  - `app/Models/FooterSetting.php`
+  - `app/Models/FooterLink.php`
+  - `app/Services/FooterContentService.php`
+  - `app/Providers/AppServiceProvider.php`
+  - `app/Http/Controllers/BusinessProfileController.php`
+  - `database/seeders/FooterSeeder.php`
+  - `database/seeders/DatabaseSeeder.php`
+  - `resources/views/frontend/layouts/footer-modern.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: buat halaman admin `Footer Manager` untuk mengelola `footer_settings` dan `footer_links` dari dashboard, sama seperti Company Profile.
+
+## 2026-07-13 - Footer Modern Database Driven Completion
+- Status: done
+- Area: shared frontend footer, business profile data, social channels
+- Summary: `footer-modern` dirapikan agar company identity, contact, logo dark, website, dan social channels berasal dari `business_profiles`. Field `youtube` dan `linkedin` ditambahkan ke database/admin Company Profile sehingga link social footer tidak lagi hardcoded di Blade. Resolver logo footer juga diperbaiki agar memakai URL asset dari database/config dengan fallback aman.
+- Impact: Footer modern kini bisa disesuaikan dari admin Company Profile tanpa edit code, termasuk logo background gelap dan social media links.
+- Files:
+  - `database/migrations/2026_07_13_171000_add_social_channels_to_business_profiles_table.php`
+  - `app/Models/BusinessProfile.php`
+  - `app/Services/BusinessProfileService.php`
+  - `app/Http/Requests/UpdateBusinessProfileRequest.php`
+  - `database/seeders/BusinessProfileSeeder.php`
+  - `resources/views/admin/business-profile/edit.blade.php`
+  - `resources/views/frontend/layouts/footer-modern.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika footer navigation juga harus dikelola non-teknis, buat tabel khusus `footer_links` agar services, quick links, dan policy links bisa diurutkan dari dashboard.
+
+## 2026-07-13 - Company Profile Light and Dark Logo Support
+- Status: done
+- Area: admin company profile, shared brand assets, frontend footer
+- Summary: Data company profile diperluas dengan `logo_dark` agar tim dapat mengelola logo untuk light mode dan dark mode secara terpisah. Admin Company Profile kini memiliki upload dan preview terpisah untuk Light Mode Logo dan Dark Mode Logo. Footer modern memprioritaskan logo dark untuk background gelap dengan fallback aman ke logo utama/config.
+- Impact: Branding lebih konsisten pada area terang dan gelap tanpa perlu mengganti file logo secara manual di codebase.
+- Files:
+  - `database/migrations/2026_07_13_170000_add_dark_logo_to_business_profiles_table.php`
+  - `app/Models/BusinessProfile.php`
+  - `app/Http/Controllers/BusinessProfileController.php`
+  - `app/Http/Requests/UpdateBusinessProfileRequest.php`
+  - `database/seeders/BusinessProfileSeeder.php`
+  - `resources/views/admin/business-profile/edit.blade.php`
+  - `resources/views/frontend/layouts/footer-modern.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika navbar modern juga ingin full database-driven, gunakan `logo` untuk navbar light background dan `logo_dark` untuk navbar di atas hero/dark surface.
+
+## 2026-07-13 - Admin Company Profile Management
+- Status: done
+- Area: backend admin settings, business profile data, shared company identity
+- Summary: Halaman admin `Company Profile` ditambahkan agar tim developer/admin dapat mengelola data perusahaan dari dashboard tanpa akses database langsung. Form mencakup identity, legal/tax data, logo, contact, social links, tagline, dan deskripsi publik multi-language. Update data juga membersihkan cache company profile agar About/footer memakai data terbaru.
+- Impact: Identitas perusahaan yang dipakai oleh frontend, footer, About page, dan fondasi invoice dapat disesuaikan lebih aman dan cepat dari admin panel.
+- Files:
+  - `app/Http/Controllers/BusinessProfileController.php`
+  - `app/Http/Requests/UpdateBusinessProfileRequest.php`
+  - `resources/views/admin/business-profile/edit.blade.php`
+  - `resources/views/layouts/left-navbar.blade.php`
+  - `routes/web.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika role selain developer perlu mengedit profil perusahaan, pindahkan akses route dari `checkPosition:developer` ke permission khusus seperti `manageCompanyProfile`.
+
+## 2026-07-13 - Database Driven Company Profile Foundation
+- Status: done
+- Area: business profile data, About Us page, shared frontend footer
+- Summary: Data perusahaan distandarkan menggunakan tabel `business_profiles` yang sudah ada, diperluas dengan field public profile seperti email, nomor tambahan, WhatsApp, tagline, dan deskripsi publik. About Us dan footer modern mulai membaca data perusahaan dari database melalui service cache reusable dengan fallback aman.
+- Impact: Penyesuaian identitas perusahaan ke depan dapat dilakukan dari data database, mengurangi hardcoded company contact di frontend, dan memberi fondasi yang sama untuk footer, invoice, policy, dan halaman public profile lain.
+- Files:
+  - `database/migrations/2026_07_13_160000_add_public_profile_fields_to_business_profiles_table.php`
+  - `app/Models/BusinessProfile.php`
+  - `app/Services/BusinessProfileService.php`
+  - `app/Providers/AppServiceProvider.php`
+  - `app/Http/Controllers/HomeController.php`
+  - `database/seeders/BusinessProfileSeeder.php`
+  - `resources/views/home/landing-page/about.blade.php`
+  - `resources/views/frontend/layouts/footer-modern.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: buat halaman admin `Company Profile` untuk edit data ini dari dashboard tanpa perlu akses database langsung.
+
+## 2026-07-13 - About Us Frontend Modernization
+- Status: done
+- Area: About Us page, frontend UI/UX, page-level assets
+- Summary: Halaman About Us dipindahkan dari layout legacy ke shell frontend modern dengan topband, breadcrumb standar, summary metrics, story section, service pillars, platform overview, agent benefits, why-partner grid, dan CTA partner. Styling khusus halaman dipindahkan ke bundle SCSS page-level yang dikompilasi melalui Laravel Mix.
+- Impact: About Us sekarang konsisten dengan standard frontend project, bebas inline style/script, lebih mudah dipindai oleh agent/partner, dan asset lebih optimal karena dimuat hanya pada halaman terkait.
+- Files:
+  - `resources/views/home/landing-page/about.blade.php`
+  - `resources/frontend/scss/pages/about-page.scss`
+  - `resources/frontend/scss/pages/about-page-entry.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `webpack.mix.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: lakukan alignment serupa pada halaman Contact Us agar halaman public profile perusahaan memakai design system yang sama.
+
+## 2026-07-13 - Transport Order Detail Multilingual Alignment
+- Status: done
+- Area: frontend order detail, transport customer view, localization
+- Summary: Halaman detail order transport modern diaudit agar label, status, tipe transport, age group, gender, satuan guest, dan istilah payment memakai `messages.php` dengan fallback aman untuk data dinamis. Translation key English, Chinese Traditional, dan Chinese Simplified ditambahkan untuk teks yang sebelumnya masih hardcoded.
+- Impact: Detail order transport sekarang mengikuti standard multi language project dan lebih konsisten dengan halaman order frontend lain saat user mengganti bahasa.
+- Files:
+  - `resources/views/frontend/orders/detail-order-transport-modern.blade.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: lanjutkan audit multilingual untuk modal order transport detail agar flow create dan detail sama-sama full localized.
+
+## 2026-07-13 - Transport Guest Gender Persistence
+- Status: done
+- Area: transport reservation modal, guest manifest persistence, order detail display
+- Summary: Guest detail pada modal order transport kini memiliki input `Gender` wajib untuk setiap guest, termasuk row yang ditambahkan secara dinamis melalui tombol Add Guest. Backend memvalidasi dan menyimpan nilai tersebut ke `guests.sex`, lalu detail order transport menampilkan gender dari data guest yang tersimpan.
+- Impact: Manifest guest transport menjadi lebih lengkap dan konsisten dengan kebutuhan operasional, tanpa menambah tabel baru karena kolom `sex` sudah tersedia pada tabel `guests`.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/home/transports/detail.blade.php`
+  - `resources/frontend/js/pages/transport-detail.js`
+  - `resources/frontend/scss/pages/transport-detail.scss`
+  - `resources/views/frontend/orders/detail-order-transport-modern.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: tambahkan translasi label `Gender`, `Male`, dan `Female` bila seluruh modal transport berikutnya distandarkan full multilingual.
+
+## 2026-07-13 - Transport Order Detail Modernization
+- Status: done
+- Area: frontend order detail, transport booking flow, payment/invoice consistency
+- Summary: Halaman `detail-order-transport` dipindahkan dari view legacy lama ke shell frontend modern yang satu keluarga dengan detail order hotel dan tour. Struktur informasi kini difokuskan ke kebutuhan agent/customer melalui hero summary, booking details, trip/logistics, guest details, service overview, payment summary, receipt preview, invoice action, dan sticky action sidebar.
+- Impact: Detail order transport sekarang konsisten dengan standar frontend project, lebih mudah dipindai, lebih aman untuk flow invoice/payment approved, dan mengurangi ketergantungan pada markup legacy yang bercampur dengan pola panel lama.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/order/user-detail-order.blade.php`
+  - `resources/views/frontend/orders/detail-order-transport-modern.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: lakukan browser QA pada desktop dan mobile untuk memastikan sticky actions, payment confirmation modal, dan invoice preview tetap konsisten dengan halaman detail order domain lain.
+
+## 2026-07-13 - Daily Rent Pickup and Drop-off Persistence Fix
+- Status: done
+- Area: transport reservation submit flow, daily rent order persistence
+- Summary: Logika submit order transport diperbaiki agar `pickup_location` dan `dropoff_location` untuk tipe `Daily Rent` selalu diambil dari input user dan disimpan ke kolom `orders.pickup_location` serta `orders.dropoff_location`. Cabang `Arrival/Departure` kini hanya aktif untuk order bertipe `Airport Shuttle`, sehingga nilai Daily Rent tidak lagi tertimpa route default dari transport price.
+- Impact: Data operasional Daily Rent kini tersimpan akurat di tabel `orders`, ringkasan detail order menjadi sesuai dengan input agent, dan flow backend tidak lagi salah menganggap order Daily Rent sebagai airport shuttle hanya karena field `airport_shuttle_type` ikut terkirim dari modal.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/home/transports/detail.blade.php`
+  - `resources/frontend/js/pages/transport-detail.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: samakan hardening submit dan idempotency flow transport create/update agar sepenuhnya mengikuti standard `docs/form-submit-standard.md`.
+
+## 2026-07-13 - Transport Reservation Agent Assignment for Internal Users
+- Status: done
+- Area: transport reservation modal, internal order creation flow, frontend/backed alignment
+- Summary: Flow order transport dari halaman detail kini menampilkan input `Select Agent` hanya untuk user internal non-agent seperti developer, reservation, dan author. Data agent yang dipilih dikirim ke backend dan divalidasi sebagai field wajib untuk flow internal, sehingga operator/admin dapat membuat order transport atas nama user agent seperti pola order hotel.
+- Impact: Flow reservasi transport menjadi konsisten dengan standard project untuk internal booking assistance, mengurangi risiko order salah menempel ke akun internal sendiri, dan menjaga perilaku agent-facing tetap bersih karena field ini tidak muncul untuk user agent biasa.
+- Files:
+  - `app/Http/Controllers/HomeController.php`
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/home/transports/detail.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: samakan juga assignment pattern ini ke flow transport create/edit legacy bila halaman lama masih dipakai internal pada skenario operasional tertentu.
+
+## 2026-07-13 - Internal Transport Redirect and Admin Date Parsing Fix
+- Status: done
+- Area: transport reservation redirect flow, admin order detail stability
+- Summary: Order transport yang dibuat oleh user internal dari halaman detail kini langsung diarahkan ke `orders-admin-{id}` agar proses validasi bisa dilanjutkan tanpa pindah manual ke halaman admin. Error parsing tanggal pada halaman admin detail order juga diperbaiki dengan menghapus formatting ganda pada nilai end time transport yang sebelumnya menghasilkan string presentasi lalu diparse ulang oleh helper tanggal.
+- Impact: Flow internal menjadi lebih efisien untuk operator/reservation, dan halaman `orders-admin-{id}` tidak lagi gagal dibuka pada order transport dengan nilai waktu seperti `11 July 2026 (13:00)`.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/admin/ordersadmindetail.blade.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: audit field tanggal/jam lain di halaman admin detail agar tidak ada lagi nilai yang diformat dua kali sebelum dikirim ke helper date frontend/admin.
+
+## 2026-07-09 - Tour Order Edit Flow Modernization
+- Status: done
+- Area: frontend order edit, tour package booking flow, submit integrity
+- Summary: Halaman `edit-order-tour` dipindahkan dari partial legacy `card-box` ke shell frontend modern yang satu keluarga dengan order detail. Form update kini memakai struktur section yang lebih jelas, summary harga live, submit overlay standar, token submit sekali pakai, history-restore guard, dan redirect final ke halaman detail order setelah update berhasil.
+- Impact: Flow edit order tour sekarang konsisten dengan standar UI/UX frontend project, aman terhadap duplicate submit/back-button, dan tetap dapat dipakai untuk order yang masih operasional seperti `Pending`, `Draft`, `Invalid`, atau `Rejected` tanpa kembali ke tampilan backend lama.
+- Files:
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/views/frontend/orders/edit-order-tour.blade.php`
+  - `resources/frontend/js/pages/order-edit.js`
+  - `resources/frontend/scss/pages/order-detail.scss`
+  - `resources/views/layouts/order-tour.blade.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+  - `webpack.mix.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: lanjutkan penyelarasan halaman edit order hotel, transport, dan villa agar semua flow edit order memakai shell modern dan submit standard yang sama.
+
+## 2026-07-09 - Shared Form Submit Integrity Standard
+- Status: done
+- Area: frontend form flow, shared submit protection, implementation standard
+- Summary: Menetapkan standar reusable untuk submit form penting melalui partial token submit, shared frontend history-restore guard, dan helper backend untuk idempotency berbasis session scope. Flow order tour package dipindahkan memakai fondasi shared ini agar pola anti-duplikasi tidak lagi menempel hanya pada satu halaman.
+- Impact: Pengembangan form baru sekarang punya kontrak implementasi yang konsisten untuk spinner, redirect canonical, proteksi back-button, dan duplicate submit handling; risiko copy-paste logic liar antar domain juga berkurang.
+- Files:
+  - `app/Http/Controllers/Concerns/InteractsWithFormSubmissions.php`
+  - `resources/views/partials/form-submission-token.blade.php`
+  - `resources/frontend/js/components/form-submission-guard.js`
+  - `resources/frontend/js/pages/tour-detail.js`
+  - `resources/views/frontend/tours/detail-modern.blade.php`
+  - `app/Http/Controllers/OrderController.php`
+  - `docs/form-submit-standard.md`
+  - `docs/frontend-ui-standards.md`
+  - `docs/frontend-roadmap.md`
+- Follow-up: migrasikan flow order hotel, transport, villa, dan form create penting lain ke helper/utility submit standard yang sama.
+
+## 2026-07-09 - Tour Detail Reservation Modal UX Refinement
+- Status: done
+- Area: tour detail reservation modal, guest leader interaction, order input clarity
+- Summary: Modal reservation pada halaman detail tour diperhalus agar lebih sesuai standar frontend project, dengan note yang lebih jelas untuk pickup/drop-off, layout tab guests yang lebih readable, tombol `Add guest` di sisi kanan, selector checkbox pada daftar guest untuk menentukan atau melepas guest leader secara langsung, link Terms pada tab review yang terbuka di tab baru, serta submit overlay/spinner agar proses order terasa jelas saat data dikirim.
+- Impact: Flow reservation tour menjadi lebih mudah dipahami agent, pemilihan guest leader lebih fleksibel tanpa mengubah validasi submit, data lead contact tetap tersinkron ke field order yang dipakai backend untuk menyimpan `pickup_name`, `pickup_phone`, `pickup_location`, dan `dropoff_location` pada tabel `orders`, dan create order tour sekarang langsung mengarah ke halaman detail order setelah berhasil disimpan.
+- Files:
+  - `resources/views/frontend/tours/detail-modern.blade.php`
+  - `resources/frontend/js/pages/tour-detail.js`
+  - `resources/frontend/scss/pages/tour-detail.scss`
+  - `resources/lang/en/tour-detail.php`
+  - `resources/lang/zh/tour-detail.php`
+  - `resources/lang/zh-CN/tour-detail.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: lakukan browser pass pada create order tour untuk memastikan state checkbox leader, validasi guest leader tanpa phone, dan summary review tetap sinkron di desktop maupun mobile.
+
+## 2026-07-07 - Tour Package Detail Redesign
+- Status: done
+- Area: frontend tour package detail / reservation CTA / map and gallery interaction
+- Summary: Halaman detail Tour Package dipindahkan ke shell frontend modern dengan topband, breadcrumb standar, hero overview, content section terstruktur, sticky reservation sidebar, rate cards, Bootstrap 5 gallery modal, Leaflet route map, dan preview harga berdasarkan jumlah pax.
+- Impact: UI/UX detail tour package konsisten dengan accommodation/detail frontend, menghapus rasa panel admin pada halaman user-facing, memisahkan CSS/JS page-level, dan mempertahankan alur create order tour package yang sudah berjalan.
+- Files:
+  - `app/Http/Controllers/ToursController.php`
+  - `resources/views/frontend/tours/detail-modern.blade.php`
+  - `resources/frontend/scss/pages/tour-detail.scss`
+  - `resources/frontend/scss/pages/tour-detail-entry.scss`
+  - `resources/frontend/js/pages/tour-detail.js`
+  - `resources/lang/en/tour-detail.php`
+  - `resources/lang/zh/tour-detail.php`
+  - `resources/lang/zh-CN/tour-detail.php`
+  - `webpack.mix.js`
+- Follow-up: remove the legacy `resources/views/frontend/tours/detail.blade.php` after patch tooling permits deleting the file cleanly.
+
+## 2026-07-07 - Tour Package Map Display
+- Status: done
+- Area: frontend tour detail / admin tour form / relational location data
+- Summary: Added structured tour package map locations, admin create/edit repeater, and a Leaflet/OpenStreetMap route overview on the tour detail page.
+- Impact: Improves tour detail readability with planned stop markers, keeps Google Maps links as optional external references, and loads map assets only when valid coordinates exist.
+- Files:
+  - `resources/views/frontend/tours/detail.blade.php`
+  - `resources/views/backend/tours/partials/tour-location-repeater.blade.php`
+  - `app/Http/Controllers/ToursController.php`
+  - `app/Http/Controllers/ToursAdminController.php`
+  - `app/Models/TourPackageLocation.php`
+  - `database/migrations/2026_07_07_000001_create_tour_package_locations_table.php`
+  - `docs/tour-package-map.md`
+- Follow-up: migrate inline Leaflet styles/scripts into a dedicated detail bundle when the legacy tour detail layout is refactored.
+
+## 2026-07-07 - Tour Packages Frontend Directory Redesign
+- Status: done
+- Area: tour packages frontend directory, AJAX filtering, shared frontend theme
+- Summary: Halaman `/tour-package-services` dipindahkan ke directory frontend modern dengan topband, breadcrumb standar, summary metrics, hero feature card, sticky filter panel, responsive tour package cards, pagination, dan filter GET/AJAX tanpa reload penuh. Data tour memakai field aktif yang tersedia secara adaptif agar aman untuk schema lama maupun baru.
+- Impact: UI/UX Tour Packages konsisten dengan accommodation dan transportation frontend, lebih profesional untuk agent, URL tetap shareable, dan link Home/Footer mengarah ke halaman frontend modern yang sama.
+- Files:
+  - `app/Http/Controllers/FrontEndController.php`
+  - `resources/views/frontend/tours/directory.blade.php`
+  - `resources/frontend/scss/pages/tour-packages-directory.scss`
+  - `resources/frontend/scss/pages/tour-packages-index-entry.scss`
+  - `resources/frontend/js/pages/tour-packages-index.js`
+  - `resources/views/frontend/home/partials/services.blade.php`
+  - `resources/views/frontend/layouts/footer-modern.blade.php`
+  - `resources/lang/en/tour-packages.php`
+  - `resources/lang/zh/tour-packages.php`
+  - `resources/lang/zh-CN/tour-packages.php`
+  - `webpack.mix.js`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Refactor halaman detail tour package agar mengikuti shell modern yang sama dan menyederhanakan flow order/reservation tour.
+
+## 2026-07-07 - Reusable Frontend Assets for Public Policy Footer
+- Status: done
+- Area: public policy footer, frontend shared assets
+- Summary: Asset head frontend umum diekstrak ke partial `frontend.layouts.frontend-head-assets` dan dipakai bersama oleh layout frontend utama serta halaman policy. Halaman policy kini memuat Bootstrap grid, FontAwesome, template CSS, dan frontend app CSS dari sumber yang sama dengan Home sebelum merender `footer-modern`.
+- Impact: Footer Terms, Privacy Policy, dan FAQ tampil konsisten dengan Home karena markup, theme CSS, grid system, icon font, dan interaction script memakai sumber reusable yang sama.
+- Files:
+  - `resources/views/frontend/layouts/frontend-head-assets.blade.php`
+  - `resources/views/frontend/layouts/app.blade.php`
+  - `resources/views/privacy-policy/partials/public-policy-page.blade.php`
+  - `resources/frontend/scss/pages/public-policy.scss`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-07 - Public Policy Shared Footer Alignment
+- Status: done
+- Area: public policy footer, shared frontend layout
+- Summary: Footer custom pada halaman Terms, Privacy Policy, dan FAQ diganti dengan reusable `frontend.layouts.footer-modern` yang sudah dipakai halaman frontend utama. Script frontend app juga dimuat agar fitur footer seperti newsletter subscribe tetap aktif.
+- Impact: Footer policy konsisten dengan halaman frontend lain, mengurangi duplikasi markup/CSS, dan menghindari drift visual pada halaman public legal.
+- Files:
+  - `resources/views/privacy-policy/partials/public-policy-page.blade.php`
+  - `resources/frontend/scss/pages/public-policy.scss`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-07 - Public Policy Brand Logo Alignment
+- Status: done
+- Area: public policy header, brand consistency
+- Summary: Logo pada halaman Terms, Privacy Policy, dan FAQ diganti dari icon hardcoded menjadi logo standar project melalui `config('app.logo_img_color')`, sama seperti navbar frontend utama.
+- Impact: Identitas brand pada halaman policy konsisten dengan halaman frontend lain, dan ukuran logo tidak dipaksa square sehingga wordmark tampil proporsional.
+- Files:
+  - `resources/views/privacy-policy/partials/public-policy-page.blade.php`
+  - `resources/frontend/scss/pages/public-policy.scss`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-07 - Database Seeded FAQ Content
+- Status: done
+- Area: public FAQ, home FAQ, backend-managed content
+- Summary: Default FAQ sekarang disimpan sebagai data database pada table `term_and_conditions` dengan type `FAQ` dan status `Active`. Seeder dibuat idempotent agar aman dijalankan ulang, dan `DatabaseSeeder` memanggil FAQ seed saat project diinisialisasi.
+- Impact: Konten FAQ bisa dikelola dari backend policy manager tanpa edit Blade, sementara Home dan halaman `/faq` tetap memakai sumber data database yang sama.
+- Files:
+  - `database/seeders/TermAndConditionSeeder.php`
+  - `database/seeders/DatabaseSeeder.php`
+  - `docs/frontend-roadmap.md`
+- Follow-up: jika dibutuhkan urutan manual FAQ, tambahkan field `sort_order` pada table policy/content.
+
+## 2026-07-07 - Shared FAQ Source for Home and FAQ Page
+- Status: done
+- Area: home FAQ, public FAQ, backend-managed content
+- Summary: FAQ section di homepage sekarang memakai `PublicFaqService`, sumber data yang sama dengan halaman `/faq`. Data diprioritaskan dari `TermAndCondition` type `FAQ` berstatus `Active`, dengan fallback translation jika belum ada FAQ aktif.
+- Impact: Konten FAQ di Home dan halaman FAQ publik konsisten, dan perubahan FAQ dari backend otomatis tampil di seluruh frontend tanpa edit Blade.
+- Files:
+  - `app/Services/PublicFaqService.php`
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Controllers/HomeController.php`
+  - `app/Http/Controllers/TermAndConditionController.php`
+  - `resources/views/frontend/home/partials/faqs-home.blade.php`
+  - `resources/frontend/scss/pages/frontend-home.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+- Follow-up: none
+
+## 2026-07-07 - Frontend Breadcrumb CSS Self-Contained Reset
+- Status: done
+- Area: frontend breadcrumb consistency
+- Summary: Breadcrumb frontend dibuat tidak lagi bergantung pada reset Bootstrap dengan menambahkan `list-style: none`, item alignment, dan separator pseudo-element langsung pada `.frontend-breadcrumb`.
+- Impact: Halaman public policy seperti Terms, Privacy, dan FAQ menampilkan breadcrumb sama seperti accommodation tanpa marker angka/list walaupun halaman tidak memuat Bootstrap CSS.
+- Files:
+  - `resources/frontend/scss/components/frontend-layout.scss`
+  - `docs/frontend-roadmap.md`
+- Follow-up: none
+
+## 2026-07-07 - Public Policy Breadcrumb Standard Alignment
+- Status: done
+- Area: public frontend legal pages, breadcrumb consistency
+- Summary: Breadcrumb Terms and Conditions, Privacy Policy, dan FAQ diposisikan ulang sebagai elemen top-level di dalam topband agar mengikuti pola breadcrumb standar frontend project.
+- Impact: Breadcrumb legal pages kini konsisten dengan halaman frontend lain yang memiliki hero/topband, tanpa membuat style breadcrumb baru.
+- Files:
+  - `resources/views/privacy-policy/partials/public-policy-page.blade.php`
+  - `resources/frontend/scss/pages/public-policy.scss`
+- Follow-up: none
+
+## 2026-07-07 - Terms and Conditions Theme Alignment Polish
+- Status: done
+- Area: public frontend legal pages
+- Summary: Halaman Terms and Conditions dipoles agar lebih mengikuti standar frontend project melalui container eksplisit, hero gradient/pattern, meta summary, policy highlight bernomor, heading direktori aktif, dan accent bar pada policy card.
+- Impact: Halaman Terms terasa lebih konsisten dengan page shell frontend modern project, lebih mudah dipindai, dan tetap mengambil konten dari backend-managed policy records.
+- Files:
+  - `resources/views/privacy-policy/partials/public-policy-page.blade.php`
+  - `resources/frontend/scss/pages/public-policy.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+- Follow-up: none
+
+## 2026-07-07 - Public Policy Pages Redesign and Backend-Managed FAQ
+- Status: done
+- Area: public frontend legal pages, backend policy management
+- Summary: Terms and Conditions, Privacy Policy, dan FAQ memakai satu reusable public policy shell yang mengikuti theme frontend. Konten publik diambil dari `TermAndCondition` berstatus `Active`, dan backend policy manager dibuat generic agar tipe User, System, Administrator, Currency, Price, Promotion, dan FAQ dapat dikelola dari satu halaman.
+- Impact: Halaman legal/FAQ lebih profesional, konsisten, responsive, dan lebih mudah dikelola tanpa edit Blade untuk perubahan konten. FAQ dapat dikelola dari backend melalui type `FAQ`, dengan fallback translation jika belum ada data FAQ aktif.
+- Files:
+  - `app/Http/Controllers/TermAndConditionController.php`
+  - `resources/views/privacy-policy/partials/public-policy-page.blade.php`
+  - `resources/views/privacy-policy/partials/policy-manager.blade.php`
+  - `resources/views/privacy-policy/partials/policy-modal.blade.php`
+  - `resources/views/privacy-policy/terms-and-conditions.blade.php`
+  - `resources/views/privacy-policy/privacy-policy.blade.php`
+  - `resources/views/privacy-policy/faq.blade.php`
+  - `resources/frontend/scss/pages/public-policy.scss`
+  - `resources/frontend/scss/pages/public-policy-entry.scss`
+  - `webpack.mix.js`
+- Follow-up: setelah sandbox mengizinkan delete penuh pada file legacy, hapus markup lama yang saat ini sudah dibypass oleh include + return.
+
+## 2026-07-07 - Public Legal and FAQ Access for Guest Users
+- Status: done
+- Area: public frontend legal pages, FAQ, guest access
+- Summary: Halaman Terms and Conditions, Privacy Policy, FAQ, dan alias Help dibuat/dirapikan agar dapat diakses tanpa login. Public policy hanya menampilkan data policy yang berstatus `Active`, sementara halaman pengelolaan policy tetap berada di balik middleware auth/role.
+- Impact: Calon user/agent dapat membaca kebijakan pengguna dan FAQ sebelum login/register, tanpa membuka akses admin operasional atau fitur internal.
+- Files:
+  - `routes/web.php`
+  - `app/Http/Controllers/TermAndConditionController.php`
+  - `resources/views/privacy-policy/terms-and-conditions.blade.php`
+  - `resources/views/privacy-policy/privacy-policy.blade.php`
+  - `resources/views/privacy-policy/faq.blade.php`
+  - `resources/views/auth/register.blade.php`
+- Follow-up: jika dibutuhkan, buat public policy hub khusus untuk mengelompokkan User, System, Price, Currency, dan Promotion policy dalam satu halaman terstruktur.
+
+## 2026-07-07 - Auth Pages Redesign and Security Flow Hardening
+- Status: done
+- Area: auth frontend UI/UX, login/register/forgot password flow, backend security
+- Summary: Halaman login, register, forgot password, dan reset password dipindahkan ke auth shell modern yang mengikuti token frontend project, menghapus inline jQuery lama, menambahkan reusable auth JS/CSS, dan memperkuat reset password custom dengan throttle serta minimal password 8 karakter.
+- Impact: Pengalaman agent dan operational user saat masuk sistem lebih profesional, mobile-friendly, konsisten multi-language, dan lebih aman tanpa mengganggu route/form auth yang sudah berjalan.
+- Files:
+  - `resources/views/layouts/master-login.blade.php`
+  - `resources/views/auth/login.blade.php`
+  - `resources/views/auth/register.blade.php`
+  - `resources/views/auth/passwords/email.blade.php`
+  - `resources/views/auth/passwords/reset.blade.php`
+  - `resources/views/auth/forgetPasswordLink.blade.php`
+  - `resources/frontend/scss/pages/auth.scss`
+  - `resources/frontend/scss/pages/auth-entry.scss`
+  - `resources/frontend/js/pages/auth.js`
+  - `app/Http/Controllers/Auth/ForgotPasswordController.php`
+  - `routes/web.php`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+- Follow-up: audit pemisahan guard/role lebih lanjut jika agent frontend dan operational backend perlu login endpoint atau guard yang benar-benar terpisah.
 
 ## 2026-07-06 - Hotel Booking Quote Request for More Than 8 Rooms
 - Status: done
@@ -1017,6 +1788,43 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
 
 ## Current Frontend Backlog
 
+## 2026-07-13 - Profile Page Frontend Redesign
+- Status: done
+- Area: user profile, account readiness, frontend consistency
+- Summary: Mendesain ulang halaman `/profile` menjadi account center modern dengan hero section, status approval, progress kelengkapan profile, informasi partner/contact yang lebih readable, newsletter status, dan modal edit/profile image/password yang lebih rapi.
+- Impact: User/agent lebih mudah memahami kelengkapan akun sebelum melakukan order, UI lebih konsisten dengan standard frontend baru, dan Blade lama yang penuh inline markup/daftar negara panjang sudah disederhanakan.
+- Files:
+  - `app/Http/Controllers/ProfileController.php`
+  - `app/Http/Controllers/UsersController.php`
+  - `resources/views/main/profile.blade.php`
+  - `resources/frontend/scss/pages/profile.scss`
+  - `resources/frontend/scss/pages/profile-entry.scss`
+  - `webpack.mix.js`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+- Follow-up: Jika dibutuhkan, daftar negara dapat dipindahkan menjadi shared config/helper agar bisa digunakan konsisten di registration, admin user manager, dan profile.
+
+## 2026-07-13 - Profile Dynamic Social Channels
+- Status: done
+- Area: user profile, contact channels, form UX
+- Summary: Mengubah media chat profile dari field statis menjadi daftar channel dinamis yang bisa dikosongkan seluruhnya, ditambah melalui tombol `Add Social Media`, dan otomatis menampilkan icon sesuai platform yang dipilih.
+- Impact: Partner bisa menyimpan beberapa kanal komunikasi secara fleksibel tanpa memaksa WhatsApp wajib diisi, sementara tampilan profile tetap rapi karena channel hanya muncul jika benar-benar tersedia.
+- Files:
+  - `app/Models/User.php`
+  - `app/Http/Controllers/ProfileController.php`
+  - `app/Http/Controllers/UsersController.php`
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Middleware/CheckProfileCompleteness.php`
+  - `database/migrations/2026_07_13_230000_add_contact_channels_to_users_table.php`
+  - `resources/views/main/profile.blade.php`
+  - `resources/frontend/js/pages/profile.js`
+  - `resources/frontend/scss/pages/profile.scss`
+  - `resources/lang/en/messages.php`
+  - `resources/lang/zh/messages.php`
+  - `resources/lang/zh-CN/messages.php`
+- Follow-up: Jika nanti admin juga perlu melihat atau mengedit channel dinamis yang sama, struktur `contact_channels` sudah siap dipakai ulang di dashboard internal.
+
 ## F1 - Align Other Frontend Service Pages to Hotel Availability Shell
 - Status: planned
 - Area: services, transport detail, villa pages, tour package pages
@@ -1068,3 +1876,44 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
   - `docs/frontend-ui-standards.md`
   - `README.md`
 - Follow-up: Jika perlu, tambahkan template PR atau release checklist.
+
+## F6 - Activity Guest Manifest Alignment
+- Status: completed
+- Area: activity detail booking flow
+- Summary: Wizard booking activity kini memakai guest rows terstruktur yang mengikuti pola order service lain, bukan lagi textarea guest manifest bebas.
+- Impact: Input tamu lebih konsisten, validasi jumlah tamu lebih jelas, dan data tamu activity sekarang tersimpan ke tabel `guests`.
+- Files:
+  - `resources/views/frontend/activities/detail.blade.php`
+  - `resources/frontend/js/pages/activity-detail.js`
+  - `resources/frontend/scss/pages/activity-detail.scss`
+  - `app/Http/Controllers/FrontEndController.php`
+  - `app/Http/Controllers/OrderController.php`
+  - `resources/lang/...`
+- Follow-up: Review detail order activity agar guest manifest bisa membaca relasi `guests` secara native jika nanti dibutuhkan layout khusus.
+
+## F7 - Activity Modal Visual Alignment With Transport
+- Status: completed
+- Area: activity detail booking modal
+- Summary: Modal create order activity direfactor agar mengikuti bahasa visual, struktur wizard, dan guest repeater flow yang sama dengan modal order transport.
+- Impact: UX antar modul frontend terasa lebih konsisten, lebih profesional, dan lebih mudah dipahami user saat berpindah dari transport ke activity booking.
+- Files:
+  - `resources/views/frontend/activities/detail.blade.php`
+  - `resources/frontend/js/pages/activity-detail.js`
+  - `resources/frontend/scss/pages/activity-detail.scss`
+- Follow-up: Jika diperlukan, ekstrak pola modal booking frontend ini menjadi komponen shared agar hotel, transport, activity, dan service lain bisa memakai fondasi yang sama.
+
+## F8 - Shared Frontend Order Modal Standard
+- Status: completed
+- Area: activity, tour, and transport detail order modals
+- Summary: Menetapkan modal order Activity Detail sebagai baseline mutlak dan mengekstrak shell, service detail, navigation, panel, actions, responsive behavior, serta fullscreen submit overlay ke komponen `frontend-order-modal` bersama.
+- Impact: Modal pembuatan order layanan frontend memiliki hierarchy dan bahasa visual yang sama, sementara field serta behavior bisnis setiap domain tetap independen.
+- Files:
+  - `docs/frontend-order-modal-standard.md`
+  - `resources/frontend/scss/components/frontend-order-modal.scss`
+  - `resources/views/frontend/activities/detail.blade.php`
+  - `resources/views/frontend/tours/detail-modern.blade.php`
+  - `resources/views/home/transports/detail.blade.php`
+  - `resources/frontend/js/pages/activity-detail.js`
+  - `resources/frontend/js/pages/tour-detail.js`
+  - `resources/frontend/js/pages/transport-detail.js`
+- Follow-up: Setiap modal order layanan frontend baru wajib menambahkan kontrak class shared dan regression coverage sebelum diterima.

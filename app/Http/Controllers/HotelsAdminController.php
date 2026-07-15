@@ -177,7 +177,7 @@ class HotelsAdminController extends Controller
             $hotels=Hotels::findOrFail($id);
             $attentions = Attention::where('page','admin-hotel-edit')->get();
             $usdrates=UsdRates::where('name','USD')->first();
-            return view('form.hoteledit',[
+            return view('backend.operations.hotels.forms.edit',[
                 'usdrates'=>$usdrates,
                 'attentions'=>$attentions,
                 ])->with('hotels',$hotels);
@@ -201,7 +201,7 @@ class HotelsAdminController extends Controller
             } else {
                 $markup = "";
             }
-            return view('form.hotel-add-normal-price',[
+            return view('backend.operations.hotels.forms.add-normal-price',[
                 'usdrates'=>$usdrates,
                 'attentions'=>$attentions,
                 'markups'=>$markups,
@@ -221,7 +221,7 @@ class HotelsAdminController extends Controller
             $hotel=Hotels::where('id','=', $room->hotels_id)->first();
             $attentions = Attention::where('page','admin-room-edit')->get();
             $roomViews = RoomView::all();
-            return view('form.roomedit',[
+            return view('backend.operations.hotels.forms.room-edit',[
                 'hotel'=>$hotel,
                 'attentions'=>$attentions,
                 'roomViews'=>$roomViews,
@@ -237,7 +237,7 @@ class HotelsAdminController extends Controller
             $wedding_venue=WeddingVenues::findOrFail($id);
             $hotel=Hotels::where('id','=', $wedding_venue->hotels_id)->first();
             $attentions = Attention::where('page','edit-wedding-venue')->get();
-            return view('form.wedding-venue-edit',[
+            return view('backend.operations.weddings.forms.venue-edit',[
                 'hotel'=>$hotel,
                 'attentions'=>$attentions,
             ])->with('wedding_venue',$wedding_venue);
@@ -251,7 +251,7 @@ class HotelsAdminController extends Controller
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotels = Hotels::all();
             $attentions = Attention::where('page','admin-hotel-add')->get();
-            return view('form.hoteladd',[
+            return view('backend.operations.hotels.forms.create',[
                 'attentions'=>$attentions,
             ])->with('hotels',$hotels);
         }else{
@@ -263,7 +263,7 @@ class HotelsAdminController extends Controller
     public function view_edit_galery_hotel($id){
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotels=Hotels::findOrFail($id);
-            return view('form.hotelgaleryedit')->with('hotels',$hotels);
+            return view('backend.operations.hotels.forms.gallery-edit')->with('hotels',$hotels);
         }else{
             return redirect("/hotels-admin")->with('error','Akses ditolak');
         }
@@ -274,7 +274,7 @@ class HotelsAdminController extends Controller
             $hotels=Hotels::findOrFail($id);
             $attentions=Attention::where('page','admin-hotel-room-add')->get();
             $usdrates=UsdRates::where('name','USD')->first();
-            return view('form.roomadd',[
+            return view('backend.operations.hotels.forms.room-create',[
                 'attentions'=>$attentions,
                 'usdrates'=>$usdrates,
             ])->with('hotels',$hotels);
@@ -288,7 +288,7 @@ class HotelsAdminController extends Controller
             $hotels=Hotels::findOrFail($id);
             $attentions=Attention::where('page','admin-wedding-venue-add')->get();
             $usdrates=UsdRates::where('name','USD')->first();
-            return view('form.wedding-venue-add',[
+            return view('backend.operations.weddings.forms.venue-create',[
                 'attentions'=>$attentions,
                 'usdrates'=>$usdrates,
             ])->with('hotels',$hotels);
@@ -302,7 +302,7 @@ class HotelsAdminController extends Controller
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotel=Hotels::findOrFail($id);
             $rooms= HotelRoom::where('hotels_id','=');
-            return view('form.hotelpromoadd')->with('hotel',$hotel);
+            return view('backend.operations.hotels.forms.add-promo')->with('hotel',$hotel);
         }else{
             return redirect("/hotels-admin")->with('error','Akses ditolak');
         }
@@ -1151,7 +1151,7 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            // return dd($room);
+            // return dd($package);
             return redirect("/detail-hotel-$hotel_id#package")->with('success','The Package has been updated!');
         }else{
             return redirect("/hotels-admin")->with('error','Akses ditolak');
@@ -1436,6 +1436,6 @@ public function func_add_contract(Request $request){
 // Modal Hotel  =============================================================================================================>
     public function modal($id){
         $modal=Hotels::findOrFail($id);
-        return view('form.hotelgaleryedit')->with('hotels',$hotels);
+        return view('backend.operations.hotels.forms.gallery-edit')->with('hotels',$modal);
         }
 }

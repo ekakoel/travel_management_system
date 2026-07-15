@@ -1,5 +1,246 @@
 @extends('layouts.head')
 @section('title', __('messages.Tour'))
+@php
+    $hasTourRouteMap = !empty($tourMapLocations);
+@endphp
+@if ($hasTourRouteMap)
+    @push('styles')
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIINfQWTKf0dQYfdh4A8iSrlv6b6R64ORc4=" crossorigin="">
+        <style>
+            .tour-route-map {
+                border: 1px solid rgba(15, 23, 42, 0.08);
+                border-radius: 24px;
+                background: linear-gradient(145deg, #ffffff 0%, #f7fbf7 100%);
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+                margin: 0 0 24px;
+                overflow: hidden;
+            }
+            .tour-route-map__header {
+                align-items: flex-start;
+                display: flex;
+                gap: 14px;
+                justify-content: space-between;
+                padding: 22px 24px 16px;
+            }
+            .tour-route-map__eyebrow {
+                color: #7a8f3b;
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.12em;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+            }
+            .tour-route-map__title {
+                color: #16213e;
+                font-size: 24px;
+                font-weight: 800;
+                line-height: 1.2;
+                margin: 0;
+            }
+            .tour-route-map__subtitle {
+                color: #667085;
+                margin: 8px 0 0;
+                max-width: 680px;
+            }
+            .tour-route-map__count {
+                align-items: center;
+                background: #eef6d2;
+                border-radius: 999px;
+                color: #526b1d;
+                display: inline-flex;
+                flex: 0 0 auto;
+                font-size: 13px;
+                font-weight: 800;
+                gap: 8px;
+                padding: 10px 14px;
+                white-space: nowrap;
+            }
+            .tour-route-map__canvas {
+                background: #edf3ee;
+                height: 420px;
+                min-height: 360px;
+                width: 100%;
+            }
+            .tour-route-map__legend {
+                display: grid;
+                gap: 12px;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                padding: 18px 24px 24px;
+            }
+            .tour-route-map__stop {
+                background: #fff;
+                border: 1px solid rgba(15, 23, 42, 0.08);
+                border-radius: 18px;
+                display: flex;
+                gap: 12px;
+                padding: 14px;
+            }
+            .tour-route-map__marker {
+                align-items: center;
+                background: #7a8f3b;
+                border-radius: 50%;
+                color: #fff;
+                display: inline-flex;
+                flex: 0 0 34px;
+                font-size: 13px;
+                font-weight: 800;
+                height: 34px;
+                justify-content: center;
+                width: 34px;
+            }
+            .tour-route-map__stop-title {
+                color: #16213e;
+                font-weight: 800;
+                margin: 0 0 4px;
+            }
+            .tour-route-map__stop-meta,
+            .tour-route-map__stop-desc {
+                color: #667085;
+                font-size: 13px;
+                margin: 0;
+            }
+            .tour-route-map__link {
+                color: #7a8f3b;
+                display: inline-block;
+                font-size: 13px;
+                font-weight: 800;
+                margin-top: 8px;
+            }
+            .tour-route-map__pin {
+                align-items: center;
+                background: #7a8f3b;
+                border: 3px solid #fff;
+                border-radius: 50%;
+                box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
+                color: #fff;
+                display: flex;
+                font-size: 13px;
+                font-weight: 800;
+                height: 34px;
+                justify-content: center;
+                width: 34px;
+            }
+            .tour-route-map__popup-title {
+                color: #16213e;
+                font-weight: 800;
+                margin-bottom: 4px;
+            }
+            .tour-route-map__popup-meta,
+            .tour-route-map__popup-desc {
+                color: #667085;
+                font-size: 12px;
+                margin: 0 0 6px;
+            }
+            @media (max-width: 767px) {
+                .tour-route-map__header {
+                    display: block;
+                    padding: 18px;
+                }
+                .tour-route-map__count {
+                    margin-top: 12px;
+                }
+                .tour-route-map__canvas {
+                    height: 340px;
+                    min-height: 320px;
+                }
+                .tour-route-map__legend {
+                    grid-template-columns: 1fr;
+                    padding: 14px 18px 18px;
+                }
+            }
+        </style>
+    @endpush
+    @push('scripts')
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjGwZ5i6JSJ9XH2bfOQFh++Swhb0tM=" crossorigin=""></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const mapElement = document.getElementById('tourRouteMap');
+                const locations = @json($tourMapLocations);
+
+                if (!mapElement || !window.L || mapElement.dataset.initialized === 'true' || !locations.length) {
+                    return;
+                }
+
+                mapElement.dataset.initialized = 'true';
+
+                const map = L.map(mapElement, {
+                    scrollWheelZoom: false,
+                    zoomControl: true
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(map);
+
+                const bounds = [];
+
+                locations.forEach(function (location) {
+                    const latLng = [location.lat, location.lng];
+                    bounds.push(latLng);
+
+                    const marker = L.marker(latLng, {
+                        icon: L.divIcon({
+                            className: '',
+                            html: '<span class="tour-route-map__pin">' + location.order + '</span>',
+                            iconSize: [34, 34],
+                            iconAnchor: [17, 17],
+                            popupAnchor: [0, -18]
+                        })
+                    }).addTo(map);
+
+                    const popup = document.createElement('div');
+                    const title = document.createElement('div');
+                    const meta = document.createElement('p');
+
+                    title.className = 'tour-route-map__popup-title';
+                    title.textContent = location.name;
+                    meta.className = 'tour-route-map__popup-meta';
+                    meta.textContent = '{{ __('tour-map.day') }} ' + location.day + ' · {{ __('tour-map.stop') }} ' + location.visit_order;
+
+                    popup.appendChild(title);
+                    popup.appendChild(meta);
+
+                    if (location.description) {
+                        const description = document.createElement('p');
+                        description.className = 'tour-route-map__popup-desc';
+                        description.textContent = location.description;
+                        popup.appendChild(description);
+                    }
+
+                    if (location.google_maps_url) {
+                        const link = document.createElement('a');
+                        link.href = location.google_maps_url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.textContent = '{{ __('tour-map.open_google_maps') }}';
+                        popup.appendChild(link);
+                    }
+
+                    marker.bindPopup(popup);
+                });
+
+                if (bounds.length > 1) {
+                    L.polyline(bounds, {
+                        color: '#7a8f3b',
+                        opacity: 0.8,
+                        weight: 4,
+                        dashArray: '8 10'
+                    }).addTo(map);
+                    map.fitBounds(bounds, { padding: [36, 36] });
+                } else {
+                    map.setView(bounds[0], 13);
+                }
+
+                setTimeout(function () {
+                    map.invalidateSize();
+                }, 250);
+            });
+        </script>
+    @endpush
+@endif
 @section('content')
     @php
         $imagePath = public_path('/storage/tours/tours-cover/'. $tour->cover);
@@ -85,6 +326,45 @@
                                         {!! $tour->$langItinerary !!}
                                     </p>
                                 </div>
+                                @if ($hasTourRouteMap)
+                                    <section class="tour-route-map" aria-labelledby="tourRouteMapTitle">
+                                        <div class="tour-route-map__header">
+                                            <div>
+                                                <div class="tour-route-map__eyebrow">@lang('tour-map.overview')</div>
+                                                <h2 class="tour-route-map__title" id="tourRouteMapTitle">@lang('tour-map.title')</h2>
+                                                <p class="tour-route-map__subtitle">@lang('tour-map.subtitle')</p>
+                                            </div>
+                                            <div class="tour-route-map__count">
+                                                <i class="icon-copy fa fa-map-marker" aria-hidden="true"></i>
+                                                {{ count($tourMapLocations) }} @lang('tour-map.planned_stops')
+                                            </div>
+                                        </div>
+                                        <div id="tourRouteMap" class="tour-route-map__canvas" role="img" aria-label="@lang('tour-map.title')"></div>
+                                        <div class="tour-route-map__legend" aria-label="@lang('tour-map.visit_sequence')">
+                                            @foreach ($tourMapLocations as $mapLocation)
+                                                <article class="tour-route-map__stop">
+                                                    <span class="tour-route-map__marker">{{ $mapLocation['order'] }}</span>
+                                                    <div>
+                                                        <p class="tour-route-map__stop-title">{{ $mapLocation['name'] }}</p>
+                                                        <p class="tour-route-map__stop-meta">
+                                                            @lang('tour-map.day') {{ $mapLocation['day'] }}
+                                                            &middot;
+                                                            @lang('tour-map.stop') {{ $mapLocation['visit_order'] }}
+                                                        </p>
+                                                        @if (!empty($mapLocation['description']))
+                                                            <p class="tour-route-map__stop-desc">{{ $mapLocation['description'] }}</p>
+                                                        @endif
+                                                        @if (!empty($mapLocation['google_maps_url']))
+                                                            <a class="tour-route-map__link" href="{{ $mapLocation['google_maps_url'] }}" target="_blank" rel="noopener noreferrer">
+                                                                @lang('tour-map.open_google_maps')
+                                                            </a>
+                                                        @endif
+                                                    </div>
+                                                </article>
+                                            @endforeach
+                                        </div>
+                                    </section>
+                                @endif
                                 <div class="card-subtitle">@lang('messages.Inclusions')</div>
                                 <div class="m-b-18">
                                     <p>
@@ -158,10 +438,6 @@
                     </div>
                 </div>
                 <div class="col-md-4 m-b-18">
-                    {{-- ATTENTIONS --}}
-                    <div class="row">
-                        @include('layouts.attentions')
-                    </div>
                     <div class="card-box">
                         <div class="card-box-title">
                             <div class="subtitle">

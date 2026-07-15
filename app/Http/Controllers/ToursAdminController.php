@@ -1,11 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-use Image;
 use Carbon\Carbon;
 use App\Models\Tax;
 use App\Models\Tours;
-use App\Models\LogData;
 use App\Models\UserLog;
 use App\Models\Partners;
 use App\Models\TourType;
@@ -14,16 +12,16 @@ use App\Models\ActionLog;
 use App\Models\Attention;
 use App\Models\TourPrices;
 use App\Models\ToursImages;
+use App\Models\TourLocationReference;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\StoretoursRequest;
-use App\Http\Requests\UpdatetoursRequest;
+use Illuminate\Validation\ValidationException;
 
 class ToursAdminController extends Controller
 {
@@ -96,7 +94,7 @@ class ToursAdminController extends Controller
     {
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $attentions = Attention::where('page','admin-tour-edit')->get();
-            $tour=Tours::findOrFail($id);
+            $tour=Tours::with(['locations' => fn ($query) => $query->ordered()])->findOrFail($id);
             $usdrates = UsdRates::where('name','USD')->first();
             $types = TourType::all();
             return view('backend.tours.update-tour', compact("types"),[
@@ -128,34 +126,8 @@ class ToursAdminController extends Controller
     public function func_add_tour(Request $request)
     {
         // 🔹 Validasi form input
-        $validated = $request->validate([
-            'cover' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:125',
-            'name_traditional' => 'required|string|max:255',
-            'name_simplified' => 'required|string|max:255',
-            'type' => 'required|integer',
-            'duration_days' => 'required|integer',
-            'duration_nights' => 'required|integer',
-            'short_description' => 'required|string',
-            'short_description_traditional' => 'required|string',
-            'short_description_simplified' => 'required|string',
-            'description' => 'required|string',
-            'description_traditional' => 'required|string',
-            'description_simplified' => 'required|string',
-            'itinerary' => 'required|string',
-            'itinerary_traditional' => 'required|string',
-            'itinerary_simplified' => 'required|string',
-            'include' => 'required|string',
-            'include_traditional' => 'required|string',
-            'include_simplified' => 'required|string',
-            'exclude' => 'required|string',
-            'exclude_traditional' => 'required|string',
-            'exclude_simplified' => 'required|string',
-            'additional_info' => 'required|string',
-            'additional_info_traditional' => 'required|string',
-            'additional_info_simplified' => 'nullable|string',
-        ]);
+        $locations = $this->validatedTourLocations($request);
+        $validated = $request->validate($this->tourValidationRules());
 
         // 🔹 Upload Cover Image
         if ($request->hasFile('cover')) {
@@ -167,34 +139,15 @@ class ToursAdminController extends Controller
         }
 
         // 🔹 Simpan ke Database
-        $tour = new Tours();
-        $tour->cover = $validated['cover'];
-        $tour->code = $validated['code'];
-        $tour->name = $validated['name'];
-        $tour->name_traditional = $validated['name_traditional'];
-        $tour->name_simplified = $validated['name_simplified'];
-        $tour->type_id = $validated['type'];
-        $tour->duration_days = $validated['duration_days'];
-        $tour->duration_nights = $validated['duration_nights'];
-        $tour->short_description = $validated['short_description'];
-        $tour->short_description_traditional = $validated['short_description_traditional'];
-        $tour->short_description_simplified = $validated['short_description_simplified'];
-        $tour->description = $validated['description'];
-        $tour->description_traditional = $validated['description_traditional'];
-        $tour->description_simplified = $validated['description_simplified'];
-        $tour->itinerary = $validated['itinerary'];
-        $tour->itinerary_traditional = $validated['itinerary_traditional'];
-        $tour->itinerary_simplified = $validated['itinerary_simplified'];
-        $tour->include = $validated['include'];
-        $tour->include_traditional = $validated['include_traditional'];
-        $tour->include_simplified = $validated['include_simplified'];
-        $tour->exclude = $validated['exclude'];
-        $tour->exclude_traditional = $validated['exclude_traditional'];
-        $tour->exclude_simplified = $validated['exclude_simplified'];
-        $tour->additional_info = $validated['additional_info'];
-        $tour->additional_info_traditional = $validated['additional_info_traditional'];
-        $tour->additional_info_simplified = $validated['additional_info_simplified'] ?? null;
-        $tour->save();
+        $tour = DB::transaction(function () use ($validated, $locations) {
+            $tour = new Tours();
+            $this->fillTourDetails($tour, $validated);
+            $tour->save();
+
+            $this->syncTourLocations($tour, $locations);
+
+            return $tour;
+        });
 
         // 🔹 Redirect dengan pesan sukses
         return redirect("/detail-tour-$tour->id")->with('success','New Tour Package has been successfully created!');
@@ -314,35 +267,8 @@ class ToursAdminController extends Controller
     public function func_update_tour(Request $request,$id)
     {
         $tour = Tours::findOrFail($id);
-        $validated = $request->validate([
-            'cover' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'status' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:125',
-            'name_traditional' => 'required|string|max:255',
-            'name_simplified' => 'required|string|max:255',
-            'type' => 'required|integer',
-            'duration_days' => 'required|integer',
-            'duration_nights' => 'required|integer',
-            'short_description' => 'required|string',
-            'short_description_traditional' => 'required|string',
-            'short_description_simplified' => 'required|string',
-            'description' => 'required|string',
-            'description_traditional' => 'required|string',
-            'description_simplified' => 'required|string',
-            'itinerary' => 'required|string',
-            'itinerary_traditional' => 'required|string',
-            'itinerary_simplified' => 'required|string',
-            'include' => 'required|string',
-            'include_traditional' => 'required|string',
-            'include_simplified' => 'required|string',
-            'exclude' => 'required|string',
-            'exclude_traditional' => 'required|string',
-            'exclude_simplified' => 'required|string',
-            'additional_info' => 'required|string',
-            'additional_info_traditional' => 'required|string',
-            'additional_info_simplified' => 'required|string',
-        ]);
+        $locations = $this->validatedTourLocations($request);
+        $validated = $request->validate($this->tourValidationRules(true));
 
         
         if($request->hasFile("cover")){
@@ -357,7 +283,12 @@ class ToursAdminController extends Controller
         } else {
             $validated['cover'] = $tour->cover;
         }
-        $tour->update($validated);
+        DB::transaction(function () use ($tour, $validated, $locations) {
+            $this->fillTourDetails($tour, $validated, true);
+            $tour->save();
+
+            $this->syncTourLocations($tour, $locations);
+        });
         return redirect("/detail-tour-$tour->id")->with('success','The Tour Package has been successfully updated!');
     }
 // function Tour Remove =============================================================================================================>
@@ -436,5 +367,389 @@ class ToursAdminController extends Controller
         $image->delete();
 
         return response()->json(['success' => true, 'message' => 'Image deleted successfully']);
+    }
+
+    private function tourValidationRules(bool $isUpdate = false): array
+    {
+        return [
+            'cover' => ($isUpdate ? 'nullable' : 'required') . '|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'status' => $isUpdate ? 'required|string|max:255' : 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:125',
+            'name_traditional' => 'required|string|max:255',
+            'name_simplified' => 'required|string|max:255',
+            'type' => 'required|integer|exists:tour_types,id',
+            'duration_days' => 'required|integer|min:1',
+            'duration_nights' => 'required|integer|min:0',
+            'short_description' => 'required|string',
+            'short_description_traditional' => 'required|string',
+            'short_description_simplified' => 'required|string',
+            'description' => 'required|string',
+            'description_traditional' => 'required|string',
+            'description_simplified' => 'required|string',
+            'package_highlights' => 'nullable|string',
+            'package_highlights_traditional' => 'nullable|string',
+            'package_highlights_simplified' => 'nullable|string',
+            'itinerary' => 'required|string',
+            'itinerary_traditional' => 'required|string',
+            'itinerary_simplified' => 'required|string',
+            'include' => 'required|string',
+            'include_traditional' => 'required|string',
+            'include_simplified' => 'required|string',
+            'exclude' => 'required|string',
+            'exclude_traditional' => 'required|string',
+            'exclude_simplified' => 'required|string',
+            'additional_info' => 'required|string',
+            'additional_info_traditional' => 'required|string',
+            'additional_info_simplified' => 'required|string',
+            'cancellation_policy' => 'required|string',
+            'cancellation_policy_traditional' => 'required|string',
+            'cancellation_policy_simplified' => 'required|string',
+        ];
+    }
+
+    private function fillTourDetails(Tours $tour, array $validated, bool $isUpdate = false): void
+    {
+        $tour->cover = $validated['cover'];
+
+        if ($isUpdate) {
+            $tour->status = $validated['status'];
+        }
+
+        $tour->type_id = $validated['type'];
+
+        foreach ($this->tourDetailFields() as $field) {
+            $tour->{$field} = $validated[$field] ?? null;
+        }
+    }
+
+    private function tourDetailFields(): array
+    {
+        return [
+            'code',
+            'name',
+            'name_traditional',
+            'name_simplified',
+            'duration_days',
+            'duration_nights',
+            'short_description',
+            'short_description_traditional',
+            'short_description_simplified',
+            'description',
+            'description_traditional',
+            'description_simplified',
+            'package_highlights',
+            'package_highlights_traditional',
+            'package_highlights_simplified',
+            'itinerary',
+            'itinerary_traditional',
+            'itinerary_simplified',
+            'include',
+            'include_traditional',
+            'include_simplified',
+            'exclude',
+            'exclude_traditional',
+            'exclude_simplified',
+            'additional_info',
+            'additional_info_traditional',
+            'additional_info_simplified',
+            'cancellation_policy',
+            'cancellation_policy_traditional',
+            'cancellation_policy_simplified',
+        ];
+    }
+
+    public function resolveTourLocationCoordinates(Request $request)
+    {
+        $request->validate([
+            'google_maps_url' => 'required|url|max:2048',
+        ]);
+
+        $url = trim((string) $request->input('google_maps_url'));
+
+        if (!$this->isAllowedGoogleMapsUrl($url)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Google Maps link must be a valid Google Maps URL.',
+            ], 422);
+        }
+
+        $coordinates = $this->extractGoogleMapsCoordinates($url);
+
+        if (!$coordinates) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Coordinates could not be read from this link. Please use a Google Maps URL containing coordinates, or fill latitude and longitude manually.',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'latitude' => round((float) $coordinates['latitude'], 7),
+            'longitude' => round((float) $coordinates['longitude'], 7),
+        ]);
+    }
+
+    public function searchTourLocationReferences(Request $request)
+    {
+        $query = trim((string) $request->query('q', ''));
+
+        if (Str::length($query) < 2) {
+            return response()->json([]);
+        }
+
+        return TourLocationReference::query()
+            ->where('destination_name', 'like', '%' . $query . '%')
+            ->orderBy('destination_name')
+            ->limit(12)
+            ->get()
+            ->map(fn (TourLocationReference $location) => [
+                'id' => $location->id,
+                'destination_name' => $location->destination_name,
+                'location_type' => $location->location_type,
+                'google_maps_url' => $location->google_maps_url,
+                'marker_image' => $location->marker_image,
+                'marker_image_url' => $location->marker_image ? asset('storage/tours/tour-location-markers/' . $location->marker_image) : null,
+                'latitude' => $location->latitude,
+                'longitude' => $location->longitude,
+                'description' => $location->description,
+            ]);
+    }
+
+    private function validatedTourLocations(Request $request): array
+    {
+        $locations = (array) $request->input('locations', []);
+        $errors = [];
+        $normalized = [];
+
+        foreach ($locations as $inputIndex => $location) {
+            if (collect($location)->filter(fn ($value) => filled($value))->isEmpty() && !$request->hasFile("locations.{$inputIndex}.marker_image")) {
+                continue;
+            }
+
+            $prefix = "locations.{$inputIndex}";
+            $locationReferenceId = $location['location_reference_id'] ?? null;
+            $name = trim((string) ($location['destination_name'] ?? ''));
+            $locationType = trim((string) ($location['location_type'] ?? 'Attraction'));
+            $googleMapsUrl = trim((string) ($location['google_maps_url'] ?? ''));
+            $existingMarkerImage = trim((string) ($location['existing_marker_image'] ?? ''));
+            $latitude = $location['latitude'] ?? null;
+            $longitude = $location['longitude'] ?? null;
+            $dayNumber = $location['day_number'] ?? null;
+            $visitOrder = $location['visit_order'] ?? null;
+            $visitTime = $location['visit_time'] ?? null;
+            $markerImage = $existingMarkerImage ?: null;
+            $markerImageFile = $request->file("locations.{$inputIndex}.marker_image");
+
+            if ($name === '') {
+                $errors["{$prefix}.destination_name"] = 'Destination name is required when adding a map location.';
+            }
+
+            if (!in_array($locationType, ['Attraction', 'Activity', 'F&B', 'Pickup/Dropoff'], true)) {
+                $errors["{$prefix}.location_type"] = 'Location type must be Attraction, Activity, F&B, or Pickup/Dropoff.';
+            }
+
+            if (!filter_var($dayNumber, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
+                $errors["{$prefix}.day_number"] = 'Day number must be a positive integer.';
+            }
+
+            if (!filter_var($visitOrder, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
+                $errors["{$prefix}.visit_order"] = 'Visit order must be a positive integer.';
+            }
+
+            if (filled($visitTime) && !preg_match('/^\d{2}:\d{2}$/', (string) $visitTime)) {
+                $errors["{$prefix}.visit_time"] = 'Visit time must use HH:mm format.';
+            }
+
+            if ((!is_numeric($latitude) || !is_numeric($longitude)) && $googleMapsUrl !== '' && $this->isAllowedGoogleMapsUrl($googleMapsUrl)) {
+                $coordinates = $this->extractGoogleMapsCoordinates($googleMapsUrl);
+
+                if ($coordinates) {
+                    $latitude = $coordinates['latitude'];
+                    $longitude = $coordinates['longitude'];
+                }
+            }
+
+            if (!is_numeric($latitude) || (float) $latitude < -90 || (float) $latitude > 90) {
+                $errors["{$prefix}.latitude"] = 'Latitude must be a number between -90 and 90, or use a Google Maps URL that exposes coordinates.';
+            }
+
+            if (!is_numeric($longitude) || (float) $longitude < -180 || (float) $longitude > 180) {
+                $errors["{$prefix}.longitude"] = 'Longitude must be a number between -180 and 180, or use a Google Maps URL that exposes coordinates.';
+            }
+
+            if ($googleMapsUrl !== '' && !$this->isAllowedGoogleMapsUrl($googleMapsUrl)) {
+                $errors["{$prefix}.google_maps_url"] = 'Google Maps link must be a valid Google Maps URL.';
+            }
+
+            if ($markerImageFile) {
+                if (!$markerImageFile->isValid() || !in_array($markerImageFile->extension(), ['jpg', 'jpeg', 'png', 'webp'], true) || $markerImageFile->getSize() > 2048 * 1024) {
+                    $errors["{$prefix}.marker_image"] = 'Marker image must be a valid JPG, PNG, or WEBP image with maximum size 2MB.';
+                } else {
+                    $filename = time() . '_' . Str::random(10) . '.' . $markerImageFile->getClientOriginalExtension();
+                    $markerImageFile->storeAs('tours/tour-location-markers', $filename, 'public');
+                    $markerImage = $filename;
+                }
+            }
+
+            $normalized[] = [
+                'location_reference_id' => $locationReferenceId ? (int) $locationReferenceId : null,
+                'destination_name' => $name,
+                'location_type' => $locationType,
+                'google_maps_url' => $googleMapsUrl ?: null,
+                'marker_image' => $markerImage,
+                'latitude' => is_numeric($latitude) ? round((float) $latitude, 7) : null,
+                'longitude' => is_numeric($longitude) ? round((float) $longitude, 7) : null,
+                'day_number' => (int) $dayNumber,
+                'visit_order' => (int) $visitOrder,
+                'visit_time' => filled($visitTime) ? $visitTime : null,
+                'description' => filled($location['description'] ?? null) ? trim((string) $location['description']) : null,
+                'is_active' => true,
+            ];
+        }
+
+        if ($errors) {
+            throw ValidationException::withMessages($errors);
+        }
+
+        return $normalized;
+    }
+
+    private function syncTourLocations(Tours $tour, array $locations): void
+    {
+        $tour->locations()->delete();
+
+        foreach ($locations as $location) {
+            $location['location_reference_id'] = $this->syncTourLocationReference($location);
+            $tour->locations()->create($location);
+        }
+    }
+
+    private function syncTourLocationReference(array $location): int
+    {
+        if (!empty($location['location_reference_id'])) {
+            $reference = TourLocationReference::find($location['location_reference_id']);
+
+            if ($reference
+                && $reference->destination_name === $location['destination_name']
+                && $reference->location_type === $location['location_type']
+                && round((float) $reference->latitude, 7) === round((float) $location['latitude'], 7)
+                && round((float) $reference->longitude, 7) === round((float) $location['longitude'], 7)
+            ) {
+                return $reference->id;
+            }
+        }
+
+        $lookupKey = TourLocationReference::lookupKey(
+            $location['destination_name'],
+            $location['location_type'],
+            (float) $location['latitude'],
+            (float) $location['longitude']
+        );
+
+        $reference = TourLocationReference::updateOrCreate(
+            ['lookup_key' => $lookupKey],
+            [
+                'destination_name' => $location['destination_name'],
+                'location_type' => $location['location_type'],
+                'google_maps_url' => $location['google_maps_url'],
+                'marker_image' => $location['marker_image'],
+                'latitude' => $location['latitude'],
+                'longitude' => $location['longitude'],
+                'description' => $location['description'],
+            ]
+        );
+
+        return $reference->id;
+    }
+
+    private function isAllowedGoogleMapsUrl(string $url): bool
+    {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+
+        return in_array($host, [
+            'google.com',
+            'www.google.com',
+            'maps.google.com',
+            'maps.app.goo.gl',
+            'goo.gl',
+        ], true);
+    }
+
+    private function extractGoogleMapsCoordinates(string $url): ?array
+    {
+        foreach ($this->candidateMapUrls($url) as $candidateUrl) {
+            $coordinates = $this->parseCoordinatesFromMapUrl($candidateUrl);
+
+            if ($coordinates) {
+                return $coordinates;
+            }
+        }
+
+        return null;
+    }
+
+    private function candidateMapUrls(string $url): array
+    {
+        $urls = [$url];
+
+        try {
+            $response = Http::timeout(4)
+                ->connectTimeout(3)
+                ->withHeaders(['User-Agent' => 'BaliKamiTour/1.0'])
+                ->get($url);
+
+            $effectiveUrl = method_exists($response, 'effectiveUri')
+                ? (string) $response->effectiveUri()
+                : null;
+
+            if ($effectiveUrl) {
+                $urls[] = $effectiveUrl;
+            }
+
+            if ($response->header('Location')) {
+                $urls[] = $response->header('Location');
+            }
+
+            if ($response->body()) {
+                $urls[] = $response->body();
+            }
+        } catch (\Throwable $exception) {
+            // Short Google Maps URLs may require external redirect resolution.
+            // If that is unavailable, manual latitude/longitude remains the safe fallback.
+        }
+
+        return array_values(array_unique(array_filter($urls)));
+    }
+
+    private function parseCoordinatesFromMapUrl(string $value): ?array
+    {
+        $decoded = urldecode($value);
+
+        $patterns = [
+            '/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/',
+            '/[?&](?:q|ll)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/',
+            '/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $decoded, $matches)) {
+                $latitude = (float) $matches[1];
+                $longitude = (float) $matches[2];
+
+                if ($latitude >= -90 && $latitude <= 90 && $longitude >= -180 && $longitude <= 180) {
+                    return [
+                        'latitude' => $latitude,
+                        'longitude' => $longitude,
+                    ];
+                }
+            }
+        }
+
+        return null;
     }
 }

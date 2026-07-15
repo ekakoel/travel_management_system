@@ -263,6 +263,37 @@
                                             <div class="row">
                                                 <div class="col-12 col-sm-6 col-md-6">
                                                     <div class="form-group">
+                                                        <label for="package_highlights" class="form-label col-form-label">Package Highlights</label>
+                                                        <textarea id="package_highlights" name="package_highlights" class="textarea_editor form-control @error('package_highlights') is-invalid @enderror" placeholder="Insert package highlights">{{ old('package_highlights') }}</textarea>
+                                                        @error('package_highlights')
+                                                            <div class="alert-form alert-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="package_highlights_traditional" class="form-label col-form-label">Package Highlights Traditional</label>
+                                                        <textarea id="package_highlights_traditional" name="package_highlights_traditional" class="textarea_editor form-control @error('package_highlights_traditional') is-invalid @enderror" placeholder="Insert package highlights in Chinese traditional">{{ old('package_highlights_traditional') }}</textarea>
+                                                        @error('package_highlights_traditional')
+                                                            <div class="alert-form alert-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="package_highlights_simplified" class="form-label col-form-label">Package Highlights Simplified</label>
+                                                        <textarea id="package_highlights_simplified" name="package_highlights_simplified" class="textarea_editor form-control @error('package_highlights_simplified') is-invalid @enderror" placeholder="Insert package highlights in Chinese simplified">{{ old('package_highlights_simplified') }}</textarea>
+                                                        @error('package_highlights_simplified')
+                                                            <div class="alert-form alert-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-12 col-sm-6 col-md-6">
+                                                    <div class="form-group">
                                                         <label for="include" class="form-label col-form-label">Include<span> *</span></label>
                                                         <textarea id="include" name="include" class="textarea_editor form-control @error('include') is-invalid @enderror" placeholder="Insert include" value="{{ old('include') }}" required>{{ old('include') }}</textarea>
                                                         @error('include')
@@ -357,7 +388,7 @@
                                                 <div class="col-12 col-sm-6 col-md-6">
                                                     <div class="form-group">
                                                         <label for="cancellation_policy" class="form-label col-form-label">Cancellation Policy<span> *</span></label>
-                                                        <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor form-control @error('cancellation_policy') is-invalid @enderror" placeholder="Insert cancellation policy" value="{{ old('cancellation_policy') }}" required>{{ old('cancellation_policy') }}</textarea>
+                                                        <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor form-control @error('cancellation_policy') is-invalid @enderror" placeholder="Insert cancellation policy" required>{{ old('cancellation_policy') }}</textarea>
                                                         @error('cancellation_policy')
                                                             <div class="alert-form alert-danger">{{ $message }}</div>
                                                         @enderror
@@ -366,7 +397,7 @@
                                                 <div class="col-12 col-sm-6 col-md-6">
                                                     <div class="form-group">
                                                         <label for="cancellation_policy_traditional" class="form-label col-form-label">Cancellation Policy Traditional<span> *</span></label>
-                                                        <textarea id="cancellation_policy_traditional" name="cancellation_policy_traditional" class="textarea_editor form-control @error('cancellation_policy_traditional') is-invalid @enderror" placeholder="Insert cancellation policy in Chinese traditional" value="{{ old('cancellation_policy_traditional') }}" required>{{ old('cancellation_policy_traditional') }}</textarea>
+                                                        <textarea id="cancellation_policy_traditional" name="cancellation_policy_traditional" class="textarea_editor form-control @error('cancellation_policy_traditional') is-invalid @enderror" placeholder="Insert cancellation policy in Chinese traditional" required>{{ old('cancellation_policy_traditional') }}</textarea>
                                                         @error('cancellation_policy_traditional')
                                                             <div class="alert-form alert-danger">{{ $message }}</div>
                                                         @enderror
@@ -375,7 +406,7 @@
                                                 <div class="col-12 col-sm-6 col-md-6">
                                                     <div class="form-group">
                                                         <label for="cancellation_policy_simplified" class="form-label col-form-label">Cancellation Policy Simplified<span> *</span></label>
-                                                        <textarea id="cancellation_policy_simplified" name="cancellation_policy_simplified" class="textarea_editor form-control @error('cancellation_policy_simplified') is-invalid @enderror" placeholder="Insert cancellation policy in Chinese simplified" value="{{ old('cancellation_policy_simplified') }}" required>{{ old('cancellation_policy_simplified') }}</textarea>
+                                                        <textarea id="cancellation_policy_simplified" name="cancellation_policy_simplified" class="textarea_editor form-control @error('cancellation_policy_simplified') is-invalid @enderror" placeholder="Insert cancellation policy in Chinese simplified" required>{{ old('cancellation_policy_simplified') }}</textarea>
                                                         @error('cancellation_policy_simplified')
                                                             <div class="alert-form alert-danger">{{ $message }}</div>
                                                         @enderror
@@ -383,6 +414,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @include('backend.tours.partials.tour-location-repeater')
                                         <input id="initial_state" name="initial_state" value="" type="hidden">
                                     </div>
                                 </form>

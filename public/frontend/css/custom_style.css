@@ -1312,6 +1312,7 @@ legend {
     vertical-align: middle;
     cursor: pointer;
     transition: all 0.25s ease-in-out;
+    border: 1px solid #b2b2b2;
 }
 
 /* Hover */
@@ -1365,6 +1366,16 @@ legend {
     background-color: #0055b1;
     border-color: #007bff;
     box-shadow: 0 0 0 .25rem #9ecdff;
+}
+
+.btn-cancel{
+    background: linear-gradient(135deg, red 0%, #8a0000 100%);
+    color: rgb(219, 219, 219);
+    border: 1px solid #970000;
+}
+.btn-cancel:is(:hover,:active,:focus){
+    background: linear-gradient(135deg, rgb(182, 0, 0) 100%, #8a0000 0%);
+    color: white;
 }
 
 .info-box {

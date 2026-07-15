@@ -3,7 +3,7 @@ return [
     'Dashboard' => '仪表板',
     'Tour Package' => '旅游套餐',
     'Hotels' => '酒店',
-    'Activities' => '活动',
+    'Activity' => '活动',
     'Activities' => '活动',
     'Transports' =>'交通工具',
     'Wedding Packages' =>'婚礼套餐',

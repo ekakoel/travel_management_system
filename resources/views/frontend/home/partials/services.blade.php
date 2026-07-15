@@ -20,11 +20,20 @@
         ],
         [
             'delay' => '0.3s',
-            'href' => route('tour-package-service'),
+            'href' => route('view.tour-package-services'),
             'image' => getThumbnail($homeServiceImages['tours'] ?? 'images/default.webp', 760, 520),
             'title' => __('home.services.items.tours.title'),
             'accent' => __('home.services.items.tours.accent'),
             'description' => __('home.services.items.tours.description'),
+            'image_class' => 'home-service-card__image--cover home-service-card__image--tour',
+        ],
+        [
+            'delay' => '0.4s',
+            'href' => route('view.activity-services'),
+            'image' => getThumbnail($homeServiceImages['activities'] ?? 'images/default.webp', 760, 520),
+            'title' => __('home.services.items.activities.title'),
+            'accent' => __('home.services.items.activities.accent'),
+            'description' => __('home.services.items.activities.description'),
             'image_class' => 'home-service-card__image--cover home-service-card__image--tour',
         ],
     ];
@@ -43,7 +52,7 @@
 
         <div class="row g-4">
             @foreach ($services as $service)
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
+                <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
                     <article class="home-service-card service-item h-100">
                         <a class="home-service-card__link" href="{{ $service['href'] }}">
                             <div class="home-service-card__media icon-container">

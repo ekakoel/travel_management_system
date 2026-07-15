@@ -158,7 +158,7 @@ class WeddingsController extends Controller
         $hotel = $weddingVenue->hotels;
         $attentions = Attention::where('page','edit-wedding-venue')->get();
         $slots = json_decode($weddingVenue->slot);
-        return view('form.wedding-venue-edit',[
+        return view('backend.operations.weddings.forms.venue-edit',[
             'weddingVenue'=>$weddingVenue,
             'hotel'=>$hotel,
             'attentions'=>$attentions,
@@ -172,7 +172,7 @@ class WeddingsController extends Controller
         $attentions = Attention::where('page','weddings-admin')->get();
         $hotel = Hotels::where('id',$id)->first();
         $usdrates = UsdRates::where('name','USD')->first();
-        return view('form.wedding-venue-add',[
+        return view('backend.operations.weddings.forms.venue-create',[
             'hotel'=>$hotel,
             "attentions"=>$attentions,
             "now"=>$now,
@@ -817,7 +817,7 @@ class WeddingsController extends Controller
         if ($wedding->status == "Active") {
             return redirect("/weddings-admin")->with('error',"Wedding package cannot be changed!");
         }else{
-            return view('form.weddingedit',[
+            return view('backend.operations.weddings.forms.edit',[
                 "service"=>$service,
                 'usdrates'=>$usdrates,
                 'attentions'=>$attentions,
@@ -849,7 +849,7 @@ class WeddingsController extends Controller
         $transports = Transports::where('status',"Active")->get();
         $additionalServices = VendorPackage::where('type','!=',"Reception Venue Decoration")->where('type','!=',"Ceremony Venue Decoration")->where('status','Active')->get();
         // $weddingVenues = $hotel->weddingVenues()->pluck('name', 'id');
-        return view('form.weddingadd', [
+        return view('backend.operations.weddings.forms.create', [
             "rooms" => $rooms,
             "service" => $service,
             'attentions' => $attentions,
@@ -902,7 +902,7 @@ class WeddingsController extends Controller
             $additionalServiceWeddingId = json_decode($wedding->additional_service_id);
             $slots = json_decode($wedding->slot);
             // $weddingVenues = $hotel->weddingVenues()->pluck('name', 'id');
-            return view('form.weddingedit', [
+            return view('backend.operations.weddings.forms.edit', [
                 "suite_and_villa" => $suite_and_villa,
                 "rooms" => $rooms,
                 "wedding" => $wedding,

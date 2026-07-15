@@ -29,7 +29,7 @@
 }
 
 .accommodation-hero {
-    grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+    grid-template-columns: minmax(50%, 50%) minmax(0, 1fr);
 }
 
 .availability-hero--merged,
@@ -167,15 +167,21 @@
 
 .accommodation-benefit,
 .availability-details,
-.booking-review__room-item,
-.booking-review__transport-block,
-.booking-review__fact,
-.booking-review__empty,
 .hotel-check-meta-item {
     border: 1px solid #e2e8f0;
     border-radius: var(--frontend-shell-radius-md);
     background: linear-gradient(180deg, var(--frontend-shell-surface-solid) 0%, var(--frontend-shell-surface-soft) 100%);
     box-shadow: var(--frontend-shell-shadow-md);
+}
+
+.booking-review__room-item,
+.booking-review__transport-block,
+.booking-review__fact,
+.booking-review__empty {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .accommodation-benefit {

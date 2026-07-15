@@ -208,6 +208,26 @@
         .additional-info p{
             line-height: 1.3;
         }
+        .invoice-note-watermark{
+            margin-top: 14px;
+            padding: 8px 12px;
+            border-top: 1px dashed #b9c2cf;
+            color: #6b7280;
+            font-size: 0.64rem;
+            line-height: 1.45;
+            text-align: center;
+            letter-spacing: 0.4px;
+            opacity: 0.88;
+        }
+        .invoice-note-watermark strong{
+            color: #4b5563;
+            font-size: 0.66rem;
+        }
+        .invoice-note-watermark p{
+            margin: 0;
+            font-size: 0.64rem !important;
+            line-height: 1.45 !important;
+        }
         .guest-container{
             display: flex;
             gap: 27px;
@@ -1346,7 +1366,7 @@
                             </div>
                         </div>
                     @endif
-                    <div class="additional-info">
+                    <div class="invoice-note-watermark">
                         <br>
                         <p>我們謹提醒您在付款過程中遵循以下步驟:<br>
                         1. 收到我們的確認信後，請查看發送的發票中的預訂詳細資訊.<br>

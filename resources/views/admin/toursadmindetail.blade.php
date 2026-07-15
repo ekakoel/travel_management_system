@@ -78,6 +78,24 @@
                                                     {!! $tour->short_description !!}
                                                 </p>
                                             </div>
+                                            @if ($tour->package_highlights)
+                                                <div class="card-subtitle">Package Highlights</div>
+                                                <div class="m-b-18">
+                                                    {!! $tour->package_highlights !!}
+                                                </div>
+                                            @endif
+                                            @if ($tour->package_highlights_traditional)
+                                                <div class="card-subtitle">Package Highlights Traditional</div>
+                                                <div class="m-b-18">
+                                                    {!! $tour->package_highlights_traditional !!}
+                                                </div>
+                                            @endif
+                                            @if ($tour->package_highlights_simplified)
+                                                <div class="card-subtitle">Package Highlights Simplified</div>
+                                                <div class="m-b-18">
+                                                    {!! $tour->package_highlights_simplified !!}
+                                                </div>
+                                            @endif
                                             <div class="card-subtitle">Itinerary</div>
                                             <div class="m-b-18">
                                                 {!! $tour->itinerary !!}
@@ -100,6 +118,18 @@
                                                 <div class="card-subtitle">Cancellation Policy</div>
                                                 <div class="m-b-18">
                                                     {!! $tour->cancellation_policy !!}
+                                                </div>
+                                            @endif
+                                            @if ($tour->cancellation_policy_traditional)
+                                                <div class="card-subtitle">Cancellation Policy Traditional</div>
+                                                <div class="m-b-18">
+                                                    {!! $tour->cancellation_policy_traditional !!}
+                                                </div>
+                                            @endif
+                                            @if ($tour->cancellation_policy_simplified)
+                                                <div class="card-subtitle">Cancellation Policy Simplified</div>
+                                                <div class="m-b-18">
+                                                    {!! $tour->cancellation_policy_simplified !!}
                                                 </div>
                                             @endif
                                             <div class="card-subtitle">Tour Gallery</div>
@@ -573,4 +603,3 @@
         }
     }
 </script>
-

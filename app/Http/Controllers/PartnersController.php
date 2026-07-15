@@ -82,7 +82,7 @@ class PartnersController extends Controller
         $type = ActivityType::all();
         $partners = Partners::find($id);
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            return view('form.partner-add-activity', [
+            return view('backend.operations.partners.forms.add-activity', [
                 "attentions"=>$attentions,
                 "type" => $type,
                 "partners" => $partners,
@@ -99,7 +99,7 @@ class PartnersController extends Controller
         $type = ActivityType::all();
         $partners = Partners::find($id);
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            return view('form.partner-add-tour', [
+            return view('backend.operations.partners.forms.add-tour', [
                 "attentions"=>$attentions,
                 "type" => $type,
                 "partners" => $partners,

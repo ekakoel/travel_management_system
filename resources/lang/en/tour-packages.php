@@ -1,0 +1,58 @@
+<?php
+
+return [
+    'hero' => [
+        'eyebrow' => 'Curated travel experiences',
+        'title' => 'Tour packages crafted for professional travel partners',
+        'text' => 'Explore private and customizable journeys designed for seamless selling, clear planning, and memorable guest experiences across Indonesia.',
+        'image_alt' => 'Curated Bali tour package experience',
+        'card_eyebrow' => 'Partner-ready inventory',
+        'card_title' => 'From cultural discovery to scenic escapes',
+        'card_text' => 'Each package is organized with practical duration, area, style, and rate signals so agents can shortlist experiences faster.',
+        'top_area' => 'Top area',
+        'visible_now' => 'Visible now',
+        'visible_suffix' => 'packages',
+    ],
+    'summary' => [
+        'tours' => 'Active packages',
+        'areas' => 'Areas',
+        'styles' => 'Tour styles',
+        'active_rates' => 'Active rates',
+    ],
+    'filters' => [
+        'eyebrow' => 'Find packages',
+        'title' => 'Filter directory',
+        'text' => 'Search by package name, area, or tour style. Results update automatically while keeping the URL shareable.',
+        'search_label' => 'Search',
+        'search_placeholder' => 'Search tour package, area, or style',
+        'area_label' => 'Area',
+        'all_areas' => 'All areas',
+        'type_label' => 'Tour style',
+        'all_types' => 'All tour styles',
+        'reset' => 'Reset filters',
+    ],
+    'results' => [
+        'eyebrow' => 'Available packages',
+        'title' => 'Curated tour package directory',
+        'text' => 'Review package duration, destination area, active rates, and details before continuing to the partner booking flow.',
+        'showing' => 'Showing',
+        'of' => 'of',
+        'tours_suffix' => 'packages',
+        'starting_rate' => 'Starting rate',
+        'active_rates' => 'Active rates',
+        'destination_highlights' => 'Destinations',
+        'food_stops' => 'F&B stops',
+        'view_detail' => 'View package detail',
+    ],
+    'empty' => [
+        'title' => 'No tour packages are available yet',
+        'text' => 'Please check back later or contact our team for curated tour support.',
+        'search_title' => 'No packages match your filters',
+        'search_text' => 'Try a different keyword, area, or tour style.',
+    ],
+    'fallback' => [
+        'area' => 'Curated area',
+        'type' => 'Private tour',
+        'request_rate' => 'Request rate',
+    ],
+];

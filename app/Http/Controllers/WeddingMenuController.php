@@ -21,7 +21,7 @@ class WeddingMenuController extends Controller
         $hotel = Hotels::find($id);
         $usdrates = UsdRates::where('name','USD')->first();
         $attentions = Attention::where('page','vadd-food-and-beverage')->get();
-        return view('form.wedding-add-food-and-beverage',[
+        return view('backend.operations.weddings.forms.food-and-beverage-create',[
            'hotel'=>$hotel,
            'usdrates'=>$usdrates,
            'attentions'=>$attentions,

@@ -36,7 +36,7 @@ return [
     'exchange_rate_api_key' => env('EXCHANGE_RATE_API_KEY', "6bf13447595262dab3f2d6c1"),
 
     'alt_logo' => env('ALT_LOGO', "Logo Bali Kami Group"),
-    'logo_dark' => env('LOGO_DARK', "storage/logo/logo-color-bali-kami.png"),
+    'logo_dark' => env('LOGO_DARK', "storage/logo/logo-white-bali-kami.png"),
     'logo_img_color' => env('LOGO_IMG_COLOR', "logo-color-bali-kami.png"),
     'logo_img_white' => env('LOGO_IMG_WHITE', "logo-white-bali-kami.png"),
     'logo_img_black' => env('LOGO_IMG_BLACK', "logo-black-bali-kami.png"),

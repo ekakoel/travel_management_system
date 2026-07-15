@@ -5,7 +5,7 @@
     <div class="image-container">
         <div class="top-lable">
             <p>
-                {!! $tour->type?->$typeField !!}
+                {{-- {!! $tour->type?->$typeField !!} --}}
             </p>
         </div>
         <a href="{{ route('view.tour-detail',$tour->slug) }}">
@@ -15,7 +15,7 @@
                 <img src="{{ getThumbnail('/images/default.webp', 380, 200) }}" alt="">
             @endif
             <div class="card-detail-title">
-                {{ $tour->$tourNameField }}
+                {{-- {{ $tour->$tourNameField }} --}}
             </div>
         </a>
     </div>

@@ -147,15 +147,22 @@
 .booking-review__grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 0;
+    border-top: 1px solid var(--frontend-shell-border);
+    border-bottom: 1px solid var(--frontend-shell-border);
 }
 
 .booking-review__card {
-    padding: 1rem 1.05rem;
-    border: 1px solid var(--frontend-shell-border);
-    border-radius: 20px;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    box-shadow: var(--frontend-shell-shadow-md);
+    padding: 1rem 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.booking-review__card + .booking-review__card {
+    padding-left: 1rem;
+    border-left: 1px solid var(--frontend-shell-border);
 }
 
 .booking-review__card-head {
@@ -173,13 +180,28 @@
 .booking-review__facts {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
+    gap: 0;
+    border-top: 1px solid var(--frontend-shell-border);
+    border-bottom: 1px solid var(--frontend-shell-border);
 }
 
 .booking-review__fact,
 .booking-review__room-item,
 .booking-review__transport-block {
-    padding: 0.85rem 0.9rem;
+    padding: 0.85rem 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.booking-review__fact:nth-child(even) {
+    padding-left: 0.85rem;
+    border-left: 1px solid var(--frontend-shell-border);
+}
+
+.booking-review__fact:nth-child(n + 3) {
+    border-top: 1px solid var(--frontend-shell-border);
 }
 
 .booking-review__fact span,
@@ -202,7 +224,7 @@
 .booking-review__transport {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0;
 }
 
 .booking-review__room-top {
@@ -213,8 +235,9 @@
 }
 
 .booking-review__empty {
-    padding: 0.9rem;
-    border-style: dashed;
+    padding: 0.9rem 0;
+    border-top: 1px dashed var(--frontend-shell-border);
+    border-bottom: 1px dashed var(--frontend-shell-border);
 }
 
 .checkbox-left {
@@ -235,6 +258,32 @@
 
 .checkbox-left p {
     margin: 0;
+}
+
+.frontend-order-confirmation {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin: 1rem 0 0;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--frontend-shell-border);
+    border-bottom: 1px solid var(--frontend-shell-border);
+    color: var(--frontend-shell-muted);
+    line-height: 1.55;
+    cursor: pointer;
+}
+
+.frontend-order-confirmation input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin-top: 0.15rem;
+    accent-color: var(--frontend-shell-primary);
+}
+
+.frontend-order-confirmation a {
+    color: var(--frontend-shell-primary);
+    font-weight: 800;
 }
 
 .hotel-check-form-group .form-control {
@@ -263,6 +312,13 @@
 
     .booking-review__grid {
         grid-template-columns: 1fr;
+    }
+
+    .booking-review__card + .booking-review__card,
+    .booking-review__fact:nth-child(even) {
+        padding-left: 0;
+        border-left: 0;
+        border-top: 1px solid var(--frontend-shell-border);
     }
 }
 

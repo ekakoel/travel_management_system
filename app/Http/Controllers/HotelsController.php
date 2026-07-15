@@ -349,14 +349,14 @@ class HotelsController extends Controller
             [
                 'key' => 'standard',
                 'eyebrow' => __('messages.Normal Prices'),
-                'title' => __('messages.Standard contract rates across your selected dates'),
+                'title' => __('messages.Standard rates across your selected dates'),
                 'cards' => $normalPriceData,
             ],
         ], fn ($section) => count($section['cards']) > 0));
 
         $hasAnyResults = count($rateSections) > 0;
 
-        return view('main.hotelavailability', [
+        return view('frontend.home.booking.hotel-availability', [
             'tax' => $tax,
             'usdrates' => $usdrates,
             'business' => $business,

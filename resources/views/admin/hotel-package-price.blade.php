@@ -31,7 +31,7 @@
                                             <tr>
                                                 <td>
                                                     <b>{{ $package->name }}</b><br>
-                                                        {{ $room->rooms }}<br>
+                                                        {{ $package->room->rooms }}<br>
                                                     @if ($package->booking_code != "")
                                                         <b>{{ $package->booking_code }}</b><br>
                                                     @endif

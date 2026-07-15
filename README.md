@@ -1,6 +1,7 @@
 # Travel Management System
 
 See [docs/project-understanding-rules.md](docs/project-understanding-rules.md) for the mandatory project understanding rules that must be followed before any AI agent or developer makes changes in this repository.
+See [docs/project-blueprint-roadmap.md](docs/project-blueprint-roadmap.md) for the product blueprint, frontend/backend separation direction, and staged UI/UX standardization roadmap.
 See [docs/blade-asset-rules.md](docs/blade-asset-rules.md) for the mandatory Blade, CSS, and JavaScript separation rules used in this repository.
 See [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md) for the mandatory frontend UI consistency rules used in this repository.
 See [docs/frontend-roadmap.md](docs/frontend-roadmap.md) for the mandatory frontend roadmap and change log that must be updated on every frontend change.
@@ -104,8 +105,20 @@ Follow these instructions to get a copy of the project up and running on your lo
       ```
     - For production:
       ```bash
-      npm run build
+      npm run prod
       ```
+
+## Project Structure
+
+Frontend and backend files must follow the project structure standard in [docs/project-structure-standard.md](docs/project-structure-standard.md).
+
+- Public frontend pages live under `resources/views/frontend/landing-page`, with page assets under `resources/frontend/js/landing-page` and `resources/frontend/scss/landing-page`.
+- Authenticated customer pages live under `resources/views/frontend/home`, with page assets under `resources/frontend/js/home` and `resources/frontend/scss/home`.
+- Internal staff/admin pages live under `resources/views/backend`, with backend assets under `resources/backend/js` and `resources/backend/scss`.
+- Shared frontend-only partials live under `resources/views/frontend/shared`; shared cross-area components should only be introduced when there are at least two real consumers.
+- Do not create new active files in legacy namespaces such as `resources/views/home`, `resources/views/form`, `resources/views/order`, or old page-level frontend folders.
+
+When moving files, update controller view paths, Blade `@include`/`@extends`, Mix entries, documentation, and run the relevant route/view tests plus `npm run development`.
 
 ## 🏃 Usage
 

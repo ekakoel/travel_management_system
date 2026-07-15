@@ -34,8 +34,6 @@
             @elseif($order->status == "Paid")
                 @if ($receipts)
                     <div class="status-paid-color"><i class="icon-copy fa fa-check-circle" aria-hidden="true"></i> {{ $order->status }}</div>
-                @elseif($doku_payment)
-                    <div class="status-paid-color"><i class="icon-copy fa fa-check-circle" aria-hidden="true"></i> {{ $doku_payment->invoice_number }} ({{ date('d M Y',strtotime($doku_payment->payment_date)) }})</div>
                 @else
                     <div class="status-paid-color"><i class="icon-copy fa fa-check-circle" aria-hidden="true"></i> {{ $invoice->inv_no }}</div>
                 @endif

@@ -7,35 +7,31 @@ use App\Models\Attention;
 use Illuminate\Http\Request;
 use App\Models\BusinessProfile;
 use App\Models\TermAndCondition;
+use App\Services\PublicFaqService;
 use App\Http\Requests\StoreTermAndConditionRequest;
 use App\Http\Requests\UpdateTermAndConditionRequest;
 
 class TermAndConditionController extends Controller
 {
+    private const POLICY_TYPES = [
+        'User',
+        'System',
+        'Administrator',
+        'Currency',
+        'Price',
+        'Promotion',
+        'FAQ',
+    ];
 
     public function index()
     {
         $attentions = Attention::where('page','term-and-condition')->get();
-        $tandcs = TermAndCondition::where('type','User')
-        ->get();
-        $system_term = TermAndCondition::where('type','System')
-        ->get();
-        $admin_term = TermAndCondition::where('type','Administrator')
-        ->get();
-        $price_term = TermAndCondition::where('type','Price')
-        ->get();
-        $promotion_term = TermAndCondition::where('type','Promotion')
-        ->get();
-        $currency_term = TermAndCondition::where('type','Currency')
-        ->get();
+        $policySections = $this->policySections(self::POLICY_TYPES);
         $business = BusinessProfile::where('id',1)->first();
-        return view('privacy-policy.term-and-condition',compact('tandcs'),[
+        return view('privacy-policy.term-and-condition',[
             'attentions'=>$attentions,
-            'system_term'=>$system_term,
-            'admin_term'=>$admin_term,
-            'price_term'=>$price_term,
-            'promotion_term'=>$promotion_term,
-            'currency_term'=>$currency_term,
+            'policySections'=>$policySections,
+            'policyTypes'=>self::POLICY_TYPES,
             'business'=>$business,
         ]);
     }
@@ -164,42 +160,121 @@ class TermAndConditionController extends Controller
 
     public function terms_and_conditions()
     {
-        $attentions = Attention::where('page','term-and-condition')->get();
-        $tandcs = TermAndCondition::where('type','User')
-        ->get();
-        $system_term = TermAndCondition::where('type','System')
-        ->get();
-        $admin_term = TermAndCondition::where('type','Administrator')
-        ->get();
-        $price_term = TermAndCondition::where('type','Price')
-        ->get();
-        $promotion_term = TermAndCondition::where('type','Promotion')
-        ->get();
-        $currency_term = TermAndCondition::where('type','Currency')
-        ->get();
         $business = BusinessProfile::where('id',1)->first();
-        return view('privacy-policy.terms-and-conditions',compact('tandcs'),[
-            'attentions'=>$attentions,
-            'system_term'=>$system_term,
-            'admin_term'=>$admin_term,
-            'price_term'=>$price_term,
-            'promotion_term'=>$promotion_term,
-            'currency_term'=>$currency_term,
+        $policyGroups = $this->publicPolicyGroups(['User', 'System', 'Administrator', 'Currency', 'Price', 'Promotion']);
+
+        return view('frontend.landing-page.policies.terms-and-conditions',[
             'business'=>$business,
+            'pageKey'=>'terms',
+            'pageTitle'=>__('messages.Terms and Conditions'),
+            'pageEyebrow'=>__('messages.Legal Center'),
+            'pageDescription'=>__('messages.Read the active terms, operating rules, pricing policies, and promotion conditions before using the Bali Kami Tour partner platform.'),
+            'policyGroups'=>$policyGroups,
+            'summaryItems'=>[
+                __('messages.User access rules'),
+                __('messages.System and administrator policy'),
+                __('messages.Price, currency, and promotion terms'),
+            ],
+            'emptyMessage'=>__('messages.No active policy content is available yet.'),
         ]);
     }
     public function privacy_policy()
     {
-        $attentions = Attention::where('page','term-and-condition')->get();
-        $tandcs = TermAndCondition::where('type','User')
-        ->get();
-        $system_term = TermAndCondition::where('type','System')
-        ->get();
         $business = BusinessProfile::where('id',1)->first();
-        return view('privacy-policy.privacy-policy',[
-            'attentions'=>$attentions,
-            'system_term'=>$system_term,
+        $policyGroups = $this->publicPolicyGroups(['System']);
+
+        return view('frontend.landing-page.policies.privacy-policy',[
+            'pageKey'=>'privacy',
+            'pageTitle'=>__('messages.Privacy Policy'),
+            'pageEyebrow'=>__('messages.Privacy and Data Use'),
+            'pageDescription'=>__('messages.Understand how Bali Kami Tour protects user information and handles data inside the partner platform.'),
+            'opening'=>__('messages.Welcome to https://online.balikamitour.com, a platform dedicated to providing information on tourism services online. Bali Kami Tour & Travel understands the importance of your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and protect the information you provide to us, based on applicable legal provisions. By using our services, you can be assured that the privacy data you provide to us will not be used for any purposes that may harm any party. By registering, you agree to the terms of this Privacy Policy.'),
+            'policyGroups'=>$policyGroups,
+            'summaryItems'=>[
+                __('messages.Personal data protection'),
+                __('messages.Platform usage transparency'),
+                __('messages.Registered partner privacy'),
+            ],
+            'emptyMessage'=>__('messages.No active privacy policy content is available yet.'),
             'business'=>$business,
         ]);
     }
+
+    public function faq(PublicFaqService $publicFaqService)
+    {
+        $business = BusinessProfile::where('id',1)->first();
+        $policyGroups = $publicFaqService->groups();
+
+        return view('frontend.landing-page.policies.faq', [
+            'pageKey'=>'faq',
+            'pageTitle'=>__('messages.FAQs'),
+            'pageEyebrow'=>__('messages.Help Center'),
+            'pageDescription'=>__('messages.Find practical answers about registration, partner access, platform use, and operational support before signing in.'),
+            'policyGroups'=>$policyGroups,
+            'summaryItems'=>[
+                __('messages.Partner onboarding'),
+                __('messages.Account access'),
+                __('messages.Operational support'),
+            ],
+            'emptyMessage'=>__('messages.No active FAQ content is available yet.'),
+            'business'=>$business,
+        ]);
+    }
+
+    private function policySections(array $types)
+    {
+        return collect($types)->map(function ($type) {
+            return [
+                'type'=>$type,
+                'title'=>$this->policyTypeLabel($type),
+                'items'=>TermAndCondition::where('type', $type)->latest()->get(),
+            ];
+        });
+    }
+
+    private function publicPolicyGroups(array $types)
+    {
+        return collect($types)->map(function ($type) {
+            return [
+                'type'=>$type,
+                'title'=>$this->policyTypeLabel($type),
+                'items'=>TermAndCondition::where('type', $type)
+                    ->where('status', 'Active')
+                    ->get()
+                    ->map(function ($policy) {
+                        return [
+                            'title'=>$this->localizedPolicyValue($policy, 'name'),
+                            'content'=>$this->localizedPolicyValue($policy, 'policy'),
+                        ];
+                    })
+                    ->filter(fn ($policy) => filled($policy['title']) || filled($policy['content']))
+                    ->values(),
+            ];
+        })->filter(fn ($group) => $group['items']->isNotEmpty())->values();
+    }
+
+    private function localizedPolicyValue(TermAndCondition $policy, string $field): ?string
+    {
+        $locale = app()->getLocale();
+        $suffix = str_starts_with($locale, 'zh') ? 'zh' : ($locale === 'en' ? 'en' : 'id');
+        $localizedField = "{$field}_{$suffix}";
+        $fallbackField = "{$field}_en";
+
+        return $policy->{$localizedField} ?: $policy->{$fallbackField} ?: $policy->{"{$field}_id"};
+    }
+
+    private function policyTypeLabel(string $type): string
+    {
+        return match ($type) {
+            'User' => __('messages.User Policy'),
+            'System' => __('messages.System Policy'),
+            'Administrator' => __('messages.Administrator Policy'),
+            'Currency' => __('messages.Currency Policy'),
+            'Price' => __('messages.Price Policy'),
+            'Promotion' => __('messages.Promotion Policy'),
+            'FAQ' => __('messages.FAQs'),
+            default => $type,
+        };
+    }
+
 }

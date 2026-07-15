@@ -160,6 +160,16 @@
                                             </a>
                                         </li>
                                         <li>
+                                            <a href="{{ route('admin.company-profile.edit') }}" class="{{ request()->routeIs('admin.company-profile.*') ? 'active' : '' }}">
+                                                <span class="icon-copy dw dw-building1" aria-hidden="true"></span> @lang("messages.Company Profile")
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('admin.footer-manager.index') }}" class="{{ request()->routeIs('admin.footer-manager.*') ? 'active' : '' }}">
+                                                <span class="icon-copy dw dw-browser2" aria-hidden="true"></span> @lang("messages.Footer Manager")
+                                            </a>
+                                        </li>
+                                        <li>
                                             <a href="{{ route('attentions') }}" class="{{ request()->routeIs('attentions') ? 'active' : '' }}">
                                                 <span class="icon-copy dw dw-warning" aria-hidden="true"></span> @lang("messages.Attentions")
                                             </a>

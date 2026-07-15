@@ -43,6 +43,11 @@ return [
                 'accent' => 'Tour Packages',
                 'description' => 'Tailored journey planning for travel agents who need flexible programs and dependable local coordination.',
             ],
+            'activities' => [
+                'title' => 'Curated Activities',
+                'accent' => 'Activities',
+                'description' => 'Experiences, excursions, and optional activity add-ons to complete premium client itineraries.',
+            ],
         ],
     ],
     'flow' => [

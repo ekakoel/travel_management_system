@@ -51,7 +51,7 @@ class TransportsAdminController extends Controller
             $type = TransportType::all();
             $brand = TransportBrand::all();
             $attentions = Attention::where('page','add-transport')->get();
-            return view('form.transportadd',[
+            return view('backend.operations.transports.forms.create',[
                 'attentions'=>$attentions,
                 'type'=>$type,
                 'brand'=>$brand,
@@ -70,7 +70,7 @@ class TransportsAdminController extends Controller
             $brand = TransportBrand::all();
             $attentions = Attention::where('page','edit-transport')->get();
             $usdrates=UsdRates::where('name','USD')->first();
-            return view('form.transportedit',[
+            return view('backend.operations.transports.forms.edit',[
                 'usdrates'=>$usdrates,
                 'type'=>$type,
                 'brand'=>$brand,

@@ -28,7 +28,7 @@ class WeddingDinnerVenuesController extends Controller
             $usdrates = UsdRates::where('name','USD')->first();
             $attentions = Attention::where('page','update-dinner-venue')->get();
 
-            return view('form.wedding-dinner-venue-add',[
+            return view('backend.operations.weddings.forms.dinner-venue-create',[
                 'hotel'=>$hotel,
                 'usdrates'=>$usdrates,
                 'attentions'=>$attentions,
@@ -46,7 +46,7 @@ class WeddingDinnerVenuesController extends Controller
                 $hotel = Hotels::where('id',$dinnerVenue->hotel_id)->first();
                 $attentions = Attention::where('page','update-dinner-venue')->get();
                 $weddingVenues = WeddingVenues::where('hotels_id',$hotel->id)->get();
-                return view('form.wedding-dinner-venue-edit',[
+                return view('backend.operations.weddings.forms.dinner-venue-edit',[
                     'dinner_venue'=>$dinnerVenue,
                     'usdrates'=>$usdrates,
                     'weddingVenues'=>$weddingVenues,
@@ -249,7 +249,7 @@ class WeddingDinnerVenuesController extends Controller
             $attentions = Attention::where('page','update-dinner-package')->get();
             $weddingVenues = WeddingVenues::where('hotels_id',$id)->get();
             $dinnerVenues = WeddingDinnerVenues::where('hotels_id',$id)->get();
-            return view('form.wedding-dinner-package-add',[
+            return view('backend.operations.weddings.forms.dinner-package-create',[
                 'dinnerVenues'=>$dinnerVenues,
                 'usdrates'=>$usdrates,
                 'weddingVenues'=>$weddingVenues,
@@ -272,7 +272,7 @@ class WeddingDinnerVenuesController extends Controller
                 $weddingVenues = WeddingVenues::where('hotels_id',$hotel->id)->get();
                 $dinnerVenues = WeddingDinnerVenues::where('hotels_id',$hotel->id)->get();
                 $dinner_venue = WeddingDinnerVenues::where('id',$dinnerPackage->dinner_venues_id)->first();
-                return view('form.wedding-dinner-package-edit',[
+                return view('backend.operations.weddings.forms.dinner-package-edit',[
                     'dinnerVenues'=>$dinnerVenues,
                     'dinner_venue_cover'=>$dinner_venue_cover,
                     'dinner_venue'=>$dinner_venue,

@@ -30,7 +30,7 @@ class WeddingReceptionVenuesController extends Controller
                 $hotel = Hotels::where('id',$reception_venue->hotel_id)->first();
                 $attentions = Attention::where('page','update-reception-venue')->get();
                 $weddingVenues = WeddingVenues::where('hotels_id',$hotel->id)->get();
-                return view('form.wedding-reception-venue-edit',[
+                return view('backend.operations.weddings.forms.reception-venue-edit',[
                     'reception_venue'=>$reception_venue,
                     'usdrates'=>$usdrates,
                     'weddingVenues'=>$weddingVenues,

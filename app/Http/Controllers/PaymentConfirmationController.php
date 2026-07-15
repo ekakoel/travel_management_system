@@ -20,12 +20,92 @@ use App\Http\Requests\UpdatePaymentConfirmationRequest;
 
 class PaymentConfirmationController extends Controller
 {
+    private function resolveOrderDetailRedirect(Orders $order): string
+    {
+        if ($order->service == "Hotel" || $order->service == "Hotel Promo" || $order->service == "Hotel Package") {
+            return "/detail-order-hotel/$order->id";
+        }
+
+        if ($order->service == "Private Villa") {
+            return "/detail-order-villa/$order->id";
+        }
+
+        if ($order->service == "Transport") {
+            return "/detail-order-transport/$order->id";
+        }
+
+        return "/detail-order-tour/$order->id";
+    }
+
+    private function getInvoicePaymentDeadline(?InvoiceAdmin $invoice): ?Carbon
+    {
+        if (!$invoice || !$invoice->due_date) {
+            return null;
+        }
+
+        return Carbon::parse($invoice->due_date);
+    }
+
+    private function hasPaymentSubmission(?InvoiceAdmin $invoice): bool
+    {
+        if (!$invoice) {
+            return false;
+        }
+
+        return $invoice->payment()->whereIn('status', ['Pending', 'Valid', 'Paid'])->exists();
+    }
+
+    private function autoCancelExpiredOrder(Orders $order, ?InvoiceAdmin $invoice, Request $request): Orders
+    {
+        $deadline = $this->getInvoicePaymentDeadline($invoice);
+
+        if (
+            $order->status !== 'Approved'
+            || !$deadline
+            || !$deadline->isPast()
+            || $this->hasPaymentSubmission($invoice)
+        ) {
+            return $order;
+        }
+
+        $order->update([
+            'status' => 'Canceled',
+            'msg' => 'Automatically canceled because no payment confirmation was submitted within 48 hours after approval.',
+        ]);
+
+        if ($order->rsv_id) {
+            Reservation::where('id', $order->rsv_id)->update([
+                'status' => 'Canceled',
+            ]);
+        }
+
+        OrderLog::create([
+            'order_id' => $order->id,
+            'action' => 'Auto Cancel Payment Deadline',
+            'url' => $request->getClientIp(),
+            'method' => 'Update',
+            'agent' => $order->name,
+            'admin' => Auth::id(),
+        ]);
+
+        $order->status = 'Canceled';
+
+        return $order;
+    }
+
     public function payment_confirmation(Request $request,$id)
     {
         $now = Carbon::now();
         $order = Orders::findOrFail($id);
         $reservation = Reservation::where('id',$order->rsv_id)->first();
         $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
+
+        $order = $this->autoCancelExpiredOrder($order, $invoice, $request);
+
+        if ($order->status !== 'Approved' || !$invoice) {
+            return redirect($this->resolveOrderDetailRedirect($order))->with('error', 'This order is no longer available for payment confirmation.');
+        }
+
         if($request->hasFile("receipt_name")){
             $file=$request->file("receipt_name");
             $receipt_name=$invoice->inv_no.'_'.time().'_'.$file->getClientOriginalName();
@@ -68,15 +148,7 @@ class PaymentConfirmationController extends Controller
                     ->subject($data["title"])
                     ->attach($receipt);
             });
-            if ($order->service == "Hotel" || $order->service == "Hotel Promo" || $order->service == "Hotel Package" ) {
-                return redirect("/detail-order-hotel/$order->id")->with('success','Payment proof has been sent.');
-            }elseif($order->service == "Private Villa"){
-                return redirect("/detail-order-villa/$order->id")->with('success','Payment proof has been sent.');
-            }elseif($order->service == "Transport"){
-                return redirect("/detail-order-transport/$order->id")->with('success','Payment proof has been sent.');
-            }else{
-                return redirect("/detail-order-tour/$order->id")->with('success','Payment proof has been sent.');
-            }
+            return redirect($this->resolveOrderDetailRedirect($order))->with('success','Payment proof has been sent.');
         }else{
             return redirect("/detail-order-$order->id")->with('error','Please try again');
         }

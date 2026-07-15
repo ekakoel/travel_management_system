@@ -31,93 +31,7 @@ class AdminPanelController extends Controller
     
     // FUNCTION ADD SERVICE =============================================================================================================>
     public function admin_panel_main(Request $request){
-        $attentions = Attention::where('page','admin-tour-edit')->get();
-        $usdrates = UsdRates::where('name','USD')->first();
-        $cnyrates = UsdRates::where('name','CNY')->first();
-        $twdrates = UsdRates::where('name','TWD')->first();
-        $now = Carbon::now();
-        $adminpanel = AdminPanel::all();
-        $services = Services::all();
-        $activetours = Tours::where('status','Active')->get();
-        $validorders = Orders::where('status','Active')
-            ->get();
-        $activeorders = Orders::where('status','Confirmed')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $pendingorders = Orders::where('status','Pending')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $invalidorders = Orders::where('status','Invalid')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $rejectedorders = Orders::where('status','Rejected')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $total_price_active_order = Orders::where('status','Confirmed')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_invalid_order = Orders::where('status','Invalid')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_pending_order = Orders::where('status','Pending')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_rejected_order = Orders::where('status','Rejected')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_valid_order = Orders::where('status','Approved')
-            ->sum('final_price');
-        $mindate = Orders::where('status','Active')
-            ->min('checkin');
-        $maxdate = Orders::where('status','Active')
-            ->max('checkin');
-        $hotels_active = Hotels::where('status','Active')->get();
-        $hotels_inactive = Hotels::where('status','!=','Active')->get();
-        $tours_active = Tours::where('status','Active')->get();
-        $tours_inactive = Tours::where('status','!=','Active')->get();
-        $activities_active = Activities::where('status','Active')->get();
-        $activities_inactive = Activities::where('status','!=','Active')->get();
-        $transports_active = Transports::where('status','Active')->get();
-        $transports_inactive = Transports::where('status','!=','Active')->get();
-        $villas_active = Villas::where('status','Active')->get();
-        $villas_inactive = Villas::where('status','!=','Active')->get();
-        $weddings_active = Weddings::where('status','Active')->get();
-        $configs = UiConfig::orderBy('page','asc')->get();
-        $hotels = Hotels::orderBy('name')->get();
-        return view('backend.developer.index',compact('adminpanel'),[
-            'attentions'=>$attentions,
-            'usdrates'=>$usdrates,
-            'cnyrates'=>$cnyrates,
-            'twdrates'=>$twdrates,
-            'mindate'=>$mindate,
-            'maxdate'=>$maxdate,
-            'services'=>$services,
-            'attentions'=>$attentions,
-            'activetours'=>$activetours,
-            'validorders'=>$validorders,
-            'activeorders'=>$activeorders,
-            'pendingorders'=>$pendingorders,
-            'invalidorders'=>$invalidorders,
-            'rejectedorders'=>$rejectedorders,
-            'total_price_active_order'=>$total_price_active_order,
-            'total_price_pending_order'=>$total_price_pending_order,
-            'total_price_invalid_order'=>$total_price_invalid_order,
-            'total_price_rejected_order'=>$total_price_rejected_order,
-            'total_price_valid_order'=>$total_price_valid_order,
-            'hotels_active'=>$hotels_active,
-            'hotels_inactive'=>$hotels_inactive,
-            'tours_active'=>$tours_active,
-            'tours_inactive'=>$tours_inactive,
-            'activities_active'=>$activities_active,
-            'activities_inactive'=>$activities_inactive,
-            'transports_active'=>$transports_active,
-            'transports_inactive'=>$transports_inactive,
-            'weddings_active'=>$weddings_active,
-            'villas_active'=>$villas_active,
-            'villas_inactive'=>$villas_inactive,
-            'configs'=>$configs,
-            'hotels'=>$hotels,
-        ]);
+        return view('backend.developer.index', $this->adminPanelData());
     }
 
     public function hotelPriceChart(Request $request)
@@ -137,8 +51,8 @@ class AdminPanelController extends Controller
         $values = [];
 
         foreach ($prices as $price) {
-            $months[] = Carbon::create()->month($price->start_date)->format('M');
-            $values[] = round($price->contract_rate);
+            $months[] = Carbon::create()->month((int) $price->month)->format('M');
+            $values[] = round((float) $price->avg_price, 2);
         }
 
         return response()->json([
@@ -149,80 +63,146 @@ class AdminPanelController extends Controller
     
     public function index()
     {
-        $attentions = Attention::where('page','admin-tour-edit')->get();
-        $usdrates = UsdRates::where('name','USD')->first();
-        $cnyrates = UsdRates::where('name','CNY')->first();
-        $twdrates = UsdRates::where('name','TWD')->first();
+        return view('backend.developer.index', $this->adminPanelData());
+    }
+
+    protected function adminPanelData(): array
+    {
         $now = Carbon::now();
-        $adminpanel = AdminPanel::all();
-        $attentions = Attention::where('page','admin-panel')->get();
-        $services = Services::all();
-        $activetours = Tours::where('status','Active')->get();
-        $validorders = Orders::where('status','Active')
-            ->get();
-        $activeorders = Orders::where('status','Confirmed')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $pendingorders = Orders::where('status','Pending')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $invalidorders = Orders::where('status','Invalid')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $rejectedorders = Orders::where('status','Rejected')
-            ->where('checkin', '>=', $now)
-            ->get();
-        $total_price_active_order = Orders::where('status','Confirmed')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_invalid_order = Orders::where('status','Invalid')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_pending_order = Orders::where('status','Pending')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_rejected_order = Orders::where('status','Rejected')
-            ->where('checkin', '>=', $now)
-            ->sum('final_price');
-        $total_price_valid_order = Orders::where('status','Approved')
-            ->sum('final_price');
-        $mindate = Orders::where('status','Active')
-            ->min('checkin');
-        $maxdate = Orders::where('status','Active')
-            ->max('checkin');
-        $hotels_active = Hotels::where('status','Active')->get();
-        $tours_active = Tours::where('status','Active')->get();
-        $activities_active = Activities::where('status','Active')->get();
-        $transports_active = Transports::where('status','Active')->get();
-        $weddings_active = Weddings::where('status','Active')->get();
-        $configs = UiConfig::orderBy('page','asc')->get();
-        return view('backend.developer.index',compact('adminpanel'),[
-            'attentions'=>$attentions,
-            'usdrates'=>$usdrates,
-            'cnyrates'=>$cnyrates,
-            'twdrates'=>$twdrates,
-            'mindate'=>$mindate,
-            'maxdate'=>$maxdate,
-            'services'=>$services,
-            'attentions'=>$attentions,
-            'activetours'=>$activetours,
-            'validorders'=>$validorders,
-            'activeorders'=>$activeorders,
-            'pendingorders'=>$pendingorders,
-            'invalidorders'=>$invalidorders,
-            'rejectedorders'=>$rejectedorders,
-            'total_price_active_order'=>$total_price_active_order,
-            'total_price_pending_order'=>$total_price_pending_order,
-            'total_price_invalid_order'=>$total_price_invalid_order,
-            'total_price_rejected_order'=>$total_price_rejected_order,
-            'total_price_valid_order'=>$total_price_valid_order,
-            'hotels_active'=>$hotels_active,
-            'tours_active'=>$tours_active,
-            'activities_active'=>$activities_active,
-            'transports_active'=>$transports_active,
-            'weddings_active'=>$weddings_active,
-            'configs'=>$configs,
+        $futureOrders = Orders::query()->where('checkin', '>=', $now);
+
+        $serviceCounts = [
+            'Hotels' => $this->activeDraftCounts(Hotels::query()),
+            'Tours' => $this->activeDraftCounts(Tours::query()),
+            'Activities' => $this->activeDraftCounts(Activities::query()),
+            'Transports' => $this->activeDraftCounts(Transports::query()),
+            'Villas' => $this->activeDraftCounts(Villas::query()),
+            'Weddings' => [
+                'active' => Weddings::query()->where('status', 'Active')->count(),
+                'draft' => Weddings::query()->where('status', '!=', 'Active')->count(),
+            ],
+        ];
+
+        $services = Services::query()
+            ->orderByRaw("status = 'Active' desc")
+            ->orderBy('name')
+            ->get()
+            ->map(function ($service) use ($serviceCounts) {
+                $counts = $serviceCounts[$service->name] ?? ['active' => 0, 'draft' => 0];
+
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'nicname' => $service->nicname,
+                    'icon' => $service->icon,
+                    'status' => $service->status,
+                    'active_count' => $counts['active'],
+                    'draft_count' => $counts['draft'],
+                    'total_count' => $counts['active'] + $counts['draft'],
+                ];
+            });
+
+        $orderPipeline = collect([
+            $this->orderPipelineItem('Confirmed', 'Confirmed', clone $futureOrders),
+            $this->orderPipelineItem('Pending', 'Pending', clone $futureOrders),
+            $this->orderPipelineItem('Invalid', 'Invalid', clone $futureOrders),
+            $this->orderPipelineItem('Rejected', 'Rejected', clone $futureOrders),
         ]);
+
+        $validOrderRange = Orders::query()
+            ->where('status', 'Active')
+            ->selectRaw('MIN(checkin) as min_date, MAX(checkin) as max_date, COUNT(*) as total_orders')
+            ->first();
+
+        $recentOrders = Orders::query()
+            ->select(['id', 'orderno', 'service', 'servicename', 'status', 'checkin', 'final_price', 'created_at'])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        $uiConfigSummary = [
+            'total' => UiConfig::query()->count(),
+            'active' => UiConfig::query()->where('status', true)->count(),
+            'inactive' => UiConfig::query()->where('status', false)->count(),
+        ];
+
+        $currencyRates = UsdRates::query()
+            ->whereIn('name', ['USD', 'CNY', 'TWD'])
+            ->get()
+            ->keyBy('name');
+
+        $hotels = Hotels::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
+
+        $approvedRevenue = Orders::query()->where('status', 'Approved')->sum('final_price');
+
+        return [
+            'adminpanel' => AdminPanel::query()->get(),
+            'attentions' => Attention::query()->where('page', 'admin-panel')->get(),
+            'currencyRates' => $currencyRates,
+            'services' => $services,
+            'serviceCounts' => $serviceCounts,
+            'orderPipeline' => $orderPipeline,
+            'validOrderRange' => $validOrderRange,
+            'validOrderRevenue' => $approvedRevenue,
+            'recentOrders' => $recentOrders,
+            'configs' => UiConfig::query()->orderBy('page', 'asc')->limit(8)->get(),
+            'uiConfigSummary' => $uiConfigSummary,
+            'hotels' => $hotels,
+            'dashboardStats' => [
+                [
+                    'label' => 'Active Services',
+                    'value' => $services->where('status', 'Active')->count(),
+                    'meta' => $services->count() . ' total services',
+                    'icon' => 'fa fa-cubes',
+                    'tone' => 'teal',
+                ],
+                [
+                    'label' => 'Future Orders',
+                    'value' => $orderPipeline->sum('count'),
+                    'meta' => currencyFormatUsd($orderPipeline->sum('total')),
+                    'icon' => 'fa fa-calendar-check-o',
+                    'tone' => 'blue',
+                ],
+                [
+                    'label' => 'Approved Revenue',
+                    'value' => currencyFormatUsd($approvedRevenue),
+                    'meta' => 'Approved order value',
+                    'icon' => 'fa fa-line-chart',
+                    'tone' => 'green',
+                ],
+                [
+                    'label' => 'UI Config',
+                    'value' => $uiConfigSummary['active'] . '/' . $uiConfigSummary['total'],
+                    'meta' => $uiConfigSummary['inactive'] . ' inactive controls',
+                    'icon' => 'fa fa-sliders',
+                    'tone' => 'amber',
+                ],
+            ],
+        ];
+    }
+
+    protected function activeDraftCounts($query): array
+    {
+        return [
+            'active' => (clone $query)->where('status', 'Active')->count(),
+            'draft' => (clone $query)->where('status', '!=', 'Active')->count(),
+        ];
+    }
+
+    protected function orderPipelineItem(string $label, string $status, $query): array
+    {
+        $query->where('status', $status);
+
+        return [
+            'label' => $label,
+            'status' => $status,
+            'count' => (clone $query)->count(),
+            'total' => (float) (clone $query)->sum('final_price'),
+            'tone' => strtolower($status),
+        ];
     }
 
 // FUNCTION ADD SERVICE =============================================================================================================>

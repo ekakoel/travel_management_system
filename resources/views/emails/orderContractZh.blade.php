@@ -69,6 +69,7 @@
             padding: 8px 8px 0 8px;
             border-radius: 4px;
             font-size: 0.7rem;
+            margin-top: 10px;
         }
         .business-name{
             font-size: 1.8rem;
@@ -190,6 +191,21 @@
         }
         .additional-info p{
             line-height: 1.3;
+        }
+        .invoice-note-watermark{
+            margin-top: 14px;
+            padding: 8px 12px;
+            border-top: 1px dashed #b9c2cf;
+            color: #6b7280;
+            font-size: 0.64rem;
+            line-height: 1.45;
+            text-align: center;
+            letter-spacing: 0.4px;
+            opacity: 0.88;
+        }
+        .invoice-note-watermark strong{
+            color: #4b5563;
+            font-size: 0.66rem;
         }
         .guest-container{
             display: flex;
@@ -1376,15 +1392,13 @@
                     {{-- {{ $invoice->bank_id }} --}}
                     <table class="table-list m-t-18 m-b-18">
                         <tbody>
-                            @uiEnabled('doku-payment')
                                 <tr>
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
                                     <td colspan="3" class="table-title">
-                                        自助付款
+                                        Payment Summary
                                     </td>
                                 </tr>
-                            @endUiEnabled
                             <tr style="text-align: right;">
                                 <td style="width:20%;"></td>
                                 <td style="width:20%;"></td>
@@ -1491,40 +1505,6 @@
                             @endif
                         </tbody>
                     </table>
-                    @uiEnabled('doku-payment')
-                        <table class="table-list m-t-18 m-b-18">
-                            <tbody>
-                                <tr>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td colspan="3" class="table-title">
-                                        DOKU 付款
-                                    </td>
-                                </tr>
-                                <tr style="text-align: right;">
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;">服務</td>
-                                    <td style="width: 20%">IDR</td>
-                                    <td style="width: 20%">{{ currencyFormatIdr($order->final_price * $usdrates->rate) }}</td>
-                                </tr>
-                                <tr style="text-align: right;">
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;">稅 ({{ $tax_doku->tax_rate }})</td>
-                                    <td >IDR</td>
-                                    <td style="width: 20%">{{ currencyFormatIdr(($order->final_price * $usdrates->rate)*$tax_doku->tax_rate) }}</td>
-                                </tr>
-                                <tr style="text-align: right;">
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>總</b></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>IDR</b></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatIdr(($order->final_price * $usdrates->rate)+(($order->final_price * $usdrates->rate)*$tax_doku->tax_rate)) }}</b></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    @endUiEnabled
                     <div class="bank-account">
                         <div class="tb-container">
                             <table class="table tb-list">
@@ -1587,20 +1567,9 @@
                             </table>
                         </div>
                     </div>
-                    <div class="additional-info">
-                        <br>
-                        <p>
-                        我們謹提醒您在付款過程中遵循以下步驟：<br>
-                        1. 收到我們的確認函後，請查閱發送的發票中的預訂詳情。<br>
-                        2. 如果收到的發票正確無誤，請在發票中提及的“付款截止日期”前完成支付。<br>
-                        3. 如果付款已完成，請將「付款證明」上傳至我們的系統。<br>
-                        @uiEnabled('doku-payment')
-                            4. 使用 DOKU Payment 付款只能以印尼盾 (IDR) 进行。<br>
-                            5. 付款可以自行支付或通过 DOKU Payment 进行。<br>
-                            6. 通过 DOKU Payment 进行的每笔付款将收取 3% 或 0.03 的税费。<br>
-                        @endUiEnabled
-                        感謝您的關注與合作。
-                        </p>
+                    <div class="invoice-note-watermark">
+                        <strong>Payment Notice</strong><br>
+                        è«‹æ–¼ä»˜æ¬¾æœŸé™å‰å®Œæˆä»˜æ¬¾ï¼Œä¸¦æ–¼è¨‚å–®é é¢ä¸Šå‚³ä»˜æ¬¾æ†‘è­‰ä»¥ä¾›æ ¸å°ã€‚
                     </div>
                 </div>
             </div>

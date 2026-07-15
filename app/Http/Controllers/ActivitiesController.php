@@ -323,7 +323,7 @@ class ActivitiesController extends Controller
     public function view_edit_galery_activity($id)
     {
         $activities=Activities::findOrFail($id);
-        return view('form.activitygaleryedit')->with('activities',$activities);
+        return view('backend.operations.activities.forms.gallery-edit')->with('activities',$activities);
     }
 
 

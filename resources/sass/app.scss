@@ -9,10 +9,9 @@
 @import '~admin-lte/dist/css/adminlte.css';
 
 // Font Awesome
-@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "~@fortawesome/fontawesome-free/scss/solid.scss";
-@import "~@fortawesome/fontawesome-free/scss/regular.scss";
-@import "~@fortawesome/fontawesome-free/scss/brands.scss";
+// Use the distributed CSS bundle so Sass does not compile legacy
+// Font Awesome SCSS internals that emit slash-division deprecation warnings.
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
 
 // sweet alert
 @import 'sweetalert2/src/sweetalert2.scss';

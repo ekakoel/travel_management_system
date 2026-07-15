@@ -69,6 +69,7 @@
             padding: 8px 8px 0 8px;
             border-radius: 4px;
             font-size: 0.7rem;
+            margin-top: 10px;
         }
         .business-name{
             font-size: 1.8rem;
@@ -190,6 +191,21 @@
         }
         .additional-info p{
             line-height: 1.3;
+        }
+        .invoice-note-watermark{
+            margin-top: 14px;
+            padding: 8px 12px;
+            border-top: 1px dashed #b9c2cf;
+            color: #6b7280;
+            font-size: 0.64rem;
+            line-height: 1.45;
+            text-align: center;
+            letter-spacing: 0.4px;
+            opacity: 0.88;
+        }
+        .invoice-note-watermark strong{
+            color: #4b5563;
+            font-size: 0.66rem;
         }
         .guest-container{
             display: flex;
@@ -1380,15 +1396,13 @@
                     </table>
                     <table class="table-list m-t-18 m-b-18">
                         <tbody>
-                            @uiEnabled('doku-payment')
-                                <tr>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td colspan="3" class="table-title">
-                                        Self Payment
-                                    </td>
-                                </tr>
-                            @endUiEnabled
+                            <tr>
+                                <td style="width:20%;"></td>
+                                <td style="width:20%;"></td>
+                                <td colspan="3" class="table-title">
+                                    Payment Summary
+                                </td>
+                            </tr>
                             <tr style="text-align: right;">
                                 <td style="width:20%;"></td>
                                 <td style="width:20%;"></td>
@@ -1443,14 +1457,14 @@
                                 <tr style="text-align: right; color:gray !important;">
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Grand Total</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
                                 </tr>
                                 <tr style="text-align: right;">
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
-                                    <td style="width:20%;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%;" class="final-price"><b>Grand Total</b></td>
                                     <td style="width:20%;" class="final-price"><b>CNY</b></td>
                                     <td style="width: 20%" class="final-price"><b>{{ "¥ ". number_format($invoice->total_cny) }}</b></td>
                                 </tr>
@@ -1458,14 +1472,14 @@
                                 <tr style="text-align: right; color:gray !important;">
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Grand Total</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
                                 </tr>
                                 <tr style="text-align: right;">
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
-                                    <td style="width:20%;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%;" class="final-price"><b>Grand Total</b></td>
                                     <td style="width:20%;" class="final-price"><b>TWD</b></td>
                                     <td style="width: 20%" class="final-price"><b>{{ currencyFormatTwd($invoice->total_twd) }}</b></td>
                                 </tr>
@@ -1473,14 +1487,14 @@
                                 <tr style="text-align: right; color:gray !important;">
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Grand Total</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
                                 </tr>
                                 <tr style="text-align: right;">
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
-                                    <td style="width:20%;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%;" class="final-price"><b>Grand Total</b></td>
                                     <td style="width:20%;" class="final-price"><b>IDR</b></td>
                                     <td style="width: 20%" class="final-price"><b>{{ currencyFormatIdr($invoice->total_idr) }}</b></td>
                                 </tr>
@@ -1488,47 +1502,13 @@
                                 <tr style="text-align: right;">
                                     <td style="width:20%;"></td>
                                     <td style="width:20%;"></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
+                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Grand Total</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>USD</b></td>
                                     <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatUsd($invoice->total_usd) }}</b></td>
                                 </tr>
                             @endif
                         </tbody>
                     </table>
-                    @uiEnabled('doku-payment')
-                        <table class="table-list m-t-18 m-b-18">
-                            <tbody>
-                                <tr>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td colspan="3" class="table-title">
-                                        DOKU Payment
-                                    </td>
-                                </tr>
-                                <tr style="text-align: right;">
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;">Services</td>
-                                    <td style="width: 20%">IDR</td>
-                                    <td style="width: 20%">{{ currencyFormatIdr($order->final_price * $usdrates->rate) }}</td>
-                                </tr>
-                                <tr style="text-align: right;">
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;">Payment Fee</td>
-                                    <td >IDR</td>
-                                    <td style="width: 20%">{{ currencyFormatIdr(($order->final_price * $usdrates->rate)*$tax_doku->tax_rate) }}</td>
-                                </tr>
-                                <tr style="text-align: right;">
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%;"></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>IDR</b></td>
-                                    <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatIdr(($order->final_price * $usdrates->rate)+(($order->final_price * $usdrates->rate)*$tax_doku->tax_rate)) }}</b></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    @endUiEnabled
                     @if ($bankAccount)
                         <div class="bank-account">
                             <div class="tb-container">
@@ -1563,7 +1543,7 @@
                                     </tr>
                                     <tr>
                                         <td style="width:15%;">
-                                            Account IDR
+                                            IDR Account
                                         </td>
                                         <td style="width: 35%;">
                                             {{ $bankAccount->account_idr }}
@@ -1577,7 +1557,7 @@
                                     </tr>
                                     <tr>
                                         <td style="width:15%;">
-                                            Account USD
+                                            USD Account
                                         </td>
                                         <td colspan="2" style="width: 35%;">
                                             {{ $bankAccount->account_usd }}
@@ -1593,19 +1573,9 @@
                             </div>
                         </div>
                     @endif
-                    <div class="additional-info">
-                        <br>
-                        <p>We would like to remind you to follow the following steps in the payment process:<br>
-                        1. After receiving our confirmation letter, please review the details of the reservation in the invoice sent.<br>
-                        2. If the invoice received is accurate, kindly proceed with the payment before the 'Payment Dateline' mentioned in the invoice.<br>
-                        3. If the payment has been completed, please upload the 'proof of payment' in our system.<br>
-                        @uiEnabled('doku-payment')
-                            4. Payments using DOKU Payment can only be made in Rupiah (IDR).<br>
-                            5. Payments can be made independently or through DOKU Payment.<br>
-                            6. Every payment made through DOKU Payment will be subject to a tax (TAX) of 3% or 0.03 of the total transaction.<br>
-                        @endUiEnabled
-                        Thank you for your attention and cooperation.
-                        </p>
+                    <div class="invoice-note-watermark">
+                        <strong>Payment Notice</strong><br>
+                        Please complete payment before the stated deadline and upload payment proof through the order page for verification.
                     </div>
                 </div>
             </div>

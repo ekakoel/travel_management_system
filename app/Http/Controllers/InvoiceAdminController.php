@@ -30,7 +30,7 @@ class InvoiceAdminController extends Controller
         $attentions = Attention::where('page',"invoice")->get();
         $rsv = Reservation::all();
         
-        return view('admin.invoice',[
+        return view('backend.finance.invoices.index',[
             'invoices'=>$invoices,
             
             'business'=>$business,
@@ -76,7 +76,7 @@ class InvoiceAdminController extends Controller
         ->sum('final_price');
         $sum_additional_invoice = AdditionalInvoice::where('inv_id',$invoice->id)
         ->sum('amount');
-        return view('admin.invoice-detail',[
+        return view('backend.finance.invoices.detail',[
             'invoice'=>$invoice,
             'business'=>$business,
             'now'=>$now,

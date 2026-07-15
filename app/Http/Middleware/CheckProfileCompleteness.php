@@ -15,15 +15,11 @@ class CheckProfileCompleteness
             return redirect()->route('profile');
         }
 
-        if (!$user->status=="Active") {
-            return redirect()->route('profile');
-        }
         return $next($request);
     }
 
     private function isProfileComplete($user)
     {
-        return $user->name && $user->phone && $user->office && $user->address && $user->country;
+        return filled($user->email);
     }
 }
-

@@ -439,10 +439,10 @@
                 const inputAirportShuttlePrice = document.getElementById('inputAirportShuttlePrice');
 
                 function formatUSD(amount) {
-                    return '$ ' + new Intl.NumberFormat('en-US', {
+                    return '$' + Number(amount || 0).toLocaleString('de-DE', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
-                    }).format(amount);
+                    });
                 }
 
                 function updateShuttlePrice() {

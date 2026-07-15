@@ -1,3 +1,5 @@
+@include('privacy-policy.partials.public-policy-page')
+@php return; @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,8 +48,9 @@
                 <nav class="site-navigation text-right ml-auto d-none d-lg-block" role="navigation">
                 <ul class="site-menu main-menu js-clone-nav ml-auto ">
                     <li><a href="/" class="nav-link">@lang('messages.Home')</a></li>
-                    <li><a href="{{ config('app.term') }}" class="nav-link">@lang('messages.Terms and Conditions')</a></li>
-                    <li class="active"><a href="#" class="nav-link">@lang('messages.Privacy Policy')</a></li>
+                    <li><a href="{{ route('terms-and-conditions') }}" class="nav-link">@lang('messages.Terms and Conditions')</a></li>
+                    <li class="active"><a href="{{ route('privacy-policy') }}" class="nav-link">@lang('messages.Privacy Policy')</a></li>
+                    <li><a href="{{ route('faq') }}" class="nav-link">@lang('messages.FAQs')</a></li>
                     {{-- <li><a href="{{ config('app.user_manual') }}" class="nav-link">@lang('messages.User Manual')</a></li>
                     <li><a href="{{ config('app.help') }}" class="nav-link">@lang('messages.Help')</a></li>
                     <li><a href="{{ config('app.contact') }}" class="nav-link">@lang('messages.Contact')</a></li> --}}
@@ -95,8 +98,9 @@
         @endphp
         <div class="text-center d-print-none p-b-18">
             <div class="inline-link">
-                <a href="{{ config('app.term') }}" target="_blank">Terms and Conditions</a> - 
-                <a href="{{ config('app.privacy') }}" target="_blank">Privacy Policy</a>
+                <a href="{{ route('terms-and-conditions') }}" target="_blank">Terms and Conditions</a> - 
+                <a href="{{ route('privacy-policy') }}" target="_blank">Privacy Policy</a> -
+                <a href="{{ route('faq') }}" target="_blank">FAQs</a>
                 {{-- <a href="{{ config('app.USER_MANUAL') }}" target="_blank">User Manual</a> - 
                 <a href="{{ config('app.CONTACT') }}" target="_blank">Contact</a> --}}
             </div>

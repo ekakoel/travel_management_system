@@ -345,7 +345,7 @@ class ReservationController extends Controller
         ->get();
         
         $business = BusinessProfile::where('id','=',1)->first();
-        return view('form.add_rsv_order',[
+        return view('backend.operations.reservations.actions.add-order',[
             'orders'=>$orders,
             'reservation' =>$reservation,
             'business'=>$business,
@@ -362,7 +362,7 @@ class ReservationController extends Controller
         ->get();
        
         $business = BusinessProfile::where('id','=',1)->first();
-        return view('form.add_rsv_transport',[
+        return view('backend.operations.reservations.actions.add-transport',[
             'orders'=>$orders,
             'reservation' =>$reservation,
             'business'=>$business,
@@ -377,7 +377,7 @@ class ReservationController extends Controller
         ->get();
         
         $business = BusinessProfile::where('id','=',1)->first();
-        return view('form.add_rsv_activity_tour',[
+        return view('backend.operations.reservations.actions.add-activity-tour',[
             'orders'=>$orders,
             'reservation' =>$reservation,
             'business'=>$business,
@@ -392,7 +392,7 @@ class ReservationController extends Controller
         ->get();
         
         $business = BusinessProfile::where('id','=',1)->first();
-        return view('form.add_rsv_itinerary',[
+        return view('backend.operations.reservations.actions.add-itinerary',[
             'orders'=>$orders,
             'reservation' =>$reservation,
             'business'=>$business,

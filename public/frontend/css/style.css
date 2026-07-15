@@ -515,6 +515,9 @@ p{
 }
 
 @media (max-width: 768px) {
+    .navbar-expand-lg .navbar-nav .dropdown-menu {
+        width: 100% !important;
+    }
     .content h1, .content-slider h1 {
     font-size: 2rem;
     }
@@ -588,24 +591,9 @@ p{
 .service-item .icon-container img{
     opacity: 1;
     max-width: 70%;
+    object-position: center;
 }
-/* .service-item .icon-container img:is(:hover,:active){
 
-} */
-
-/* .service-item::after {
-    position: absolute;
-    content: "";
-    width: 0;
-    height: 0;
-    top: -80px;
-    right: -80px;
-    border: 80px solid;
-    transform: rotate(45deg);
-    opacity: 1;
-    transition: .5s;
-    color: #ab7842;
-} */
 
 .service-item.bg-white::after {
     border-color: transparent transparent var(--light) transparent;

@@ -37,7 +37,7 @@ class ReviewController extends Controller
             ->orderBy('created_at', 'desc')
             ->latest()
             ->paginate(10, ['*'], 'rejected_page');
-        return view('home.reviews.index', compact('reviews', 'serviceStats',  'pendingReviews', 'approvedReviews','rejectedReviews','transportStats', 'guideStats', 'driverStats', 'guides', 'drivers'));
+        return view('frontend.home.reviews.index', compact('reviews', 'serviceStats',  'pendingReviews', 'approvedReviews','rejectedReviews','transportStats', 'guideStats', 'driverStats', 'guides', 'drivers'));
     }
 
     public function wedding_review_index()
@@ -56,7 +56,7 @@ class ReviewController extends Controller
             ->orderBy('created_at', 'desc')
             ->latest()
             ->paginate(10, ['*'], 'rejected_page');
-        return view('home.reviews.wedding-index', compact('reviews', 'weddingStats',  'pendingReviews', 'approvedReviews','rejectedReviews'));
+        return view('frontend.home.reviews.wedding-index', compact('reviews', 'weddingStats',  'pendingReviews', 'approvedReviews','rejectedReviews'));
     }
 
     public function print_reviews($bookingCode)
@@ -102,7 +102,7 @@ class ReviewController extends Controller
             $averageMoodScore = null;
             $averageMoodLabel = 'No data';
         }
-        return view('home.reviews.print-reviews', compact('reviews', 'bookingCode', 'averageRatings','averageMoodLabel', 'averageMoodScore','temporary_link'));
+        return view('frontend.home.reviews.print-reviews', compact('reviews', 'bookingCode', 'averageRatings','averageMoodLabel', 'averageMoodScore','temporary_link'));
     }
 
     public function print_wedding_reviews($bookingCode)
@@ -146,7 +146,7 @@ class ReviewController extends Controller
             $averageMoodScore = null;
             $averageMoodLabel = 'No data';
         }
-        return view('home.reviews.print-wedding-reviews', compact('reviews', 'bookingCode', 'averageRatings','averageMoodLabel', 'averageMoodScore','temporary_link'));
+        return view('frontend.home.reviews.print-wedding-reviews', compact('reviews', 'bookingCode', 'averageRatings','averageMoodLabel', 'averageMoodScore','temporary_link'));
     }
     
     public function create()
@@ -184,7 +184,7 @@ class ReviewController extends Controller
         ];
         $guides = Guide::where('status', 'active')->get();
         $drivers = Drivers::where('status', 'active')->get();
-        return view('home.reviews.create', compact('driver_questions','guide_questions','service_questions', 'options', 'moods', 'guides','drivers'));
+        return view('frontend.home.reviews.create', compact('driver_questions','guide_questions','service_questions', 'options', 'moods', 'guides','drivers'));
     }
 
     public function store(Request $request)
@@ -346,14 +346,14 @@ class ReviewController extends Controller
         $reviewLinks = TemporaryReviewLink::where('expires_at', '>=', Carbon::now())
             ->orderByDesc('created_at')
             ->paginate(10);
-        return view('home.reviews.review_link_form', compact('reviewLinks'));
+        return view('frontend.home.reviews.review_link_form', compact('reviewLinks'));
     }
     public function showWeddingForm()
     {
         $weddingReviewLinks = TemporaryWeddingReviewLink::where('expires_at', '>=', Carbon::now())
             ->orderByDesc('created_at')
             ->paginate(10);
-        return view('home.reviews.wedding_review_link_form', compact('weddingReviewLinks'));
+        return view('frontend.home.reviews.wedding_review_link_form', compact('weddingReviewLinks'));
     }
 
     public function generate(Request $request)

@@ -1,101 +1,88 @@
 <?php
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\OrderWedding;
-use Illuminate\Http\Request;
-use App\Models\WeddingPlanner;
-use App\Models\SpkDestinations;
-use App\Models\WeddingInvitations;
-use Illuminate\Support\Facades\DB;
-use App\Models\PaymentConfirmation;
-use App\Http\Middleware\ApproveUser;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\MailController;
-use App\Http\Controllers\MenuController;
-use App\Http\Controllers\SpksController;
-use App\Http\Controllers\AgentController;
-use App\Http\Controllers\CartsController;
-use App\Http\Controllers\ChatsController;
-use App\Http\Controllers\GuideController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ToursController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\GuestsController;
-use App\Http\Controllers\HotelsController;
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\VillasController;
-use App\Http\Controllers\BedTypeController;
-use App\Http\Controllers\DriversController;
-use App\Http\Controllers\FlightsController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\ExtraBedController;
-use App\Http\Controllers\FirebaseController;
-use App\Http\Controllers\FrontEndController;
-use App\Http\Controllers\ImagesupController;
-use App\Http\Controllers\PartnersController;
-use App\Http\Controllers\RoomViewController;
-use App\Http\Controllers\ServicesController;
-use App\Http\Controllers\UiConfigController;
-use App\Http\Controllers\UsdRatesController;
-use App\Http\Controllers\WeddingsController;
-use App\Http\Controllers\WhatsAppController;
-use App\Http\Controllers\AttentionController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ActivitiesAdminController;
 use App\Http\Controllers\ActivitiesController;
+use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AdminPanelController;
-use App\Http\Controllers\HotelPromoController;
-use App\Http\Controllers\ManualBookController;
-use App\Http\Controllers\SubscriberController;
-use App\Http\Controllers\TourPricesController;
-use App\Http\Controllers\ToursAdminController;
-use App\Http\Controllers\TransportsController;
+use App\Http\Controllers\AgentController;
+use App\Http\Controllers\AgentRegistrationController;
+use App\Http\Controllers\AttentionController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BedTypeController;
 use App\Http\Controllers\BookingCodeController;
-use App\Http\Controllers\DokuPaymentController;
+use App\Http\Controllers\BusinessProfileController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataItinerariesController;
+use App\Http\Controllers\DownloadDataHotelController;
+use App\Http\Controllers\DriversController;
 use App\Http\Controllers\EmailBlastsController;
+use App\Http\Controllers\ExtraBedController;
+use App\Http\Controllers\FlightsController;
+use App\Http\Controllers\FlyerGeneratorController;
+use App\Http\Controllers\FrontEndController;
+use App\Http\Controllers\FooterManagerController;
+use App\Http\Controllers\GuestsController;
+use App\Http\Controllers\GuideController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HotelPromoController;
 use App\Http\Controllers\HotelsAdminController;
-use App\Http\Controllers\OrdersAdminController;
-use App\Http\Controllers\RactivitiesController;
-use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\ToursImagesController;
-use App\Http\Controllers\WeddingMenuController;
+use App\Http\Controllers\HotelsController;
 use App\Http\Controllers\InvoiceAdminController;
 use App\Http\Controllers\LocalizationController;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\ManualBookController;
+use App\Http\Controllers\MapController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrdersAdminController;
 use App\Http\Controllers\OrderWeddingController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\ContractAgentController;
-use App\Http\Controllers\WeddingDinnerController;
-use App\Http\Controllers\WeddingVenuesController;
-use App\Http\Controllers\FlyerGeneratorController;
-use App\Http\Controllers\WeddingPlannerController;
-use App\Http\Controllers\ActivitiesAdminController;
-use App\Http\Controllers\DataItinerariesController;
-use App\Http\Controllers\TransportsAdminController;
+use App\Http\Controllers\PartnersController;
+use App\Http\Controllers\PaymentConfirmationController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\RoomViewController;
+use App\Http\Controllers\SpksController;
 use App\Http\Controllers\SpksDestinationsController;
+use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TermAndConditionController;
-use App\Http\Controllers\AdminNotificationController;
-use App\Http\Controllers\AgentRegistrationController;
-use App\Http\Controllers\DownloadDataHotelController;
+use App\Http\Controllers\TourPricesController;
+use App\Http\Controllers\ToursAdminController;
+use App\Http\Controllers\ToursController;
+use App\Http\Controllers\ToursImagesController;
+use App\Http\Controllers\TransportManagementController;
+use App\Http\Controllers\TransportsAdminController;
+use App\Http\Controllers\TransportsController;
+use App\Http\Controllers\UiConfigController;
+use App\Http\Controllers\UsdRatesController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\VillasController;
+use App\Http\Controllers\WeddingDinnerVenuesController;
 use App\Http\Controllers\WeddingInvitationsController;
 use App\Http\Controllers\WeddingLunchVenuesController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\PaymentConfirmationController;
-use App\Http\Controllers\TransportManagementController;
-use App\Http\Controllers\WeddingDinnerVenuesController;
+use App\Http\Controllers\WeddingMenuController;
+use App\Http\Controllers\WeddingPlannerController;
 use App\Http\Controllers\WeddingReceptionVenuesController;
+use App\Http\Controllers\WeddingsController;
+use App\Http\Controllers\WeddingVenuesController;
+use App\Http\Controllers\WhatsAppController;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 
     // ---------------------------------------------------
     //                    FRONTEND
     // ---------------------------------------------------
     Route::get('/',[FrontEndController::class,'index'])->name('home');
     Route::get('/accommodations',[FrontEndController::class,'accommodation_service'])->name('view.accommodation-service');
+    Route::get('/activity-services',[FrontEndController::class,'activity_services'])->name('view.activity-services');
+    Route::get('/activity/{code}', [FrontEndController::class, 'activity_detail'])->name('view.activity-public-detail');
     Route::get('/accommodation/{code}', [FrontEndController::class, 'accommodation_detail'])
         ->where('code', '^(?!price-).+$')
         ->name('view.accommodation-detail');
@@ -121,8 +108,7 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::get('/accommodation/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.accommodation-check-price');
     Route::get('/hotel/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.hotel-check-price');
     Route::get('/transportations',[FrontEndController::class,'transport_service'])->name('view.transport-service');
-
-    // ================================================================================================================================= DONE
+    Route::get('/tour-package-services',[FrontEndController::class,'tour_package_services'])->name('view.tour-package-services');
 
     Route::get('/about-us',[HomeController::class,'about_us'])->name('about-us');
     Route::get('/contact-us',[HomeController::class,'contact_us'])->name('contact-us');
@@ -130,8 +116,10 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::get('/transportation-{id}', [HomeController::class, 'show_transport'])->name('transport.show');
     Route::get('/tour-package-service',[HomeController::class,'tour_package_service'])->name('tour-package-service');
     Route::get('/tour-package-{id}',[HomeController::class,'show_tour_package'])->name('tour-package.show');
-
     Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe.store');
+    // ================================================================================================================================= DONE
+
+
     // ---------------------------------------------------
     //                   REVIEWS
     // ---------------------------------------------------
@@ -218,12 +206,17 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::get('change-password', [ForgotPasswordController::class, 'forgetPassword'])->name('change.password.get');
     Route::get('forget-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('forget.password.get');
     Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset.password.get');
-    Route::post('f-forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('f-forget.password.post');
-    Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('reset.password.post');
+    Route::post('f-forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->middleware('throttle:5,1')->name('f-forget.password.post');
+    Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->middleware('throttle:5,1')->name('reset.password.post');
     Route::get('/terms-and-conditions', [TermAndConditionController::class, 'terms_and_conditions'])->name('terms-and-conditions');
     
     Route::get('/privacy-policy', [TermAndConditionController::class, 'privacy_policy'])->name('privacy-policy');
+    Route::get('/faq', [TermAndConditionController::class, 'faq'])->name('faq');
+    Route::get('/help', [TermAndConditionController::class, 'faq'])->name('help');
+    Route::get('/tour/{slug}',[ToursController::class,'view_tour_detail'])->name('view.tour-detail');
     Auth::routes(['verify' => true]);
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->middleware('throttle:5,1')->name('password.email');
+    Route::post('password/reset', [\App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
     Route::middleware(['auth'])->group(function () {
         // Route::get('home', function () {return redirect('/profile');});
         Route::get('profile', [ProfileController::class,'profile'])->name('profile');
@@ -233,6 +226,7 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
         Route::put('/fupdate-password',[UsersController::class,'updatePassword'])->name('update-password');
     });
     Route::middleware(['auth','profile.complete','approve'])->group(function () {
+        Route::post('/activity/{code}/order', [OrderController::class, 'storeFrontendActivityOrder'])->name('view.activity-order.store');
         Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index');
     
         // ========================================================================================================================================> (DEVELOPER)
@@ -250,6 +244,13 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             Route::post('/ui-config/update', [UiConfigController::class, 'update'])->name('admin.ui-config.update');
             Route::post('/ui-config/store', [UiConfigController::class, 'store'])->name('admin.ui-config.store');
             Route::delete('/ui-config/delete/{id}', [UiConfigController::class, 'destroy'])->name('admin.ui-config.delete');
+            Route::get('/admin/company-profile', [BusinessProfileController::class, 'edit'])->name('admin.company-profile.edit');
+            Route::put('/admin/company-profile', [BusinessProfileController::class, 'update'])->name('admin.company-profile.update');
+            Route::get('/admin/footer-manager', [FooterManagerController::class, 'index'])->name('admin.footer-manager.index');
+            Route::put('/admin/footer-manager/settings', [FooterManagerController::class, 'updateSettings'])->name('admin.footer-manager.settings.update');
+            Route::post('/admin/footer-manager/links', [FooterManagerController::class, 'storeLink'])->name('admin.footer-manager.links.store');
+            Route::put('/admin/footer-manager/links/{footerLink}', [FooterManagerController::class, 'updateLink'])->name('admin.footer-manager.links.update');
+            Route::delete('/admin/footer-manager/links/{footerLink}', [FooterManagerController::class, 'destroyLink'])->name('admin.footer-manager.links.destroy');
             Route::get('/dashboard/hotel-price-chart', [DashboardController::class, 'hotelPriceChart']);
 
 
@@ -583,6 +584,7 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             Route::put('/fsend-confirmation-{id}',[OrdersAdminController::class,'func_send_confirmation']);
             Route::put('/fresend-confirmation-order-{id}',[OrdersAdminController::class,'resend_confirmation_order']);
             Route::put('/fgenerate-invoice-{id}',[OrdersAdminController::class,'fgenerate_invoice']);
+            Route::put('/fregenerate-invoice-pdf-{id}',[OrdersAdminController::class,'fregenerate_invoice_pdf']);
             Route::put('/fsend-approval-email-{id}',[OrdersAdminController::class,'fsend_approval_email']);
             Route::put('/fedit-confirmation-order-{id}',[OrdersAdminController::class,'func_edit_confirmation_order']);
             Route::put('/fadd-confirmation-order-{id}',[OrdersAdminController::class,'func_add_confirmation_order']);
@@ -800,6 +802,8 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             Route::get('/edit-tour-{id}',[ToursAdminController::class,'view_edit_tour'])->name('view.edit-tour-admin');
             Route::delete('/remove-tour/{id}',[ToursAdminController::class,'remove_tour'])->name('func.remove-tour');
             Route::get('/add-tour',[ToursAdminController::class,'view_add_tour'])->name('view.add-tour');
+            Route::get('/tour-location/references',[ToursAdminController::class,'searchTourLocationReferences'])->name('tour-location.references');
+            Route::post('/tour-location/resolve-coordinates',[ToursAdminController::class,'resolveTourLocationCoordinates'])->name('tour-location.resolve-coordinates');
             Route::post('/fadd-tour-price-{id}',[ToursAdminController::class,'func_add_tour_price'])->name('func.add-tour-price');
             Route::put('/fedit-tour-price-{id}',[ToursAdminController::class,'func_update_tour_price']);
             Route::delete('/fdelete-tour-price-{id}',[ToursAdminController::class,'func_delete_tour_price']);
@@ -959,7 +963,6 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             // ---------------------------------------------------
             Route::get('/tour-packages',[ToursController::class,'index'])->name('view.tours');
             Route::get('/tour-{code}-{bcode}',[ToursController::class,'view_tour_detail_bookingcode'])->name('view.tour-detail-bookingcode');
-            Route::get('/tour/{slug}',[ToursController::class,'view_tour_detail'])->name('view.tour-detail');
             Route::get('/tours/load-more', [ToursController::class, 'loadMore'])->name('tours.load-more');
             Route::post('/search-tours',[ToursController::class,'search_tour'])->name('view.tour-search');
             Route::post('/tour-detail',[ToursController::class,'tour_check_code'])->name('func.tour-check-code');
@@ -993,6 +996,8 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
             // ---------------------------------------------------
             Route::get('/orders',[OrderController::class,'index'])->name('view.orders');
             Route::get('/orders/history', [OrderController::class, 'order_history'])->name('orders.history');
+            Route::get('/orders/{id}/invoice/preview', [OrderController::class, 'preview_order_invoice'])->name('orders.invoice.preview');
+            Route::get('/orders/{id}/invoice/download', [OrderController::class, 'download_order_invoice'])->name('orders.invoice.download');
 
             Route::get('/order-{id}',[OrderController::class,'detail_order'])->name('view.detail-order');
             Route::post('/fadd-order',[OrderController::class,'func_add_order'])->name('func.add-order');
@@ -1220,14 +1225,3 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
     Route::get('/approval/pending', function () {
         return redirect('/profile');
     })->name('approval.pending');
-    // ---------------------------------------------------
-    //                     DOKU PAYMENT
-    // ---------------------------------------------------
-    Route::post('/generate-doku-payment/{id}', [OrdersAdminController::class, 'func_generate_doku_payment'])->name('func.generate-doku-payment');
-    Route::post('/payment/doku/{id}', [DokuPaymentController::class, 'createPayment'])->name('doku.payment');
-    Route::post('/payment/doku/callback', function (Request $request) {
-        \Log::info('DOKU Payment Callback', $request->all());
-        return response()->json(['status' => 'success']);
-    });
-    Route::post('/doku/store-response', [DokuPaymentController::class, 'storeResponse'])->name('doku.storeResponse');
-    Route::get('/payment/{invoice_number}', [DokuPaymentController::class, 'showPaymentPage'])->name('payment.show');

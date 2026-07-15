@@ -1,0 +1,286 @@
+.transport-booking-page {
+    .transport-booking-hero {
+        gap: 1.25rem;
+    }
+
+    .transport-booking-layout {
+        align-items: start;
+    }
+
+    .transport-booking-form {
+        width: 100%;
+    }
+
+    .transport-booking-section,
+    .transport-booking-sidebar {
+        padding: var(--frontend-shell-panel-padding);
+    }
+
+    .transport-booking-section__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .transport-booking-section__meta {
+        max-width: 320px;
+        color: var(--frontend-shell-subtle);
+        font-size: 0.84rem;
+        line-height: 1.6;
+        text-align: right;
+    }
+
+    .transport-booking-facts,
+    .transport-booking-notes {
+        display: grid;
+        gap: 0.85rem;
+    }
+
+    .transport-booking-facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .transport-booking-notes {
+        margin-top: 1rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .transport-booking-note-card,
+    .transport-booking-airport-group,
+    .transport-booking-price-card {
+        padding: 1rem 1.05rem;
+        border: 1px solid #dbe7f3;
+        border-radius: 22px;
+        background:
+            radial-gradient(circle at top right, rgba(15, 95, 168, 0.08), transparent 30%),
+            linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        box-shadow: var(--frontend-shell-shadow-md);
+    }
+
+    .transport-booking-note-card h3 {
+        margin: 0 0 0.45rem;
+        color: var(--frontend-shell-text);
+        font-size: 0.98rem;
+        font-weight: 800;
+    }
+
+    .transport-booking-note-card,
+    .transport-booking-note-card div,
+    .transport-booking-helper,
+    .transport-booking-sidebar p,
+    .transport-booking-sidebar__notice {
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .transport-booking-airport-group + .transport-booking-airport-group {
+        margin-top: 1rem;
+    }
+
+    .transport-booking-helper {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 0.82rem;
+    }
+
+    .transport-booking-sidebar__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 0.4rem 0.72rem;
+        border-radius: 999px;
+        background: var(--frontend-shell-primary-soft);
+        color: var(--frontend-shell-primary);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .transport-booking-sidebar h2 {
+        margin: 1rem 0 0.5rem;
+        color: var(--frontend-shell-text);
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .transport-booking-sidebar__facts {
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .transport-booking-sidebar__facts div {
+        padding: 0.85rem 0.95rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.88);
+    }
+
+    .transport-booking-sidebar__facts span,
+    .transport-booking-price-row span {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--frontend-shell-muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .transport-booking-sidebar__facts strong,
+    .transport-booking-price-row strong {
+        color: var(--frontend-shell-text);
+        font-size: 0.96rem;
+        line-height: 1.5;
+    }
+
+    .transport-booking-price-card {
+        margin-top: 1rem;
+    }
+
+    .transport-booking-price-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .transport-booking-price-row + .transport-booking-price-row {
+        margin-top: 0.85rem;
+        padding-top: 0.85rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .transport-booking-price-row--discount strong {
+        color: #b45309;
+    }
+
+    .transport-booking-sidebar__notice {
+        margin-top: 1rem;
+        padding: 0.95rem 1rem;
+        border: 1px solid rgba(14, 116, 144, 0.16);
+        border-radius: 18px;
+        background: rgba(236, 254, 255, 0.78);
+        font-size: 0.88rem;
+    }
+
+    .transport-booking-sidebar__actions {
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .transport-booking-sidebar__actions .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+    }
+
+    .transport-booking-sidebar .btn-danger {
+        border-color: #cbd5e1;
+        background: #fff;
+        color: #334155;
+    }
+
+    .transport-booking-sidebar .btn-danger:hover,
+    .transport-booking-sidebar .btn-danger:focus {
+        color: #0f172a;
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+
+    .booking-submit-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1200;
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+        background: rgba(15, 23, 42, 0.42);
+        backdrop-filter: blur(3px);
+    }
+
+    .booking-submit-overlay.hidden {
+        display: none;
+    }
+
+    .booking-submit-overlay__card {
+        width: min(100%, 360px);
+        padding: 1.4rem 1.3rem;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+        text-align: center;
+    }
+
+    .booking-submit-overlay__card strong {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: #0f172a;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .booking-submit-overlay__card p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .booking-submit-overlay__spinner,
+    .booking-submit-button__spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(15, 95, 168, 0.18);
+        border-top-color: #0f5fa8;
+        border-radius: 999px;
+        animation: transportBookingSpin 0.8s linear infinite;
+    }
+
+    .booking-submit-overlay__spinner {
+        width: 38px;
+        height: 38px;
+        margin-bottom: 0.9rem;
+        border-width: 3px;
+    }
+
+    .btn.is-processing {
+        pointer-events: none;
+        opacity: 0.95;
+    }
+
+    .btn.is-processing .booking-submit-button__spinner {
+        margin-right: 0.45rem;
+        vertical-align: middle;
+    }
+
+    @keyframes transportBookingSpin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .transport-booking-facts,
+        .transport-booking-notes {
+            grid-template-columns: 1fr;
+        }
+
+        .transport-booking-section__header {
+            flex-direction: column;
+        }
+
+        .transport-booking-section__meta {
+            max-width: none;
+            text-align: left;
+        }
+    }
+}

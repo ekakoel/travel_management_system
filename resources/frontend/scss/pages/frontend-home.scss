@@ -43,7 +43,7 @@
 }
 
 .home-section-heading__title {
-    margin: 0;
+    margin-bottom: 18px;
     color: #102033;
     font-size: clamp(2rem, 3.5vw, 3.4rem);
     line-height: 1.08;
@@ -114,7 +114,7 @@
 }
 
 .home-hero__title {
-    margin: 1.1rem 0 0;
+    margin: 1.1rem 0 18px;
     color: #102033;
     font-size: clamp(2.5rem, 3vw, 4.75rem);
     line-height: 1.02;
@@ -323,7 +323,7 @@
 
 .home-promo-section__head {
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     justify-content: space-between;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
@@ -682,13 +682,32 @@
 }
 
 .home-faq-accordion .accordion-body {
-    padding: 0 1.4rem 1.35rem 4.7rem;
+    padding: 1.35rem 3.4rem 1.35rem 4.7rem;;
     color: #5c7183;
     line-height: 1.85;
 }
 
 .home-faq-accordion .accordion-body p {
     margin: 0;
+}
+
+.home-faq-accordion__answer {
+    color: inherit;
+}
+
+.home-faq-accordion__answer p:last-child,
+.home-faq-accordion__answer ul:last-child,
+.home-faq-accordion__answer ol:last-child {
+    margin-bottom: 0;
+}
+
+.home-faq-accordion__answer ul,
+.home-faq-accordion__answer ol {
+    padding-left: 1.2rem;
+}
+
+.home-faq-accordion__answer li + li {
+    margin-top: 0.4rem;
 }
 
 .home-cta-surface {
@@ -765,7 +784,7 @@
     }
 
     .home-promo-section__head {
-        align-items: start;
+        align-items: flex-start;
         flex-direction: column;
     }
 

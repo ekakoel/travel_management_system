@@ -1,0 +1,58 @@
+<?php
+
+return [
+    'hero' => [
+        'eyebrow' => '精选旅游体验',
+        'title' => '为专业旅游合作伙伴打造的旅游套餐',
+        'text' => '探索私人及可定制行程，帮助代理更顺畅地销售、规划，并为客人提供难忘的印尼旅游体验。',
+        'image_alt' => '精选巴厘旅游套餐体验',
+        'card_eyebrow' => '合作伙伴可用产品',
+        'card_title' => '从文化探索到自然景观之旅',
+        'card_text' => '每个套餐都整理了实用的天数、区域、风格和价格信息，帮助代理更快筛选合适体验。',
+        'top_area' => '热门区域',
+        'visible_now' => '当前显示',
+        'visible_suffix' => '个套餐',
+    ],
+    'summary' => [
+        'tours' => '启用套餐',
+        'areas' => '区域',
+        'styles' => '旅游风格',
+        'active_rates' => '有效价格',
+    ],
+    'filters' => [
+        'eyebrow' => '搜索套餐',
+        'title' => '筛选目录',
+        'text' => '可按套餐名称、区域或旅游风格搜索。结果会自动更新，并保留可分享的网址。',
+        'search_label' => '搜索',
+        'search_placeholder' => '搜索旅游套餐、区域或风格',
+        'area_label' => '区域',
+        'all_areas' => '所有区域',
+        'type_label' => '旅游风格',
+        'all_types' => '所有旅游风格',
+        'reset' => '重置筛选',
+    ],
+    'results' => [
+        'eyebrow' => '可用套餐',
+        'title' => '精选旅游套餐目录',
+        'text' => '在进入合作伙伴预订流程前，查看套餐天数、目的地区域、有效价格和详细信息。',
+        'showing' => '显示',
+        'of' => '共',
+        'tours_suffix' => '个套餐',
+        'starting_rate' => '起始价格',
+        'active_rates' => '有效价格',
+        'destination_highlights' => '景点与活动',
+        'food_stops' => '餐饮站点',
+        'view_detail' => '查看套餐详情',
+    ],
+    'empty' => [
+        'title' => '目前暂无可用旅游套餐',
+        'text' => '请稍后再查看，或联系我们的团队获取定制旅游支持。',
+        'search_title' => '没有符合筛选条件的套餐',
+        'search_text' => '请尝试其他关键词、区域或旅游风格。',
+    ],
+    'fallback' => [
+        'area' => '精选区域',
+        'type' => '私人旅游',
+        'request_rate' => '询价',
+    ],
+];

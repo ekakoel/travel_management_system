@@ -41,7 +41,7 @@
     </div>
     <a href="#" id="backToTopBtn" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top" style="display: none; place-content: center;"><i class="bi bi-arrow-up"></i></a>
     {{-- @include('layouts.home.script') --}}
-    @include('home.partials.footer')
+    @include('frontend.shared.footer-legacy')
     {{-- @include('frontend.layouts.footer') --}}
 
     <!-- JavaScript Libraries -->

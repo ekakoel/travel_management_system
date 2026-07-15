@@ -4,42 +4,42 @@
             <div class="row g-5">
                 <div class="col-lg-5">
                     <div class="site-footer__brand">
-                        <a class="site-footer__logo" href="{{ url('/') }}" aria-label="{{ __('home.footer.logo_aria') }}">
-                            <img src="{{ asset('storage/logo/' . config('app.logo_img_white')) }}" alt="Logo Bali Kami Tour">
+                        <a class="site-footer__logo" href="{{ url('/') }}" aria-label="{{ data_get($footerData, 'brand.logo_aria') }}">
+                            <img src="{{ data_get($footerData, 'brand.logo_url') }}" alt="{{ data_get($footerData, 'brand.name') }}">
                         </a>
 
                         <p class="site-footer__tagline">
-                            {{ __('home.footer.tagline') }}
+                            {{ data_get($footerData, 'brand.tagline') }}
                         </p>
 
                         <p class="site-footer__description">
-                            {{ __('home.footer.description') }}
+                            {{ data_get($footerData, 'brand.description') }}
                         </p>
 
-                        <div class="site-footer__trust-list" aria-label="{{ __('home.footer.highlights_aria') }}">
-                            <span>{{ __('home.footer.highlights.worldwide_agents') }}</span>
-                            <span>{{ __('home.footer.highlights.indonesia_supply') }}</span>
-                            <span>{{ __('home.footer.highlights.global_access') }}</span>
+                        <div class="site-footer__trust-list" aria-label="{{ data_get($footerData, 'brand.trust_aria') }}">
+                            @foreach (data_get($footerData, 'brand.trust_items', []) as $trustItem)
+                                <span>{{ $trustItem }}</span>
+                            @endforeach
                         </div>
                     </div>
                 </div>
 
                 <div class="col-sm-6 col-lg-3">
                     <div class="site-footer__section">
-                        <span class="site-footer__eyebrow">@lang('messages.Get In Touch')</span>
+                        <span class="site-footer__eyebrow">{{ data_get($footerData, 'contact.title') }}</span>
 
                         <ul class="site-footer__contact-list">
                             <li>
                                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                <span>{{ __('home.footer.address') }}</span>
+                                <span>{{ data_get($footerData, 'contact.address') }}</span>
                             </li>
                             <li>
                                 <i class="fas fa-phone-alt" aria-hidden="true"></i>
-                                <a href="tel:+62361710661">(+62 361) 710661 / 710663 / 710664 / 723061</a>
+                                <a href="tel:{{ data_get($footerData, 'contact.phone_href') }}">{{ data_get($footerData, 'contact.phone') }}</a>
                             </li>
                             <li>
                                 <i class="fas fa-envelope" aria-hidden="true"></i>
-                                <a href="mailto:e-admin@balikamitour.com">e-admin@balikamitour.com</a>
+                                <a href="mailto:{{ data_get($footerData, 'contact.email') }}">{{ data_get($footerData, 'contact.email') }}</a>
                             </li>
                         </ul>
                     </div>
@@ -47,10 +47,10 @@
 
                 <div class="col-sm-6 col-lg-4">
                     <div class="site-footer__section">
-                        <span class="site-footer__eyebrow">@lang('messages.Newsletter')</span>
+                        <span class="site-footer__eyebrow">{{ data_get($footerData, 'newsletter.title') }}</span>
 
                         <p class="site-footer__newsletter-copy">
-                            @lang('messages.Stay informed with partner updates, curated offers, and service announcements.')
+                            {{ data_get($footerData, 'newsletter.copy') }}
                         </p>
 
                         <div id="subscribe-alert" class="alert d-none site-footer__alert" role="alert"></div>
@@ -62,36 +62,29 @@
                             data-csrf-token="{{ csrf_token() }}"
                         >
                             @csrf
-                            <label class="visually-hidden" for="footer-email">Email</label>
+                            <label class="visually-hidden" for="footer-email">{{ data_get($footerData, 'newsletter.email_label') }}</label>
                             <input
                                 class="site-footer__input"
                                 type="email"
                                 name="email"
                                 id="footer-email"
-                                placeholder="@lang('messages.Enter your email')"
+                                placeholder="{{ data_get($footerData, 'newsletter.placeholder') }}"
                                 required
                             >
                             <button type="submit" class="site-footer__submit">
-                                @lang('messages.Subscribe')
+                                {{ data_get($footerData, 'newsletter.button') }}
                             </button>
                         </form>
 
                         <div class="site-footer__social-block">
-                            <span class="site-footer__social-label">@lang('messages.Follow Us')</span>
+                            <span class="site-footer__social-label">{{ data_get($footerData, 'social.title') }}</span>
 
                             <div class="site-footer__social-links">
-                                <a class="site-footer__social-link" href="https://www.facebook.com/BALIKAMITOUR/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                                    <i class="fab fa-facebook-f" aria-hidden="true"></i>
-                                </a>
-                                <a class="site-footer__social-link" href="https://www.instagram.com/balikamitour" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                                    <i class="fab fa-instagram" aria-hidden="true"></i>
-                                </a>
-                                <a class="site-footer__social-link" href="https://www.youtube.com/@balikamichannel" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                                    <i class="fab fa-youtube" aria-hidden="true"></i>
-                                </a>
-                                <a class="site-footer__social-link" href="https://id.linkedin.com/company/bali-kami-group" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                                    <i class="fab fa-linkedin-in" aria-hidden="true"></i>
-                                </a>
+                                @foreach (data_get($footerData, 'social.links', []) as $socialLink)
+                                    <a class="site-footer__social-link" href="{{ $socialLink['url'] }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $socialLink['label'] }}">
+                                        <i class="{{ $socialLink['icon'] }}" aria-hidden="true"></i>
+                                    </a>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -101,43 +94,30 @@
 
         <div class="site-footer__links">
             <div class="row g-4">
-                <div class="col-sm-6 col-lg-3">
-                    <div class="site-footer__section">
-                        <span class="site-footer__eyebrow">@lang('messages.Our Services')</span>
-                        <nav class="site-footer__nav-list" aria-label="Footer services">
-                            <a href="{{ route('view.accommodation-service') }}">@lang('messages.Accommodations')</a>
-                            <a href="{{ route('view.transport-service') }}">@lang('messages.Transports')</a>
-                            <a href="{{ route('tour-package-service') }}">@lang('messages.Tour Packages')</a>
-                        </nav>
+                @foreach (data_get($footerData, 'link_sections', []) as $linkSection)
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="site-footer__section">
+                            <span class="site-footer__eyebrow">{{ $linkSection['title'] }}</span>
+                            <nav class="site-footer__nav-list" aria-label="{{ $linkSection['aria'] }}">
+                                @foreach ($linkSection['links'] as $footerLink)
+                                    <a
+                                        href="{{ $footerLink['url'] }}"
+                                        @if ($footerLink['target']) target="{{ $footerLink['target'] }}" @endif
+                                        @if ($footerLink['rel']) rel="{{ $footerLink['rel'] }}" @endif
+                                    >
+                                        {{ $footerLink['label'] }}
+                                    </a>
+                                @endforeach
+                            </nav>
+                        </div>
                     </div>
-                </div>
+                @endforeach
 
                 <div class="col-sm-6 col-lg-3">
                     <div class="site-footer__section">
-                        <span class="site-footer__eyebrow">@lang('messages.Quick Links')</span>
-                        <nav class="site-footer__nav-list" aria-label="Footer quick links">
-                            <a href="{{ route('about-us') }}">@lang('messages.About Us')</a>
-                            <a href="{{ route('contact-us') }}">@lang('messages.Contact Us')</a>
-                            <a href="{{ route('services') }}">@lang('messages.Our Services')</a>
-                        </nav>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="site-footer__section">
-                        <span class="site-footer__eyebrow">@lang('messages.Policies')</span>
-                        <nav class="site-footer__nav-list" aria-label="Footer policies">
-                            <a href="{{ route('terms-and-conditions') }}">@lang('messages.Terms & Conditions')</a>
-                            <a href="{{ route('privacy-policy') }}">@lang('messages.Privacy Policy')</a>
-                        </nav>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="site-footer__section">
-                        <span class="site-footer__eyebrow">@lang('messages.Platform')</span>
+                        <span class="site-footer__eyebrow">{{ data_get($footerData, 'platform.title') }}</span>
                         <p class="site-footer__small-copy">
-                            {{ __('home.footer.platform_copy') }}
+                            {{ data_get($footerData, 'platform.copy') }}
                         </p>
                     </div>
                 </div>
@@ -146,9 +126,9 @@
 
         <div class="site-footer__bottom">
             <p class="site-footer__copyright">
-                &copy; {{ date('Y') }}
-                <a href="{{ url('/') }}">online.balikamitour.com</a>.
-                @lang('messages.All Right Reserved.')
+                &copy; {{ data_get($footerData, 'copyright.year') }}
+                <a href="{{ data_get($footerData, 'copyright.website_url') }}">{{ data_get($footerData, 'copyright.website_label') }}</a>.
+                {{ data_get($footerData, 'copyright.suffix') }}
             </p>
         </div>
     </div>

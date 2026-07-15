@@ -1,0 +1,58 @@
+<?php
+
+return [
+    'hero' => [
+        'eyebrow' => '精選旅遊體驗',
+        'title' => '為專業旅遊合作夥伴打造的旅遊套裝',
+        'text' => '探索私人及可客製化行程，協助代理更順暢地銷售、規劃，並為客人提供難忘的印尼旅遊體驗。',
+        'image_alt' => '精選峇里旅遊套裝體驗',
+        'card_eyebrow' => '合作夥伴可用產品',
+        'card_title' => '從文化探索到自然景觀之旅',
+        'card_text' => '每個套裝都整理了實用的天數、區域、風格和價格資訊，協助代理更快篩選合適體驗。',
+        'top_area' => '熱門區域',
+        'visible_now' => '目前顯示',
+        'visible_suffix' => '個套裝',
+    ],
+    'summary' => [
+        'tours' => '啟用套裝',
+        'areas' => '區域',
+        'styles' => '旅遊風格',
+        'active_rates' => '有效價格',
+    ],
+    'filters' => [
+        'eyebrow' => '搜尋套裝',
+        'title' => '篩選目錄',
+        'text' => '可依套裝名稱、區域或旅遊風格搜尋。結果會自動更新，並保留可分享的網址。',
+        'search_label' => '搜尋',
+        'search_placeholder' => '搜尋旅遊套裝、區域或風格',
+        'area_label' => '區域',
+        'all_areas' => '所有區域',
+        'type_label' => '旅遊風格',
+        'all_types' => '所有旅遊風格',
+        'reset' => '重設篩選',
+    ],
+    'results' => [
+        'eyebrow' => '可用套裝',
+        'title' => '精選旅遊套裝目錄',
+        'text' => '在進入合作夥伴預訂流程前，查看套裝天數、目的地區域、有效價格和詳細資訊。',
+        'showing' => '顯示',
+        'of' => '共',
+        'tours_suffix' => '個套裝',
+        'starting_rate' => '起始價格',
+        'active_rates' => '有效價格',
+        'destination_highlights' => '景點與活動',
+        'food_stops' => '餐飲站點',
+        'view_detail' => '查看套裝詳情',
+    ],
+    'empty' => [
+        'title' => '目前尚無可用旅遊套裝',
+        'text' => '請稍後再查看，或聯絡我們的團隊取得客製化旅遊支援。',
+        'search_title' => '沒有符合篩選條件的套裝',
+        'search_text' => '請嘗試其他關鍵字、區域或旅遊風格。',
+    ],
+    'fallback' => [
+        'area' => '精選區域',
+        'type' => '私人旅遊',
+        'request_rate' => '洽詢價格',
+    ],
+];

@@ -1,0 +1,500 @@
+.frontend-order-modal {
+    --frontend-order-modal-accent: #0f5fa8;
+    --frontend-order-modal-accent-secondary: #0d7b8f;
+    --frontend-order-modal-border: #dbe7f3;
+    --frontend-order-modal-muted: #64748b;
+    --frontend-order-modal-text: #0f172a;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.frontend-order-modal__dialog {
+    width: min(1120px, calc(100% - 2rem));
+    max-width: 1120px !important;
+    margin: 1rem auto;
+}
+
+.frontend-order-modal__surface {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+    padding: 1.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.10), transparent 24%),
+        linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    box-shadow: 0 34px 90px rgba(15, 23, 42, 0.34);
+}
+
+.frontend-order-modal__form {
+    min-width: 0;
+}
+
+.frontend-order-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 5;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--frontend-order-modal-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--frontend-order-modal-text);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
+    opacity: 1;
+}
+
+.frontend-order-modal__close:hover,
+.frontend-order-modal__close:focus {
+    border-color: rgba(15, 95, 168, 0.34);
+    background: #ffffff;
+    color: var(--frontend-order-modal-accent);
+}
+
+.frontend-order-modal__service {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-right: 3rem;
+}
+
+.frontend-order-modal__media {
+    min-height: 220px;
+    overflow: hidden;
+    border: 1px solid var(--frontend-order-modal-border);
+    border-radius: 24px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.10);
+}
+
+.frontend-order-modal__media img {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.frontend-order-modal__service-content {
+    min-width: 0;
+}
+
+.frontend-order-modal__eyebrow,
+.frontend-order-modal__heading-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.42rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(15, 95, 168, 0.09);
+    color: var(--frontend-order-modal-accent);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.frontend-order-modal__title {
+    margin: 0.9rem 0 0.45rem;
+    color: var(--frontend-order-modal-text);
+    font-size: clamp(1.7rem, 2vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.frontend-order-modal__summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin: 1rem 0 0;
+    border-top: 1px solid var(--frontend-order-modal-border);
+    border-bottom: 1px solid var(--frontend-order-modal-border);
+}
+
+.frontend-order-modal__summary-card,
+.frontend-order-modal__price-card {
+    padding: 0.8rem 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.frontend-order-modal__summary-card + .frontend-order-modal__summary-card {
+    padding-left: 1rem;
+    border-left: 1px solid var(--frontend-order-modal-border);
+}
+
+.frontend-order-modal__summary-card > span,
+.frontend-order-modal__price-card > span {
+    display: block;
+    margin-bottom: 0.28rem;
+    color: var(--frontend-order-modal-muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.frontend-order-modal__summary-card > strong {
+    color: var(--frontend-order-modal-text);
+    font-weight: 800;
+}
+
+.frontend-order-modal__price-card {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--frontend-order-modal-border);
+}
+
+.frontend-order-modal__price-card > strong {
+    display: block;
+    color: var(--frontend-order-modal-accent);
+    font-size: clamp(1.5rem, 2vw, 1.95rem);
+    font-weight: 900;
+    line-height: 1.05;
+}
+
+.frontend-order-modal__nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.frontend-order-modal__nav-item {
+    display: flex;
+    min-height: 66px;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--frontend-order-modal-border);
+    border-radius: 20px;
+    background: #ffffff;
+    color: var(--frontend-order-modal-muted);
+    text-align: left;
+    box-shadow: none;
+    transform: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.frontend-order-modal__nav-item > span {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.frontend-order-modal__nav-item strong {
+    display: block;
+    color: var(--frontend-order-modal-text);
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.frontend-order-modal__nav-item small {
+    color: var(--frontend-order-modal-muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+.frontend-order-modal__nav-item.is-active,
+.frontend-order-modal__nav-item.is-complete {
+    border-color: rgba(14, 116, 144, 0.28);
+    box-shadow: 0 14px 32px rgba(15, 95, 168, 0.10);
+}
+
+.frontend-order-modal__nav-item.is-active {
+    background: linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%);
+    transform: translateY(-1px);
+}
+
+.frontend-order-modal__nav-item.is-active > span,
+.frontend-order-modal__nav-item.is-complete > span {
+    background: linear-gradient(135deg, var(--frontend-order-modal-accent) 0%, var(--frontend-order-modal-accent-secondary) 100%);
+    color: #ffffff;
+}
+
+.frontend-order-modal__panel {
+    min-width: 0;
+}
+
+.frontend-order-modal__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+}
+
+.frontend-order-modal__heading h3,
+.frontend-order-modal__heading h6 {
+    margin: 0.85rem 0 0;
+    color: var(--frontend-order-modal-text);
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.frontend-order-modal__heading p {
+    max-width: 560px;
+    margin: 0;
+    color: var(--frontend-order-modal-muted);
+    line-height: 1.7;
+}
+
+.frontend-order-modal .form-control,
+.frontend-order-modal .form-select {
+    min-height: 48px;
+    border-color: var(--frontend-order-modal-border);
+    border-radius: 15px;
+    background-color: #ffffff !important;
+    color: var(--frontend-order-modal-text);
+    box-shadow: none;
+}
+
+.frontend-order-modal textarea.form-control {
+    min-height: 110px;
+}
+
+.frontend-order-modal .form-control:focus,
+.frontend-order-modal .form-select:focus {
+    border-color: rgba(15, 95, 168, 0.48);
+    box-shadow: 0 0 0 0.22rem rgba(15, 95, 168, 0.11);
+}
+
+.frontend-order-modal .btn {
+    display: inline-flex;
+    min-height: var(--frontend-shell-button-height, 48px);
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border-radius: var(--frontend-shell-radius-sm, 14px);
+    font-weight: 700;
+    line-height: 1.2;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.frontend-order-modal .btn-primary {
+    border-color: var(--frontend-shell-primary, #0f5fa8);
+    background: linear-gradient(135deg, var(--frontend-shell-primary, #0f5fa8) 0%, var(--frontend-shell-secondary, #0d7b8f) 100%);
+    color: #ffffff;
+}
+
+.frontend-order-modal .btn-primary:hover,
+.frontend-order-modal .btn-primary:focus {
+    border-color: var(--frontend-shell-primary, #0f5fa8);
+    background: linear-gradient(135deg, var(--frontend-shell-primary, #0f5fa8) 100%, var(--frontend-shell-secondary, #0d7b8f) 0%);
+    color: #ffffff;
+    box-shadow: var(--frontend-shell-shadow-sm, 0 10px 24px rgba(15, 23, 42, 0.10));
+}
+
+.frontend-order-modal .btn-light {
+    border-color: var(--frontend-order-modal-border);
+    background: #ffffff;
+    color: #334155;
+}
+
+.frontend-order-modal .btn-light:hover,
+.frontend-order-modal .btn-light:focus {
+    border-color: rgba(15, 95, 168, 0.28);
+    background: #f8fbff;
+    color: var(--frontend-order-modal-accent);
+}
+
+.frontend-order-modal .btn-cancel {
+    border-color: #dc2626;
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.frontend-order-modal .btn-cancel:hover,
+.frontend-order-modal .btn-cancel:focus {
+    border-color: #b91c1c;
+    background: #b91c1c;
+    color: #ffffff;
+    box-shadow: 0 12px 26px rgba(220, 38, 38, 0.18);
+}
+
+.frontend-order-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.15rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.frontend-order-modal .frontend-order-confirmation {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin: 1rem 0 0;
+    padding: 0.75rem 0;
+    border-top: 1px solid rgba(219, 228, 238, 0.92);
+    border-bottom: 1px solid rgba(219, 228, 238, 0.92);
+    color: var(--frontend-order-modal-muted);
+    line-height: 1.55;
+    cursor: pointer;
+}
+
+.frontend-order-modal .frontend-order-confirmation input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin-top: 0.15rem;
+    accent-color: var(--frontend-order-modal-accent);
+}
+
+.frontend-order-modal .frontend-order-confirmation a {
+    color: var(--frontend-order-modal-accent);
+    font-weight: 800;
+}
+
+.frontend-order-modal__actions .btn.is-processing,
+.frontend-order-modal .btn.is-processing {
+    pointer-events: none;
+    opacity: 0.95;
+}
+
+html.frontend-order-submit-locked,
+body.frontend-order-submit-locked {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+}
+
+body.frontend-order-submit-locked {
+    touch-action: none;
+}
+
+.frontend-order-modal__overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483647 !important;
+    display: grid;
+    place-items: center;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    padding: 1.5rem;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(4px);
+    overscroll-behavior: none;
+    pointer-events: auto;
+    touch-action: none;
+    cursor: wait;
+}
+
+.frontend-order-modal__overlay.hidden {
+    display: none !important;
+    pointer-events: none;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__card,
+.frontend-order-modal__overlay .booking-submit-overlay__dialog {
+    display: block;
+    width: min(100%, 360px);
+    padding: 1.45rem 1.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.20);
+    text-align: center;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__spinner,
+.frontend-order-modal__overlay .booking-submit-overlay__spinner {
+    display: inline-block;
+    width: 38px;
+    height: 38px;
+    margin: 0 0 0.85rem;
+    border: 3px solid rgba(15, 95, 168, 0.18);
+    border-top-color: var(--frontend-order-modal-accent, #0f5fa8);
+    border-radius: 999px;
+    animation: frontendOrderModalSpin 0.8s linear infinite;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__card strong,
+.frontend-order-modal__overlay .booking-submit-overlay__title {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--frontend-order-modal-text, #0f172a);
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__card p,
+.frontend-order-modal__overlay .booking-submit-overlay__text {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+@keyframes frontendOrderModalSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .frontend-order-modal__dialog {
+        width: calc(100% - 1.5rem);
+        margin: 0.75rem auto;
+    }
+
+    .frontend-order-modal__surface {
+        padding: 1rem;
+        border-radius: 24px;
+    }
+
+    .frontend-order-modal__service,
+    .frontend-order-modal__summary,
+    .frontend-order-modal__nav {
+        grid-template-columns: 1fr;
+    }
+
+    .frontend-order-modal__service {
+        padding-right: 0;
+    }
+
+    .frontend-order-modal__media,
+    .frontend-order-modal__media img {
+        min-height: 180px;
+    }
+
+    .frontend-order-modal__summary-card + .frontend-order-modal__summary-card {
+        padding-left: 0;
+        border-left: 0;
+        border-top: 1px solid var(--frontend-order-modal-border);
+    }
+
+    .frontend-order-modal__heading,
+    .frontend-order-modal__actions {
+        flex-direction: column;
+    }
+
+    .frontend-order-modal__actions .btn {
+        width: 100%;
+    }
+}

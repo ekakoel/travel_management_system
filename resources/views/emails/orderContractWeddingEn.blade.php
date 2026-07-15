@@ -72,6 +72,7 @@
             padding: 8px 8px 0 8px;
             border-radius: 4px;
             font-size: 0.7rem;
+            margin-top: 10px;
         }
         .business-name{
             font-size: 1.8rem;
@@ -207,6 +208,21 @@
         }
         .additional-info p{
             line-height: 1.3;
+        }
+        .invoice-note-watermark{
+            margin-top: 14px;
+            padding: 8px 12px;
+            border-top: 1px dashed #b9c2cf;
+            color: #6b7280;
+            font-size: 0.64rem;
+            line-height: 1.45;
+            text-align: center;
+            letter-spacing: 0.4px;
+            opacity: 0.88;
+        }
+        .invoice-note-watermark strong{
+            color: #4b5563;
+            font-size: 0.66rem;
         }
         .guest-container{
             display: flex;
@@ -1171,7 +1187,7 @@
                         @if ($invoice->currency->name != "USD")
                             {{-- TOTAL USD --}}
                             <tr style="background-color:  #ffffce">
-                                <td colspan="3" class="text-center">Total USD</td>
+                                <td colspan="3" class="text-center">Grand Total USD</td>
                                 <td class="text-right">
                                     <div class="tabel-heading">{{ '$ ' . number_format($invoice->total_usd, 0, ',', '.') }}</div>
                                     
@@ -1181,7 +1197,7 @@
                         @if ($invoice->currency->name == "USD")
                             {{-- TOTAL USD --}}
                             <tr style="background-color:  #ffffce">
-                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Total USD</b></div></td>
+                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Grand Total USD</b></div></td>
                                 <td class="text-right">
                                     <div class="tabel-heading"><b>{{ '$ ' . number_format($invoice->total_usd, 0, ',', '.') }}</b></div>
                                     
@@ -1190,7 +1206,7 @@
                         @elseif ($invoice->currency->name == "CNY")
                             {{-- TOTAL CNY --}}
                             <tr style="background-color:  #ffffce">
-                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Total CNY</b></div></td>
+                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Grand Total CNY</b></div></td>
                                 <td class="text-right">
                                     <div class="tabel-heading"><b>{{ '¥ ' . number_format($invoice->total_cny, 0, ',', '.') }}</b></div>
                                     
@@ -1199,7 +1215,7 @@
                         @elseif ($invoice->currency->name == "TWD")
                             {{-- TOTAL TWD --}}
                             <tr style="background-color:  #ffffce">
-                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Total TWD</b></div></td>
+                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Grand Total TWD</b></div></td>
                                 <td class="text-right">
                                     <div class="tabel-heading"><b>{{ '$ ' . number_format($invoice->total_twd, 0, ',', '.') }}</b></div>
                                     
@@ -1208,7 +1224,7 @@
                         @elseif ($invoice->currency->name == "IDR")
                             {{-- TOTAL IDR --}}
                             <tr style="background-color:  #ffffce">
-                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Total IDR</b></div></td>
+                                <td colspan="3" class="text-center"><div class="tabel-heading"><b>Grand Total IDR</b></div></td>
                                 <td class="text-right">
                                     <div class="tabel-heading"><b>{{ 'Rp ' . number_format($invoice->total_idr, 0, ',', '.') }}</b></div>
                                     
@@ -1288,7 +1304,7 @@
                                     </tr>
                                     <tr>
                                         <td style="width:15%;">
-                                            Account IDR
+                                            IDR Account
                                         </td>
                                         <td style="width: 35%;">
                                             {{ $bank_account->account_idr }}
@@ -1302,7 +1318,7 @@
                                     </tr>
                                     <tr>
                                         <td style="width:15%;">
-                                            Account USD
+                                            USD Account
                                         </td>
                                         <td colspan="2" style="width: 35%;">
                                             {{ $bank_account->account_usd }}
@@ -1318,14 +1334,9 @@
                             </div>
                         </div>
                     @endif
-                    <div class="additional-info">
-                        <br>
-                        <p>We would like to remind you to follow the following steps in the payment process:<br>
-                        1. After receiving our confirmation letter, please review the details of the reservation in the invoice sent.<br>
-                        2. If the invoice received is accurate, kindly proceed with the payment before the 'Payment Dateline' mentioned in the invoice.<br>
-                        3. If the payment has been completed, please upload the 'proof of payment' in our system.<br>
-                        Thank you for your attention and cooperation.
-                        </p>
+                    <div class="invoice-note-watermark">
+                        <strong>Payment Notice</strong><br>
+                        Please complete payment before the stated deadline and upload payment proof through the order page for verification.
                     </div>
                 </div>
             </div>

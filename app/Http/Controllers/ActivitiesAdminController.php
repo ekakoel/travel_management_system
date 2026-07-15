@@ -78,7 +78,7 @@ class ActivitiesAdminController extends Controller
             $attentions = Attention::where('page','admin-activity-add')->get();
             $partner = Partners::where('id',$activities->partners_id)->first();
             $partners = Partners::all();
-            return view('form.activityedit',[
+            return view('backend.operations.activities.forms.edit',[
                 'type' => $type,
                 'usdrates'=>$usdrates,
                 "attentions"=>$attentions,
@@ -98,7 +98,7 @@ class ActivitiesAdminController extends Controller
             $activities = Activities::all();
             $type = ActivityType::all();
             $partners = Partners::all();
-            return view('form.activityadd', [
+            return view('backend.operations.activities.forms.create', [
                 "attentions"=>$attentions,
                 "type" => $type,
                 "partners" => $partners,

@@ -7,7 +7,8 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Partners;
 use App\Models\TourType;
-use App\Models\Itinerary;
+use App\Models\Itineraries;
+use App\Models\TourPackageLocation;
 use App\Models\TourPrices;
 use App\Models\ToursImages;
 use Illuminate\Support\Str;
@@ -35,6 +36,9 @@ class Tours extends Model
         'description',
         'description_traditional',
         'description_simplified',
+        'package_highlights',
+        'package_highlights_traditional',
+        'package_highlights_simplified',
         'duration_days',
         'duration_nights',
         'itinerary',
@@ -62,7 +66,13 @@ class Tours extends Model
         return $this->hasMany(TourPrices::class,'tour_id');
     }
     public function itineraries(){
-        return $this->hasMany(Itinerary::class,'tour_id');
+        return $this->hasMany(Itineraries::class,'tour_id');
+    }
+    public function locations(){
+        return $this->hasMany(TourPackageLocation::class,'tour_id');
+    }
+    public function activeLocations(){
+        return $this->hasMany(TourPackageLocation::class,'tour_id')->active()->ordered();
     }
     public function type(){
         return $this->belongsTo(TourType::class,'type_id');

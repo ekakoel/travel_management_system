@@ -19,7 +19,6 @@ use App\Models\Wallet;
 use App\Models\Drivers;
 use App\Models\Flights;
 use App\Models\LogData;
-use App\Models\TaxDoku;
 use App\Models\UserLog;
 use App\Models\ExtraBed;
 use App\Models\OrderLog;
@@ -45,7 +44,6 @@ use Illuminate\Http\Request;
 use App\Models\ExtraBedOrder;
 use App\Models\VendorPackage;
 use App\Models\WeddingVenues;
-use App\Services\DokuService;
 use App\Mail\ConfirmationMail;
 use App\Models\AirportShuttle;
 use App\Models\TransportPrice;
@@ -53,7 +51,6 @@ use App\Models\BusinessProfile;
 use App\Models\AdditionalService;
 use App\Models\OptionalRateOrder;
 use App\Models\RemarkReservation;
-use App\Models\DokuVirtualAccount;
 use App\Models\ExcludeReservation;
 use App\Models\IncludeReservation;
 use App\Models\WeddingInvitations;
@@ -79,11 +76,8 @@ use App\Http\Requests\UpdateactivitiesRequest;
 
 class OrdersAdminController extends Controller
 {
-    protected $dokuService;
-
-    public function __construct(DokuService $dokuService)
+    public function __construct()
     {
-        $this->dokuService = $dokuService;
         $this->middleware(['auth']);
         // $this->middleware(['auth','can:isAdmin']);
     }
@@ -113,6 +107,139 @@ class OrdersAdminController extends Controller
             'room_total' => $roomTotal,
             'unit_price' => $unitPrice,
         ];
+    }
+
+    private function buildStandardInvoicePdfPayload(Orders $order, InvoiceAdmin $invoice): array
+    {
+        $agent = User::where('id', $order->sales_agent)->first();
+        $hotels = Hotels::all();
+        $villa = Villas::find($order->service_id);
+        $usdrates = UsdRates::where('name', 'USD')->first();
+        $tax = Tax::where('id', 1)->first();
+        $attentions = Attention::where('page', 'user-order-detail')->get();
+        $business = BusinessProfile::where('id', 1)->first();
+        $optionalrates = OptionalRate::with('hotels')->get();
+        $optionalrate_meals = OptionalRate::with('hotels')->where('type', 'Meals')->get();
+        $optional_rate_orders = $order->optional_rate_orders;
+        $extra_beds = ExtraBed::all();
+        $now = Carbon::now();
+        $reservation = Reservation::where('id', $order->rsv_id)->first();
+        $bankAccount = BankAccount::where('id', $invoice->bank_id ?: 1)->first();
+        $pdsc = json_decode($order->promotion_disc);
+
+        if ($order->service == 'Tour Package') {
+            $amount = $order->price_total;
+            if ($order->duration == '1D') {
+                $order_duration = 1;
+            } elseif ($order->duration == '2D/1N') {
+                $order_duration = 1;
+            } elseif ($order->duration == '3D/2N') {
+                $order_duration = 2;
+            } elseif ($order->duration == '4D/3N') {
+                $order_duration = 3;
+            } elseif ($order->duration == '5D/4N') {
+                $order_duration = 4;
+            } elseif ($order->duration == '6D/5N') {
+                $order_duration = 5;
+            } else {
+                $order_duration = 1;
+            }
+        } elseif ($order->service == 'Activity') {
+            $amount = $order->price_total;
+            $order_duration = $order->duration;
+        } else {
+            $amount = $order->normal_price;
+            $order_duration = $order->duration;
+        }
+
+        $promotion_disc = isset($pdsc) ? array_sum($pdsc) : 0;
+        $special_day = json_decode($order->special_day);
+        $special_date = json_decode($order->special_date);
+        $extra_bed = json_decode($order->extra_bed);
+        $extra_bed_id = json_decode($order->extra_bed_id);
+        $extra_bed_price = json_decode($order->extra_bed_price);
+        $nor = $order->number_of_room;
+        $order_link = 'https://online.balikamitour.com/detail-order-' . $order->id;
+        $admin = Auth::user()->where('id', $order->verified_by)->first();
+        $guest_name = Guests::where('rsv_id', $order->rsv_id)->get();
+        $pickup_people = Guests::where('id', $order->pickup_name)->first();
+        $guide = Guide::where('id', $order->guide_id)->first();
+        $driver = Drivers::where('id', $order->driver_id)->first();
+        $airport_shuttles = AirportShuttle::where('order_id', $order->id)->get();
+        $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
+
+        return [
+            'now' => $now,
+            'title' => 'Confirmation Order',
+            'email' => $order->email,
+            'agent' => $agent,
+            'admin' => $admin,
+            'order_link' => $order_link,
+            'extra_beds' => $extra_beds,
+            'order' => $order,
+            'tax' => $tax,
+            'optionalrates' => $optionalrates,
+            'usdrates' => $usdrates,
+            'business' => $business,
+            'optional_rate_orders' => $optional_rate_orders,
+            'attentions' => $attentions,
+            'optionalrate_meals' => $optionalrate_meals,
+            'logoImage' => public_path('storage/logo/bali-kami-tour-logo.png'),
+            'guest_name' => $guest_name,
+            'hotels' => $hotels,
+            'villa' => $villa,
+            'special_day' => $special_day,
+            'special_date' => $special_date,
+            'extra_bed' => $extra_bed,
+            'extra_bed_id' => $extra_bed_id,
+            'extra_bed_price' => $extra_bed_price,
+            'nor' => $nor,
+            'pickup_people' => $pickup_people,
+            'guide' => $guide,
+            'driver' => $driver,
+            'reservation' => $reservation,
+            'invoice' => $invoice,
+            'amount' => $amount,
+            'jml_extra_bed' => $extraBedSummary['quantity'],
+            'extrabed_price' => $extraBedSummary['total'],
+            'extra_bed_room_price' => $extraBedSummary['room_total'],
+            'extra_bed_unit_price' => $extraBedSummary['unit_price'],
+            'cebp' => $extraBedSummary['count'],
+            'promotion_disc' => $promotion_disc,
+            'bankAccount' => $bankAccount,
+            'order_duration' => $order_duration,
+            'arrival_flight' => $order->arrival_flight,
+            'arrival_time' => $order->arrival_time,
+            'departure_flight' => $order->departure_flight,
+            'departure_time' => $order->departure_time,
+            'airport_shuttles' => $airport_shuttles,
+        ];
+    }
+
+    private function saveStandardInvoicePdfDocuments(Orders $order, InvoiceAdmin $invoice): void
+    {
+        $data = $this->buildStandardInvoicePdfPayload($order, $invoice);
+        $basePath = "storage/document/invoice-{$invoice->inv_no}-{$order->id}";
+        [$englishView, $chineseView] = $order->service === 'Tour Package'
+            ? ['emails.invoiceTourEn', 'emails.invoiceTourZh']
+            : ['emails.orderContractEn', 'emails.orderContractZh'];
+
+        if (File::exists($basePath . '_en.pdf')) {
+            File::delete($basePath . '_en.pdf');
+        }
+
+        PDF::loadView($englishView, $data)->save($basePath . '_en.pdf');
+
+        if (File::exists($basePath . '_zh.pdf')) {
+            File::delete($basePath . '_zh.pdf');
+        }
+
+        PDF::loadView($chineseView, $data)->save($basePath . '_zh.pdf');
+    }
+
+    private function canRegenerateStandardInvoice(?Orders $order, ?InvoiceAdmin $invoice): bool
+    {
+        return $order && $invoice && $order->status === 'Approved';
     }
     
     public function index()
@@ -359,23 +486,6 @@ class OrdersAdminController extends Controller
             $wedding_itineraries = null;
             $hotel_price = 0;
         }
-        if ($invoice) {
-            $doku_payment = DokuVirtualAccount::where('invoice_id', $invoice->id)
-            ->where('expired_date','>=',$now)
-            ->orderBy('expired_date','DESC')
-            ->first();
-            $doku_payment_paid = DokuVirtualAccount::where('invoice_id', $invoice->id)
-            ->where('status','Paid')
-            ->first();
-            $dokuPayments = DokuVirtualAccount::where('invoice_id', $invoice->id)
-            ->where('expired_date','>=',$now)
-            ->get();
-        }else{
-            $doku_payment = null;
-            $doku_payment_paid = null;
-            $dokuPayments = null;
-        }
-
         $guest_detail = json_decode($order->guest_detail);
 
         $nor = $order->number_of_room;
@@ -475,9 +585,6 @@ class OrdersAdminController extends Controller
             'hotel_price'=>$hotel_price,
             'wedding_itineraries'=>$wedding_itineraries,
             'wedding_transport_price'=>$wedding_transport_price,
-            'doku_payment'=>$doku_payment,
-            'doku_payment_paid'=>$doku_payment_paid,
-            'dokuPayments'=>$dokuPayments,
             'total_payment_usd' => $total_payment_usd,
             'total_payment_cny' => $total_payment_cny,
             'total_payment_twd' => $total_payment_twd,
@@ -1523,7 +1630,7 @@ class OrdersAdminController extends Controller
         if ($order->handled_by) {
             if ($order->handled_by == Auth::user()->id) {
                 if ($order->status != "Approved") {
-                    return view('order.add-additional-services',[
+                    return view('backend.operations.orders.actions.add-additional-services',[
                         'order'=> $order,
                         'usdrates'=> $usdrates,
                         'attentions'=> $attentions,
@@ -1540,7 +1647,7 @@ class OrdersAdminController extends Controller
                 return redirect("/orders-admin-$id")->with('success','You can not change anything!');
             }
         }else{
-            return view('order.add-additional-services',[
+            return view('backend.operations.orders.actions.add-additional-services',[
                 'order'=> $order,
                 'usdrates'=> $usdrates,
                 'attentions'=> $attentions,
@@ -1564,7 +1671,7 @@ class OrdersAdminController extends Controller
         $additional_service_price = json_decode($order->additional_service_price);
         $order_wedding = OrderWedding::where('id',$order->wedding_order_id)->firstOrFail();
         $wedding_itineraries = Itinerary::where('order_id',$order->id)->orderBy('day', 'asc')->get();
-        return view('order.add-order-itinerary',[
+        return view('backend.operations.orders.actions.add-order-itinerary',[
             'order'=> $order,
             'usdrates'=> $usdrates,
             'attentions'=> $attentions,
@@ -1587,7 +1694,7 @@ class OrdersAdminController extends Controller
         if ($order->handled_by) {
             if ($order->handled_by == Auth::user()->id) {
                 if ($order->status != "Approved") {
-                    return view('order.edit-airport-shuttle',[
+                    return view('backend.operations.orders.actions.edit-airport-shuttle',[
                         'order'=> $order,
                         'usdrates'=> $usdrates,
                         'attentions'=> $attentions,
@@ -1603,7 +1710,7 @@ class OrdersAdminController extends Controller
                 return redirect("/orders-admin-$id")->with('success','You can not change anything!');
             }
         }else{
-            return view('order.edit-airport-shuttle',[
+            return view('backend.operations.orders.actions.edit-airport-shuttle',[
                 'order'=> $order,
                 'usdrates'=> $usdrates,
                 'attentions'=> $attentions,
@@ -2712,7 +2819,6 @@ class OrdersAdminController extends Controller
         }else{
             $promotion_disc = 0;
         }
-        $tax_doku = TaxDoku::where('id','1')->first();
 
         $special_day = json_decode($order->special_day);
         $special_date = json_decode($order->special_date);
@@ -2764,11 +2870,6 @@ class OrdersAdminController extends Controller
         }
 
         $invoice = InvoiceAdmin::where('rsv_id',$order->rsv_id)->first();
-        $doku_payment = DokuVirtualAccount::where('invoice_id',$invoice->id)->first();
-        $doku_virtual_account = DokuVirtualAccount::where('invoice_id', $invoice->id)
-        ->where('expired_date','>=',$now)
-        ->orderBy('expired_date','DESC')
-        ->first();
         $bankAccount = BankAccount::where("id",$invoice->bank_id)->first();
         if (isset($optional_rate_orders->optional_rate_id)){
             $opsirate_order_date = json_decode($optional_rate_orders->service_date);
@@ -2880,7 +2981,6 @@ class OrdersAdminController extends Controller
                 'order_duration'=>$order_duration,
                 'price'=>$price,
                 'airport_shuttles'=>$airport_shuttles,
-                'doku_payment'=>$doku_payment,
             ]);
         }else{
             return view('emails.printContract',compact('order'),[
@@ -2934,9 +3034,6 @@ class OrdersAdminController extends Controller
                 'order_duration'=>$order_duration,
                 'price'=>$price,
                 'airport_shuttles'=>$airport_shuttles,
-                'tax_doku'=>$tax_doku,
-                'doku_virtual_account'=>$doku_virtual_account,
-                'doku_payment'=>$doku_payment,
             ]);
         }
     }
@@ -3188,14 +3285,6 @@ class OrdersAdminController extends Controller
         $order_log->save();
         $admin = Auth::user()->where('id',$order->verified_by)->first();
         $bankAccount = BankAccount::where("id",$invoice->bank_id)->first();
-        $doku_payment = DokuVirtualAccount::where('invoice_id',$invoice->id)->first();
-        $paymentResponse = $this->dokuService->createPayment($order, $invoice, $agent);
-        if ($paymentResponse) {
-            $doku_virtual_account = $paymentResponse;
-        }else{
-            $doku_virtual_account = null;
-        }
-        $tax_doku = TaxDoku::where('id','1')->first();
         $data = [
             'now'=>$now,
             'title'=>"Confirmation Order - ".$order->orderno,
@@ -3259,9 +3348,6 @@ class OrdersAdminController extends Controller
             'weddingOthers'=>$weddingOthers,
             'weddingFixedServices'=>$weddingFixedServices,
             'bride'=>$bride,
-            'doku_payment'=>$doku_payment,
-            'doku_virtual_account'=>$doku_virtual_account,
-            'tax_doku'=>$tax_doku,
         ];
         
         if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf")) {
@@ -3295,18 +3381,28 @@ class OrdersAdminController extends Controller
         return redirect("/orders-admin-$id");
     }
 
-    public function func_generate_doku_payment(Request $request, $id){
-        $order=Orders::find($id);
-        $agent = User::where('id', $order->sales_agent)->first();
-        $reservation = Reservation::find($order->rsv_id);
-        $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
-        $paymentResponse = $this->dokuService->generateDokuPayment($order, $invoice, $agent);
-        // dd($paymentResponse, );
-        return redirect("/orders-admin-$id");
-    }
-
     public function fgenerate_invoice(Request $request,$id){
         $order=Orders::with(['optional_rate_orders'])->find($id);
+        if (!$order || $order->status !== 'Approved') {
+            return redirect()->back()->with('error', 'Invoice can only be generated for approved orders.');
+        }
+
+        $existingInvoice = InvoiceAdmin::where('rsv_id', $order->rsv_id)->latest('id')->first();
+        if ($existingInvoice) {
+            $this->saveStandardInvoicePdfDocuments($order, $existingInvoice);
+
+            OrderLog::create([
+                'order_id' => $order->id,
+                'action' => 'Regenerate Invoice PDF',
+                'url' => $request->getClientIp(),
+                'method' => 'Update',
+                'agent' => $order->name,
+                'admin' => Auth::id(),
+            ]);
+
+            return redirect()->back()->with('success', 'Invoice PDF regenerated successfully.');
+        }
+
         $agent = User::where('id', $order->sales_agent)->first();
         $hotels=Hotels::all();
         $villa=Villas::find($order->service_id);
@@ -3405,7 +3501,7 @@ class OrdersAdminController extends Controller
 
         // INVOICE
         $inv_no = "INV-".$reservation->rsv_no;
-        $due_date = date('Y-m-d', strtotime("-3 days", strtotime($order->checkin)));
+        $due_date = Carbon::parse($now)->addHours(48);
         $rate_usd = $usdrates->rate;
         $rate_cny = $cnyrates->rate;
         $rate_twd = $twdrates->rate;
@@ -3448,70 +3544,32 @@ class OrdersAdminController extends Controller
             "balance"=>$balance,
         ]);
         $invoice->save();
-        $airport_shuttles = AirportShuttle::where('order_id',$id)->get();
-        $tax_doku = TaxDoku::where('id','1')->first();
-        $doku_payment = DokuVirtualAccount::where('invoice_id',$invoice->id)->first();
-        $data = [
-            'now'=>$now,
-            'title'=>"Confirmation Order",
-            'email'=>$email,
-            'agent'=>$agent,
-            'admin'=>$admin,
-            'order_link'=>$order_link,
-            'extra_beds'=>$extra_beds,
-            'order'=>$order,
-            'tax'=>$tax,
-            'optionalrates'=>$optionalrates,
-            'usdrates'=>$usdrates,
-            'business'=>$business,
-            'optional_rate_orders'=> $optional_rate_orders,
-            'attentions'=>$attentions,
-            'optionalrate_meals'=>$optionalrate_meals,
-            'logoImage'=> public_path('storage/logo/bali-kami-tour-logo.png'),
-            'guest_name'=>$guest_name,
-            'hotels'=>$hotels,
-            'villa'=>$villa,
-            'special_day'=>$special_day,
-            'special_date'=>$special_date,
-            'extra_bed'=>$extra_bed,
-            'extra_bed_id'=>$extra_bed_id,
-            'extra_bed_price'=>$extra_bed_price,
-            'nor'=>$nor,
-            'pickup_people'=>$pickup_people,
-            'guide'=>$guide,
-            'driver'=>$driver,
-            'reservation'=>$reservation,
-            'invoice'=>$invoice,
-            'amount'=>$amount,
-            'jml_extra_bed'=>$jml_extra_bed,
-            'extrabed_price'=>$extrabed_price,
-            'extra_bed_room_price'=>$extra_bed_room_price,
-            'extra_bed_unit_price'=>$extra_bed_unit_price,
-            'cebp'=>$cebp,
-            'promotion_disc'=>$promotion_disc,
-            'bankAccount'=>$bankAccount,
-            'order_duration'=>$order_duration,
-            'arrival_flight' =>$order->arrival_flight,
-            'arrival_time' =>$order->arrival_time,
-            'departure_flight'=>$order->departure_flight,
-            'departure_time'=>$order->departure_time,
-            'airport_shuttles'=>$airport_shuttles,
-            'tax_doku'=>$tax_doku,
-            'doku_payment'=>$doku_payment,
-        ];
-        if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf")) {
-            File::delete("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
-        }
-        $pdf = PDF::loadView('emails.orderContractEn', $data);
-        $pdf->save("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
-
-        if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf")) {
-            File::delete("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
-        }
-        $pdf = PDF::loadView('emails.orderContractZh', $data);
-        $pdf->save("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
+        $this->saveStandardInvoicePdfDocuments($order, $invoice);
 
         return redirect()->back()->with('success','Invoice generate successfuly');
+    }
+
+    public function fregenerate_invoice_pdf(Request $request, $id)
+    {
+        $order = Orders::with(['optional_rate_orders'])->find($id);
+        $invoice = $order ? InvoiceAdmin::where('rsv_id', $order->rsv_id)->latest('id')->first() : null;
+
+        if (!$this->canRegenerateStandardInvoice($order, $invoice)) {
+            return redirect()->back()->with('error', 'Invoice PDF can only be regenerated for approved orders with an existing invoice.');
+        }
+
+        $this->saveStandardInvoicePdfDocuments($order, $invoice);
+
+        OrderLog::create([
+            'order_id' => $order->id,
+            'action' => 'Regenerate Invoice PDF',
+            'url' => $request->getClientIp(),
+            'method' => 'Update',
+            'agent' => $order->name,
+            'admin' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Invoice PDF regenerated successfully.');
     }
 
     public function test_contrat(Request $request,$id){
@@ -3628,7 +3686,7 @@ class OrdersAdminController extends Controller
 
         // INVOICE
         $inv_no = "INV-".$reservation->rsv_no;
-        $due_date = date('Y-m-d', strtotime("-3 days", strtotime($order->checkin)));
+        $due_date = Carbon::parse($now)->addHours(48);
         $total_idr = ceil($order->final_price / $usdrates->rate);
         $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
         $dataInvoice = [
@@ -3642,11 +3700,6 @@ class OrdersAdminController extends Controller
             "bank_id"=>$bank,
         ];
         $airport_shuttles = AirportShuttle::where('order_id',$id)->get();
-        $doku_payment = DokuVirtualAccount::where('invoice_id',$invoice->id)->first();
-        $doku_virtual_account = DokuVirtualAccount::where('invoice_id', $invoice->id)
-        ->where('expired_date','>=',$now)
-        ->first();
-        $tax_doku = TaxDoku::where('id','1')->first();
         $data = [
             'now'=>$now,
             'title'=>"Confirmation Order",
@@ -3697,9 +3750,6 @@ class OrdersAdminController extends Controller
             'departure_time'=>$order->departure_time,
             'airport_shuttles'=>$airport_shuttles,
             'hotel'=>$hotel,
-            'doku_virtual_account'=>$doku_virtual_account,
-            'doku_payment'=>$doku_payment,
-            'tax_doku'=>$tax_doku,
         ];
         // if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf")) {
         //     File::delete("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
@@ -3975,7 +4025,6 @@ class OrdersAdminController extends Controller
         }
         $reservation = Reservation::where('id',$order->rsv_id)->first();
         $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
-        $doku_payment = DokuVirtualAccount::where('invoice_id', $invoice->id);
         if ($order->handled_by == $user->id) {
             $status = "Paid";
             $order->update([
@@ -3986,9 +4035,6 @@ class OrdersAdminController extends Controller
             ]);
             $invoice->update([
                 "balance"=>0,
-            ]);
-            $doku_payment->update([
-                "status"=>$status,
             ]);
             $order_log =new OrderLog([
                 "order_id"=>$order->id,

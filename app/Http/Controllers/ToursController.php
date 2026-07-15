@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Http\Controllers\Concerns\BuildsTourLocationItinerary;
 use App\Models\Tax;
+use App\Models\User;
 use App\Models\Tours;
 use App\Models\Orders;
 use App\Models\TourType;
@@ -25,9 +27,11 @@ use App\Http\Requests\UpdatetoursRequest;
 class ToursController extends Controller
 
 {   
+    use BuildsTourLocationItinerary;
+
     public function __construct()
     {
-        $this->middleware(['auth','verified']);
+        $this->middleware(['auth','verified'])->except(['view_tour_detail']);
     }
     public function index()
     {   
@@ -144,29 +148,37 @@ class ToursController extends Controller
     }
     public function view_tour_detail($slug)
     {
-        $user_id = Auth::id();
+        $user = Auth::user();
+        $canViewTourRates = $this->canViewTourRates($user);
+        $tourRateAccess = $this->tourRateAccessState($user);
         $now = Carbon::now();
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
 
-        $tour = Tours::with(['images','prices'])->where('slug',$slug)->first();
-        $tour->prices->transform(function ($price) use ($usdrates, $tax) {
-            $price->calculated_price = $price->calculatePrice($usdrates, $tax);
-            return $price;
-        });
-        $prices = $tour->prices()->where('status', 'Active')->get()->map(function ($p) use ($usdrates, $tax) {
-            return [
-                'min_qty' => $p->min_qty,
-                'max_qty' => $p->max_qty,
-                'price' => $p->calculatePrice($usdrates, $tax),
-            ];
-        });
+        $tour = Tours::with(['images','prices','activeLocations'])->where('slug',$slug)->firstOrFail();
+        $prices = collect();
 
-        $orders = Orders::all();
-        $ordernotours = count($orders) + 1;
+        if ($canViewTourRates) {
+            $tour->prices->transform(function ($price) use ($usdrates, $tax) {
+                $price->calculated_price = $price->calculatePrice($usdrates, $tax);
+                return $price;
+            });
+            $prices = $tour->prices()->where('status', 'Active')->get()->map(function ($p) use ($usdrates, $tax) {
+                return [
+                    'id' => $p->id,
+                    'min_qty' => $p->min_qty,
+                    'max_qty' => $p->max_qty,
+                    'price' => $p->calculatePrice($usdrates, $tax),
+                ];
+            });
+        } else {
+            $tour->setRelation('prices', collect());
+        }
+
+        $ordernotours = Orders::count() + 1;
         $attentions = Attention::where('page','tour-detail')->get();
-        $agents = Auth::user()->where('status','Active')->get();
+        $agents = $canViewTourRates ? User::where('status','Active')->get() : collect();
         $neartours = Tours::where('status',"Active")
         ->where('slug','!=',$slug)
         ->where('type_id',$tour->type_id)
@@ -213,6 +225,11 @@ class ToursController extends Controller
             'zh-CN' => 'description_simplified',
             default => 'description',
         };
+        $langPackageHighlights = match (config('app.locale')) {
+            'zh' => 'package_highlights_traditional',
+            'zh-CN' => 'package_highlights_simplified',
+            default => 'package_highlights',
+        };
         $langItinerary = match (config('app.locale')) {
             'zh' => 'itinerary_traditional',
             'zh-CN' => 'itinerary_simplified',
@@ -238,7 +255,13 @@ class ToursController extends Controller
             'zh-CN' => 'cancellation_policy_simplified',
             default => 'cancellation_policy',
         };
-        return view('frontend.tours.detail',[
+        $tourMapLocations = $this->formatTourMapLocations($tour);
+        $tourGeneratedItinerary = $this->buildTourLocationItineraryHtml(
+            $tour,
+            trim((string) ($tour->$langItinerary ?: $tour->itinerary))
+        );
+
+        return view('frontend.landing-page.tours.detail',[
             'tax'=>$tax,
             'usdrates'=>$usdrates,
             'agents'=>$agents,
@@ -257,15 +280,159 @@ class ToursController extends Controller
             'langName'=>$langName,
             'langShortDescription'=>$langShortDescription,
             'langDescription'=>$langDescription,
+            'langPackageHighlights'=>$langPackageHighlights,
             'langItinerary'=>$langItinerary,
             'langInclude'=>$langInclude,
             'langExclude'=>$langExclude,
             'langAdditionalInfo'=>$langAdditionalInfo,
             'langCancellationPolicy'=>$langCancellationPolicy,
             'prices'=>$prices,
+            'tourGeneratedItinerary'=>$tourGeneratedItinerary,
+            'tourMapLocations'=>$tourMapLocations,
+            'canViewTourRates'=>$canViewTourRates,
+            'tourRateAccess'=>$tourRateAccess,
 
 
         ]);
+    }
+
+    private function canViewTourRates($user): bool
+    {
+        return $user
+            && $user->hasVerifiedEmail()
+            && (bool) $user->is_approved
+            && $user->status === 'Active'
+            && filled($user->name)
+            && filled($user->phone)
+            && filled($user->office)
+            && filled($user->address)
+            && filled($user->country);
+    }
+
+    private function tourRateAccessState($user): array
+    {
+        if (!$user) {
+            return [
+                'title' => __('tour-detail.login_required_title'),
+                'message' => __('tour-detail.login_required_message'),
+                'button' => __('tour-detail.login_to_view_rates'),
+                'url' => route('login'),
+            ];
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            return [
+                'title' => __('tour-detail.verify_required_title'),
+                'message' => __('tour-detail.verify_required_message'),
+                'button' => __('tour-detail.verify_account'),
+                'url' => route('verification.notice'),
+            ];
+        }
+
+        if (!(bool) $user->is_approved) {
+            return [
+                'title' => __('tour-detail.approval_required_title'),
+                'message' => __('tour-detail.approval_required_message'),
+                'button' => __('tour-detail.view_approval_status'),
+                'url' => route('approval.pending'),
+            ];
+        }
+
+        return [
+            'title' => __('tour-detail.profile_required_title'),
+            'message' => __('tour-detail.profile_required_message'),
+            'button' => __('tour-detail.complete_profile'),
+            'url' => route('profile'),
+        ];
+    }
+
+    private function formatTourMapLocations(Tours $tour): array
+    {
+        $markerImage = $tour->cover
+            ? getThumbnail('/tours/tours-cover/' . $tour->cover, 180, 180)
+            : asset('images/default.webp');
+
+        $dayCounters = [];
+
+        return $tour->activeLocations
+            ->filter(function ($location) {
+                return is_numeric($location->latitude)
+                    && is_numeric($location->longitude)
+                    && (float) $location->latitude >= -90
+                    && (float) $location->latitude <= 90
+                    && (float) $location->longitude >= -180
+                    && (float) $location->longitude <= 180;
+            })
+            ->values()
+            ->map(function ($location, $index) use ($markerImage, &$dayCounters) {
+                $markerStyle = $this->tourLocationMarkerStyle($location->location_type);
+                $dayNumber = (int) $location->day_number;
+                $dayCounters[$dayNumber] = ($dayCounters[$dayNumber] ?? 0) + 1;
+                $locationImage = $location->marker_image
+                    ? asset('storage/tours/tour-location-markers/' . $location->marker_image)
+                    : null;
+
+                return [
+                    'order' => $index + 1,
+                    'day' => $dayNumber,
+                    'display_order' => $dayCounters[$dayNumber],
+                    'visit_order' => (int) $location->visit_order,
+                    'visit_time' => $location->visit_time ? Carbon::parse($location->visit_time)->format('H:i') : null,
+                    'name' => $location->destination_name,
+                    'type' => $location->location_type ?: 'Attraction',
+                    'icon' => $markerStyle['icon'],
+                    'color' => $markerStyle['color'],
+                    'label' => $markerStyle['label'],
+                    'description' => trim(strip_tags((string) $location->description)),
+                    'lat' => (float) $location->latitude,
+                    'lng' => (float) $location->longitude,
+                    'location_image_url' => $locationImage,
+                    'image_url' => $locationImage ?: $markerImage,
+                    'google_maps_url' => $this->isTrustedMapUrl($location->google_maps_url) ? $location->google_maps_url : null,
+                ];
+            })
+            ->all();
+    }
+
+    private function tourLocationMarkerStyle(?string $type): array
+    {
+        return match ($type) {
+            'Activity' => [
+                'icon' => 'fa-route',
+                'color' => '#f97316',
+                'label' => 'Activity',
+            ],
+            'F&B' => [
+                'icon' => 'fa-utensils',
+                'color' => '#dc2626',
+                'label' => 'F&B',
+            ],
+            'Pickup/Dropoff' => [
+                'icon' => 'fa-hotel',
+                'color' => '#2563eb',
+                'label' => 'Pickup/Dropoff Location',
+            ],
+            default => [
+                'icon' => 'fa-landmark',
+                'color' => '#0f766e',
+                'label' => 'Attraction',
+            ],
+        };
+    }
+
+    private function isTrustedMapUrl(?string $url): bool
+    {
+        if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        return in_array(strtolower((string) parse_url($url, PHP_URL_HOST)), [
+            'google.com',
+            'www.google.com',
+            'maps.google.com',
+            'maps.app.goo.gl',
+            'goo.gl',
+        ], true);
     }
     public function tour_check_code(Request $request){
         $now = Carbon::now();

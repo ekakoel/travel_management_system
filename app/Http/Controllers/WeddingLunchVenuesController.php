@@ -29,7 +29,7 @@ class WeddingLunchVenuesController extends Controller
                 $hotel = Hotels::where('id',$lunch_venue->hotel_id)->first();
                 $attentions = Attention::where('page','update-lunch-venue')->get();
                 $weddingVenues = WeddingVenues::where('hotels_id',$hotel->id)->get();
-                return view('form.wedding-lunch-venue-edit',[
+                return view('backend.operations.weddings.forms.lunch-venue-edit',[
                     'lunch_venue'=>$lunch_venue,
                     'usdrates'=>$usdrates,
                     'weddingVenues'=>$weddingVenues,

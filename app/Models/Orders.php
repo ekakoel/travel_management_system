@@ -51,7 +51,11 @@ class Orders extends Model
         'benefits',
         'booking_code',
         'include',
+        'include_traditional',
+        'include_simplified',
         'exclude',
+        'exclude_traditional',
+        'exclude_simplified',
         'destinations',
         'additional_info',
         'number_of_guests',
@@ -146,7 +150,7 @@ class Orders extends Model
     }
     public function guests()
     {
-        return $this->hasMany(Guests::class);
+        return $this->hasMany(Guests::class, 'order_id');
     }
     public function guide()
     {

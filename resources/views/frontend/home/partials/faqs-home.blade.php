@@ -1,30 +1,5 @@
 @php
-    $faqItems = [
-        [
-            'question' => __('home.faq.items.register.question'),
-            'answer' => __('home.faq.items.register.answer'),
-        ],
-        [
-            'question' => __('home.faq.items.partner.question'),
-            'answer' => __('home.faq.items.partner.answer'),
-        ],
-        [
-            'question' => __('home.faq.items.approval.question'),
-            'answer' => __('home.faq.items.approval.answer'),
-        ],
-        [
-            'question' => __('home.faq.items.promotions.question'),
-            'answer' => __('home.faq.items.promotions.answer'),
-        ],
-        [
-            'question' => __('home.faq.items.support.question'),
-            'answer' => __('home.faq.items.support.answer'),
-        ],
-        [
-            'question' => __('home.faq.items.history.question'),
-            'answer' => __('home.faq.items.history.answer'),
-        ],
-    ];
+    $faqItems = collect($homeFaqItems ?? app(\App\Services\PublicFaqService::class)->items());
 @endphp
 
 <section class="home-section home-faq-section">
@@ -52,8 +27,8 @@
                         <span>{{ __('home.faq.aside.points.support') }}</span>
                     </div>
 
-                    <a class="home-faq-aside__link" href="{{ route('contact-us') }}">
-                        {{ __('home.faq.aside.link') }}
+                    <a class="home-faq-aside__link" href="{{ route('faq') }}">
+                        @lang('messages.View all FAQs')
                         <i class="fas fa-arrow-right" aria-hidden="true"></i>
                     </a>
                 </div>
@@ -83,7 +58,7 @@
                                 data-bs-parent="#homeFaqAccordion"
                             >
                                 <div class="accordion-body">
-                                    <p>{{ $item['answer'] }}</p>
+                                    <div class="home-faq-accordion__answer">{!! $item['answer'] !!}</div>
                                 </div>
                             </div>
                         </div>

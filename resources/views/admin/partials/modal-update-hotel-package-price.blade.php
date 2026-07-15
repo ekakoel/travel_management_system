@@ -50,7 +50,7 @@
                                 <div class="form-group">
                                     <label for="rooms_id">Rooms <span>*</span></label>
                                     <select id="rooms_id" name="rooms_id" class="custom-select col-12 @error('rooms_id') is-invalid @enderror" required>
-                                        <option selected value="{{ $room->id }}">{{ $room->rooms }}</option>
+                                        <option selected value="{{ $package->room->id }}">{{ $package->room->rooms }}</option>
                                         @foreach ($rooms as $prsroom)
                                             <option value="{{ $prsroom->id }}">{{ $prsroom->rooms }}</option>
                                         @endforeach

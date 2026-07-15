@@ -26,11 +26,13 @@
 .frontend-page-shell .btn-primary {
     border-color: var(--frontend-shell-primary);
     background: linear-gradient(135deg, var(--frontend-shell-primary) 0%, var(--frontend-shell-secondary) 100%);
+    align-content: center;
 }
 
 .frontend-page-shell .btn-primary:hover,
 .frontend-page-shell .btn-primary:focus {
     border-color: var(--frontend-shell-primary);
+    background: linear-gradient(135deg, var(--frontend-shell-primary) 100%, var(--frontend-shell-secondary) 0%);
     box-shadow: var(--frontend-shell-shadow-sm);
 }
 

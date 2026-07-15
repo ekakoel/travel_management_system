@@ -29,7 +29,7 @@ class MenuController extends Controller
             ->where('status','Confirmed')->get();
         $order_approved = Orders::where('user_id','=', Auth::user()->id)
             ->where('status','Approved')->get();
-        return view('main.order',compact('orders'),[
+        return view('frontend.home.orders.index',compact('orders'),[
             'menu_order'=>$menu_order,
             'order_active'=>$order_active,
             'order_rejected'=>$order_rejected,

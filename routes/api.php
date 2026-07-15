@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\API\V1\DokuWebhookController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WhatsAppController;
 use App\Models\SubmittedReview;
@@ -47,8 +46,6 @@ Route::namespace('App\\Http\\Controllers\\API\V1')->group(function () {
         'tag' => 'TagController',
     ]);
 });
-
-Route::post('/doku/webhook', [DokuWebhookController::class, 'handleWebhook']);
 
 Route::post('/submit-review', [ReviewController::class, 'store']);
 Route::post('/submit-wedding-review', [ReviewController::class, 'store_wedding_review']);

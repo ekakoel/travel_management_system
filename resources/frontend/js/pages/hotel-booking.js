@@ -1076,8 +1076,16 @@
 
         $form.data('processingLabel', processingLabel);
         $form.on('submit', function (event) {
+            var formElement = $form.get(0);
+
             if ($form.data('isSubmitting')) {
                 event.preventDefault();
+                return false;
+            }
+
+            if (formElement && !formElement.checkValidity()) {
+                event.preventDefault();
+                formElement.reportValidity();
                 return false;
             }
 

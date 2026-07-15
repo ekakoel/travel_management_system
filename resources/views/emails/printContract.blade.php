@@ -1359,15 +1359,13 @@
                 </table>
                 <table class="table-list m-t-18 m-b-18">
                     <tbody>
-                        @uiEnabled('doku-payment')
-                            <tr>
-                                <td style="width:20%;"></td>
-                                <td style="width:20%;"></td>
-                                <td colspan="3" class="table-title">
-                                    Self Payment
-                                </td>
-                            </tr>
-                        @endUiEnabled
+                        <tr>
+                            <td style="width:20%;"></td>
+                            <td style="width:20%;"></td>
+                            <td colspan="3" class="table-title">
+                                Payment Summary
+                            </td>
+                        </tr>
                         <tr style="text-align: right;">
                             <td style="width:20%;"></td>
                             <td style="width:20%;"></td>
@@ -1474,40 +1472,6 @@
                         @endif
                     </tbody>
                 </table>
-                @uiEnabled('doku-payment')
-                    <table class="table-list m-t-18 m-b-18">
-                        <tbody>
-                            <tr>
-                                <td style="width:20%;"></td>
-                                <td style="width:20%;"></td>
-                                <td colspan="3" class="table-title">
-                                    DOKU Payment
-                                </td>
-                            </tr>
-                            <tr style="text-align: right;">
-                                <td style="width:20%;"></td>
-                                <td style="width:20%;"></td>
-                                <td style="width:20%;">Services</td>
-                                <td style="width: 20%">IDR</td>
-                                <td style="width: 20%">{{ currencyFormatIdr($order->final_price * $usdrates->rate) }}</td>
-                            </tr>
-                            <tr style="text-align: right;">
-                                <td style="width:20%;"></td>
-                                <td style="width:20%;"></td>
-                                <td style="width:20%;">Payment Fee</td>
-                                <td >IDR</td>
-                                <td style="width: 20%">{{ currencyFormatIdr(($order->final_price * $usdrates->rate)*$tax_doku->tax_rate) }}</td>
-                            </tr>
-                            <tr style="text-align: right;">
-                                <td style="width:20%;"></td>
-                                <td style="width:20%;"></td>
-                                <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>Total</b></td>
-                                <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>IDR</b></td>
-                                <td style="width:20%; border-top: 1px solid grey;" class="final-price"><b>{{ currencyFormatIdr(($order->final_price * $usdrates->rate)+(($order->final_price * $usdrates->rate)*$tax_doku->tax_rate)) }}</b></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                @endUiEnabled
                 <div class="bank-account">
                     <div class="tb-container">
                         <table class="table tb-list">
@@ -1572,15 +1536,8 @@
                 </div>
                 <div class="additional-info">
                     <br>
-                    <p>We would like to remind you to follow the following steps in the payment process:<br>
-                    1. After receiving our confirmation letter, please review the details of the reservation in the invoice sent.<br>
-                    2. If the invoice received is accurate, kindly proceed with the payment before the 'Payment Dateline' mentioned in the invoice.<br>
-                    3. If the payment has been completed, please upload the 'proof of payment' in our system.<br>
-                    @uiEnabled('doku-payment')
-                        4. Payments using DOKU Payment can only be made in Rupiah (IDR).<br>
-                        5. Payments can be made independently or through DOKU Payment.<br>
-                        6. Every payment made through DOKU Payment will be subject to a tax (TAX) of 3% or 0.03 of the total transaction.<br>
-                    @endUiEnabled
+                    <p>Please review the invoice carefully and complete the payment before the stated payment deadline.<br>
+                    After payment is completed, kindly upload the proof of payment through our system for verification.<br>
                     Thank you for your attention and cooperation.
                     </p>
                 </div>

@@ -17,7 +17,7 @@ class AgentRegistrationController extends Controller
 {
     public function showForm()
     {
-        return view('home.agents.register');
+        return view('frontend.home.agents.register');
     }
 
     public function test_view_email(Request $request)

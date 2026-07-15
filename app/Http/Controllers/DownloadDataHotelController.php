@@ -38,7 +38,7 @@ class DownloadDataHotelController extends Controller
         ->where('book_periode_end',">=", $now)->get();
         $hotel_package = HotelPackage::where('status',"Active")
         ->where('stay_period_end',">=", $now)->get();
-        return view('main.download', compact('data_hotels'),[
+        return view('backend.reports.downloads.index', compact('data_hotels'),[
             "now" => $now,
             "data_hotels" => $data_hotels,
             "data_hotel_rooms" => $data_hotel_rooms,
@@ -64,7 +64,7 @@ class DownloadDataHotelController extends Controller
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
-        return view('main.downloadhotel', compact('data_hotels'),[
+        return view('backend.reports.downloads.hotel', compact('data_hotels'),[
             "now"=>$now,
             "hr_prices"=>$hr_prices,
             "tax" => $tax,
@@ -88,7 +88,7 @@ class DownloadDataHotelController extends Controller
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
-        return view('main.download-test', compact('data_hotels'),[
+        return view('backend.reports.downloads.hotel-test', compact('data_hotels'),[
             "now"=>$now,
             "hr_prices"=>$hr_prices,
             "tax" => $tax,
@@ -111,7 +111,7 @@ class DownloadDataHotelController extends Controller
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
-        return view('main.download-hotel-package', compact('packages'),[
+        return view('backend.reports.downloads.hotel-package', compact('packages'),[
             "now"=>$now,
             "rooms"=>$rooms,
             "hr_prices"=>$hr_prices,
@@ -135,7 +135,7 @@ class DownloadDataHotelController extends Controller
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
-        return view('main.download-hotel-promo', compact('promos'),[
+        return view('backend.reports.downloads.hotel-promo', compact('promos'),[
             "now"=>$now,
             "rooms"=>$rooms,
             "hr_prices"=>$hr_prices,
@@ -153,7 +153,7 @@ class DownloadDataHotelController extends Controller
         $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
-        return view('main.download-data-tour', compact('data_tours'),[
+        return view('backend.reports.downloads.tour', compact('data_tours'),[
             "now"=>$now,
             "tax" => $tax,
             "usdrates" =>$usdrates,
@@ -176,7 +176,7 @@ class DownloadDataHotelController extends Controller
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
-        return view('main.downloadhotel', compact('data_hotels'),[
+        return view('backend.reports.downloads.hotel', compact('data_hotels'),[
             
             "now"=>$now,
             "hr_prices"=>$hr_prices,
@@ -211,7 +211,7 @@ class DownloadDataHotelController extends Controller
             "attentions" => $attentions,
         ]; 
             
-        $pdf = PDF::loadView('main.downloadhotel', $data)->setPaper('a4', 'landscape');
+        $pdf = PDF::loadView('backend.reports.downloads.hotel', $data)->setPaper('a4', 'landscape');
      
         return $pdf->download('data_hotel_prices.pdf');
     }
