@@ -1,10 +1,8 @@
 <?php
 use Carbon\Carbon;
-use App\Models\UiConfig;
 use Intervention\Image\ImageManager;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\MapController;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -16,24 +14,6 @@ if (!function_exists('dateFormat')) {
         }
 
         return Carbon::parse($date)->translatedFormat($format);
-    }
-}
-
-if (!function_exists('ui_config')) {
-    function ui_config($name, $default = false)
-    {
-        return Cache::remember("ui_config_{$name}", 30, function () use ($name, $default) {
-            return UiConfig::where('name', $name)->value('status') ?? $default;
-        });
-    }
-}
-
-if (!function_exists('set_ui_config')) {
-    function set_ui_config($name, $status, $message = '')
-    {
-        $config = UiConfig::updateOrCreate(['name' => $name], ['status' => $status, 'message' => $message]);
-        Cache::forget("ui_config_{$name}");
-        return $config;
     }
 }
 

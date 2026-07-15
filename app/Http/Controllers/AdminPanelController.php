@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Tours;
 use App\Models\Hotels;
-use App\Models\Orders;
 use App\Models\Villas;
 use App\Models\UserLog;
 use App\Models\Services;
-use App\Models\UiConfig;
 use App\Models\UsdRates;
 use App\Models\Weddings;
 use App\Models\Attention;
@@ -68,9 +66,6 @@ class AdminPanelController extends Controller
 
     protected function adminPanelData(): array
     {
-        $now = Carbon::now();
-        $futureOrders = Orders::query()->where('checkin', '>=', $now);
-
         $serviceCounts = [
             'Hotels' => $this->activeDraftCounts(Hotels::query()),
             'Tours' => $this->activeDraftCounts(Tours::query()),
@@ -102,82 +97,94 @@ class AdminPanelController extends Controller
                 ];
             });
 
-        $orderPipeline = collect([
-            $this->orderPipelineItem('Confirmed', 'Confirmed', clone $futureOrders),
-            $this->orderPipelineItem('Pending', 'Pending', clone $futureOrders),
-            $this->orderPipelineItem('Invalid', 'Invalid', clone $futureOrders),
-            $this->orderPipelineItem('Rejected', 'Rejected', clone $futureOrders),
-        ]);
-
-        $validOrderRange = Orders::query()
-            ->where('status', 'Active')
-            ->selectRaw('MIN(checkin) as min_date, MAX(checkin) as max_date, COUNT(*) as total_orders')
-            ->first();
-
-        $recentOrders = Orders::query()
-            ->select(['id', 'orderno', 'service', 'servicename', 'status', 'checkin', 'final_price', 'created_at'])
-            ->latest()
-            ->limit(6)
-            ->get();
-
-        $uiConfigSummary = [
-            'total' => UiConfig::query()->count(),
-            'active' => UiConfig::query()->where('status', true)->count(),
-            'inactive' => UiConfig::query()->where('status', false)->count(),
-        ];
-
+        $expectedCurrencies = collect(['USD', 'CNY', 'TWD']);
         $currencyRates = UsdRates::query()
-            ->whereIn('name', ['USD', 'CNY', 'TWD'])
+            ->whereIn('name', $expectedCurrencies->all())
             ->get()
             ->keyBy('name');
 
-        $hotels = Hotels::query()
-            ->select(['id', 'name'])
-            ->orderBy('name')
+        $attentions = Attention::query()
+            ->where('page', 'admin-panel')
             ->get();
 
-        $approvedRevenue = Orders::query()->where('status', 'Approved')->sum('final_price');
+        $inactiveServices = $services->where('status', '!=', 'Active')->count();
+        $totalDraftContent = collect($serviceCounts)->sum('draft');
+        $missingCurrencyRates = $expectedCurrencies
+            ->reject(fn ($currency) => $currencyRates->has($currency))
+            ->values();
+        $servicesMissingMetadata = $services
+            ->filter(fn ($service) => empty($service['nicname']) || empty($service['icon']))
+            ->values();
+
+        $developerHealthChecks = collect([
+            [
+                'label' => 'Service Registry',
+                'status' => $servicesMissingMetadata->isEmpty() ? 'Healthy' : 'Needs Review',
+                'meta' => $servicesMissingMetadata->isEmpty()
+                    ? 'All registered services have slug and icon metadata.'
+                    : $servicesMissingMetadata->count() . ' services are missing slug or icon metadata.',
+                'tone' => $servicesMissingMetadata->isEmpty() ? 'healthy' : 'warning',
+            ],
+            [
+                'label' => 'Access Baseline',
+                'status' => 'Role Based',
+                'meta' => 'Developer pages rely on route middleware and policies for access control.',
+                'tone' => 'info',
+            ],
+            [
+                'label' => 'Currency Integration',
+                'status' => $missingCurrencyRates->isEmpty() ? 'Ready' : 'Incomplete',
+                'meta' => $missingCurrencyRates->isEmpty()
+                    ? 'USD, CNY, and TWD exchange rates are configured.'
+                    : 'Missing rate: ' . $missingCurrencyRates->implode(', '),
+                'tone' => $missingCurrencyRates->isEmpty() ? 'healthy' : 'danger',
+            ],
+            [
+                'label' => 'Developer Notes',
+                'status' => $attentions->count() . ' Notes',
+                'meta' => $attentions->isEmpty()
+                    ? 'No admin-panel notes are currently configured.'
+                    : 'Review active notes before changing this dashboard.',
+                'tone' => $attentions->isEmpty() ? 'neutral' : 'info',
+            ],
+        ]);
 
         return [
             'adminpanel' => AdminPanel::query()->get(),
-            'attentions' => Attention::query()->where('page', 'admin-panel')->get(),
+            'attentions' => $attentions,
             'currencyRates' => $currencyRates,
+            'expectedCurrencies' => $expectedCurrencies,
+            'missingCurrencyRates' => $missingCurrencyRates,
             'services' => $services,
             'serviceCounts' => $serviceCounts,
-            'orderPipeline' => $orderPipeline,
-            'validOrderRange' => $validOrderRange,
-            'validOrderRevenue' => $approvedRevenue,
-            'recentOrders' => $recentOrders,
-            'configs' => UiConfig::query()->orderBy('page', 'asc')->limit(8)->get(),
-            'uiConfigSummary' => $uiConfigSummary,
-            'hotels' => $hotels,
+            'developerHealthChecks' => $developerHealthChecks,
             'dashboardStats' => [
                 [
-                    'label' => 'Active Services',
+                    'label' => 'Registered Services',
                     'value' => $services->where('status', 'Active')->count(),
-                    'meta' => $services->count() . ' total services',
+                    'meta' => $inactiveServices . ' inactive from ' . $services->count() . ' total services',
                     'icon' => 'fa fa-cubes',
                     'tone' => 'teal',
                 ],
                 [
-                    'label' => 'Future Orders',
-                    'value' => $orderPipeline->sum('count'),
-                    'meta' => currencyFormatUsd($orderPipeline->sum('total')),
-                    'icon' => 'fa fa-calendar-check-o',
+                    'label' => 'Draft Content',
+                    'value' => $totalDraftContent,
+                    'meta' => 'Inactive or draft records across service domains',
+                    'icon' => 'fa fa-code-fork',
                     'tone' => 'blue',
                 ],
                 [
-                    'label' => 'Approved Revenue',
-                    'value' => currencyFormatUsd($approvedRevenue),
-                    'meta' => 'Approved order value',
-                    'icon' => 'fa fa-line-chart',
+                    'label' => 'Currency Setup',
+                    'value' => $currencyRates->count() . '/' . $expectedCurrencies->count(),
+                    'meta' => $missingCurrencyRates->isEmpty() ? 'Required rates configured' : 'Missing ' . $missingCurrencyRates->implode(', '),
+                    'icon' => 'fa fa-exchange',
                     'tone' => 'green',
                 ],
                 [
-                    'label' => 'UI Config',
-                    'value' => $uiConfigSummary['active'] . '/' . $uiConfigSummary['total'],
-                    'meta' => $uiConfigSummary['inactive'] . ' inactive controls',
-                    'icon' => 'fa fa-sliders',
+                    'label' => 'Developer Notes',
+                    'value' => $attentions->count(),
+                    'meta' => 'Admin-panel notes configured for developer review',
+                    'icon' => 'fa fa-sticky-note-o',
                     'tone' => 'amber',
                 ],
             ],
@@ -189,19 +196,6 @@ class AdminPanelController extends Controller
         return [
             'active' => (clone $query)->where('status', 'Active')->count(),
             'draft' => (clone $query)->where('status', '!=', 'Active')->count(),
-        ];
-    }
-
-    protected function orderPipelineItem(string $label, string $status, $query): array
-    {
-        $query->where('status', $status);
-
-        return [
-            'label' => $label,
-            'status' => $status,
-            'count' => (clone $query)->count(),
-            'total' => (float) (clone $query)->sum('final_price'),
-            'tone' => strtolower($status),
         ];
     }
 

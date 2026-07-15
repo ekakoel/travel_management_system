@@ -210,6 +210,17 @@ resources/backend/js/admin/users/index.js
 resources/backend/scss/admin/users/index-entry.scss
 ```
 
+Contoh implementasi aktif:
+
+```text
+resources/views/backend/developer/index.blade.php
+resources/backend/js/admin/panel/index.js
+resources/backend/scss/admin/panel/index-entry.scss
+resources/backend/scss/admin/panel/_index.scss
+```
+
+Halaman backend baru wajib menempatkan Blade, JS, dan SCSS di area `backend` sesuai domainnya. Hindari inline script/style untuk behavior halaman yang dapat dipindahkan ke asset backend.
+
 ## Mapping Legacy Ke Struktur Target
 
 | Legacy | Target |

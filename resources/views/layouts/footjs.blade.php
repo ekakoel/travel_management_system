@@ -52,26 +52,6 @@
     });
 </script>
 <script>
-	function toggleUI(name, status, message) {
-		fetch('/ui-config/toggle', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-			},
-			body: JSON.stringify({ name: name, status: status, message: message })
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.success) {
-				alert('Configuration has been change.');
-				location.reload();
-			}
-		});
-	}
-</script>
-
-<script>
     $(function(){
         $('.textarea_editor').summernote({
             height: 150,

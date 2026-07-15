@@ -55,7 +55,6 @@ use App\Http\Controllers\ToursImagesController;
 use App\Http\Controllers\TransportManagementController;
 use App\Http\Controllers\TransportsAdminController;
 use App\Http\Controllers\TransportsController;
-use App\Http\Controllers\UiConfigController;
 use App\Http\Controllers\UsdRatesController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VendorController;
@@ -240,10 +239,6 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fenable-service/{id}',[AdminPanelController::class,'func_enable_service'])->name('f-enable-service');
             Route::delete('/fremove-service/{id}',[AdminPanelController::class,'func_remove_service'])->name('f-remove-service');
 
-            Route::get('/ui-config', [UiConfigController::class, 'index'])->name('admin.ui-config');
-            Route::post('/ui-config/update', [UiConfigController::class, 'update'])->name('admin.ui-config.update');
-            Route::post('/ui-config/store', [UiConfigController::class, 'store'])->name('admin.ui-config.store');
-            Route::delete('/ui-config/delete/{id}', [UiConfigController::class, 'destroy'])->name('admin.ui-config.delete');
             Route::get('/admin/company-profile', [BusinessProfileController::class, 'edit'])->name('admin.company-profile.edit');
             Route::put('/admin/company-profile', [BusinessProfileController::class, 'update'])->name('admin.company-profile.update');
             Route::get('/admin/footer-manager', [FooterManagerController::class, 'index'])->name('admin.footer-manager.index');
@@ -907,7 +902,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('/weddings-admin-{id}',[WeddingsController::class,'view_wedding_admin_detail']);
         });
         // ========================================================================================================================================> (AGENT)
-        Route::middleware(['page.access'])->group(function () {
+        Route::group(function () {
             // ---------------------------------------------------
             //                      HOTELS 
             // ---------------------------------------------------

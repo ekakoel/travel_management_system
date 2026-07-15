@@ -62,9 +62,7 @@
 				</form>
 
 				<div class="auth-divider" aria-hidden="true"></div>
-				@uiEnabled('btn-register')
-					<p class="auth-switch">@lang('messages.Do not have an account?') <a class="auth-link" href="{{ route('register') }}">@lang('messages.Create One')</a></p>
-				@endUiEnabled
+				<p class="auth-switch">@lang('messages.Do not have an account?') <a class="auth-link" href="{{ route('register') }}">@lang('messages.Create One')</a></p>
 				<div class="auth-security-note">
 					<i class="fa fa-circle-info" aria-hidden="true"></i>
 					<span>@lang('messages.For your protection, authentication requests are CSRF protected and repeated attempts are throttled.')</span>

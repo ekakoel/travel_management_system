@@ -89,14 +89,12 @@
                                 <a href="{{ route('login') }}">
                                     <button type="button" class="btn btn-primary">@lang('messages.Login')</button>
                                 </a>
-                                @uiEnabled('btn-register')
-                                    <span>@lang('messages.or')</span>
-                                    @if (Route::has('register'))
-                                        <a href="{{ route('register') }}">
-                                            <button type="button" class="btn btn-secondary">@lang('messages.Register')</button>
-                                        </a>
-                                    @endif
-                                @endUiEnabled
+                                <span>@lang('messages.or')</span>
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}">
+                                        <button type="button" class="btn btn-secondary">@lang('messages.Register')</button>
+                                    </a>
+                                @endif
                                 <br> <br>
                                 <div class="inline-link" style="font-size: 0.8rem;">
                                     <a href="{{ config('app.term') }}" target="_blank">Terms and Conditions</a> - 

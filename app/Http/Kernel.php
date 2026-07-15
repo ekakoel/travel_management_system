@@ -85,7 +85,6 @@ class Kernel extends HttpKernel
         'weddingRsv' => \App\Http\Middleware\WeddingRsv::class,
         'weddingAuthor' => \App\Http\Middleware\WeddingAuthor::class,
         'checkPosition' => \App\Http\Middleware\CheckPosition::class,
-        'page.access' => \App\Http\Middleware\CheckPageAccess::class,
         'apikey' => \App\Http\Middleware\ApiKeyMiddleware::class,
     ];
 }

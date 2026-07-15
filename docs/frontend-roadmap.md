@@ -1917,3 +1917,30 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
   - `resources/frontend/js/pages/tour-detail.js`
   - `resources/frontend/js/pages/transport-detail.js`
 - Follow-up: Setiap modal order layanan frontend baru wajib menambahkan kontrak class shared dan regression coverage sebelum diterima.
+
+## B1 - Backend Admin Panel Redesign Baseline
+- Status: completed
+- Area: backend admin panel, developer dashboard, backend assets
+- Summary: Admin panel direfactor menjadi dashboard backend modern tanpa card di dalam card, dengan hero ringkas, statistik operasional, service availability, order pipeline, currency rate, recent orders, UI config, dan attention notes dalam struktur flat yang lebih mudah dipahami.
+- Impact: Halaman `/admin-panel` kini menjadi baseline awal redesign backend: Blade tetap di `resources/views/backend`, behavior dipindahkan ke `resources/backend/js`, styling ke `resources/backend/scss`, dan data controller lebih ringkas melalui agregasi dashboard.
+- Files:
+  - `app/Http/Controllers/AdminPanelController.php`
+  - `resources/views/backend/developer/index.blade.php`
+  - `resources/backend/js/admin/panel/index.js`
+  - `resources/backend/scss/admin/panel/index-entry.scss`
+  - `resources/backend/scss/admin/panel/_index.scss`
+  - `webpack.mix.js`
+  - `tests/Feature/ProjectStructureStandardTest.php`
+- Follow-up: Redesign backend berikutnya sebaiknya mengikuti pola flat section, asset per-domain di `resources/backend`, dan menghindari inline script/style kecuali untuk data Blade yang benar-benar kecil.
+
+## B2 - Developer-Focused Admin Panel Data Scope
+- Status: completed
+- Area: backend admin panel, developer dashboard, data relevance
+- Summary: Admin panel disesuaikan agar hanya menampilkan data yang relevan untuk role developer: service registry, draft/content health, UI configuration snapshot, currency readiness, platform health checks, dan developer notes.
+- Impact: Data order, revenue, dan reservation pipeline dihapus dari developer dashboard karena lebih tepat berada di area reservation/operations, sehingga halaman lebih ringan dan fokus pada konfigurasi platform.
+- Files:
+  - `app/Http/Controllers/AdminPanelController.php`
+  - `resources/views/backend/developer/index.blade.php`
+  - `resources/backend/scss/admin/panel/_index.scss`
+  - `tests/Feature/ProjectStructureStandardTest.php`
+- Follow-up: Jika role reservation/operations membutuhkan dashboard order, buat halaman terpisah di domain `resources/views/backend/operations` agar scope role tetap bersih.

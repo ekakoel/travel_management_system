@@ -33,64 +33,60 @@
 					</div>
 				@endif
 
-				@uiEnabled('form-register')
-					<form method="POST" action="{{ route('register') }}" class="auth-form">
-						@csrf
-						<div class="auth-field">
-							<label for="name">@lang('messages.Name')</label>
-							<input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" autocomplete="name" required>
-							@error('name')
-								<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-							@enderror
-						</div>
-						<div class="auth-field">
-							<label for="username">@lang('messages.Username')</label>
-							<input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" autocomplete="username" required>
-							@error('username')
-								<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-							@enderror
-						</div>
-						<div class="auth-field">
-							<label for="email">@lang('messages.E-Mail Address')</label>
-							<input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" autocomplete="email" required>
-							@error('email')
-								<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-							@enderror
-						</div>
-						<div class="auth-field auth-password-field">
-							<label for="password">@lang('messages.Password')</label>
-							<input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" autocomplete="new-password" required>
-							<button type="button" class="auth-password-toggle" data-password-toggle="password" aria-label="@lang('messages.Show password')" aria-pressed="false">
-								<i class="fa fa-eye-slash" aria-hidden="true"></i>
-							</button>
-							@error('password')
-								<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-							@enderror
-						</div>
-						<div class="auth-field auth-password-field">
-							<label for="password-confirmation">@lang('messages.Confirm Password')</label>
-							<input id="password-confirmation" type="password" class="form-control @error('password_confirmation') is-invalid @enderror" name="password_confirmation" autocomplete="new-password" required>
-							<button type="button" class="auth-password-toggle" data-password-toggle="password-confirmation" aria-label="@lang('messages.Show password')" aria-pressed="false">
-								<i class="fa fa-eye-slash" aria-hidden="true"></i>
-							</button>
-							@error('password_confirmation')
-								<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-							@enderror
-						</div>
-						<label class="auth-check" for="termsAndCondition">
-							<input type="checkbox" id="termsAndCondition" name="terms" value="1" data-auth-terms="#btnRegister" {{ old('terms') ? 'checked' : '' }}>
-							<span>
-								@lang('messages.By registering you agree with our terms and condition.')
-								<a class="auth-link" href="{{ route('terms-and-conditions') }}" target="_blank" rel="noopener">@lang('messages.Terms and Conditions')</a>
-								/
-								<a class="auth-link" href="{{ route('privacy-policy') }}" target="_blank" rel="noopener">@lang('messages.Privacy Policy')</a>
-							</span>
-						</label>
-						<button id="btnRegister" type="submit" class="btn btn-primary auth-submit" disabled>@lang('messages.Register')</button>
-					</form>
-				@elseUiEnabled('btn-register')
-					<div class="alert alert-warning auth-alert" role="alert">@lang('messages.Registration is currently unavailable.')</div>
-				@endUiEnabled
+				<form method="POST" action="{{ route('register') }}" class="auth-form">
+					@csrf
+					<div class="auth-field">
+						<label for="name">@lang('messages.Name')</label>
+						<input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" autocomplete="name" required>
+						@error('name')
+							<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+						@enderror
+					</div>
+					<div class="auth-field">
+						<label for="username">@lang('messages.Username')</label>
+						<input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" autocomplete="username" required>
+						@error('username')
+							<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+						@enderror
+					</div>
+					<div class="auth-field">
+						<label for="email">@lang('messages.E-Mail Address')</label>
+						<input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" autocomplete="email" required>
+						@error('email')
+							<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+						@enderror
+					</div>
+					<div class="auth-field auth-password-field">
+						<label for="password">@lang('messages.Password')</label>
+						<input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" autocomplete="new-password" required>
+						<button type="button" class="auth-password-toggle" data-password-toggle="password" aria-label="@lang('messages.Show password')" aria-pressed="false">
+							<i class="fa fa-eye-slash" aria-hidden="true"></i>
+						</button>
+						@error('password')
+							<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+						@enderror
+					</div>
+					<div class="auth-field auth-password-field">
+						<label for="password-confirmation">@lang('messages.Confirm Password')</label>
+						<input id="password-confirmation" type="password" class="form-control @error('password_confirmation') is-invalid @enderror" name="password_confirmation" autocomplete="new-password" required>
+						<button type="button" class="auth-password-toggle" data-password-toggle="password-confirmation" aria-label="@lang('messages.Show password')" aria-pressed="false">
+							<i class="fa fa-eye-slash" aria-hidden="true"></i>
+						</button>
+						@error('password_confirmation')
+							<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+						@enderror
+					</div>
+					<label class="auth-check" for="termsAndCondition">
+						<input type="checkbox" id="termsAndCondition" name="terms" value="1" data-auth-terms="#btnRegister" {{ old('terms') ? 'checked' : '' }}>
+						<span>
+							@lang('messages.By registering you agree with our terms and condition.')
+							<a class="auth-link" href="{{ route('terms-and-conditions') }}" target="_blank" rel="noopener">@lang('messages.Terms and Conditions')</a>
+							/
+							<a class="auth-link" href="{{ route('privacy-policy') }}" target="_blank" rel="noopener">@lang('messages.Privacy Policy')</a>
+						</span>
+					</label>
+					<button id="btnRegister" type="submit" class="btn btn-primary auth-submit" disabled>@lang('messages.Register')</button>
+				</form>
 
 				<div class="auth-divider" aria-hidden="true"></div>
 				<p class="auth-switch">@lang('messages.Already have an account?') <a class="auth-link" href="{{ route('login') }}">@lang('messages.Login')</a></p>

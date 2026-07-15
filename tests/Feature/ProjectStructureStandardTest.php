@@ -8,6 +8,7 @@ use App\Models\Hotels;
 use App\Models\ManualBook;
 use App\Models\OptionalRate;
 use App\Models\Orders;
+use App\Models\Services;
 use App\Models\Tax;
 use App\Models\Tours;
 use App\Models\TourPrices;
@@ -1702,5 +1703,113 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("@include('frontend.home.orders.weddings.sections.accommodation')", $weddingEdit);
         $this->assertStringContainsString("@include('frontend.home.orders.weddings.sections.transports')", $weddingEdit);
         $this->assertStringNotContainsString("@include('order-wedding-package.", $weddingEdit);
+    }
+
+    public function test_admin_panel_view_is_sourced_from_backend_structure(): void
+    {
+        $controller = file_get_contents(app_path('Http/Controllers/AdminPanelController.php'));
+        $view = file_get_contents(resource_path('views/backend/developer/index.blade.php'));
+
+        $this->assertFileExists(resource_path('views/backend/developer/index.blade.php'));
+        $this->assertFileDoesNotExist(resource_path('views/admin/adminpanel.blade.php'));
+        $this->assertFileDoesNotExist(resource_path('views/admin/panels/index.blade.php'));
+        $this->assertStringContainsString("view('backend.developer.index'", $controller);
+        $this->assertStringNotContainsString("view('admin.adminpanel'", $controller);
+        $this->assertStringNotContainsString("view('admin.panels.index'", $controller);
+        $this->assertStringNotContainsString('main-card-box', $view);
+        $this->assertStringNotContainsString('Contract Rate Trend', $view);
+        $this->assertStringNotContainsString('cdn.jsdelivr.net/npm/chart.js', $view);
+        $this->assertStringNotContainsString('adminPanelPriceChart', $view);
+        $this->assertStringNotContainsString('Upcoming Pipeline', $view);
+        $this->assertStringNotContainsString('Latest Orders', $view);
+        $this->assertStringNotContainsString('$orderPipeline', $view);
+        $this->assertStringContainsString('Platform Health Checks', $view);
+        $this->assertStringNotContainsString('UI Configuration Snapshot', $view);
+        $this->assertStringNotContainsString('UI Config', $view);
+        $this->assertStringNotContainsString("@include('backend.developer.partials.", $view);
+        $this->assertStringContainsString("mix('build/backend/css/admin/panel/index.css')", $view);
+        $this->assertStringContainsString("mix('build/backend/js/admin/panel/index.js')", $view);
+    }
+
+    public function test_admin_panel_assets_are_sourced_from_backend_structure(): void
+    {
+        $mix = file_get_contents(base_path('webpack.mix.js'));
+
+        $this->assertFileExists(resource_path('backend/js/admin/panel/index.js'));
+        $this->assertFileExists(resource_path('backend/scss/admin/panel/index-entry.scss'));
+        $this->assertFileExists(resource_path('backend/scss/admin/panel/_index.scss'));
+        $this->assertStringContainsString("resources/backend/js/admin/panel/index.js", $mix);
+        $this->assertStringContainsString("resources/backend/scss/admin/panel/index-entry.scss", $mix);
+    }
+
+    public function test_admin_panel_controller_returns_backend_dashboard_view_data(): void
+    {
+        Services::forceCreate([
+            'name' => 'Hotels',
+            'nicname' => 'hotels',
+            'icon' => 'fa fa-hotel',
+            'status' => 'Active',
+        ]);
+
+        $view = app(\App\Http\Controllers\AdminPanelController::class)->index();
+
+        $this->assertInstanceOf(\Illuminate\View\View::class, $view);
+        $this->assertSame('backend.developer.index', $view->name());
+        $this->assertArrayHasKey('dashboardStats', $view->getData());
+        $this->assertArrayHasKey('services', $view->getData());
+        $this->assertArrayHasKey('currencyRates', $view->getData());
+        $this->assertArrayHasKey('expectedCurrencies', $view->getData());
+        $this->assertArrayHasKey('missingCurrencyRates', $view->getData());
+        $this->assertArrayHasKey('developerHealthChecks', $view->getData());
+        $this->assertArrayNotHasKey('configs', $view->getData());
+        $this->assertArrayNotHasKey('uiConfigSummary', $view->getData());
+        $this->assertArrayNotHasKey('orderPipeline', $view->getData());
+        $this->assertArrayNotHasKey('recentOrders', $view->getData());
+        $this->assertArrayNotHasKey('validOrderRevenue', $view->getData());
+        $this->assertEqualsCanonicalizing([
+            'dashboardStats',
+            'services',
+            'currencyRates',
+            'expectedCurrencies',
+            'missingCurrencyRates',
+            'developerHealthChecks',
+        ], array_intersect(array_keys($view->getData()), [
+            'dashboardStats',
+            'services',
+            'currencyRates',
+            'expectedCurrencies',
+            'missingCurrencyRates',
+            'developerHealthChecks',
+        ]));
+    }
+
+    public function test_ui_config_feature_is_removed_from_project_runtime(): void
+    {
+        $routeFile = file_get_contents(base_path('routes/web.php'));
+        $kernel = file_get_contents(app_path('Http/Kernel.php'));
+        $helpers = file_get_contents(app_path('Helpers/helpers.php'));
+        $provider = file_get_contents(app_path('Providers/AppServiceProvider.php'));
+        $footJs = file_get_contents(resource_path('views/layouts/footjs.blade.php'));
+
+        $this->assertFileDoesNotExist(app_path('Http/Controllers/UiConfigController.php'));
+        $this->assertFileDoesNotExist(app_path('Models/UiConfig.php'));
+        $this->assertFileDoesNotExist(app_path('Http/Middleware/CheckPageAccess.php'));
+        $this->assertFileDoesNotExist(app_path('Policies/UiConfigPolicy.php'));
+        $this->assertFileDoesNotExist(app_path('Http/Requests/StoreUiConfigRequest.php'));
+        $this->assertFileDoesNotExist(app_path('Http/Requests/UpdateUiConfigRequest.php'));
+        $this->assertFileDoesNotExist(database_path('factories/UiConfigFactory.php'));
+        $this->assertFileDoesNotExist(database_path('seeders/UiConfigSeeder.php'));
+        $this->assertFileDoesNotExist(database_path('migrations/2025_03_06_090758_create_ui_configs_table.php'));
+        $this->assertFileDoesNotExist(resource_path('views/admin/ui-config.blade.php'));
+        $this->assertStringNotContainsString('UiConfigController', $routeFile);
+        $this->assertStringNotContainsString('/ui-config', $routeFile);
+        $this->assertStringNotContainsString('admin.ui-config', $routeFile);
+        $this->assertStringNotContainsString('page.access', $routeFile);
+        $this->assertStringNotContainsString('page.access', $kernel);
+        $this->assertStringNotContainsString('CheckPageAccess', $kernel);
+        $this->assertStringNotContainsString('ui_config', $helpers);
+        $this->assertStringNotContainsString('UiConfig', $helpers);
+        $this->assertStringNotContainsString('uiEnabled', $provider);
+        $this->assertStringNotContainsString('/ui-config/toggle', $footJs);
     }
 }

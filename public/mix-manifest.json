@@ -1,6 +1,7 @@
 {
-    "/js/app.js": "/js/app.js?id=9b708b78219634eff654fafd091186bb",
-    "/build/backend/js/app.js": "/build/backend/js/app.js?id=0a9ef4c53c4296f03b24f6685d72ba3b",
+    "/js/app.js": "/js/app.js?id=0faa7ffd81fb56b639b3a6e10eb48dfb",
+    "/build/backend/js/app.js": "/build/backend/js/app.js?id=1b1e9772ae75e5d67758fc478ea45083",
+    "/build/backend/js/admin/panel/index.js": "/build/backend/js/admin/panel/index.js?id=f9b195d20e683fb3eb97729e20632b73",
     "/build/frontend/js/app.js": "/build/frontend/js/app.js?id=86f6c53c5f260a203411df480c5cc832",
     "/build/frontend/js/pages/frontend-orders.js": "/build/frontend/js/pages/frontend-orders.js?id=79ff5ba01086f88e95df4bdfc5f842d5",
     "/build/frontend/js/pages/manual-book.js": "/build/frontend/js/pages/manual-book.js?id=7c69eb3385019b097c3e811992a670d1",
@@ -21,8 +22,8 @@
     "/build/frontend/js/pages/order-edit.js": "/build/frontend/js/pages/order-edit.js?id=166a8912870735ccfedd600771b37fe7",
     "/build/backend/css/app.css": "/build/backend/css/app.css?id=f44bc66f8f624a5ea2fb7f3d70b28407",
     "/css/app.css": "/css/app.css?id=f44bc66f8f624a5ea2fb7f3d70b28407",
-    "/build/frontend/css/pages/frontend-home-entry.css": "/build/frontend/css/pages/frontend-home-entry.css?id=833441647ea4a534a13fb53eea7ced4d",
     "/build/frontend/css/app.css": "/build/frontend/css/app.css?id=446e3eac5decea2215adee2a77b4f3a2",
+    "/build/backend/css/admin/panel/index.css": "/build/backend/css/admin/panel/index.css?id=41e35b2da7f80eb01410edf28e392917",
     "/build/frontend/css/pages/order-detail-entry.css": "/build/frontend/css/pages/order-detail-entry.css?id=a733cfe46d1743c7e424be78d1aa14df",
     "/build/frontend/css/pages/transport-booking-entry.css": "/build/frontend/css/pages/transport-booking-entry.css?id=f0311b9bca41623d9480195d00e5df03",
     "/build/frontend/css/pages/hotel-booking-entry.css": "/build/frontend/css/pages/hotel-booking-entry.css?id=d99854e4ccf43be526ea154d81bdc113",
@@ -41,5 +42,6 @@
     "/build/frontend/css/pages/frontend-orders-entry.css": "/build/frontend/css/pages/frontend-orders-entry.css?id=d122dec68568aa3a6962bff3cfd2dd0f",
     "/build/frontend/css/pages/profile-entry.css": "/build/frontend/css/pages/profile-entry.css?id=863948a9c6f70b00629ca4980f4efdff",
     "/build/frontend/css/pages/contact-page-entry.css": "/build/frontend/css/pages/contact-page-entry.css?id=b5223f017ad5b5333304bb25f915b8d2",
-    "/build/frontend/css/pages/about-page-entry.css": "/build/frontend/css/pages/about-page-entry.css?id=58ce0982be521a558815b3e7348501f4"
+    "/build/frontend/css/pages/about-page-entry.css": "/build/frontend/css/pages/about-page-entry.css?id=58ce0982be521a558815b3e7348501f4",
+    "/build/frontend/css/pages/frontend-home-entry.css": "/build/frontend/css/pages/frontend-home-entry.css?id=833441647ea4a534a13fb53eea7ced4d"
 }
