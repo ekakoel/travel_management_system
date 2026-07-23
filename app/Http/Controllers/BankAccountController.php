@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use App\Http\Requests\StoreBankAccountRequest;
 use App\Http\Requests\UpdateBankAccountRequest;
 
@@ -22,45 +23,21 @@ class BankAccountController extends Controller
     // ADD BANK ACCOUNT ==================================================================================================================================================================================
     public function func_add_bank_account(Request $request)
     {
-        $validated = $request->validate([
-            'location' => 'required',
-            'bank' => 'required',
-            'name' => 'required',
-        ]);
-        $bankAccount = new BankAccount ([
-            "bank"=>$request->bank,
-            "currency"=>$request->currency,
-            "account_name"=>$request->account_name,
-            "account_number"=>$request->account_number,
-            "location"=>$request->location,
-            "address"=>$request->address,
-            "telephone"=>$request->telephone,
-            "swift_code"=>$request->swift_code,
-            "bank_code"=>$request->bank_code,
-        ]);
-        //@dd($bankAccount);
+        $validated = $this->validateBankAccount($request);
+
+        $bankAccount = new BankAccount($this->bankAccountPayload($validated));
+
         $bankAccount->save();
         return redirect()->back()->with('success','Bank Account has been added');
-        return redirect()->back()->with('error','Bank Account cannot be added');
     }
 
     public function func_update_bank_account(Request $request,$id)
     {
         $bankaccount=BankAccount::findOrFail($id);
+        $validated = $this->validateBankAccount($request);
         
-        $bankaccount->update([
-            "bank"=>$request->bank,
-            "currency"=>$request->currency,
-            "account_name"=>$request->account_name,
-            "account_number"=>$request->account_number,
-            "location"=>$request->location,
-            "address"=>$request->address,
-            "telephone"=>$request->telephone,
-            "swift_code"=>$request->swift_code,
-            "bank_code"=>$request->bank_code,
-        ]);
+        $bankaccount->update($this->bankAccountPayload($validated));
         return redirect()->back()->with('success','Bank Account has been updated');
-        return redirect()->back()->with('error','Bank Account cannot be update');
     }
 
     // Function Delete REMARK =============================================================================================================>
@@ -114,5 +91,49 @@ class BankAccountController extends Controller
     public function destroy(BankAccount $bankAccount)
     {
         //
+    }
+
+    private function validateBankAccount(Request $request): array
+    {
+        return $request->validate([
+            'bank' => ['required', 'string', 'max:255'],
+            'currency' => ['required', 'in:IDR,USD,CNY,TWD'],
+            'account_name' => ['required', 'string', 'max:255'],
+            'account_number' => ['required', 'string', 'max:255'],
+            'location' => ['required', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'telephone' => ['nullable', 'string', 'max:255'],
+            'swift_code' => ['nullable', 'string', 'max:255'],
+            'bank_code' => ['nullable', 'string', 'max:255'],
+        ]);
+    }
+
+    private function bankAccountPayload(array $validated): array
+    {
+        $payload = [
+            'bank' => $validated['bank'],
+            'currency' => $validated['currency'],
+            'location' => $validated['location'],
+            'address' => $validated['address'] ?? null,
+            'telephone' => $validated['telephone'] ?? null,
+            'swift_code' => $validated['swift_code'] ?? null,
+            'bank_code' => $validated['bank_code'] ?? null,
+        ];
+
+        if (Schema::hasColumn('bank_accounts', 'account_name')) {
+            $payload['account_name'] = $validated['account_name'];
+            $payload['account_number'] = $validated['account_number'];
+
+            return $payload;
+        }
+
+        $payload['name'] = $validated['account_name'];
+        $payload['account_idr'] = null;
+        $payload['account_usd'] = null;
+        $payload['account_cny'] = null;
+        $payload['account_twd'] = null;
+        $payload['account_' . strtolower($validated['currency'])] = $validated['account_number'];
+
+        return $payload;
     }
 }

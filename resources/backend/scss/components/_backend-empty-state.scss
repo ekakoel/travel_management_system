@@ -1,0 +1,34 @@
+body.sidebar-light .backend-empty-state {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: var(--backend-radius-md);
+  color: var(--backend-muted);
+  display: grid;
+  font-weight: 700;
+  gap: 6px;
+  justify-items: center;
+  min-width: 0;
+  padding: 28px;
+  text-align: center;
+}
+
+body.sidebar-light .backend-empty-state i,
+body.sidebar-light .backend-empty-state strong {
+  color: var(--backend-brand-strong);
+}
+
+body.sidebar-light .backend-empty-state strong {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+body.sidebar-light .backend-empty-state span,
+body.sidebar-light .backend-empty-state p {
+  color: var(--backend-muted);
+  margin: 0;
+}
+
+body.sidebar-light .backend-empty-state--compact {
+  padding: 18px;
+}

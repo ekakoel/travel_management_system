@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Hotels;
 use App\Models\Villas;
 use App\Models\OptionalRateOrder;
+use App\Services\Hotels\HotelPricingService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -22,6 +23,8 @@ class OptionalRate extends Model
         'active_date',
         'must_buy_start',
         'must_buy_end',
+        'mandatory_start',
+        'mandatory_end',
         'contract_rate',
         'markup',
         'description',
@@ -39,11 +42,19 @@ class OptionalRate extends Model
     }
     public function calculatePrice($usdrates, $tax)
     {
-        $contract_rate = $this->contract_rate;
-        $usd = (ceil($contract_rate / $usdrates->rate)) + $this->markup;
-        $tax_rate = ceil($usd * ($tax->tax / 100));
-        return $usd + $tax_rate;
+        return app(HotelPricingService::class)->publishedRate($this->contract_rate, $this->markup, $usdrates, $tax);
     }
+
+    public function getMandatoryStartAttribute()
+    {
+        return $this->must_buy_start;
+    }
+
+    public function getMandatoryEndAttribute()
+    {
+        return $this->must_buy_end;
+    }
+
     public function scopeMustBuy($query, $checkin, $checkout)
     {
         return $query->whereBetween('active_date', [$checkin, $checkout]);

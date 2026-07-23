@@ -16,6 +16,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->middleware('registration.open')->only(['showRegistrationForm', 'register']);
     }
 
     protected function validator(array $data)

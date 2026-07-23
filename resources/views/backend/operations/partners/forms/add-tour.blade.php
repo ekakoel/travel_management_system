@@ -6,18 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Tour Package
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="/partners">Partners</a></li>
-                                <li class="breadcrumb-item"><a href="/detail-partner-{{ $partners->id }}">{{ $partners->name }}</a></li>
-                                <li class="breadcrumb-item active">Add Tour Package</li>
-                            </ol>
-                        </nav>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Tour Package
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -57,35 +50,35 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12">
-                                            <div class="form-group">
-                                                <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
+                                            <div class="backend-form-field">
+                                                <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
                                                 @error('cover')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="name">Name</label>
-                                                <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert tour package name" value="{{ old('name') }}" required>
+                                                <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert tour package name" value="{{ old('name') }}" required>
                                                 @error('name')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="location">Location</label>
-                                                <input type="text" id="location" name="location" class="form-control @error('location') is-invalid @enderror" placeholder="Insert tour location" value="{{ old('location') }}" required>
+                                                <input type="text" id="location" name="location" class="backend-form-control @error('location') is-invalid @enderror" placeholder="Insert tour location" value="{{ old('location') }}" required>
                                                 @error('location')location
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="type">Type<span> *</span></label>
-                                                <select id="type" name="type" class="custom-select col-12 @error('type') is-invalid @enderror" required>
+                                                <select id="type" name="type" class="backend-form-control col-12 @error('type') is-invalid @enderror" required>
                                                     <option selected value="">Select Type</option>
                                                     <option value="Private">Private</option>
                                                     <option value="Group">Group</option>
@@ -97,9 +90,9 @@
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="duration">Duration<span> *</span></label>
-                                                <select id="duration" name="duration" value="{{ old('duration') }}" class="custom-select col-12 @error('duration') is-invalid @enderror" required>
+                                                <select id="duration" name="duration" value="{{ old('duration') }}" class="backend-form-control col-12 @error('duration') is-invalid @enderror" required>
                                                     <option selected value="">Select duration</option>
                                                     <option value="1D">1D</option>
                                                     <option value="2D/1N">2D/1N</option>
@@ -115,48 +108,48 @@
                                             </div>
                                         </div>
                                         {{-- <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="qty">Capacity</label>
-                                                <input type="number" id="qty" name="qty" value="{{ old('qty') }}" class="form-control @error('qty') is-invalid @enderror" placeholder="Insert capacity" required>
+                                                <input type="number" id="qty" name="qty" value="{{ old('qty') }}" class="backend-form-control @error('qty') is-invalid @enderror" placeholder="Insert capacity" required>
                                                 @error('qty')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div> --}}
                                         <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="description">Description</label>
-                                                <textarea id="description" name="description" class="textarea_editor form-control border-radius-0" placeholder="Insert description" value="{{ old('description') }}" required></textarea>
+                                                <textarea data-backend-richtext="true" id="description" name="description" class="textarea_editor backend-form-control border-radius-0" placeholder="Insert description" value="{{ old('description') }}" required></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="destinations">Destinations</label>
-                                                <textarea id="destinations" name="destinations" class="textarea_editor form-control border-radius-0" placeholder="Insert destinations" value="{{ old('destinations') }}" required></textarea>
+                                                <textarea data-backend-richtext="true" id="destinations" name="destinations" class="textarea_editor backend-form-control border-radius-0" placeholder="Insert destinations" value="{{ old('destinations') }}" required></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="itinerary">Itinerary</label>
-                                                <textarea id="itinerary" name="itinerary" class="textarea_editor form-control border-radius-0" placeholder="Insert itinerary" value="{{ old('itinerary') }}" required></textarea>
+                                                <textarea data-backend-richtext="true" id="itinerary" name="itinerary" class="textarea_editor backend-form-control border-radius-0" placeholder="Insert itinerary" value="{{ old('itinerary') }}" required></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="include">Include</label>
-                                                <textarea id="include" name="include" class="textarea_editor form-control border-radius-0" placeholder="Insert include" value="{{ old('include') }}" required></textarea>
+                                                <textarea data-backend-richtext="true" id="include" name="include" class="textarea_editor backend-form-control border-radius-0" placeholder="Insert include" value="{{ old('include') }}" required></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="cancellation_policy">Cancellation Policy</label>
-                                                <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor form-control border-radius-0" placeholder="Insert additional information" value="{{ old('cancellation_policy') }}"></textarea>
+                                                <textarea data-backend-richtext="true" id="cancellation_policy" name="cancellation_policy" class="textarea_editor backend-form-control border-radius-0" placeholder="Insert additional information" value="{{ old('cancellation_policy') }}"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="additional_info">Additional Information</label>
-                                                <textarea id="additional_info" name="additional_info" class="textarea_editor form-control border-radius-0" placeholder="Insert additional information" value="{{ old('additional_info') }}"></textarea>
+                                                <textarea data-backend-richtext="true" id="additional_info" name="additional_info" class="textarea_editor backend-form-control border-radius-0" placeholder="Insert additional information" value="{{ old('additional_info') }}"></textarea>
                                             </div>
                                         </div>
                                         <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
@@ -166,26 +159,12 @@
                                     </div>
                                 </form>
                                 <div class="card-box-footer">
-                                    <button type="submit" form="add-tour" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add Tour</button>
+                                    <button type="submit" form="add-tour" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add Tour</button>
                                     <a href="/detail-partner-{{ $partners->id }}">
-                                        <button type="button"class="btn btn-danger"><i class="icon-copy fa fa-remove" aria-hidden="true"></i> Cancel</button>
+                                        <button type="button"class="backend-button backend-button-danger"><i class="icon-copy fa fa-remove" aria-hidden="true"></i> Cancel</button>
                                     </a>
                                 </div>
                             </div>
-                            @if (count($attentions)>0)
-                                <div class="col-md-4">
-                                    <div class="card-box mb-30">
-                                        <div class="banner-right">
-                                            <div class="title">Attention</div>
-                                            <ul class="attention">
-                                                @foreach ($attentions as $attention)
-                                                    <li><p><b>"{{ $attention->name }}"</b> {{ $attention->attention }}</p></li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                     </div>
                     @include('layouts.footer')

@@ -1,678 +1,367 @@
+@extends('layouts.head')
 @section('title', __('messages.Currency'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/admin/currency/index.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/admin/currency/index.js') }}"></script>
+@endpush
+
 @section('content')
-    @extends('layouts.head')
+    @php
+        $rateMeta = [
+            'USD' => ['name' => 'US Dollar', 'symbol' => '$', 'icon' => 'fa-usd', 'route' => 'f-update-usd-rates'],
+            'CNY' => ['name' => 'Chinese Yuan', 'symbol' => 'CNY', 'icon' => 'fa-jpy', 'route' => 'f-update-cny-rates'],
+            'TWD' => ['name' => 'New Taiwan Dollar', 'symbol' => 'NT$', 'icon' => 'fa-money', 'route' => 'f-update-twd-rates'],
+        ];
+        $formatIdr = fn ($value) => is_numeric($value) ? currencyFormatIdr((float) $value) : '-';
+        $formatNumber = fn ($value) => is_numeric($value) ? number_format((float) $value, 2, '.', ',') : '-';
+        $externalStatus = $externalRates['status'] ?? 'unavailable';
+        $externalUpdatedAt = $externalRates['retrieved_at'] ?? null;
+    @endphp
+
     <div class="mobile-menu-overlay"></div>
-    <div class="main-container">
+    <main class="main-container currency-admin-page">
         <div class="pd-ltr-20">
-            <div class="min-height-200px">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="title">
-                                <i class="icon-copy fa fa-money" aria-hidden="true"></i> Currency
-                            </div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Currency</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-                <div class="info-action">
-                    @if (count($errors) > 0)
-                        <div class="alert alert-danger">
+            <x-backend.page-hero class="currency-admin-header">
+                <x-slot name="kicker">
+                    Finance Configuration
+                </x-slot>
+                <x-slot name="heading">
+                    Currency
+                </x-slot>
+                <x-slot name="copy">
+                    <p>
+                        Manage selling rates, buying rates, tax configuration, and payment bank accounts used by backend order and invoice workflows.
+                    </p>
+                </x-slot>
+                <x-slot name="action">
+                    @canany(['posDev','posAuthor'])
+                        <button type="button" class="backend-page-primary-action" data-toggle="modal" data-target="#add-bank-account">
+                        <i class="fa fa-plus"></i>
+                        Add Bank Account
+                    </button>
+                        @endcanany
+                </x-slot>
+            </x-backend.page-hero>
+
+            @if ($errors->any() || session()->has('success') || session()->has('error'))
+                <section class="backend-feedback currency-admin-feedback">
+                    @if ($errors->any())
+                        <div class="backend-alert backend-alert--danger currency-admin-alert currency-admin-alert--danger">
+                            <strong>Action needs attention.</strong>
                             <ul>
                                 @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                                    <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
                         </div>
                     @endif
-                    @if (\Session::has('success'))
-                        <div class="alert alert-success">
-                            <ul>
-                                <li>{!! \Session::get('success') !!}</li>
-                            </ul>
+                    @if (session()->has('success'))
+                        <div class="backend-alert backend-alert--success currency-admin-alert currency-admin-alert--success">
+                            <strong>Saved.</strong>
+                            <span>{{ session('success') }}</span>
                         </div>
                     @endif
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="row">
-                            {{-- USD RATE --}}
-                            <div class="col-md-12">
-                                <div class="card-box m-b-18">
-                                    <div class="card-box-title">
-                                        <div class="subtitle"><i class="icon-copy fa fa-usd" aria-hidden="true"></i> USD Rate</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6 col-md-6 col-sm-6">
-                                            <div class="subtitle">Recent Rate</div>
-                                        </div>
-                                        <div class="col-6 col-md-6 col-sm-6 text-right">
-                                            <div class="usd-rate">{{ currencyFormatIdr($usd_rate) }}</div>
-                                            <p>{{ $usd_rate }}</p>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="card-ptext-margin">
-                                                <div class="row">
-                                                    <div class="col-6"><span><i class="icon-copy fa fa-arrow-up" aria-hidden="true"></i></span> <b>SELL</b></div>
-                                                    <div class="col-6"><span><i class="icon-copy fa fa-arrow-down" aria-hidden="true"></i></span> <b>BUY</b></div>
-                                                    <div class="col-6"><div class="usd-rate">{{ currencyFormatIdr($usdrates->sell) }}</div></div>
-                                                    <div class="col-6"><div class="usd-rate">{{ currencyFormatIdr($usdrates->buy) }}</div></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-12 col-sm-12 text-right">
-                                            <p><i>last updated : {{ date('d M Y (H:i)', strtotime($usdrates->updated_at)) }}</i></p>
-                                        </div>
-                                        @canany(['posDev','posAuthor'])
-                                            <div class="edit-button">
-                                                <a href="#" data-toggle="modal" data-target="#edit-usdrates-{{ $usdrates->id }}">
-                                                    <button class="btn edit-btn" data-toggle="tooltip" data-placement="top" title="Update usd rate"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                                </a>
-                                            </div>
-                                            {{-- MODAL EDIT USD RATE --}}
-                                            <div class="modal fade" id="edit-usdrates-{{ $usdrates->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="card-box">
-                                                            <div class="card-box-title">
-                                                                <div class="subtitle"><i class="fa fa-pencil"></i> Edit</div>
-                                                            </div>
-                                                            <form id="edit-usd-rate" action="/update-usdrates/{{ $usdrates->id }}" method="post" enctype="multipart/form-data">
-                                                                @csrf
-                                                                @method('put')
-                                                                {{ csrf_field() }}
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-                                                                            <b>Recent USD Rate</b><br>
-                                                                            <div class="title">{{ currencyFormatIdr($usdrates->rate) }}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-12">
-                                                                        <hr class="form-hr">
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="form-group">
-                                                                            <label for="sell">Sell <span>*</span></label>
-                                                                            <div class="btn-icon">
-                                                                                <span>Rp</span>
-                                                                                <input name="sell" id="usdSell" wire:model="sell" class="form-control @error('sell') is-invalid @enderror" placeholder="Insert rate" type="text" value="{{ $usdrates->sell }}" required>
-                                                                                @error('sell')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="form-group">
-                                                                            <label for="difference">Difference <span>*</span></label>
-                                                                            <div class="btn-icon">
-                                                                                <span>Rp</span>
-                                                                                <input name="difference" id="usdDifference" wire:model="difference" class="form-control @error('difference') is-invalid @enderror" placeholder="Insert rate" type="text" value="{{ $usdrates->difference }}" required>
-                                                                                @error('difference')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                                                </div>
-                                                            </form>
-                                                            <div class="card-box-footer">
-                                                                <button class="btn btn-primary" type="submit" form="edit-usd-rate"><i class="icon-copy fa fa-check"></i> Save</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endcanany
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- CNY RATE --}}
-                            <div class="col-md-12">
-                                <div class="card-box m-b-18">
-                                    <div class="card-box-title">
-                                        <div class="subtitle"><i class="icon-copy fa fa-rmb" aria-hidden="true"></i> CNY Rate</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6 col-md-6 col-sm-6">
-                                            <div class="subtitle">Recent Rate</div>
-                                        </div>
-                                        <div class="col-6 col-md-6 col-sm-6 text-right">
-                                            <div class="usd-rate">{{ currencyFormatIdr($cny_rate) }}</div>
-                                            <p>{{ $cny_rate }}</p>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="card-ptext-margin">
-                                                <div class="row">
-                                                    <div class="col-6"><span><i class="icon-copy fa fa-arrow-up" aria-hidden="true"></i></span> <b>SELL</b></div>
-                                                    <div class="col-6"><span><i class="icon-copy fa fa-arrow-down" aria-hidden="true"></i></span> <b>BUY</b></div>
-                                                    <div class="col-6"><div class="usd-rate">{{ currencyFormatIdr($cnyrates->sell) }}</div></div>
-                                                    <div class="col-6"><div class="usd-rate">{{ currencyFormatIdr($cnyrates->buy) }}</div></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-12 col-sm-12 text-right">
-                                            <p><i>last updated : {{ date('d M Y (H:i)', strtotime($cnyrates->updated_at)) }}</i></p>
-                                        </div>
-                                        @canany(['posDev','posAuthor'])
-                                            <div class="edit-button">
-                                                <a href="#" data-toggle="modal" data-target="#edit-cnyrates-{{ $cnyrates->id }}">
-                                                    <button class="btn edit-btn" data-toggle="tooltip" data-placement="top" title="Update usd rate"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                                </a>
-                                            </div>
-                                            {{-- MODAL EDIT CNY RATE --}}
-                                            <div class="modal fade" id="edit-cnyrates-{{ $cnyrates->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="card-box">
-                                                            <div class="card-box-title">
-                                                                <div class="subtitle"><i class="fa fa-pencil"></i> Edit</div>
-                                                            </div>
-                                                            <form id="edit-cny-rate" action="/update-cnyrates/{{ $cnyrates->id }}" method="post" enctype="multipart/form-data">
-                                                                @csrf
-                                                                @method('put')
-                                                                {{ csrf_field() }}
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-                                                                            <b>Recent CNY Rate</b><br>
-                                                                            <div class="title">{{ currencyFormatIdr($cnyrates->rate) }}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-12">
-                                                                        <hr class="form-hr">
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="form-group">
-                                                                            <label for="sell">Sell <span>*</span></label>
-                                                                            <div class="btn-icon">
-                                                                                <span>Rp</span>
-                                                                                <input name="sell" id="cnySell" wire:model="sell" class="form-control @error('sell') is-invalid @enderror" placeholder="Insert rate" type="text" value="{{ $cnyrates->sell }}" required>
-                                                                                @error('sell')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="form-group">
-                                                                            <label for="difference">Difference <span>*</span></label>
-                                                                            <div class="btn-icon">
-                                                                                <span>Rp</span>
-                                                                                <input name="difference" id="cnyDifference" wire:model="difference" class="form-control @error('difference') is-invalid @enderror" placeholder="Insert rate" type="text" value="{{ $cnyrates->difference }}" required>
-                                                                                @error('difference')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                                                </div>
-                                                            </form>
-                                                            <div class="card-box-footer">
-                                                                <button class="btn btn-primary" type="submit" form="edit-cny-rate"><i class="icon-copy fa fa-check"></i> Save</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endcanany
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- TWD RATE --}}
-                            <div class="col-md-12">
-                                <div class="card-box m-b-18">
-                                    <div class="card-box-title">
-                                        <div class="subtitle">NT<i class="icon-copy fa fa-usd" aria-hidden="true"></i> TWD Rate</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6 col-md-6 col-sm-6">
-                                            <div class="subtitle">Recent Rate</div>
-                                        </div>
+                    @if (session()->has('error'))
+                        <div class="backend-alert backend-alert--danger currency-admin-alert currency-admin-alert--danger">
+                            <strong>Unable to save.</strong>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                    @endif
+                </section>
+            @endif
 
-                                        <div class="col-6 col-md-6 col-sm-6 text-right">
-                                            <div class="usd-rate">{{ currencyFormatIdr($twd_rate) }}</div>
-                                            <p>{{ $twd_rate }}</p>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="card-ptext-margin">
-                                                <div class="row">
-                                                    <div class="col-6"><span><i class="icon-copy fa fa-arrow-up" aria-hidden="true"></i></span> <b>SELL</b></div>
-                                                    <div class="col-6"><span><i class="icon-copy fa fa-arrow-down" aria-hidden="true"></i></span> <b>BUY</b></div>
-                                                    <div class="col-6"><div class="usd-rate">{{ currencyFormatIdr($twdrates->sell) }}</div></div>
-                                                    <div class="col-6"><div class="usd-rate">{{ currencyFormatIdr($twdrates->buy) }}</div></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-12 col-sm-12 text-right">
-                                            <p><i>last updated : {{ date('d M Y (H:i)', strtotime($twdrates->updated_at)) }}</i></p>
-                                        </div>
-                                        @canany(['posDev','posAuthor'])
-                                            <div class="edit-button">
-                                                <a href="#" data-toggle="modal" data-target="#edit-twdrates-{{ $twdrates->id }}">
-                                                    <button class="btn edit-btn" data-toggle="tooltip" data-placement="top" title="Update twd rate"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                                </a>
-                                            </div>
-                                            {{-- MODAL EDIT TWD RATE --}}
-                                            <div class="modal fade" id="edit-twdrates-{{ $twdrates->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="card-box">
-                                                            <div class="card-box-title">
-                                                                <div class="subtitle"><i class="fa fa-pencil"></i> Edit TWD Rate</div>
-                                                            </div>
-                                                            <form id="edit-twd-rate" action="/update-twdrates/{{ $twdrates->id }}" method="post" enctype="multipart/form-data">
-                                                                @csrf
-                                                                @method('put')
-                                                                {{ csrf_field() }}
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-                                                                            <b>Recent TWD Rate</b><br>
-                                                                            <div class="title">{{ currencyFormatIdr($twdrates->rate) }}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-12">
-                                                                        <hr class="form-hr">
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="form-group">
-                                                                            <label for="sell">Sell <span>*</span></label>
-                                                                            <div class="btn-icon">
-                                                                                <span>Rp</span>
-                                                                                <input name="sell" id="twdSell" wire:model="sell" class="form-control @error('sell') is-invalid @enderror" placeholder="Insert rate" type="text" value="{{ $twdrates->sell }}" required>
-                                                                                @error('sell')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="form-group">
-                                                                            <label for="difference">Difference <span>*</span></label>
-                                                                            <div class="btn-icon">
-                                                                                <span>Rp</span>
-                                                                                <input name="difference" id="twdDifference" wire:model="difference" class="form-control @error('difference') is-invalid @enderror" placeholder="Insert rate" type="text" value="{{ $twdrates->difference }}" required>
-                                                                                @error('difference')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                                                </div>
-                                                            </form>
-                                                            <div class="card-box-footer">
-                                                                <button class="btn btn-primary" type="submit" form="edit-twd-rate"><i class="icon-copy fa fa-check"></i> Save</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endcanany
+            <section class="backend-page-toolbar currency-admin-toolbar">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Currency</li>
+                    </ol>
+                </nav>
+                <div class="currency-admin-source currency-admin-source--{{ $externalStatus === 'available' ? 'ok' : 'warning' }}">
+                    <i class="fa {{ $externalStatus === 'available' ? 'fa-check-circle' : 'fa-exclamation-circle' }}"></i>
+                    <span>
+                        External rates {{ $externalStatus === 'available' ? 'available' : 'using local fallback' }}
+                        @if ($externalUpdatedAt)
+                            <small>{{ $externalUpdatedAt->format('d M Y H:i') }}</small>
+                        @endif
+                    </span>
+                </div>
+            </section>
+
+            <section class="currency-admin-grid">
+                <div class="currency-admin-rates">
+                    @foreach ($currencyRates as $rate)
+                        @php
+                            $code = $rate['code'];
+                            $meta = $rateMeta[$code];
+                            $spread = is_numeric($rate['sell']) && is_numeric($rate['buy']) ? (float) $rate['sell'] - (float) $rate['buy'] : null;
+                            $routeName = $meta['route'];
+                        @endphp
+
+                        <article class="currency-rate-card">
+                            <div class="currency-rate-card__header">
+                                <div>
+                                    <span class="currency-rate-card__code">{{ $code }}</span>
+                                    <h2>{{ $meta['name'] }}</h2>
+                                </div>
+                                <span class="currency-rate-card__icon"><i class="fa {{ $meta['icon'] }}"></i></span>
+                            </div>
+
+                            <div class="currency-rate-card__body">
+                                <div class="currency-rate-card__metric currency-rate-card__metric--primary">
+                                    <span>Market reference</span>
+                                    <strong>{{ $formatIdr($rate['external_rate']) }}</strong>
+                                    <small>{{ $formatNumber($rate['external_rate']) }}</small>
+                                </div>
+                                <div class="currency-rate-card__pair">
+                                    <div>
+                                        <span>Sell</span>
+                                        <strong>{{ $formatIdr($rate['sell']) }}</strong>
+                                    </div>
+                                    <div>
+                                        <span>Buy</span>
+                                        <strong>{{ $formatIdr($rate['buy']) }}</strong>
+                                    </div>
+                                    <div>
+                                        <span>Spread</span>
+                                        <strong>{{ $formatIdr($spread) }}</strong>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    {{-- TAX --}}
-                    <div class="col-md-4">
-                        <div class="card-box m-b-18">
-                            <div class="card-box-title">
-                                <div class="subtitle"><i class="icon-copy fa fa-gavel" aria-hidden="true"></i> Tax Rate</div>
+
+                            <div class="currency-rate-card__footer">
+                                <span>
+                                    <i class="fa fa-clock-o"></i>
+                                    {{ $rate['updated_at'] ? $rate['updated_at']->format('d M Y H:i') : 'Not configured' }}
+                                </span>
+                                @canany(['posDev','posAuthor'])
+                                    @if ($rate['id'])
+                                        <button type="button" class="backend-button backend-button-secondary" data-toggle="modal" data-target="#edit-rate-{{ $code }}">
+                                            <i class="fa fa-pencil"></i>
+                                            Update
+                                        </button>
+                                    @endif
+                                @endcanany
                             </div>
-                            <div class="row">
-                                <div class="col-9 col-md-8 col-sm-8">
-                                    <div class="price-usd">{{ $tax->tax }} %</div>
-                                    <p>last updated : {{ date('d M Y (H:i)', strtotime($tax->updated_at)) }}</p>
+                        </article>
+
+                        @canany(['posDev','posAuthor'])
+                            @if ($rate['id'])
+                                <div class="modal fade backend-modal currency-admin-modal" id="edit-rate-{{ $code }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="backend-modal__header currency-admin-modal__header">
+                                                <div>
+                                                    <span>{{ $code }} Rate</span>
+                                                    <h3>Update Currency Rate</h3>
+                                                </div>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form id="edit-rate-form-{{ $code }}" action="{{ route($routeName, $rate['id']) }}" method="post">
+                                                @csrf
+                                                @method('put')
+                                                <div class="backend-modal__body currency-admin-modal__body">
+                                                    <div class="currency-admin-current">
+                                                        <span>Current sell rate</span>
+                                                        <strong>{{ $formatIdr($rate['sell']) }}</strong>
+                                                    </div>
+                                                    <div class="backend-form-grid currency-admin-form-grid">
+                                                        <label>
+                                                            <span>Sell Rate <b>*</b></span>
+                                                            <input class="backend-form-control" name="sell" type="number" step="0.01" min="0" value="{{ old('sell', $rate['sell']) }}" required>
+                                                        </label>
+                                                        <label>
+                                                            <span>Spread / Difference <b>*</b></span>
+                                                            <input class="backend-form-control" name="difference" type="number" step="0.01" min="0" value="{{ old('difference', $rate['difference']) }}" required>
+                                                        </label>
+                                                    </div>
+                                                    <p class="currency-admin-help">Buy rate is calculated automatically from sell rate minus spread.</p>
+                                                </div>
+                                                <div class="backend-modal__footer currency-admin-modal__footer">
+                                                    <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="backend-button backend-button-primary">
+                                                        <i class="fa fa-check"></i>
+                                                        Save Rate
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endcanany
+                    @endforeach
+                </div>
+
+                <aside class="currency-admin-side">
+                    <article class="currency-tax-card">
+                        <div>
+                            <span class="currency-admin-eyebrow">Tax</span>
+                            <h2>{{ $tax ? $formatNumber($tax->tax) : '-' }}%</h2>
+                            <p>Applied to pricing calculation where tax configuration is required.</p>
+                        </div>
+                        @canany(['posDev','posAuthor'])
+                            @if ($tax)
+                                <button type="button" class="backend-button backend-button-secondary" data-toggle="modal" data-target="#edit-tax">
+                                    <i class="fa fa-pencil"></i>
+                                    Update Tax
+                                </button>
+                            @endif
+                        @endcanany
+                    </article>
+
+                    <article class="backend-kpi-card backend-kpi-card--blue">
+                        <div class="backend-kpi-card__icon"><i class="fa fa-university"></i></div>
+                        <div>
+                            <span>Payment Accounts</span>
+                            <strong>{{ $bank_acc->count() }}</strong>
+                            <small>Active bank account records grouped by currency for invoice payment instructions.</small>
+                        </div>
+                    </article>
+                </aside>
+            </section>
+
+            <section class="backend-panel currency-bank-section">
+                <div class="backend-section-header currency-admin-section-heading">
+                    <div>
+                        <span class="backend-section-header__label">Bank Accounts</span>
+                        <h2>Payment Account Directory</h2>
+                    </div>
+                    @canany(['posDev','posAuthor'])
+                        <button type="button" class="backend-button backend-button-secondary" data-toggle="modal" data-target="#add-bank-account">
+                            <i class="fa fa-plus"></i>
+                            Add Account
+                        </button>
+                    @endcanany
+                </div>
+
+                <div class="currency-bank-list">
+                    @forelse ($bank_acc as $bank)
+                        <article class="currency-bank-card">
+                            <div class="currency-bank-card__header">
+                                <div>
+                                    <span>{{ $bank->currency }}</span>
+                                    <h3>{{ $bank->bank }}</h3>
                                 </div>
                                 @canany(['posDev','posAuthor'])
-                                    <div class="edit-button">
-                                        <a href="#" data-toggle="modal" data-target="#edit-tax-{{ $tax->id }}">
-                                            <button class="btn edit-btn" data-toggle="tooltip" data-placement="top" title="Update TAX"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                        </a>
-                                    </div>
-                                    {{-- MODAL EDIT TAX --------------------------------------------------------------------------------------------------------------- --}}
-                                    <div class="modal fade" id="edit-tax-{{ $tax->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content">
-                                                <div class="card-box">
-                                                    <div class="card-box-title">
-                                                        <div class="subtitle"><i class="fa fa-pencil"></i> Edit TAX</div>
-                                                    </div>
-                                                    <form id="edit-tax" action="/update-tax/{{ $tax->id }}" method="post" enctype="multipart/form-data">
-                                                        @csrf
-                                                        @method('put')
-                                                        {{ csrf_field() }}
-                                                        <div class="row">
-                                                            <div class="col-md-4">
-                                                                <div class="form-group">
-                                                                    <label for="lact-tax">Recent TAX</label>
-                                                                    <div class="title">{{ $tax->tax }} %</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-8">
-                                                                <div class="form-group">
-                                                                    <label for="tax">New TAX</label>
-                                                                    <input name="tax" id="tax" wire:model="tax" class="form-control @error('tax') is-invalid @enderror" placeholder="New tax" type="text" required>
-                                                                    @error('tax')
-                                                                        <span class="invalid-feedback">
-                                                                            <strong>{{ $message }}</strong>
-                                                                        </span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                            <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                                            <input id="hotels_id" name="hotels_id" value="" type="hidden">
-                                                        </div>
-                                                    </form>
-                                                    <div class="card-box-footer">
-                                                        <button class="btn btn-primary" type="submit" form="edit-tax" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-check"></i> Save</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="currency-bank-card__actions">
+                                        <button type="button" data-toggle="modal" data-target="#edit-bank-account-{{ $bank->id }}" title="Edit bank account">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <form action="/delete-bank-account/{{ $bank->id }}" method="post" data-confirm-delete="Delete {{ $bank->bank }} account?">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit" title="Delete bank account">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 @endcanany
                             </div>
-                        </div>
-                    </div>
-                    {{-- BANK ACCOUNT --}}
-                    <div class="col-md-4">
-                        <div class="card-box m-b-18">
-                            <div class="card-box-title">
-                                <div class="subtitle">
-                                    <i class="icon-copy fa fa-bank" aria-hidden="true"></i>BANK Account
+                            <dl class="currency-bank-card__details">
+                                <div>
+                                    <dt>Account Name</dt>
+                                    <dd>{{ $bank->account_name ?: '-' }}</dd>
                                 </div>
-                            </div>
-                            <div class="row">
-                                @canany(['posDev','posAuthor'])
-                                    <div class="edit-button">
-                                        <a href="#" data-toggle="modal" data-target="#add-bank-account">
-                                            <button class="btn edit-btn" data-toggle="tooltip" data-placement="top" title="Add BANK Account"><i class="icon-copy fa fa-plus" aria-hidden="true"></i></button>
-                                        </a>
-                                    </div>
-                                    <div class="modal fade" id="add-bank-account" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content">
-                                                <div class="card-box">
-                                                    <div class="card-box-title">
-                                                        <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add BANK Account</div>
-                                                    </div>
-                                                        <form id="add-bank" action="/fadd-bank-account" method="post" enctype="multipart/form-data">
-                                                            @csrf
-                                                            @method('put')
-                                                            <div class="row">
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="location">Location</label>
-                                                                        <input type="text" name="location" class="form-control @error('location') is-invalid @enderror" placeholder="Insert BANK location" value="{{ old('location') }}" required>
-                                                                        @error('location')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="bank">BANK</label>
-                                                                        <input type="text" name="bank" class="form-control @error('bank') is-invalid @enderror" placeholder="Insert BANK" value="{{ old('bank') }}" required>
-                                                                        
-                                                                        @error('bank')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="name">Name</label>
-                                                                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert name" value="{{ old('name') }}" required>
-                                                                        
-                                                                        @error('name')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="account_idr">Account IDR</label>
-                                                                        <input type="text" name="account_idr" class="form-control @error('account_idr') is-invalid @enderror" placeholder="Insert account IDR" value="{{ old('account_idr') }}" required>
-                                                                        
-                                                                        @error('account_idr')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="account_usd">Account USD</label>
-                                                                            <input type="text" name="account_usd" class="form-control @error('account_usd') is-invalid @enderror" placeholder="Insert account IDR" value="{{ old('account_usd') }}">
-                                                                        
-                                                                        @error('account_usd')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="address">Address</label>
-                                                                        <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Insert address" value="{{ old('address') }}">
-                                                                        
-                                                                        @error('address')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="swift_code">Swift Code</label>
-                                                                        <input type="text" name="swift_code" class="form-control @error('swift_code') is-invalid @enderror" placeholder="Insert Swift Code" value="{{ old('swift_code') }}">
-                                                                        
-                                                                        @error('swift_code')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-3">
-                                                                    <div class="form-group">
-                                                                        <label for="telephone">Phone Number</label>
-                                                                        <input type="text" name="telephone" class="form-control @error('telephone') is-invalid @enderror" placeholder="Insert phone number" value="{{ old('telephone') }}">
-                                                                        
-                                                                        @error('telephone')
-                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    <div class="card-box-footer">
-                                                        <button type="submit" form="add-bank" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endcanany
-                                <div class="col-md-12">
-                                    @foreach ($bank_acc as $no=>$perbankan)
-                                        <div class="position-relatif">
-                                            <div class="inner-subtitle">
-                                                {{ $perbankan->bank }} ({{ $perbankan->currency }})
-                                            </div>
-                                            <div class="card-ptext-margin" >
-                                                <div class="card-ptext-content">
-                                                    <div class="ptext-title">Account Name</div>
-                                                    <div class="ptext-value">{{ $perbankan->account_name }}</div>
-                                                    <div class="ptext-title">Account Number</div>
-                                                    <div class="ptext-value">{{ $perbankan->account_number }}</div>
-                                                    <div class="ptext-title">Location</div>
-                                                    <div class="ptext-value">{{ $perbankan->location }}</div>
-                                                    <div class="ptext-title">Address</div>
-                                                    <div class="ptext-value">{{ $perbankan->address }}</div>
-                                                    <div class="ptext-title">Telephone</div>
-                                                    <div class="ptext-value">{{ $perbankan->telephone }}</div>
-                                                    <div class="ptext-title">SWIFT Code</div>
-                                                    <div class="ptext-value">{{ $perbankan->swift_code }}</div>
-                                                    <div class="ptext-title">BANK Code</div>
-                                                    <div class="ptext-value">{{ $perbankan->bank_code }}</div>
-                                                </div>
-                                            </div>
-                                            @canany(['posDev','posAuthor'])
-                                                <div class="btn-container">
-                                                    <a href="#" data-toggle="modal" data-target="#edit-bank-account-{{ $perbankan->id }}">
-                                                        <button class="btn edit-btn" data-toggle="tooltip" data-placement="top" title="Edit BANK Account"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                                    </a>
-                                                    <form action="/delete-bank-account/{{ $perbankan->id }}" method="post">
-                                                        @csrf
-                                                        @method('delete')
-                                                        <button class="btn delete-btn" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove BANK Account {{ $perbankan->id }}"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
-                                                    </form>
-                                                    <div class="modal fade" id="edit-bank-account-{{ $perbankan->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="card-box">
-                                                                    <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="fa fa-pencil"></i> Edit BANK Account</div>
-                                                                    </div>
-                                                                    <div class="product-detail-wrap">
-                                                                        <form id="edit-bank" action="/fupdate-bank-account/{{ $perbankan->id }}" method="post" enctype="multipart/form-data">
-                                                                            @csrf
-                                                                            @method('put')
-                                                                            <div class="row">
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="bank">BANK</label>
-                                                                                        <input type="text" name="bank" class="form-control @error('bank') is-invalid @enderror" placeholder="Insert BANK" value="{{ $perbankan->bank }}" required>
-                                                                                        @error('bank')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="currency" class="form-label">Currency<span> *</span></label>
-                                                                                        <select name="currency" id="currency"  type="text" class="custom-select @error('currency') is-invalid @enderror" placeholder="Select currency" required>
-                                                                                            <option {{ $perbankan->currency?"":"Selected" }} value="">Select Currency</option>
-                                                                                            <option {{ $perbankan->currency == "IDR"?"Selected":"" }} value="IDR">IDR (Rp)</option>
-                                                                                            <option {{ $perbankan->currency == "USD"?"Selected":"" }} value="USD">USD ($)</option>
-                                                                                            <option {{ $perbankan->currency == "CNY"?"Selected":"" }} value="CNY">CNY (¥)</option>
-                                                                                            <option {{ $perbankan->currency == "TWD"?"Selected":"" }} value="TWD">TWD (NT$)</option>
-                                                                                        </select>
-                                                                                        @error('currency')
-                                                                                            <span class="invalid-feedback">
-                                                                                                <strong>{{ $message }}</strong>
-                                                                                            </span>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="account_name">Account Name</label>
-                                                                                        <input type="text" name="account_name" class="form-control @error('account_name') is-invalid @enderror" placeholder="Insert account_name" value="{{ $perbankan->account_name }}" required>
-                                                                                        @error('account_name')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="account_number">Account Number</label>
-                                                                                            <input type="text" name="account_number" class="form-control @error('account_number') is-invalid @enderror" placeholder="Insert account number" value="{{ $perbankan->account_number }}" required>
-                                                                                        @error('account_number')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="location">Location</label>
-                                                                                        <input type="text" name="location" class="form-control @error('location') is-invalid @enderror" placeholder="Insert BANK location" value="{{ $perbankan->location }}" required>
-                                                                                        @error('location')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="address">Address</label>
-                                                                                        <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Insert address" value="{{ $perbankan->address }}" required>
-                                                                                        @error('address')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="telephone">Telephone</label>
-                                                                                        <input type="text" name="telephone" class="form-control @error('telephone') is-invalid @enderror" placeholder="Insert phone number" value="{{ $perbankan->telephone }}" required>
-                                                                                        @error('telephone')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="swift_code">SWIFT Code</label>
-                                                                                        <input type="text" name="swift_code" class="form-control @error('swift_code') is-invalid @enderror" placeholder="Insert Swift Code" value="{{ $perbankan->swift_code }}">
-                                                                                        @error('swift_code')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="bank_code">BANK Code</label>
-                                                                                        <input type="text" name="bank_code" class="form-control @error('bank_code') is-invalid @enderror" placeholder="Insert BANK Code" value="{{ $perbankan->bank_code }}">
-                                                                                        @error('bank_code')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </form>
-                                                                        <div class="card-box-footer">
-                                                                            <button type="submit" form="edit-bank" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endcanany
-                                        </div>
-                                    @endforeach
+                                <div>
+                                    <dt>Account Number</dt>
+                                    <dd>{{ $bank->account_number ?: '-' }}</dd>
                                 </div>
-                            </div>
+                                <div>
+                                    <dt>Location</dt>
+                                    <dd>{{ $bank->location ?: '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>Address</dt>
+                                    <dd>{{ $bank->address ?: '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>Telephone</dt>
+                                    <dd>{{ $bank->telephone ?: '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>SWIFT Code</dt>
+                                    <dd>{{ $bank->swift_code ?: '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>Bank Code</dt>
+                                    <dd>{{ $bank->bank_code ?: '-' }}</dd>
+                                </div>
+                            </dl>
+                        </article>
+
+                        @canany(['posDev','posAuthor'])
+                            @include('backend.developer.partials.currency-bank-modal', [
+                                'modalId' => 'edit-bank-account-' . $bank->id,
+                                'title' => 'Edit Bank Account',
+                                'formId' => 'edit-bank-account-form-' . $bank->id,
+                                'action' => '/fupdate-bank-account/' . $bank->id,
+                                'method' => 'put',
+                                'bank' => $bank,
+                            ])
+                        @endcanany
+                    @empty
+                        <div class="backend-empty-state currency-admin-empty">
+                            <i class="fa fa-university"></i>
+                            <strong>No bank accounts configured.</strong>
+                            <span>Add the first payment account to show payment instructions on invoices.</span>
                         </div>
+                    @endforelse
+                </div>
+            </section>
+        </div>
+    </main>
+
+    @canany(['posDev','posAuthor'])
+        @if ($tax)
+            <div class="modal fade backend-modal currency-admin-modal" id="edit-tax" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="backend-modal__header currency-admin-modal__header">
+                            <div>
+                                <span>Tax Rate</span>
+                                <h3>Update Tax</h3>
+                            </div>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form id="edit-tax-form" action="{{ route('f-update-tax', $tax->id) }}" method="post">
+                            @csrf
+                            @method('put')
+                            <div class="backend-modal__body currency-admin-modal__body">
+                                <label class="currency-admin-field">
+                                    <span>Tax Percentage <b>*</b></span>
+                                    <input class="backend-form-control" name="tax" type="number" step="0.01" min="0" value="{{ old('tax', $tax->tax) }}" required>
+                                </label>
+                                <input name="author" value="{{ Auth::id() }}" type="hidden">
+                            </div>
+                            <div class="backend-modal__footer currency-admin-modal__footer">
+                                <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="backend-button backend-button-primary">
+                                    <i class="fa fa-check"></i>
+                                    Save Tax
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        @endif
+
+        @include('backend.developer.partials.currency-bank-modal', [
+            'modalId' => 'add-bank-account',
+            'title' => 'Add Bank Account',
+            'formId' => 'add-bank-account-form',
+            'action' => '/fadd-bank-account',
+            'method' => 'put',
+            'bank' => null,
+        ])
+    @endcanany
 @endsection

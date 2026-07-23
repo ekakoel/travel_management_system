@@ -2,7 +2,7 @@
     $from = $order->checkin;
     $dur = $order->duration + 1;
     $date_stay = [];
-    for ($a=0; $a < $dur ; $a++) { 
+    for ($a=0; $a < $dur ; $a++) {
         $date_stay[$a] = $from;
         $from = date('Y-m-d',strtotime('+1 days',strtotime($from)));
     }
@@ -14,29 +14,17 @@
     <div class="main-container">
         <div class="pd-ltr-20">
             <div class="min-height-200px">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="title"><i class="icon-copy fa fa-tags"></i>&nbsp; Edit Additional Charge</div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="orders">Order</a></li>
-                                    <li class="breadcrumb-item"><a href="javascript:history.back()">{{ $order->orderno }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Edit Additional Charges</a></li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-               
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="icon-copy fa fa-tags"></i>  Edit Additional Charge
+                    </x-slot>
+                </x-backend.page-hero>
+
                 <div class="row">
 
-                    {{-- ATTENTIONS --}}
                     <div class="col-md-4 mobile">
                         <div class="row">
                             @include('admin.usd-rate')
-                            @include('layouts.attentions')
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -78,11 +66,9 @@
                             </table>
                         </div>
                     </div>
-                    {{-- ATTENTIONS --}}
                     <div class="col-md-4 desktop">
                         <div class="row">
                             @include('admin.usd-rate')
-                            @include('layouts.attentions')
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -107,9 +93,9 @@
                                                             <div class="control-group">
                                                                 <div class="row">
                                                                     <div class="col-sm-4">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="service_date[]">@lang('messages.Date')</label>
-                                                                            <select name="service_date[]" class="custom-select" required>
+                                                                            <select name="service_date[]" class="backend-form-control" required>
                                                                                 @if ($optional_rate_order->mandatory == 1)
                                                                                     <option selected value="{{ $optional_rate_order->service_date }}">{{ dateFormat($optional_rate_order->service_date) }}</option>
                                                                                 @else
@@ -121,9 +107,9 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-4">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="optional_rate_id[]">@lang('messages.Services')</label>
-                                                                            <select name="optional_rate_id[]" class="custom-select" required>
+                                                                            <select name="optional_rate_id[]" class="backend-form-control" required>
                                                                                 @if ($optional_rate_order->mandatory == 1)
                                                                                     <option selected value="{{ $optional_rate_order->optional_rate_id }}">{{ $optional_rate_order->optional_rate->name }}</option>
                                                                                 @else
@@ -135,9 +121,9 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-3">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="number_of_guest[]">@lang('messages.Number of Guest')</label>
-                                                                            <input {{ $optional_rate_order->mandatory == 1?"readonly":""; }} type="number" min="1" max="{{ $order->number_of_guests }}" name="number_of_guest[]" class="form-control m-0 @error('number_of_guest[]') is-invalid @enderror" placeholder="Max {{ $order->number_of_guests }}" value="{{ $optional_rate_order->number_of_guest }}" required>
+                                                                            <input {{ $optional_rate_order->mandatory == 1?"readonly":""; }} type="number" min="1" max="{{ $order->number_of_guests }}" name="number_of_guest[]" class="backend-form-control m-0 @error('number_of_guest[]') is-invalid @enderror" placeholder="Max {{ $order->number_of_guests }}" value="{{ $optional_rate_order->number_of_guest }}" required>
                                                                             @error('number_of_guest[]')
                                                                                 <div class="alert alert-danger">
                                                                                     {{ $message }}
@@ -149,7 +135,7 @@
                                                             </div>
                                                             <input type="hidden" name="optional_rate_order_id[]" value="{{ $optional_rate_order->id }}">
                                                             @if ($optional_rate_order->mandatory != 1)
-                                                                <button class="btn btn-remove btnremove remove" data-id="{{ $optional_rate_order->id }}"><i class="icon-copy fa fa-close" aria-hidden="true"></i></button>
+                                                                <button class="backend-button backend-button-danger btnremove remove" data-id="{{ $optional_rate_order->id }}"><i class="icon-copy fa fa-close" aria-hidden="true"></i></button>
                                                             @endif
                                                         </ul>
                                                     @endforeach
@@ -162,24 +148,24 @@
                                         <input type="hidden" name="status" value="Draft">
                                     </div>
                                 </form>
-                        
+
                                 <div class="card-box-footer">
-                                    <button type="button" class="btn btn-primary add-more"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Add')</button>
-                                    <button type="submit" form="updateOrderAdditionalCharge" class="btn btn-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> @lang('messages.Save')</button>
+                                    <button type="button" class="backend-button backend-button-primary add-more"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Add')</button>
+                                    <button type="submit" form="updateOrderAdditionalCharge" class="backend-button backend-button-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> @lang('messages.Save')</button>
                                     <a href="{{ route('view.detail-order-admin',$order->id) }}#optional_service">
-                                        <button type="button" class="btn btn-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                        <button type="button" class="backend-button backend-button-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                     </a>
                                 </div>
-                            
-                    
+
+
                             <div class="copy hide">
                                 <ul class="m-b-8 room-container">
                                     <div class="control-group">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="service_date[]">@lang('messages.Date')</label>
-                                                    <select name="service_date[]" class="custom-select" required>
+                                                    <select name="service_date[]" class="backend-form-control" required>
                                                         <option selected value="">@lang('messages.Select date')</option>
                                                         @foreach ($date_stay as $datestay)
                                                             <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ dateFormat($datestay) }}</option>
@@ -188,9 +174,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="optional_rate_id[]">@lang('messages.Services')</label>
-                                                    <select name="optional_rate_id[]" class="custom-select" required>
+                                                    <select name="optional_rate_id[]" class="backend-form-control" required>
                                                         <option selected value="">@lang('messages.Select service')</option>
                                                         @foreach ($optional_services as $additional_charge)
                                                             <option value="{{ $additional_charge->id }}">{{ $additional_charge->name }}</option>
@@ -199,9 +185,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="number_of_guest[]">@lang('messages.Number of Guest')</label>
-                                                    <input type="number" min="1" max="{{ $order->number_of_guests }}" name="number_of_guest[]" class="form-control m-0 @error('number_of_guest[]') is-invalid @enderror" placeholder="Max {{ $order->number_of_guests }}" value="" required>
+                                                    <input type="number" min="1" max="{{ $order->number_of_guests }}" name="number_of_guest[]" class="backend-form-control m-0 @error('number_of_guest[]') is-invalid @enderror" placeholder="Max {{ $order->number_of_guests }}" value="" required>
                                                     @error('number_of_guest[]')
                                                         <div class="alert alert-danger">
                                                             {{ $message }}
@@ -212,32 +198,32 @@
                                         </div>
                                     </div>
                                     <input type="hidden" name="optional_rate_order_id[]" value=0>
-                                    <button class="btn btn-remove remove" type="button"><i class="icon-copy fa fa-close" aria-hidden="true"></i></button>
+                                    <button class="backend-button backend-button-danger remove" type="button"><i class="icon-copy fa fa-close" aria-hidden="true"></i></button>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
                 @include('layouts.footer')
             </div>
         </div>
     </div>
-    
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             var jmlh_room = 8;
             var ro = 1;
-            $(".add-more").click(function(){ 
-                if(ro < jmlh_room){ 
+            $(".add-more").click(function(){
+                if(ro < jmlh_room){
                     ro++;
                     var html = $(".copy").html();
                     $(".after-add-more").before(html);
                 }
             });
 
-            $("body").on("click",".remove",function(){ 
+            $("body").on("click",".remove",function(){
                 $(this).parents(".room-container").remove();
             });
         });

@@ -43,6 +43,7 @@ class Kernel extends HttpKernel
             \RealRashid\SweetAlert\ToSweetAlert::class,
             \App\Http\Middleware\UserActivity::class,
             LogActivityMiddleware::class,
+            \App\Http\Middleware\TrackWebsiteVisit::class,
             
             \App\Http\Middleware\SetLocale::class,
         ],
@@ -78,6 +79,8 @@ class Kernel extends HttpKernel
         'adminType' => \App\Http\Middleware\AdminType::class,
         'reservationPos' => \App\Http\Middleware\ReservationPos::class,
         'developerPos' => \App\Http\Middleware\DeveloperPos::class,
+        'registration.open' => \App\Http\Middleware\EnsureRegistrationIsOpen::class,
+        'internal' => \App\Http\Middleware\EnsureInternalUser::class,
         'authorPos' => \App\Http\Middleware\AuthorPos::class,
         'staffPos' => \App\Http\Middleware\StaffPos::class,
         'weddingDvl' => \App\Http\Middleware\WeddingDdvl::class,

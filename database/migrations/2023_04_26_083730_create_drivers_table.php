@@ -20,6 +20,7 @@ class CreateDriversTable extends Migration
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
             $table->integer('rsv_id')->nullable();
+            $table->string('license',5)->nullable();
             $table->string('name');
             $table->string('phone');
             $table->string('email')->nullable();

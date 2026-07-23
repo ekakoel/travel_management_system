@@ -6,21 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <i class="icon-copy fa fa-handshake-o" aria-hidden="true"></i> Partners
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Partners</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy fa fa-handshake-o" aria-hidden="true"></i> Partners
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -82,7 +72,6 @@
                                     @endif
                                 </div>
                             </div>
-                            @include('layouts.attentions')
                         @endif
                         <div class="col-md-8">
                             <div class="card-box">
@@ -92,15 +81,15 @@
                                 <div class="input-container">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                        <input id="searchPartnerByName" type="text" onkeyup="searchPartnerByName()" class="form-control" name="search-partner-byname" placeholder="Search by name">
+                                        <input id="searchPartnerByName" type="text" onkeyup="searchPartnerByName()" class="backend-form-control" name="search-partner-byname" placeholder="Search by name">
                                     </div>
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                        <input id="searchPartnerByLocation" type="text" onkeyup="searchPartnerByLocation()" class="form-control" name="search-partner-location" placeholder="Search by location">
+                                        <input id="searchPartnerByLocation" type="text" onkeyup="searchPartnerByLocation()" class="backend-form-control" name="search-partner-location" placeholder="Search by location">
                                     </div>
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                        <input id="searchPartnerByType" type="text" onkeyup="searchPartnerByType()" class="form-control" name="search-partner-location" placeholder="Search by type">
+                                        <input id="searchPartnerByType" type="text" onkeyup="searchPartnerByType()" class="backend-form-control" name="search-partner-location" placeholder="Search by type">
                                     </div>
                                 </div>
                                 @if (count($partners)>0)
@@ -174,7 +163,7 @@
                                 @endif
                                 @canany(['posDev','posAuthor'])
                                     <div class="card-box-footer">
-                                        <a href="#" data-toggle="modal" data-target="#add-partner"><button class="btn btn-primary"><i class="ion-plus-round"></i> Add Partner</button></a>
+                                        <a href="#" data-toggle="modal" data-target="#add-partner"><button class="backend-button backend-button-primary"><i class="ion-plus-round"></i> Add Partner</button></a>
                                     </div>
                                     {{-- MODAL ADD PARTNER --------------------------------------------------------------------------------------------------------------- --}}
                                     <div class="modal fade" id="add-partner" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -187,7 +176,7 @@
                                                     <form id="addPartner" action="/fadd-partner" method="post" enctype="multipart/form-data">
                                                         @csrf
                                                         {{ csrf_field() }}
-                                                        
+
                                                         <div class="col-md-12">
                                                             <div class="row">
                                                                 <div class="col-12 col-sm-12 col-md-12">
@@ -201,31 +190,31 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="row">
-                                                                        
+
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-6 col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="name">Cover Image</label>
-                                                                        <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
+                                                                        <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
                                                                         @error('cover')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-6 col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="name">Partner Name</label>
-                                                                        <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
+                                                                        <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
                                                                         @error('name')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group ">
+                                                                    <div class="backend-form-field">
                                                                         <label for="type">Type<span> *</span></label>
-                                                                        <select name="type" id="type"  type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Select type" required>
+                                                                        <select name="type" id="type"  type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Select type" required>
                                                                             <option selected value="">Select type</option>
                                                                             <option value="Tourist Attraction">Tourist Attraction</option>
                                                                             <option value="Travel Agent">Travel Agent</option>
@@ -242,54 +231,54 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-6 col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="address">Address</label>
-                                                                        <input type="text" id="address" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Address" value="{{ old('address') }}" required>
+                                                                        <input type="text" id="address" name="address" class="backend-form-control @error('address') is-invalid @enderror" placeholder="Address" value="{{ old('address') }}" required>
                                                                         @error('address')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-6 col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="contact_person">Contact Person</label>
-                                                                        <input type="text" id="contact_person" name="contact_person" class="form-control @error('contact_person') is-invalid @enderror" placeholder="Name" value="{{ old('contact_person') }}" required>
+                                                                        <input type="text" id="contact_person" name="contact_person" class="backend-form-control @error('contact_person') is-invalid @enderror" placeholder="Name" value="{{ old('contact_person') }}" required>
                                                                         @error('contact_person')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-6 col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="phone">Phone</label>
-                                                                        <input type="number" id="phone" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Name" value="{{ old('phone') }}" required>
+                                                                        <input type="number" id="phone" name="phone" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Name" value="{{ old('phone') }}" required>
                                                                         @error('phone')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-6 col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="location">Location</label>
-                                                                        <input type="text" id="location" name="location" class="form-control @error('location') is-invalid @enderror" placeholder="Location" value="{{ old('location') }}" required>
+                                                                        <input type="text" id="location" name="location" class="backend-form-control @error('location') is-invalid @enderror" placeholder="Location" value="{{ old('location') }}" required>
                                                                         @error('location')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-6 col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="map">Map Link</label>
-                                                                        <input type="text" id="map" name="map" class="form-control @error('map') is-invalid @enderror" placeholder="link" value="{{ old('map') }}" required>
+                                                                        <input type="text" id="map" name="map" class="backend-form-control @error('map') is-invalid @enderror" placeholder="link" value="{{ old('map') }}" required>
                                                                         @error('map')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-12">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="description">Description</label>
-                                                                        <textarea name="description" id="description" wire:model="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! old('description') !!}</textarea>
+                                                                        <textarea data-backend-richtext="true" name="description" id="description" wire:model="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! old('description') !!}</textarea>
                                                                         @error('description')
                                                                             <span class="invalid-feedback">
                                                                                 <strong>{{ $message }}</strong>
@@ -302,8 +291,8 @@
                                                         <input id="author_id" name="author_id" value="{{ Auth::user()->id }}" type="hidden">
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="addPartner" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                        <button type="submit" form="addPartner" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -346,7 +335,6 @@
                                         </a>
                                     @endif
                                 </div>
-                                @include('layouts.attentions')
                             </div>
                         @endif
                     </div>
@@ -372,7 +360,7 @@
                 } else {
                     tr[i].style.display = "none";
                 }
-            }       
+            }
         }
     }
 </script>
@@ -392,7 +380,7 @@
                 } else {
                     tr[i].style.display = "none";
                 }
-            }       
+            }
         }
     }
 </script>
@@ -412,7 +400,7 @@
                 } else {
                     tr[i].style.display = "none";
                 }
-            }       
+            }
         }
     }
 </script>

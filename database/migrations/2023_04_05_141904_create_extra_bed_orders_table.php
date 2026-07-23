@@ -19,8 +19,8 @@ class CreateExtraBedOrdersTable extends Migration
 
         Schema::create('extra_bed_orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id')->nullable();
             $table->integer('order_id')->nullable();
+            $table->integer('order_wedding_id')->nullable();
             $table->string('rooms_id');
             $table->string('extra_bed_id');
             $table->string('duration');

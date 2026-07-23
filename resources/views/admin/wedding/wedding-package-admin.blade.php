@@ -23,7 +23,7 @@
                         }else {
                                 $slot = NULL;
                         }
-                                                
+
                     @endphp
                         <div class="card">
                             <a href="#" data-toggle="modal" data-target="#detail-wedding-package-{{ $wedding_package->id }}">
@@ -44,19 +44,19 @@
                                         @else
                                         @endif
                                     </div>
-                                    
+
                                     @if ($wedding_package->status == "Draft")
                                         <img class="img-fluid rounded thumbnail-image grayscale" src="{{ url('storage/weddings/wedding-cover/' . $wedding_package->cover) }}" alt="{{ $wedding_package->name }}">
                                     @else
                                         <img class="img-fluid rounded thumbnail-image" src="{{ url('storage/weddings/wedding-cover/' . $wedding_package->cover) }}" alt="{{ $wedding_package->name }}">
                                     @endif
-                                    
+
                                     <div class="card-price-container">
                                         <div class="card-price-full">
                                             <i class="icon-copy fa fa-user" aria-hidden="true"></i> {{ $wedding_package->capacity }} Invitations
                                         </div>
                                     </div>
-                                    
+
                                     <div class="name-card">
                                         <b>
                                             {{ $wedding_package->name }}
@@ -69,7 +69,7 @@
                                     @if ($wedding_package->status == "Draft")
                                         <a href="/edit-wedding-package-{{ $wedding_package->id }}">
                                             <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button><br>
-                                            {{-- <button type="button" class="btn btn-update"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                            {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
                                         </a>
                                     @endif
                                     <form action="/fdelete-wedding-package/{{ $wedding_package->id }}" method="post">
@@ -142,7 +142,7 @@
                                                             <div class="card-subtitle">Period End</div>
                                                             <p>{{ dateFormat($wedding_package->period_end) }}</p>
                                                         </div>
-                                                        
+
                                                         <div class="col-6 col-sm-3">
                                                             <div class="card-subtitle">Week Day Price</div>
                                                             <div class="usd-rate">{{ '$ ' . number_format($weekDayPrice, 0, ',', '.') }}</div>
@@ -338,7 +338,7 @@
                                             @if ($wedding_package->status == "Draft")
                                                 @canany(['posDev','posAuthor'])
                                                     <a href="/edit-wedding-package-{{ $wedding_package->id }}">
-                                                        <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                        <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                                     </a>
                                                 @endcanany
                                             @elseif ($wedding_package->status == "Active")
@@ -346,10 +346,10 @@
                                                     @csrf
                                                     @method('PUT')
                                                 </form>
-                                                <button type="submit" form="draftWeddingPackage-{{ $wedding_package->id }}" class="btn btn-dark"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save to Draft</button>
+                                                <button type="submit" form="draftWeddingPackage-{{ $wedding_package->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save to Draft</button>
                                             @endif
-                                            
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+
+                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -360,7 +360,7 @@
         @endif
         <div class="card-box-footer">
             <a href="/add-wedding-package-{{ $hotel->id }}">
-                <button class="btn btn-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
+                <button class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
             </a>
         </div>
     </div>

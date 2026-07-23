@@ -15,7 +15,6 @@ use App\Models\Services;
 use App\Models\UsdRates;
 use App\Models\Weddings;
 use App\Models\ActionLog;
-use App\Models\Attention;
 use App\Models\HotelRoom;
 use App\Models\Promotion;
 use App\Models\HotelPrice;
@@ -60,7 +59,6 @@ class WeddingsController extends Controller
         $draftweddings=Weddings::where('status','Draft')->get();
         $archivedweddings=Weddings::where('status','Archived')->get();
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','weddings-admin')->get();
         $service = Services::where('name','Weddings')->first();
         $hotels = Hotels::all();
         $ceremony_venues = WeddingVenues::all();
@@ -81,7 +79,6 @@ class WeddingsController extends Controller
             'service'=>$service,
             'taxes'=>$taxes,
             "usdrates" => $usdrates,
-            "attentions"=>$attentions,
             "hotels"=>$hotels,
             "ceremony_venues"=>$ceremony_venues,
             "reception_venues"=>$reception_venues,
@@ -96,12 +93,10 @@ class WeddingsController extends Controller
         ->where("period_start",'<',$now)
         ->where("period_end",'>',$now)
         ->paginate(12)->withQueryString();
-        $attentions = Attention::where('page','weddings-admin')->get();
         $service = Services::where('name','Weddings')->first();
         $hotels = Hotels::all();
         return view('main.wedding',[
             'service'=>$service,
-            "attentions"=>$attentions,
             "hotels"=>$hotels,
         ])->with('weddings',$weddings);
     }
@@ -116,7 +111,6 @@ class WeddingsController extends Controller
         $wedding_contracts = ContractWedding::where('period_end','>',$now)->where('hotels_id',$id)->get();
         $user = Auth::user()->all();
         $author = Auth::user()->where('id',$hotel->author_id)->first();
-        $attentions = Attention::where('page','wedding-hotel-admin')->get();
         $action_log = ActionLog::where('service',"Hotel")->get();
         $ceremonyVenues = WeddingVenues::where('hotels_id',$id)->where('periode_start','<=',$now)->where('periode_end','>=',$now)->get();
         $dinnerVenues = WeddingDinnerVenues::where('hotel_id',$id)->get();
@@ -135,7 +129,6 @@ class WeddingsController extends Controller
             'usdrates'=>$usdrates,
             'user'=>$user,
             'action_log'=>$action_log,
-            'attentions'=>$attentions,
             'hotel'=>$hotel,
             'now'=>$now,
             'author'=>$author,
@@ -156,12 +149,10 @@ class WeddingsController extends Controller
     public function view_edit_wedding_venue($id){
         $weddingVenue = WeddingVenues::find($id);
         $hotel = $weddingVenue->hotels;
-        $attentions = Attention::where('page','edit-wedding-venue')->get();
         $slots = json_decode($weddingVenue->slot);
         return view('backend.operations.weddings.forms.venue-edit',[
             'weddingVenue'=>$weddingVenue,
             'hotel'=>$hotel,
-            'attentions'=>$attentions,
             'slots'=>$slots,
         ]);
     }
@@ -169,12 +160,10 @@ class WeddingsController extends Controller
     public function view_add_wedding_venue($id)
     {
         $now = Carbon::now();
-        $attentions = Attention::where('page','weddings-admin')->get();
         $hotel = Hotels::where('id',$id)->first();
         $usdrates = UsdRates::where('name','USD')->first();
         return view('backend.operations.weddings.forms.venue-create',[
             'hotel'=>$hotel,
-            "attentions"=>$attentions,
             "now"=>$now,
             "usdrates"=>$usdrates,
         ]);
@@ -183,11 +172,9 @@ class WeddingsController extends Controller
     public function view_add_decoration_ceremony_venue($id)
     {
         $now = Carbon::now();
-        $attentions = Attention::where('page','add-decoration-ceremony-venue')->get();
         $hotel = Hotels::where('id',$id)->first();
         return view('admin.wedding.add-ceremony-venue-decoration',[
             'hotel'=>$hotel,
-            "attentions"=>$attentions,
             "now"=>$now,
         ]);
     }
@@ -197,11 +184,9 @@ class WeddingsController extends Controller
         $now = Carbon::now();
         $decoration = WeddingDecorations::find($id);
         $hotel = Hotels::where('id',$decoration->hotel_id)->first();
-        $attentions = Attention::where('page','edit-decoration-ceremony-venue')->get();
         return view('admin.wedding.edit-ceremony-venue-decoration',[
             'decoration'=>$decoration,
             'hotel'=>$hotel,
-            "attentions"=>$attentions,
             "now"=>$now,
         ]);
     }
@@ -646,12 +631,10 @@ class WeddingsController extends Controller
             ->paginate(12)->withQueryString();
         }
         $vendors = Hotels::where('name','LIKE','%'.$hotel_name.'%')->get();
-        $attentions = Attention::where('page','weddings-admin')->get();
         $service = Services::where('name','Weddings')->first();
         
         return view('main.wedding-search',[
             'service'=>$service,
-            "attentions"=>$attentions,
             "hotels"=>$hotels,
             "vendors"=>$vendors,
         ])->with('weddings',$weddings);
@@ -661,7 +644,6 @@ class WeddingsController extends Controller
 // View User Wedding Hotel =========================================================================================>
     public function view_wedding_hotel_detail($code){
         $now = Carbon::now();
-        $attentions = Attention::where('page','wedding-hotel')->get();
         $hotel = Hotels::where('code',$code)->first();
         $rooms = HotelRoom::where('hotels_id',$hotel->id)->get();
         $service = Services::where('name','Weddings')->first();
@@ -713,7 +695,6 @@ class WeddingsController extends Controller
         return view('main.wedding-hotel',[
             'agents'=>$agents,
             'now'=>$now,
-            'attentions'=>$attentions,
             'hotel'=>$hotel,
             'service'=>$service,
             'brochures'=>$brochures,
@@ -741,7 +722,6 @@ class WeddingsController extends Controller
         $taxes = Tax::where('id',1)->first();
         if ($wedding) {
             $usdrates = UsdRates::where('name','USD')->first();
-            $attentions = Attention::where('page','weddings-admin-detail')->get();
             $vendors = Vendor::where('status','Active')->get();
             $hotels = Hotels::where('status', 'Active')->get();
             $hotel = Hotels::where('id', $wedding->hotel_id)->first();
@@ -768,7 +748,6 @@ class WeddingsController extends Controller
                 'taxes'=>$taxes,
                 "wedding"=>$wedding,
                 "usdrates" => $usdrates,
-                "attentions"=>$attentions,
                 "suite_and_villas"=>$suite_and_villas,
                 "wedding_venues"=>$wedding_venues,
                 "wedding_venue"=>$wedding_venue,
@@ -798,7 +777,6 @@ class WeddingsController extends Controller
     {
         $wedding=Weddings::findOrFail($id);
         $service = Services::where('name','Weddings')->first();
-        $attentions = Attention::where('page','wedding-admin-edit')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $hotel = Hotels::where('id',$wedding->hotel_id)->firstOrFail();
         $hotels = Hotels::where('status','Active')->get();
@@ -820,7 +798,6 @@ class WeddingsController extends Controller
             return view('backend.operations.weddings.forms.edit',[
                 "service"=>$service,
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
                 'hotel'=>$hotel,
                 'hotels'=>$hotels,
                 'duration_day'=>$duration_day,
@@ -835,7 +812,6 @@ class WeddingsController extends Controller
 // View Admin Add Wedding =============================================================================================================>
     public function view_add_wedding_package($id) {
         $service = Services::where('name','Weddings')->first();
-        $attentions = Attention::where('page','wedding-add')->get();
         $hotel = Hotels::where('id',$id)->first();
         $rooms = HotelRoom::where('hotels_id',$hotel->id)->where('status','Active')->get();
         $weddingVenues = WeddingVenues::where('status','Active')->where('hotels_id',$hotel->id)->get();
@@ -852,7 +828,6 @@ class WeddingsController extends Controller
         return view('backend.operations.weddings.forms.create', [
             "rooms" => $rooms,
             "service" => $service,
-            'attentions' => $attentions,
             'hotel' => $hotel,
             'weddingVenues' => $weddingVenues,
             'receptionVenues' => $receptionVenues,
@@ -883,7 +858,6 @@ class WeddingsController extends Controller
             $lunchVenue = WeddingLunchVenues::where('id',$wedding->lunch_venue_id)->first();
             $dinnerVenues = WeddingDinnerVenues::where('hotel_id',$hotel->id)->where('status','Active')->get();
             $dinnerVenue = WeddingDinnerVenues::where('id',$wedding->dinner_venue_id)->first();
-            $attentions = Attention::where('page','edit-wedding-package')->get();
             $hotel = Hotels::where('id',$wedding->hotel_id)->first();
             $rooms = HotelRoom::where('hotels_id',$hotel->id)->where('status','Active')->get();
             $suite_and_villa = HotelRoom::where('id',$wedding->suites_and_villas_id)->first();
@@ -906,7 +880,6 @@ class WeddingsController extends Controller
                 "suite_and_villa" => $suite_and_villa,
                 "rooms" => $rooms,
                 "wedding" => $wedding,
-                'attentions' => $attentions,
                 'hotel' => $hotel,
                 'ceremonyVenue' => $ceremonyVenue,
                 'ceremonyVenues' => $ceremonyVenues,
@@ -1354,7 +1327,6 @@ class WeddingsController extends Controller
     public function func_add_wedding_package(Request $request,$id){
         $code = Str::random(26);
         $now = Carbon::now();
-        $attentions = Attention::where('page','add-wedding')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hotel = Hotels::find($id);

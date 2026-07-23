@@ -24,7 +24,6 @@ use App\Models\ExtraBed;
 use App\Models\OrderLog;
 use App\Models\UsdRates;
 use App\Models\Weddings;
-use App\Models\Attention;
 use App\Models\HotelRoom;
 use App\Models\Promotion;
 use App\Models\HotelPrice;
@@ -934,7 +933,6 @@ class OrderController extends Controller
         $now = Carbon::now();
         $archived = date('Y-m-d',strtotime('+7 days',strtotime($now)));
         $userid = Auth::user()->id;
-        $attentions = Attention::where('page','orders')->get();
         $optional_rate_order = OptionalRateOrder::all();
         $optionalrates = OptionalRate::all();
         $wedding_order = OrderWedding::all();
@@ -1027,7 +1025,6 @@ class OrderController extends Controller
             'orderno'=>$orderno,
             'optionalrates'=>$optionalrates,
             'optional_rate_order'=>$optional_rate_order,
-            'attentions'=>$attentions,
             'archivedorders'=>$archivedorders,
             'rejectedorders'=>$rejectedorders,
             'business'=>$business,
@@ -1617,7 +1614,6 @@ class OrderController extends Controller
                 'airport_shuttle_out' => $airport_shuttle_out,
                 'airport_shuttle_any_zero' => $airport_shuttle_any_zero,
                 'total_price_airport_shuttle' => $total_price_airport_shuttle,
-                'attentions' => Attention::where('page', 'edit-order-villa')->get(),
                 'hasInvalidOrder' => $hasInvalidOrder,
                 'canEditOrder' => $canEditOrder,
                 'agent' => $agent,
@@ -1829,7 +1825,6 @@ class OrderController extends Controller
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::firstWhere('name', 'USD'));
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
-        $attentions = Cache::remember('attention', 3600, fn() => Attention::where('page', 'orders')->get());
         $villa = Villas::with(['galleries', 'rooms' => fn($q) => $q->where('status', 1)])
             ->findOrFail($order->service_id);
         if ($villa) {
@@ -1912,7 +1907,6 @@ class OrderController extends Controller
                 'now' => $now,
                 'usdrates' => $usdrates,
                 'business' => $business,
-                'attentions' => $attentions,
                 'invoice' => $invoice,
                 'reservation' => $reservation,
                 'inv_no' => $inv_no,
@@ -1960,7 +1954,6 @@ class OrderController extends Controller
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
         $logoDark = Cache::remember('app.logo_dark', 3600, fn() => config('app.logo_dark'));
         $altLogo = Cache::remember('app.alt_logo', 3600, fn() => config('app.alt_logo'));
-        $attentions = Attention::where('page', 'order-hotel-promo')->get();
         $room = HotelRoom::with('hotels')->findOrFail($id);
         $hotel = $room->hotels;
         if (!session()->has('booking_dates.checkin')) {
@@ -2764,7 +2757,7 @@ class OrderController extends Controller
 
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type', "Meals")->get();
-        $optional_rate_orders = OptionalRateOrder::where('orders_id', $id)->first();
+        $optional_rate_orders = OptionalRateOrder::where('order_id', $id)->first();
         $tour_price = TourPrices::find($order->price_id);
         $tour_prices = TourPrices::where('tour_id', $order->subservice_id)
             ->where('status', "Active")
@@ -2774,7 +2767,7 @@ class OrderController extends Controller
         $tour = ($order->service == "Tour Package") ? Tours::find($order->service_id) : null;
         $order_optional_rates = OptionalRateOrder::with('optional_rate')
             ->where('service', 'Hotel Promo')
-            ->where('orders_id', $order->id)
+            ->where('order_id', $order->id)
             ->get();
         $optionalServiceTotalPrice = $order_optional_rates->sum('price_total');
         $airport_shuttles = AirportShuttle::where('order_id',$order->id)->get();
@@ -2847,7 +2840,6 @@ class OrderController extends Controller
                 'total_price_airport_shuttle' => $total_price_airport_shuttle,
                 'optionalServiceTotalPrice' => $optionalServiceTotalPrice,
                 'qty' => $qty,
-                'attentions' => Attention::where('page', 'edit-order')->get(),
                 'hasInvalidOrder' => $hasInvalidOrder,
                 'showExtraBedPrice' => $showExtraBedPrice,
                 'multipleRooms' => $multipleRooms,
@@ -2979,7 +2971,6 @@ class OrderController extends Controller
                 'tour' => $tour,
                 'agent' => $agent,
                 'prices' => $prices,
-                'attentions' => Attention::where('page', 'edit-order-tour')->get(),
                 'langType'=>$langType,
                 'langName'=>$langName,
                 'langArea'=>$langArea,
@@ -3429,7 +3420,6 @@ class OrderController extends Controller
                 'business' => $business,
                 'transport' => $transport,
                 'transports' => $transports,
-                'attentions' => Attention::where('page', 'edit-order')->get(),
                 'canEditOrder' => $canEditOrder,
                 'promotions_name' => $promotions_name,
                 'promotion_discount' => $promotion_discount,
@@ -3662,7 +3652,6 @@ class OrderController extends Controller
         $usdrates = Cache::remember('usd_rates', 60, fn() => UsdRates::where('name', 'USD')->first());
         $tax = Cache::remember('tax', 60, fn() => Tax::where('id', 1)->first());
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
-        $attentions = Attention::where('page', 'editorder-room')->get();
         $hotel = Hotels::find($order->service_id);
         $room = HotelRoom::find($order->subservice_id);
         $duration = Carbon::parse($order->checkin)->diffInDays(Carbon::parse($order->checkout));
@@ -3689,7 +3678,6 @@ class OrderController extends Controller
             'now' => $now,
             'usdrates' => $usdrates,
             'business' => $business,
-            'attentions' => $attentions,
             'hotel' => $hotel,
             'room' => $room,
             'date_stay' => $date_stay,
@@ -3819,7 +3807,6 @@ class OrderController extends Controller
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
         $logoDark = Cache::remember('app.logo_dark', 3600, fn() => config('app.logo_dark'));
         $altLogo = Cache::remember('app.alt_logo', 3600, fn() => config('app.alt_logo'));
-        $attentions = Attention::where('page', 'order-hotel-promo')->get();
 
         $order = Orders::with(['optional_rate_orders'])->where('id', $id)->where('sales_agent', $user_id)->first();
         $optional_rate_orders = $order->optional_rate_orders;
@@ -3839,7 +3826,6 @@ class OrderController extends Controller
                 'usdrates'=>$usdrates,
                 'business'=>$business,
                 'order'=>$order,
-                'attentions'=>$attentions,
                 'optional_rate_orders'=>$optional_rate_orders,
                 'duration'=>$duration,
                 'optional_services'=>$optional_services,
@@ -4099,7 +4085,6 @@ class OrderController extends Controller
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::firstWhere('name', 'USD'));
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
-        $attentions = Cache::remember('attention', 3600, fn() => Attention::where('page', 'orders')->get());
         $room = HotelRoom::find($order->subservice_id);
         $hotel = Hotels::with(['optionalrates'])->where('id',$order->service_id)->first();
         if ($hotel) {
@@ -4162,7 +4147,6 @@ class OrderController extends Controller
             'now' => $now,
             'usdrates' => $usdrates,
             'business' => $business,
-            'attentions' => $attentions,
             'invoice' => $invoice,
             'reservation' => $reservation,
             'hotel' => $hotel,
@@ -4198,7 +4182,6 @@ class OrderController extends Controller
             return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
         }
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','orders-detail')->get();
         $business = BusinessProfile::where('id','=',1)->first();
         $optional_rate_order = OptionalRateOrder::all();
         $optionalrates = OptionalRate::all();
@@ -4211,7 +4194,6 @@ class OrderController extends Controller
                 'business'=>$business,
                 'optional_rate_order'=>$optional_rate_order,
                 'optionalrates'=>$optionalrates,
-                'attentions'=>$attentions,
             ]);
         }
         
@@ -5727,7 +5709,6 @@ class OrderController extends Controller
         }
         $tour = Tours::with('activeLocations')->find($order->service_id);
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','orders')->get();
         $business = BusinessProfile::where('id','=',1)->first();
         $reservation = Reservation::find($order->rsv_id)??null;
         $promotion_discounts = json_decode($order->promotion_disc, true);
@@ -5844,7 +5825,6 @@ class OrderController extends Controller
             'usdrates'=>$usdrates,
             'order'=> $order,
             'business'=>$business,
-            'attentions'=>$attentions,
             'tour'=>$tour,
             'invoice'=>$invoice,
             'receipts'=>$receipts,

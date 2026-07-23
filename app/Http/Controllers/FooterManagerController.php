@@ -6,6 +6,7 @@ use App\Models\FooterLink;
 use App\Models\FooterSetting;
 use App\Services\FooterContentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class FooterManagerController extends Controller
@@ -31,7 +32,15 @@ class FooterManagerController extends Controller
             ->get()
             ->groupBy('group');
 
-        return view('admin.footer-manager.index', compact('settings', 'links'));
+        $summary = [
+            'settings' => $settings->count(),
+            'activeSettings' => $settings->where('status', true)->count(),
+            'groups' => $links->count(),
+            'links' => $links->flatten(1)->count(),
+            'activeLinks' => $links->flatten(1)->where('status', true)->count(),
+        ];
+
+        return view('backend.admin.footer-manager.index', compact('settings', 'links', 'summary'));
     }
 
     public function updateSettings(Request $request)
@@ -44,20 +53,22 @@ class FooterManagerController extends Controller
             'settings.*.status' => ['nullable', 'boolean'],
         ]);
 
-        foreach ($validated['settings'] ?? [] as $id => $settingData) {
-            $setting = FooterSetting::find($id);
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['settings'] ?? [] as $id => $settingData) {
+                $setting = FooterSetting::find($id);
 
-            if (!$setting) {
-                continue;
+                if (!$setting) {
+                    continue;
+                }
+
+                $setting->update([
+                    'value' => $settingData['value'] ?? null,
+                    'value_traditional' => $settingData['value_traditional'] ?? null,
+                    'value_simplified' => $settingData['value_simplified'] ?? null,
+                    'status' => (bool) ($settingData['status'] ?? false),
+                ]);
             }
-
-            $setting->update([
-                'value' => $settingData['value'] ?? null,
-                'value_traditional' => $settingData['value_traditional'] ?? null,
-                'value_simplified' => $settingData['value_simplified'] ?? null,
-                'status' => (bool) ($settingData['status'] ?? false),
-            ]);
-        }
+        });
 
         $this->footerContentService->forget();
 

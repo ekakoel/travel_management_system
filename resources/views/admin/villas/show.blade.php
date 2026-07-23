@@ -9,20 +9,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="title"><i class="micon dw dw-building-1" aria-hidden="true"></i>Private Villa</div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item"><a href="/villas-admin">Villas</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">{{ $villa->name }}</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="micon dw dw-building-1" aria-hidden="true"></i>Private Villa
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -42,11 +33,9 @@
                         @endif
                     </div>
                     <div class="row">
-                        {{-- ATTENTIONS MOBILE --}}
                         <div class="col-md-4 mobile">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                                 <div class="col-md-12">
                                     <div class="card-box">
                                         <div class="card-box-title">
@@ -77,7 +66,7 @@
                                                     $hi = $now;
                                                 @endphp
                                                 @foreach ($villa->prices as $lprices)
-                                                
+
                                                     @php
                                                         $ed = $lprices->end_date;
                                                     @endphp
@@ -94,7 +83,7 @@
                                                     <p style="color:red;">Expired</p>
                                                 @endif
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -248,7 +237,7 @@
                                             </div>
                                         </div>
                                     @endif
-                                    
+
                                     @if ($villa->additional_info)
                                         <div class="row">
                                             <div class="col-md-12">
@@ -302,7 +291,7 @@
                                     @canany(['posDev','posAuthor'])
                                         <div class="card-box-footer">
                                             <a href="{{ route('admin.villa.edit',$villa->id) }}">
-                                                <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Villa</button>
+                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Villa</button>
                                             </a>
                                         </div>
                                     @endcanany
@@ -377,8 +366,8 @@
                                                                             <input type="hidden" name="file_name" value="{{ $contract->file_name }}">
                                                                             <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                                             <input type="hidden" name="villa_id" value="{{ $villa->id }}">
-                                                                            <button class="btn btn-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i> Delete</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                            <button class="backend-button backend-button-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i> Delete</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                         </form>
                                                                     </div>
                                                                 </div>
@@ -393,25 +382,25 @@
                                                                     <div class="card-box-title">
                                                                         <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Contract</div>
                                                                     </div>
-                                                                
+
                                                                     <form id="update-villa-contract-{{ $contract->id }}" action="{{ route('func.update-villa-contract',$contract->id) }}" method="post" enctype="multipart/form-data">
                                                                         @csrf
                                                                         @method('put')
                                                                         <div class="row">
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="file_name"><i class="icon-copy fa fa-file-pdf-o" aria-hidden="true"></i> {{ $contract->file_name }}</label>
-                                                                                    <input type="file" name="file_name" id="file_name" class="custom-file-input @error('file_name') is-invalid @enderror" placeholder="Choose Contract">
+                                                                                    <input type="file" name="file_name" id="file_name" class="backend-form-control @error('file_name') is-invalid @enderror" placeholder="Choose Contract">
                                                                                     @error('file_name')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
-                                                                            
+
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="contract_name">Contract Name</label>
-                                                                                    <input name="contract_name" id="contract_name"  type="text" class="form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ $contract->name }}">
+                                                                                    <input name="contract_name" id="contract_name"  type="text" class="backend-form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ $contract->name }}">
                                                                                     @error('contract_name')
                                                                                         <span class="invalid-feedback">
                                                                                             <strong>{{ $message }}</strong>
@@ -420,9 +409,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="period_start">Period Start</label>
-                                                                                    <input readonly name="period_start" id="period_start"  type="text" class="form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Insert contract name" value="{{ date('d M Y', strtotime($contract->period_start)) }}">
+                                                                                    <input readonly name="period_start" id="period_start"  type="text" class="backend-form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Insert contract name" value="{{ date('d M Y', strtotime($contract->period_start)) }}">
                                                                                     @error('period_start')
                                                                                         <span class="invalid-feedback">
                                                                                             <strong>{{ $message }}</strong>
@@ -431,9 +420,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="period_end">Period End</label>
-                                                                                    <input readonly name="period_end" id="period_end"  type="text" class="form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ date('d M Y', strtotime($contract->period_end)) }}">
+                                                                                    <input readonly name="period_end" id="period_end"  type="text" class="backend-form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ date('d M Y', strtotime($contract->period_end)) }}">
                                                                                     @error('period_end')
                                                                                         <span class="invalid-feedback">
                                                                                             <strong>{{ $message }}</strong>
@@ -446,8 +435,8 @@
                                                                         </div>
                                                                     </form>
                                                                     <div class="card-box-footer">
-                                                                        <button type="submit" form="update-villa-contract-{{ $contract->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                        <button type="submit" form="update-villa-contract-{{ $contract->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -463,7 +452,7 @@
                                 @canany(['posDev','posAuthor'])
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#add-contract-{{ $villa->id }}" data-toggle="tooltip" data-placement="top" title="Add more contract">
-                                            <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Contract</button>
+                                            <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Contract</button>
                                         </a>
                                     </div>
                                     {{-- MODAL ADD Contract =====================================================================================================================--}}
@@ -474,24 +463,24 @@
                                                     <div class="card-box-title">
                                                         <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Contract</div>
                                                     </div>
-                                                
+
                                                     <form id="addContract" action="/fadd-villa-contract" method="post" enctype="multipart/form-data">
                                                         @csrf
                                                         {{ csrf_field() }}
                                                         <div class="row">
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="file_name">Contract PDF File</label>
-                                                                    <input type="file" name="file_name" id="file_name" class="custom-file-input @error('file_name') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('file_name') }}" required>
+                                                                    <input type="file" name="file_name" id="file_name" class="backend-form-control @error('file_name') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('file_name') }}" required>
                                                                     @error('file_name')
                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                     @enderror
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="contract_name">Contract Name</label>
-                                                                    <input name="contract_name" id="contract_name"  type="text" class="form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ old('contract_name') }}" required>
+                                                                    <input name="contract_name" id="contract_name"  type="text" class="backend-form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ old('contract_name') }}" required>
                                                                     @error('contract_name')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -500,9 +489,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="period_start" >Period Start</label>
-                                                                    <input readonly name="period_start" id="period_start"  type="text" class="form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Select Date" value="{{ old('period_start') }}" required>
+                                                                    <input readonly name="period_start" id="period_start"  type="text" class="backend-form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Select Date" value="{{ old('period_start') }}" required>
                                                                     @error('period_start')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -511,9 +500,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="period_end">Period End</label>
-                                                                    <input name="period_end" id="period_end"  type="text" class="form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ old('period_end') }}" required>
+                                                                    <input name="period_end" id="period_end"  type="text" class="backend-form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ old('period_end') }}" required>
                                                                     @error('period_end')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -521,14 +510,14 @@
                                                                     @enderror
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <input name="villa_id" value="{{ $villa->id }}" type="hidden">
                                                             <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
                                                         </div>
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="addContract" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                        <button type="submit" form="addContract" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -682,10 +671,10 @@
                                                                     <div class="card-box-footer">
                                                                         @canany(['posDev','posAuthor'])
                                                                             <a href="{{ route('view.edit-villa-room',$room->id) }}">
-                                                                                <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                                                             </a>
                                                                         @endcanany
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -699,7 +688,7 @@
                                         @canany(['posDev','posAuthor'])
                                             <div class="card-box-footer">
                                                 <a href="{{ route('admin.villa-room.add',$villa->id) }}">
-                                                    <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Rooms</button>
+                                                    <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Rooms</button>
                                                 </a>
                                             </div>
                                         @endcanany
@@ -707,11 +696,9 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- ATTENTIONS DESKTOP --}}
                         <div class="col-md-4 desktop">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                                 <div class="col-md-12">
                                     <div class="card-box">
                                         <div class="card-box-title">
@@ -742,7 +729,7 @@
                                                     $hi = $now;
                                                 @endphp
                                                 @foreach ($villa->prices as $lprices)
-                                                
+
                                                     @php
                                                         $ed = $lprices->end_date;
                                                     @endphp
@@ -759,7 +746,7 @@
                                                     <p style="color:red;">Expired</p>
                                                 @endif
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -791,8 +778,7 @@
             } else {
             tr[i].style.display = "none";
             }
-        }       
+        }
         }
     }
 </script>
-

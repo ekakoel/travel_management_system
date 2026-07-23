@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Orders;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use App\Models\BankAccount;
 use App\Models\Reservation;
 use App\Models\InvoiceAdmin;
@@ -27,7 +26,6 @@ class InvoiceAdminController extends Controller
         $invoices = InvoiceAdmin::where('due_date','>',$now)->orderBy('due_date','ASC')->get();
         $business = BusinessProfile::first();
         $now = Carbon::now();
-        $attentions = Attention::where('page',"invoice")->get();
         $rsv = Reservation::all();
         
         return view('backend.finance.invoices.index',[
@@ -35,7 +33,6 @@ class InvoiceAdminController extends Controller
             
             'business'=>$business,
             'now'=>$now,
-            'attentions'=>$attentions,
             'rsv'=>$rsv,
         ]);
     }
@@ -44,7 +41,6 @@ class InvoiceAdminController extends Controller
         $invoice = InvoiceAdmin::find($id);
         $business = BusinessProfile::first();
         $now = Carbon::now();
-        $attentions = Attention::where('page', 'Invoice-detail')->get();
         $reservation = Reservation::where('id',$invoice->rsv_id)->first();
         $in=Carbon::parse($reservation->checkin);
         $out=Carbon::parse($reservation->checkout);
@@ -80,7 +76,6 @@ class InvoiceAdminController extends Controller
             'invoice'=>$invoice,
             'business'=>$business,
             'now'=>$now,
-            'attentions'=>$attentions,
             'reservation'=>$reservation,
             'accommodations'=>$accommodations,
             'tours'=>$tours,

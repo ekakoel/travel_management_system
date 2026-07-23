@@ -5,22 +5,11 @@
     @can('isAdmin')
     <div class="main-container">
         <div class="pd-ltr-20">
-            <div class="page-header">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="title">
-                            <i class="icon-copy dw dw-file-31"></i> SPK Detail
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('view.transport-management.index') }}">Surat Perintah Kerja (SPK)</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ $spk->order_number }}</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+            <x-backend.page-hero>
+                <x-slot name="heading">
+                    <i class="icon-copy dw dw-file-31"></i> SPK Detail
+                </x-slot>
+            </x-backend.page-hero>
             <div class="row">
                 <div class="col-md-8">
                     <div class="card-box mb-4">
@@ -44,10 +33,10 @@
                                             <div class="rd-label">Type</div>
                                             <div class="rd-value">{{ $spk->type ?? '-' }}</div>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
-                            
+
                                 <div class="col-md-6">
                                     <div class="rd-list">
                                         <div class="rd-item">
@@ -116,11 +105,11 @@
                                                                         <hr class="form-hr">
                                                                         <div class="row">
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="name">Name <span>*</span></label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                                        <input  name="name" class="form-control input-icon @error('name') is-invalid @enderror" type="text" value="{{ $guest->name }}" placeholder="Insert guest name" required>
+                                                                                        <input  name="name" class="backend-form-control input-icon @error('name') is-invalid @enderror" type="text" value="{{ $guest->name }}" placeholder="Insert guest name" required>
                                                                                     </div>
                                                                                     @error('name')
                                                                                         <span class="invalid-feedback">
@@ -130,11 +119,11 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="name_mandarin">Mandarin Name</label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                                        <input  name="name_mandarin" class="form-control input-icon @error('name_mandarin') is-invalid @enderror" type="text" value="{{ $guest->name_mandarin }}" placeholder="Insert guest Mandarin name">
+                                                                                        <input  name="name_mandarin" class="backend-form-control input-icon @error('name_mandarin') is-invalid @enderror" type="text" value="{{ $guest->name_mandarin }}" placeholder="Insert guest Mandarin name">
                                                                                     </div>
                                                                                     @error('name_mandarin')
                                                                                         <span class="invalid-feedback">
@@ -144,11 +133,11 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label>Sex <span>*</span></label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fa fa-venus-mars" aria-hidden="true"></i></span>
-                                                                                        <select name="sex" class="custom-select input-icon form-select" required>
+                                                                                        <select name="sex" class="backend-form-control input-icon form-select" required>
                                                                                             <option disabled selected value="">Select Sex</option>
                                                                                             <option {{ $guest->sex == "m"?"selected":"" }} value="m">Male</option>
                                                                                             <option {{ $guest->sex == "f"?"selected":"" }} value="f">Female</option>
@@ -157,11 +146,11 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label>Age <span>*</span></label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fa fa-male" aria-hidden="true"></i></span>
-                                                                                        <select name="age" class="custom-select input-icon form-select" required>
+                                                                                        <select name="age" class="backend-form-control input-icon form-select" required>
                                                                                             <option disabled selected value="">Select Age</option>
                                                                                             <option {{ $guest->age == "Adult"?"selected":"" }} value="Adult">Adult</option>
                                                                                             <option {{ $guest->age == "Child"?"selected":"" }} value="Child">Child</option>
@@ -170,11 +159,11 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="phone">Telephone</label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fa fa-mobile-phone" aria-hidden="true"></i></span>
-                                                                                        <input  name="phone" class="form-control input-icon @error('phone') is-invalid @enderror" type="number" value="{{ $guest->phone }}" placeholder="Insert telephone number">
+                                                                                        <input  name="phone" class="backend-form-control input-icon @error('phone') is-invalid @enderror" type="number" value="{{ $guest->phone }}" placeholder="Insert telephone number">
                                                                                     </div>
                                                                                     @error('phone')
                                                                                         <span class="invalid-feedback">
@@ -187,8 +176,8 @@
                                                                     </form>
                                                                 </div>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="updateGuest{{ $guest->id }}" class="btn btn-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
+                                                                    <button type="submit" form="updateGuest{{ $guest->id }}" class="backend-button backend-button-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -198,7 +187,7 @@
                                         </tbody>
                                 </table>
                                 <div class="button-container">
-                                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addGuest"><i class="fa fa-plus"></i> Add Guest</button>
+                                    <button class="backend-button backend-button-primary" data-toggle="modal" data-target="#addGuest"><i class="fa fa-plus"></i> Add Guest</button>
                                 </div>
                                 {{-- MODAL ADD GUEST --}}
                                 <div class="modal fade" id="addGuest" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -219,11 +208,11 @@
                                                         <hr class="form-hr">
                                                         <div class="row">
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="name">Name <span>*</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                        <input  name="name" class="form-control input-icon @error('name') is-invalid @enderror" type="text" value="{{ old('name') }}" placeholder="Insert guest name" required>
+                                                                        <input  name="name" class="backend-form-control input-icon @error('name') is-invalid @enderror" type="text" value="{{ old('name') }}" placeholder="Insert guest name" required>
                                                                     </div>
                                                                     @error('name')
                                                                         <span class="invalid-feedback">
@@ -233,11 +222,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="name_mandarin">Mandarin Name</label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                        <input  name="name_mandarin" class="form-control input-icon @error('name_mandarin') is-invalid @enderror" type="text" value="{{ old('name_mandarin') }}" placeholder="Insert guest Mandarin name">
+                                                                        <input  name="name_mandarin" class="backend-form-control input-icon @error('name_mandarin') is-invalid @enderror" type="text" value="{{ old('name_mandarin') }}" placeholder="Insert guest Mandarin name">
                                                                     </div>
                                                                     @error('name_mandarin')
                                                                         <span class="invalid-feedback">
@@ -247,11 +236,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label>Sex <span>*</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-venus-mars" aria-hidden="true"></i></span>
-                                                                        <select name="sex" class="custom-select input-icon form-select" required>
+                                                                        <select name="sex" class="backend-form-control input-icon form-select" required>
                                                                             <option disabled selected value="">Select Sex</option>
                                                                             <option value="m">Male</option>
                                                                             <option value="f">Female</option>
@@ -260,11 +249,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label>Age <span>*</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-male" aria-hidden="true"></i></span>
-                                                                        <select name="age" class="custom-select input-icon form-select" required>
+                                                                        <select name="age" class="backend-form-control input-icon form-select" required>
                                                                             <option disabled selected value="">Select Age</option>
                                                                             <option value="Adult">Adult</option>
                                                                             <option value="Child">Child</option>
@@ -273,11 +262,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="phone">Telephone</label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-mobile-phone" aria-hidden="true"></i></span>
-                                                                        <input  name="phone" class="form-control input-icon @error('phone') is-invalid @enderror" type="number" value="{{ old("phone") }}" placeholder="Insert telephone number">
+                                                                        <input  name="phone" class="backend-form-control input-icon @error('phone') is-invalid @enderror" type="number" value="{{ old("phone") }}" placeholder="Insert telephone number">
                                                                     </div>
                                                                     @error('phone')
                                                                         <span class="invalid-feedback">
@@ -290,8 +279,8 @@
                                                     </form>
                                                 </div>
                                                 <div class="card-box-footer">
-                                                    <button type="submit" form="addMoreGuest" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
+                                                    <button type="submit" form="addMoreGuest" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -332,7 +321,7 @@
                                                 <td>{{ $dest->visited_at ?? '-' }}</td>
                                                 <td>
                                                     @if($dest->status === 'Visited')
-                                                        <a href="{{ $dest->checkin_map_link }}" target="_blank" class="btn btn-sm btn-success color-white">
+                                                        <a href="{{ $dest->checkin_map_link }}" target="_blank" class="backend-button backend-button-primary color-white">
                                                             See on Map
                                                         </a>
                                                     @else
@@ -378,7 +367,7 @@
                                                                                 <label for="time">Time <span>*</span></label>
                                                                                 <div class="btn-icon">
                                                                                     <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                                                    <input type="time" name="time" class="form-control input-icon @error('time') is-invalid @enderror" placeholder="Select time" value="{{ date('H:i',strtotime($dest->date)) }}"  required>
+                                                                                    <input type="time" name="time" class="backend-form-control input-icon @error('time') is-invalid @enderror" placeholder="Select time" value="{{ date('H:i',strtotime($dest->date)) }}"  required>
                                                                                 </div>
                                                                                 @error('time')
                                                                                     <div class="alert alert-danger">{{ $message }}</div>
@@ -390,7 +379,7 @@
                                                                                 <label for="destinationName">Destination Name <span>*</span></label>
                                                                                 <div class="btn-icon">
                                                                                     <span><i class="icon-copy dw dw-edit1"></i></span>
-                                                                                    <input type="text" name="destination_name" class="form-control input-icon @error('destination_name') is-invalid @enderror" placeholder="Insert destination name" value="{{ $dest->destination_name }}" required>
+                                                                                    <input type="text" name="destination_name" class="backend-form-control input-icon @error('destination_name') is-invalid @enderror" placeholder="Insert destination name" value="{{ $dest->destination_name }}" required>
                                                                                     @error('destination_name')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
@@ -402,7 +391,7 @@
                                                                                 <label for="destinationAddress">Map Location</label>
                                                                                 <div class="btn-icon">
                                                                                     <span><i class="icon-copy dw dw-map2"></i></span>
-                                                                                    <input type="text" name="destination_address" class="form-control input-icon" placeholder="Copy url from Google Map" value="{{ $dest->destination_address }}">
+                                                                                    <input type="text" name="destination_address" class="backend-form-control input-icon" placeholder="Copy url from Google Map" value="{{ $dest->destination_address }}">
                                                                                     @error('destination_address')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
@@ -410,17 +399,17 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="description" class="form-label">Description</label>
-                                                                                <textarea name="description" class="textarea_editor form-control" placeholder="Insert description">{{ $dest->description }}</textarea>
+                                                                                <textarea data-backend-richtext="true" name="description" class="textarea_editor backend-form-control" placeholder="Insert description">{{ $dest->description }}</textarea>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </form>
                                                             </div>
                                                             <div class="card-box-footer">
-                                                                <button type="submit" form="updateSpk{{ $dest->id }}" class="btn btn-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
+                                                                <button type="submit" form="updateSpk{{ $dest->id }}" class="backend-button backend-button-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -433,23 +422,23 @@
                                 <p class="text-muted">No destinations added yet.</p>
                             @endif
                             <div class="button-container">
-                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addDestination"><i class="fa fa-plus"></i> Add Destination</button>
+                                <button class="backend-button backend-button-primary" data-toggle="modal" data-target="#addDestination"><i class="fa fa-plus"></i> Add Destination</button>
                             </div>
                         </div>
                         <div class="card-box-footer">
-                            <a href="https://api.whatsapp.com/send?text={{ urlencode('https://online.balikamitour.com/spk/'.$spk->id.'/'.$spk->spk_number) }}" 
-                                target="_blank" 
-                                class="btn btn-success">
+                            <a href="https://api.whatsapp.com/send?text={{ urlencode('https://online.balikamitour.com/spk/'.$spk->id.'/'.$spk->spk_number) }}"
+                                target="_blank"
+                                class="backend-button backend-button-primary">
                                 <i class="bi bi-whatsapp"></i> Share SPK
                             </a>
                             <a href="{{ route('spks.print',$spk->id) }}" target="__blank">
-                                <button class="btn btn-sm btn-light" data-toggle="modal" data-target="#changeDate"><i class="fa fa-print"></i> Print</button>
+                                <button class="backend-button backend-button-secondary" data-toggle="modal" data-target="#changeDate"><i class="fa fa-print"></i> Print</button>
                             </a>
-                            
-                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editSpkDetail"><i class="fa fa-pencil"></i> Edit SPK</button>
-                            
+
+                            <button class="backend-button backend-button-primary" data-toggle="modal" data-target="#editSpkDetail"><i class="fa fa-pencil"></i> Edit SPK</button>
+
                             <a href="{{ route('view.transport-management.index') }}">
-                                <button class="btn btn-danger"><i class="icon-copy dw dw-left-arrow1"></i> Back</button>
+                                <button class="backend-button backend-button-danger"><i class="icon-copy dw dw-left-arrow1"></i> Back</button>
                             </a>
                         </div>
                         {{-- MODAL EDIT SPK --}}
@@ -471,26 +460,26 @@
                                                 <hr class="form-hr">
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label>Order Number <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy fa fa-qrcode" aria-hidden="true"></i></span>
                                                                 <input
-                                                                    class="form-control input-icon @error('order_number') is-invalid @enderror"
+                                                                    class="backend-form-control input-icon @error('order_number') is-invalid @enderror"
                                                                     name="order_number"
                                                                     type="text"
                                                                     value="{{ $spk->order_number }}"
-                                                                    placeholder="@lang('messages.Insert order number')" 
+                                                                    placeholder="@lang('messages.Insert order number')"
                                                                     required>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label>Status <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy fa fa-check-square-o" aria-hidden="true"></i></span>
-                                                                <select name="status" class="custom-select input-icon form-select" required>
+                                                                <select name="status" class="backend-form-control input-icon form-select" required>
                                                                     <option disabled selected value="">Select Status</option>
                                                                     <option {{ $spk->status == "Canceled"?"selected":"" }} value="Canceled">Cancelled</option>
                                                                     <option {{ $spk->status == "Pending"?"selected":"" }} value="Pending">Pending</option>
@@ -501,11 +490,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label>Transport Service <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy fa fa-server" aria-hidden="true"></i></span>
-                                                                <select name="spk_type" class="custom-select input-icon form-select" required>
+                                                                <select name="spk_type" class="backend-form-control input-icon form-select" required>
                                                                     <option disabled selected value="">Select Service</option>
                                                                     <option {{ $spk->type == "Airport Shuttle"?"selected":""; }} value="Airport Shuttle">Airport Shuttle</option>
                                                                     <option {{ $spk->type == "Hotel Transfer"?"selected":""; }} value="Hotel Transfer">Hotel Transfer</option>
@@ -516,26 +505,26 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label>SPK Date <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy fa fa-calendar-check-o" aria-hidden="true"></i></span>
                                                                 <input readonly
-                                                                    class="form-control spk-date input-icon @error('spk_date') is-invalid @enderror"
+                                                                    class="backend-form-control spk-date input-icon @error('spk_date') is-invalid @enderror"
                                                                     name="spk_date"
                                                                     type="date"
                                                                     value="{{ $spk->spk_date }}"
-                                                                    placeholder="@lang('messages.Select date')" 
+                                                                    placeholder="@lang('messages.Select date')"
                                                                     required>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="number_of_guests">Number of Guests <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy fa fa-users" aria-hidden="true"></i></span>
-                                                                <input  name="number_of_guests" min="1" class="form-control input-icon @error('number_of_guests') is-invalid @enderror" type="number" value="{{ $spk->number_of_guests }}" placeholder="@lang('messages.Number of guests')" required>
+                                                                <input  name="number_of_guests" min="1" class="backend-form-control input-icon @error('number_of_guests') is-invalid @enderror" type="number" value="{{ $spk->number_of_guests }}" placeholder="@lang('messages.Number of guests')" required>
                                                             </div>
                                                             @error('number_of_guests')
                                                                 <span class="invalid-feedback">
@@ -545,11 +534,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label>Vehicle <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy fa fa-car" aria-hidden="true"></i></span>
-                                                                <select name="transport_id" class="custom-select form-select" required>
+                                                                <select name="transport_id" class="backend-form-control form-select" required>
                                                                     <option disabled selected value="">Select Vehicle</option>
                                                                     @foreach ($vehicles as $vehicle)
                                                                         <option {{ $spk->transport->id == $vehicle->id?"selected":""; }} value="{{ $vehicle->id }}">{{ $vehicle->brand." ".$vehicle->name }} {{ $vehicle->number_plate?" (".$vehicle->number_plate.")":"" }}</option>
@@ -559,11 +548,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label>Driver <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy fa fa-user-circle-o" aria-hidden="true"></i></span>
-                                                                <select name="driver_id" class="custom-select form-select" required>
+                                                                <select name="driver_id" class="backend-form-control form-select" required>
                                                                     <option disabled selected value="">Select Driver</option>
                                                                     @foreach ($drivers as $driver)
                                                                         <option {{ $spk->driver->id == $driver->id?"selected":""; }} value="{{ $driver->id }}">{{ $driver->name }}</option>
@@ -576,8 +565,8 @@
                                             </form>
                                         </div>
                                         <div class="card-box-footer">
-                                            <button type="submit" form="updateSpkDetail" class="btn btn-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
+                                            <button type="submit" form="updateSpkDetail" class="backend-button backend-button-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
+                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -600,7 +589,7 @@
                                                             <label for="time">Time <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                                <input type="time" name="time" class="form-control input-icon @error('time') is-invalid @enderror" placeholder="Select time" value="{{ old('time') }}" required>
+                                                                <input type="time" name="time" class="backend-form-control input-icon @error('time') is-invalid @enderror" placeholder="Select time" value="{{ old('time') }}" required>
                                                             </div>
                                                             @error('time')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
@@ -612,7 +601,7 @@
                                                             <label for="destinationName">Destination Name <span>*</span></label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy dw dw-edit1"></i></span>
-                                                                <input type="text" id="destinationName" name="destination_name" class="form-control input-icon" placeholder="Insert destination name" value="{{ old('destination_name') }}" required>
+                                                                <input type="text" id="destinationName" name="destination_name" class="backend-form-control input-icon" placeholder="Insert destination name" value="{{ old('destination_name') }}" required>
                                                                 @error('destination_name')
                                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                                 @enderror
@@ -624,7 +613,7 @@
                                                             <label for="destinationAddress">Map Location</label>
                                                             <div class="btn-icon">
                                                                 <span><i class="icon-copy dw dw-map2"></i></span>
-                                                                <input type="text" id="destinationAddress" name="destination_address" class="form-control input-icon" placeholder="Copy url from Google Map">
+                                                                <input type="text" id="destinationAddress" name="destination_address" class="backend-form-control input-icon" placeholder="Copy url from Google Map">
                                                                 @error('destination_name')
                                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                                 @enderror
@@ -632,17 +621,17 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="description" class="form-label">Deskription</label>
-                                                            <textarea name="description" class="textarea_editor form-control" placeholder="Insert description">{{ old('description') }}</textarea>
+                                                            <textarea data-backend-richtext="true" name="description" class="textarea_editor backend-form-control" placeholder="Insert description">{{ old('description') }}</textarea>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </form>
                                         </div>
                                         <div class="card-box-footer">
-                                            <button type="submit" form="addSpkDestination" class="btn btn-primary"><i class="icon-copy dw dw-add"></i> Add</button>
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
+                                            <button type="submit" form="addSpkDestination" class="backend-button backend-button-primary"><i class="icon-copy dw dw-add"></i> Add</button>
+                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -670,7 +659,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener("submit", function(e) {
             const form = e.target.closest("form");

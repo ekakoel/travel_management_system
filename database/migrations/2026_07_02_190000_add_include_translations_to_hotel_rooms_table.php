@@ -9,6 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('hotel_rooms', function (Blueprint $table) {
+            if (!Schema::hasColumn('hotel_rooms', 'include')) {
+                $table->longText('include')->nullable()->after('size');
+            }
+        });
+
+        Schema::table('hotel_rooms', function (Blueprint $table) {
             if (!Schema::hasColumn('hotel_rooms', 'include_traditional')) {
                 $table->longText('include_traditional')->nullable()->after('include');
             }

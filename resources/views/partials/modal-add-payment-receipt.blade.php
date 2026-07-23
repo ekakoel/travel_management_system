@@ -33,9 +33,9 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-12 m-t-8">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="desktop_receipt_name" class="form-label">@lang('messages.Select Receipt') </label><br>
-                                                <input type="file" name="desktop_receipt_name" id="desktop_receipt_name" class="custom-file-input @error('desktop_receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('desktop_receipt_name') }}" required>
+                                                <input type="file" name="desktop_receipt_name" id="desktop_receipt_name" class="backend-form-control @error('desktop_receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('desktop_receipt_name') }}" required>
                                                 @error('desktop_receipt_name')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
@@ -49,8 +49,8 @@
                     </div>
                 </form>
                 <div class="card-box-footer">
-                    <button type="submit" form="desktop-payment-confirm-wedding-{{ $order->id }}" class="btn btn-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                    <button type="submit" form="desktop-payment-confirm-wedding-{{ $order->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
+                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                 </div>
             </div>
         </div>

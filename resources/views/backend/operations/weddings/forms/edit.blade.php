@@ -9,20 +9,13 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title">
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
                             <i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Wedding Package
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/weddings-admin">Vendors</a></li>
-                                <li class="breadcrumb-item"><a href="/weddings-hotel-admin-{{ $hotel->id }}">{{ $hotel->name }}</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Edit {{ $wedding->name }}</li>
-                            </ol>
-                        </nav>
-                    </div>
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="product-wrap">
-                        
+
                         <div class="row">
                             <div class="col-md-8 m-b-18">
                                 <div class="card-box p-b-18">
@@ -36,7 +29,7 @@
                                             <div class="col-12 col-sm-12 col-md-12">
                                                 <div class="row">
                                                     <div class="col-12 col-sm-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="cover-preview" class="form-label">Cover Image</label>
                                                             <div class="dropzone">
                                                                 <div id="cover-img-preview">
@@ -48,25 +41,25 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="cover" class="form-label">Cover Image </label>
-                                                    <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" onchange="updateCoverPreview(event)">
+                                                    <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" onchange="updateCoverPreview(event)">
                                                     @error('cover')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="status" class="form-label">Status</label>
-                                                    <select name="status" class="custom-select col-12 @error('status') is-invalid @enderror" required>
+                                                    <select name="status" class="backend-form-control col-12 @error('status') is-invalid @enderror" required>
                                                         <option selected value="{{ $wedding->status }}">{{ $wedding->status }}</option>
                                                         @if ($wedding->status == 'Active')
                                                             <option value="Draft">Draft</option>
                                                         @else
                                                             <option value="Active">Active</option>
                                                         @endif
-                                                        
+
                                                     </select>
                                                     @error('status')
                                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -80,45 +73,45 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="name" class="form-label">Package Name</label>
-                                                    <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert wedding package name" value="{{ $wedding->name }}" required>
+                                                    <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert wedding package name" value="{{ $wedding->name }}" required>
                                                     @error('name')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="capacity" class="form-label">Capacity</label>
-                                                    <input type="number" min="1" id="capacity" name="capacity" class="form-control @error('capacity') is-invalid @enderror" placeholder="Capacity" value="{{ $wedding->capacity }}" required>
+                                                    <input type="number" min="1" id="capacity" name="capacity" class="backend-form-control @error('capacity') is-invalid @enderror" placeholder="Capacity" value="{{ $wedding->capacity }}" required>
                                                     @error('capacity')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="duration" class="form-label">Duration</label>
-                                                    <input type="number" min="0" id="duration" name="duration" class="form-control @error('duration') is-invalid @enderror" placeholder="Night" value="{{ $wedding->duration }}" required>
+                                                    <input type="number" min="0" id="duration" name="duration" class="backend-form-control @error('duration') is-invalid @enderror" placeholder="Night" value="{{ $wedding->duration }}" required>
                                                     @error('duration')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="period_start" class="form-label">Period Start</label>
-                                                    <input readonly type="text" id="period_start" name="period_start" class="form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Select Date" value="{{ dateFormat($wedding->period_start) }}" required>
+                                                    <input readonly type="text" id="period_start" name="period_start" class="backend-form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Select Date" value="{{ dateFormat($wedding->period_start) }}" required>
                                                     @error('period_start')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="period_end" class="form-label">Period End</label>
-                                                    <input readonly type="text" id="period_end" name="period_end" class="form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select Date" value="{{ dateFormat($wedding->period_end) }}" required>
+                                                    <input readonly type="text" id="period_end" name="period_end" class="backend-form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select Date" value="{{ dateFormat($wedding->period_end) }}" required>
                                                     @error('period_end')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
@@ -131,9 +124,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="suites_and_villas_id" class="form-label">Suites and Villas</label>
-                                                    <select name="suites_and_villas_id" id="suites_and_villas_id" class="form-control custom-select @error('suites_and_villas_id') is-invalid @enderror">
+                                                    <select name="suites_and_villas_id" id="suites_and_villas_id" class="backend-form-control @error('suites_and_villas_id') is-invalid @enderror">
                                                         @if (!$wedding->suites_and_villas_id)
                                                             <option selected value="">-</option>
                                                         @endif
@@ -147,9 +140,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="transport_id" class="form-label">Transport</label>
-                                                    <select name="transport_id" id="transport_id" placeholder="test" class="form-control custom-select @error('transport_id') is-invalid @enderror">
+                                                    <select name="transport_id" id="transport_id" placeholder="test" class="backend-form-control @error('transport_id') is-invalid @enderror">
                                                         @if (!$wedding->transport_id)
                                                             <option selected value="">-</option>
                                                         @endif
@@ -163,9 +156,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="ceremony_venue_id" class="form-label">Ceremony Venue</label>
-                                                    <select name="ceremony_venue_id" id="ceremony_venue_id" class="form-control custom-select @error('ceremony_venue_id') is-invalid @enderror" required>
+                                                    <select name="ceremony_venue_id" id="ceremony_venue_id" class="backend-form-control @error('ceremony_venue_id') is-invalid @enderror" required>
                                                         @if (!$wedding->ceremony_venue_id)
                                                             <option selected value="">-</option>
                                                         @endif
@@ -183,9 +176,9 @@
                                                     $ceremonyVenueDecorations_hotel = $ceremonyVenueDecorations->where('hotel_id',$hotel->id);
                                                     $ceremonyVenueDecorations_vendor = $ceremonyVenueDecorations->where('hotel_id',NULL);
                                                 @endphp
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="ceremony_venue_decoration_id" class="form-label">Ceremony Venue Decoration</label>
-                                                    <select name="ceremony_venue_decoration_id" id="ceremony_venue_decoration_id" class="form-control custom-select @error('ceremony_venue_decoration_id') is-invalid @enderror">
+                                                    <select name="ceremony_venue_decoration_id" id="ceremony_venue_decoration_id" class="backend-form-control @error('ceremony_venue_decoration_id') is-invalid @enderror">
                                                         <option {{ $wedding->ceremony_venue_decoration_id?"":"selected"; }} value="">Basic Decoration</option>
                                                         @if ($ceremonyVenueDecorations_hotel)
                                                             @foreach ($ceremonyVenueDecorations_hotel as $ceremony_venue_decoration_hotel)
@@ -206,9 +199,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="reception_venue_id" class="form-label">Reception Venue <span> *</span></label>
-                                                    <select name="reception_venue_id" id="reception_venue_id" class="form-control custom-select @error('reception_venue_id') is-invalid @enderror" required>
+                                                    <select name="reception_venue_id" id="reception_venue_id" class="backend-form-control @error('reception_venue_id') is-invalid @enderror" required>
                                                         @if (!$wedding->reception_venue_id)
                                                             <option selected value="">-</option>
                                                         @endif
@@ -226,9 +219,9 @@
                                                     $receptionVenueDecorations_hotel = $receptionVenueDecorations->where('hotel_id',$hotel->id);
                                                     $receptionVenueDecorations_vendor = $receptionVenueDecorations->where('hotel_id',NULL);
                                                 @endphp
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="reception_venue_decoration_id" class="form-label">Reception Venue Decoration</label>
-                                                    <select name="reception_venue_decoration_id" id="reception_venue_decoration_id" class="form-control custom-select @error('reception_venue_decoration_id') is-invalid @enderror">
+                                                    <select name="reception_venue_decoration_id" id="reception_venue_decoration_id" class="backend-form-control @error('reception_venue_decoration_id') is-invalid @enderror">
                                                         <option {{ $wedding->reception_venue_decoration_id?"":"selected"; }} value="">Basic Decoration</option>
                                                         @if ($receptionVenueDecorations_hotel)
                                                             @foreach ($receptionVenueDecorations_hotel as $reception_venue_decoration_hotel)
@@ -257,7 +250,7 @@
                                                 <div class="line-with-text">
                                                     <span class="line-text">Additional Services</span>
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     @if ($adser_entertainments)
                                                         <div class="subtitle m-b-8 m-t-8">Entertainment</div>
                                                         <div class="grid-4">
@@ -350,37 +343,37 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="include" class="form-label">Include</label>
-                                                    <textarea id="include" name="include" class="textarea_editor form-control @error('include') is-invalid @enderror" placeholder="Insert include" value="{{ $wedding->include }}" required>{!! $wedding->include !!}</textarea>
+                                                    <textarea data-backend-richtext="true" id="include" name="include" class="textarea_editor backend-form-control @error('include') is-invalid @enderror" placeholder="Insert include" value="{{ $wedding->include }}" required>{!! $wedding->include !!}</textarea>
                                                     @error('include')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="payment_process" class="form-label">Payment Process</label>
-                                                    <textarea id="payment_process" name="payment_process" class="textarea_editor form-control @error('Description') is-invalid @enderror" placeholder="Insert Remark" value="{{ $wedding->payment_process }}">{!! $wedding->payment_process !!}</textarea>
+                                                    <textarea data-backend-richtext="true" id="payment_process" name="payment_process" class="textarea_editor backend-form-control @error('Description') is-invalid @enderror" placeholder="Insert Remark" value="{{ $wedding->payment_process }}">{!! $wedding->payment_process !!}</textarea>
                                                     @error('payment_process')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="cancellation_policy" class="form-label">Cancellation Policy</label>
-                                                    <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor form-control @error('Description') is-invalid @enderror" placeholder="Insert cancellation policy" value="{{ $wedding->cancellation_policy }}">{!! $wedding->cancellation_policy !!}</textarea>
+                                                    <textarea data-backend-richtext="true" id="cancellation_policy" name="cancellation_policy" class="textarea_editor backend-form-control @error('Description') is-invalid @enderror" placeholder="Insert cancellation policy" value="{{ $wedding->cancellation_policy }}">{!! $wedding->cancellation_policy !!}</textarea>
                                                     @error('cancellation_policy')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-12 col-sm-12 col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="terms_and_conditions" class="form-label">Terms and Conditions</label>
-                                                    <textarea id="terms_and_conditions" name="terms_and_conditions" class="textarea_editor form-control @error('terms_and_conditions') is-invalid @enderror" placeholder="Insert terms_and_conditions" value="{{ $wedding->terms_and_conditions }}">{!! $wedding->terms_and_conditions !!}</textarea>
+                                                    <textarea data-backend-richtext="true" id="terms_and_conditions" name="terms_and_conditions" class="textarea_editor backend-form-control @error('terms_and_conditions') is-invalid @enderror" placeholder="Insert terms_and_conditions" value="{{ $wedding->terms_and_conditions }}">{!! $wedding->terms_and_conditions !!}</textarea>
                                                     @error('terms_and_conditions')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
@@ -396,11 +389,11 @@
                                                     @if ($slots)
                                                         @foreach ($slots as $slot)
                                                             <div class="slot-item">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="slot">Slot</label>
-                                                                    <input type="time" name="slot[]"  class="form-control input-w-button-right @error('slot') is-invalid @enderror" value="{{ date('H:i',strtotime($slot)) }}">
+                                                                    <input type="time" name="slot[]"  class="backend-form-control input-w-button-right @error('slot') is-invalid @enderror" value="{{ date('H:i',strtotime($slot)) }}">
                                                                     <div class="btn-remove-input">
-                                                                        <button class="btn btn-danger remove" type="button"><i class="fa fa-times"></i></button>
+                                                                        <button class="backend-button backend-button-danger remove" type="button"><i class="fa fa-times"></i></button>
                                                                     </div>
                                                                     @error('slot')
                                                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -412,7 +405,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12 text-right">
-                                                <button id="addMoreSlot" type="button" class="btn btn-primary m-b-8"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add More Slot</button>
+                                                <button id="addMoreSlot" type="button" class="backend-button backend-button-primary m-b-8"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add More Slot</button>
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-12">
                                                 <div class="line-with-text">
@@ -420,11 +413,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="week_day_price">Week Day Price</label>
                                                     <div class="btn-icon">
                                                         <span>$</span>
-                                                        <input type="text" id="week_day_price" name="week_day_price"  class="form-control @error('week_day_price') is-invalid @enderror" value="{{ $wedding->week_day_price }}" required>
+                                                        <input type="text" id="week_day_price" name="week_day_price"  class="backend-form-control @error('week_day_price') is-invalid @enderror" value="{{ $wedding->week_day_price }}" required>
                                                         @error('week_day_price')
                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                         @enderror
@@ -432,11 +425,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-6 col-md-6">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="holiday_price">Holiday Price</label>
                                                     <div class="btn-icon">
                                                         <span>$</span>
-                                                        <input type="text" id="holiday_price" name="holiday_price"  class="form-control @error('holiday_price') is-invalid @enderror" value="{{ $wedding->holiday_price }}" required>
+                                                        <input type="text" id="holiday_price" name="holiday_price"  class="backend-form-control @error('holiday_price') is-invalid @enderror" value="{{ $wedding->holiday_price }}" required>
                                                         @error('holiday_price')
                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                         @enderror
@@ -445,27 +438,25 @@
                                             </div>
                                         </div>
                                     </form>
-                                    
-                                   
-                                    
+
+
+
                                     <div class="card-box-footer">
-                                        <button type="submit" form="editWedding" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                        <button type="submit" form="editWedding" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
                                         <a href="/weddings-hotel-admin-{{ $hotel->id }}#weddingPackage">
-                                            <button type="button"class="btn btn-danger"><i class="icon-copy fi-arrow-left"></i> Back</button>
+                                            <button type="button"class="backend-button backend-button-danger"><i class="icon-copy fi-arrow-left"></i> Back</button>
                                         </a>
                                     </div>
                                 </div>
                             </div>
-                            {{-- ATTENTIONS --}}
                             <div class="col-md-4 desktop">
                                 <div class="row">
                                     @include('admin.usd-rate')
-                                    @include('layouts.attentions')
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     @include('layouts.footer')
                 </div>
             </div>
@@ -475,11 +466,11 @@
                 $('#addMoreSlot').click(function() {
                     var html = `
                         <div class="slot-item">
-                            <div class="form-group">
+                            <div class="backend-form-field">
                                 <label for="slot">Slot</label>
-                                    <input type="time" name="slot[]" class="form-control input-w-button-right @error('slot') is-invalid @enderror" value="">
+                                    <input type="time" name="slot[]" class="backend-form-control input-w-button-right @error('slot') is-invalid @enderror" value="">
                                     <div class="btn-remove-input">
-                                        <button class="btn btn-danger remove" type="button"><i class="fa fa-times"></i></button>
+                                        <button class="backend-button backend-button-danger remove" type="button"><i class="fa fa-times"></i></button>
                                     </div>
                                 @error('slot')
                                     <div class="alert alert-danger">{{ $message }}</div>

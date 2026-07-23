@@ -9,20 +9,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 {{-- NAVBAR PAGE ======================================================================================================================= --}}
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="title"><i class="icon-copy fi-torso-business"></i> Detail {{ $vendor->name }}</div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                    <li class="breadcrumb-item"><a href="/vendors-admin">Vendors</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ $vendor->name }}</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="icon-copy fi-torso-business"></i> Detail {{ $vendor->name }}
+                    </x-slot>
+                </x-backend.page-hero>
                 <div class="info-action">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
@@ -46,9 +37,7 @@
                     <div class="product-detail-wrap">
                         <div class="row">
                             <div class="col-md-4 mobile">
-                                {{-- ATTENTIONS --}}
                                 <div class="row">
-                                    @include('layouts.attentions')
                                     <div class="col-md-12">
                                         <div class="card-box">
                                             <div class="row">
@@ -111,7 +100,7 @@
                                             </div>
                                         </div>
                                         <div class="card-content">
-                                          
+
                                             <div class="card-text">
                                                 <div class="row m-b-18">
                                                     <div class="col-6 col-sm-4">
@@ -149,7 +138,7 @@
                                                 </div>
                                             @endif
                                             @if ($vendor->term)
-                                                
+
                                                 <div class="col-sm-12">
                                                     <div class="card-subtitle">Terms and Conditions:</div>
                                                     <p>{!! $vendor->term !!}</p>
@@ -159,7 +148,7 @@
                                     </div>
                                     @canany(['posDev','weddingDvl','weddingAuthor'])
                                         <div class="card-box-footer">
-                                            <a href="#" data-toggle="modal" data-target="#edit-vendor"><button class="btn btn-primary"><i class="fa fa-pencil"></i> Edit Vendor</button></a>
+                                            <a href="#" data-toggle="modal" data-target="#edit-vendor"><button class="backend-button backend-button-primary"><i class="fa fa-pencil"></i> Edit Vendor</button></a>
                                         </div>
                                         {{-- MODAL EDIT VENDOR --------------------------------------------------------------------------------------------------------------- --}}
                                         <div class="modal fade" id="edit-vendor" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -189,9 +178,9 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="name">Cover</label>
-                                                                            <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ $vendor->cover }}">
+                                                                            <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ $vendor->cover }}">
                                                                             @error('cover')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
@@ -200,7 +189,7 @@
                                                                     <div class="col-12 col-sm-12 col-md-12">
                                                                         <div class="row">
                                                                             <div class="col-12 col-sm-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="edit-cover-img-preview" class="form-label">Cover Preview</label>
                                                                                     <div class="dropzone">
                                                                                         <div id="edit-cover-img-preview">
@@ -212,18 +201,18 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="cover">Cover Image</label>
-                                                                            <input type="file" name="cover" id="editCoverPackage" onchange="updateCoverPreview(event)" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
+                                                                            <input type="file" name="cover" id="editCoverPackage" onchange="updateCoverPreview(event)" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
                                                                             @error('cover')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="status">Status <span>*</span></label>
-                                                                                <select name="status" id="status"  type="text" class="custom-select @error('status') is-invalid @enderror" placeholder="Select status" required>
+                                                                                <select name="status" id="status"  type="text" class="backend-form-control @error('status') is-invalid @enderror" placeholder="Select status" required>
                                                                                     @if ($vendor->status == "Draft")
                                                                                         <option selected value="{{ $vendor->status }}">{{ $vendor->status }}</option>
                                                                                         <option value="Active">Active</option>
@@ -240,18 +229,18 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="name">Name</label>
-                                                                            <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $vendor->name }}" required>
+                                                                            <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $vendor->name }}" required>
                                                                             @error('name')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="type">Type</label>
-                                                                            <select name="type" id="type"  type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Select type" required>
+                                                                            <select name="type" id="type"  type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Select type" required>
                                                                                 <option selected value="{{ $vendor->type }}">{{ $vendor->type }}</option>
                                                                                 <option value="Decoration">Decoration</option>
                                                                                 <option value="Documentation">Documentation</option>
@@ -268,73 +257,73 @@
                                                                             @enderror
                                                                         </div>
                                                                     </div>
-                                                                    
+
                                                                     <div class="col-12 col-sm-3 col-md-3">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="contact_name">Contact Person</label>
-                                                                            <input type="text" id="contact_name" name="contact_name" class="form-control @error('contact_name') is-invalid @enderror" placeholder="Name" value="{{ $vendor->contact_name }}" required>
+                                                                            <input type="text" id="contact_name" name="contact_name" class="backend-form-control @error('contact_name') is-invalid @enderror" placeholder="Name" value="{{ $vendor->contact_name }}" required>
                                                                             @error('contact_name')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-3 col-md-3">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="phone">Phone</label>
-                                                                            <input type="number" id="phone" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Name" value="{{ $vendor->phone }}" required>
+                                                                            <input type="number" id="phone" name="phone" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Name" value="{{ $vendor->phone }}" required>
                                                                             @error('phone')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="email">E-mail</label>
-                                                                            <input type="text" id="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Address" value="{{ $vendor->email }}" required>
+                                                                            <input type="text" id="email" name="email" class="backend-form-control @error('email') is-invalid @enderror" placeholder="Address" value="{{ $vendor->email }}" required>
                                                                             @error('email')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="location">Location</label>
-                                                                            <input type="text" id="location" name="location" class="form-control @error('location') is-invalid @enderror" placeholder="Location" value="{{ $vendor->location }}" required>
+                                                                            <input type="text" id="location" name="location" class="backend-form-control @error('location') is-invalid @enderror" placeholder="Location" value="{{ $vendor->location }}" required>
                                                                             @error('location')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="description">Description</label>
-                                                                            <textarea name="description" id="description" wire:model="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! $vendor->description !!}</textarea>
+                                                                            <textarea data-backend-richtext="true" name="description" id="description" wire:model="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! $vendor->description !!}</textarea>
                                                                             @error('description')
                                                                                 <span class="invalid-feedback">
                                                                                     <strong>{{ $message }}</strong>
                                                                                 </span>
                                                                             @enderror
-                                                                            
+
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="term"></label>
-                                                                            <textarea name="term" id="term" wire:model="term" class="textarea_editor form-control @error('term') is-invalid @enderror" placeholder="Description" type="text">{!! $vendor->term !!}</textarea>
+                                                                            <textarea data-backend-richtext="true" name="term" id="term" wire:model="term" class="textarea_editor backend-form-control @error('term') is-invalid @enderror" placeholder="Description" type="text">{!! $vendor->term !!}</textarea>
                                                                             @error('term')
                                                                                 <span class="invalid-feedback">
                                                                                     <strong>{{ $message }}</strong>
                                                                                 </span>
                                                                             @enderror
-                                                                            
+
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </form>
                                                         <div class="card-box-footer">
-                                                            <button type="submit" form="update-vendor" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                            <button type="submit" form="update-vendor" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -344,9 +333,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4 desktop">
-                                {{-- ATTENTIONS --}}
                                 <div class="row">
-                                    @include('layouts.attentions')
                                     <div class="col-md-12">
                                         <div class="card-box">
                                             <div class="card-box-title">
@@ -375,7 +362,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -403,7 +390,7 @@
                                         @endif
                                         @canany(['posDev','weddingDvl','weddingAuthor'])
                                             <div class="card-box-footer">
-                                                <a href="#" data-toggle="modal" data-target="#add-package"><button class="btn btn-primary"><i class="ion-plus-round"></i> Add Service</button></a>
+                                                <a href="#" data-toggle="modal" data-target="#add-package"><button class="backend-button backend-button-primary"><i class="ion-plus-round"></i> Add Service</button></a>
                                             </div>
                                             {{-- MODAL ADD SERVICES --------------------------------------------------------------------------------------------------------------- --}}
                                             <div class="modal fade" id="add-package" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -421,7 +408,7 @@
                                                                         <div class="col-12 col-sm-12 col-md-12">
                                                                             <div class="row">
                                                                                 <div class="col-12 col-sm-6">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="add-cover-img-preview" class="form-label">Cover Preview</label>
                                                                                         <div class="dropzone">
                                                                                             <div id="add-cover-img-preview">
@@ -432,27 +419,27 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-sm-6 col-md-6">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="cover">Cover Image</label>
-                                                                                <input type="file" name="cover" id="addCoverPackage" onchange="addCoverPreview(event)" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
+                                                                                <input type="file" name="cover" id="addCoverPackage" onchange="addCoverPreview(event)" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
                                                                                 @error('cover')
                                                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                                                 @enderror
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-sm-6 col-md-6">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="service">Package Name</label>
-                                                                                <input type="text" id="service" name="service" class="form-control @error('service') is-invalid @enderror" placeholder="Name" value="{{ old('service') }}" required>
+                                                                                <input type="text" id="service" name="service" class="backend-form-control @error('service') is-invalid @enderror" placeholder="Name" value="{{ old('service') }}" required>
                                                                                 @error('service')
                                                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                                                 @enderror
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-sm-6 col-md-6">
-                                                                            <div class="form-group ">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="type">Type <span>*</span></label>
-                                                                                <select id="typeService" name="type" type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Select type" required>
+                                                                                <select id="typeService" name="type" type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Select type" required>
                                                                                     <option selected value="">Select Type</option>
                                                                                     <option value="Ceremony Venue Decoration">Ceremony Venue Decoration</option>
                                                                                     <option value="Reception Venue Decoration">Reception Venue Decoration</option>
@@ -469,9 +456,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div id="venueContainer" class="col-12 col-sm-6 col-md-6 hidden">
-                                                                            <div class="form-group ">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="venue">Venue <span>*</span></label>
-                                                                                <select name="venue" type="text" class="custom-select @error('venue') is-invalid @enderror" placeholder="Select venue">
+                                                                                <select name="venue" type="text" class="backend-form-control @error('venue') is-invalid @enderror" placeholder="Select venue">
                                                                                     <option selected value="">Select Venue</option>
                                                                                     <option value="Ceremony Venue">Ceremony Venue</option>
                                                                                     <option value="Reception Venue">Reception Venue</option>
@@ -484,18 +471,18 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-6 col-sm-3 col-md-3">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="duration">Duration</label>
-                                                                                <input type="number" id="duration" name="duration" class="form-control @error('duration') is-invalid @enderror" placeholder="Insert duration" value="{{ old('duration') }}" required>
+                                                                                <input type="number" id="duration" name="duration" class="backend-form-control @error('duration') is-invalid @enderror" placeholder="Insert duration" value="{{ old('duration') }}" required>
                                                                                 @error('duration')
                                                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                                                 @enderror
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-6 col-sm-3 col-md-3">
-                                                                            <div class="form-group ">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="time">Time <span>*</span></label>
-                                                                                <select name="time" id="time"  type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Select time">
+                                                                                <select name="time" id="time"  type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Select time">
                                                                                     <option selected value="minutes">Minutes</option>
                                                                                     <option value="hours">Hours</option>
                                                                                     <option value="days">Days</option>
@@ -508,9 +495,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-6">
-                                                                            <div class="form-group ">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="hotel_id">Hotel</label>
-                                                                                <select name="hotel_id" id="hotel_id"  type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Select hotel_id">
+                                                                                <select name="hotel_id" id="hotel_id"  type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Select hotel_id">
                                                                                     <option selected value="">Select Hotel</option>
                                                                                     @foreach ($hotels as $hotel)
                                                                                         <option value="{{ $hotel->id }}">{{ $hotel->name }}</option>
@@ -524,11 +511,11 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-sm-6 col-md-6">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="capacity">Capacity</label>
                                                                                 <div class="btn-icon">
                                                                                     <span><i class="icon-copy fa fa-users" aria-hidden="true"></i></span>
-                                                                                    <input type="number" id="capacity" name="capacity" class="input-icon form-control @error('capacity') is-invalid @enderror" placeholder="Insert capacity" value="{{ old('capacity') }}">
+                                                                                    <input type="number" id="capacity" name="capacity" class="input-icon backend-form-control @error('capacity') is-invalid @enderror" placeholder="Insert capacity" value="{{ old('capacity') }}">
                                                                                     @error('capacity')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
@@ -536,11 +523,11 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-sm-6 col-md-6">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="contract_rate">Contract Rate <span>*</span></label>
                                                                                 <div class="btn-icon">
                                                                                     <span>Rp</span>
-                                                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ old('contract_rate') }}" required>
+                                                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon backend-form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ old('contract_rate') }}" required>
                                                                                     @error('contract_rate')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
@@ -548,11 +535,11 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-sm-6 col-md-6">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="markup">Markup</label>
                                                                                 <div class="btn-icon">
                                                                                     <span>$</span>
-                                                                                    <input type="number" id="markup" name="markup" min="1" class="input-icon form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ old('markup') }}">
+                                                                                    <input type="number" id="markup" name="markup" min="1" class="input-icon backend-form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ old('markup') }}">
                                                                                     @error('markup')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
@@ -560,9 +547,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="description">Description</label>
-                                                                                <textarea name="description" id="description-package" wire:model="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! old('description') !!}</textarea>
+                                                                                <textarea data-backend-richtext="true" name="description" id="description-package" wire:model="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! old('description') !!}</textarea>
                                                                                 @error('description')
                                                                                     <span class="invalid-feedback">
                                                                                         <strong>{{ $message }}</strong>
@@ -575,8 +562,8 @@
                                                                 </div>
                                                             </form>
                                                             <div class="card-box-footer">
-                                                                <button type="submit" form="addPackage" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Create</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                <button type="submit" form="addPackage" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Create</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                             </div>
                                                         </div>
                                                     </div>

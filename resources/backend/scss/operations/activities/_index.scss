@@ -1,0 +1,141 @@
+.activities-admin-page,
+.activity-detail-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.activities-admin-page *,
+.activity-detail-page * {
+  box-sizing: border-box;
+}
+
+.activities-admin-panel,
+.activity-detail-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.activities-admin-panel__heading,
+.activity-detail-panel__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.activities-admin-table-wrap {
+  padding: 0;
+}
+
+.activities-admin-table th:nth-child(1),
+.activities-admin-table td:nth-child(1) {
+  width: 24%;
+}
+
+.activities-admin-table th:nth-child(2),
+.activities-admin-table td:nth-child(2),
+.activities-admin-table th:nth-child(3),
+.activities-admin-table td:nth-child(3) {
+  width: 16%;
+}
+
+.activities-admin-table th:nth-child(4),
+.activities-admin-table td:nth-child(4),
+.activities-admin-table th:nth-child(5),
+.activities-admin-table td:nth-child(5),
+.activities-admin-table th:nth-child(6),
+.activities-admin-table td:nth-child(6) {
+  width: 13%;
+}
+
+.activities-admin-table th:nth-child(7),
+.activities-admin-table td:nth-child(7) {
+  width: 8%;
+}
+
+.activities-admin-card-list {
+  padding: 14px;
+}
+
+.activities-admin-card__actions {
+  border-top: 1px solid var(--backend-line-soft);
+  justify-content: flex-start;
+  padding: 12px;
+}
+
+.activity-detail-section-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.activity-detail-summary {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  padding: 18px;
+}
+
+.activity-detail-cover {
+  align-self: start;
+  margin: 0;
+  overflow: hidden;
+}
+
+.activity-detail-cover img {
+  aspect-ratio: 3 / 2;
+  display: block;
+  height: auto;
+  max-height: 240px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.activity-detail-info-card .backend-table-card__header strong,
+.activity-detail-content-block .backend-table-card__header strong {
+  color: var(--backend-ink);
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.activity-detail-content-block {
+  grid-column: 1 / -1;
+}
+
+.activity-detail-richtext {
+  color: var(--backend-ink);
+  line-height: 1.7;
+  padding: 16px;
+}
+
+.activity-detail-richtext > :last-child {
+  margin-bottom: 0;
+}
+
+[data-activity-row].is-filtered-out {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  .activity-detail-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-detail-cover {
+    max-width: 360px;
+  }
+
+  .activities-admin-table-wrap {
+    display: none;
+  }
+
+  .activities-admin-card-list {
+    display: grid;
+    gap: 12px;
+  }
+}

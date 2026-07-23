@@ -1,0 +1,155 @@
+body.sidebar-light .main-container .backend-table-actions,
+body.sidebar-light .modal .backend-table-actions {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+body.sidebar-light .backend-icon-action,
+body.sidebar-light .backend-danger-icon-action,
+body.sidebar-light .user-manager-icon-action,
+body.sidebar-light .terms-admin-icon-action,
+body.sidebar-light .btn-view,
+body.sidebar-light .btn-edit,
+body.sidebar-light .btn-delete {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--backend-radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 800;
+  gap: 6px;
+  height: 36px;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0;
+  text-decoration: none;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
+  width: 36px;
+}
+
+body.sidebar-light .backend-icon-action:hover,
+body.sidebar-light .backend-icon-action:focus,
+body.sidebar-light .backend-danger-icon-action:hover,
+body.sidebar-light .backend-danger-icon-action:focus,
+body.sidebar-light .user-manager-icon-action:hover,
+body.sidebar-light .user-manager-icon-action:focus,
+body.sidebar-light .terms-admin-icon-action:hover,
+body.sidebar-light .terms-admin-icon-action:focus,
+body.sidebar-light .btn-view:hover,
+body.sidebar-light .btn-view:focus,
+body.sidebar-light .btn-edit:hover,
+body.sidebar-light .btn-edit:focus,
+body.sidebar-light .btn-delete:hover,
+body.sidebar-light .btn-delete:focus {
+  box-shadow: var(--backend-button-hover-shadow);
+  text-decoration: none;
+  transform: var(--backend-button-hover-transform);
+}
+
+body.sidebar-light .backend-icon-action:focus-visible,
+body.sidebar-light .backend-danger-icon-action:focus-visible,
+body.sidebar-light .user-manager-icon-action:focus-visible,
+body.sidebar-light .terms-admin-icon-action:focus-visible,
+body.sidebar-light .btn-view:focus-visible,
+body.sidebar-light .btn-edit:focus-visible,
+body.sidebar-light .btn-delete:focus-visible {
+  box-shadow: var(--backend-button-focus-ring), var(--backend-button-hover-shadow);
+  outline: none;
+}
+
+body.sidebar-light .backend-icon-action,
+body.sidebar-light .backend-icon-action--view,
+body.sidebar-light .backend-icon-action:has(.fa-eye),
+body.sidebar-light .backend-icon-action:has(.dw-eye),
+body.sidebar-light .btn-view {
+  background: #e0f2fe;
+  border-color: rgba(2, 132, 199, 0.16);
+  color: #0369a1;
+}
+
+body.sidebar-light .backend-icon-action:hover,
+body.sidebar-light .backend-icon-action:focus,
+body.sidebar-light .backend-icon-action--view:hover,
+body.sidebar-light .backend-icon-action--view:focus,
+body.sidebar-light .backend-icon-action:has(.fa-eye):hover,
+body.sidebar-light .backend-icon-action:has(.fa-eye):focus,
+body.sidebar-light .backend-icon-action:has(.dw-eye):hover,
+body.sidebar-light .backend-icon-action:has(.dw-eye):focus,
+body.sidebar-light .btn-view:hover,
+body.sidebar-light .btn-view:focus {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+body.sidebar-light .backend-icon-action--edit,
+body.sidebar-light .backend-icon-action:has(.fa-pencil),
+body.sidebar-light .backend-icon-action:has(.fa-edit),
+body.sidebar-light .user-manager-icon-action,
+body.sidebar-light .terms-admin-icon-action:not(.is-danger),
+body.sidebar-light .btn-edit {
+  background: #fef3c7;
+  border-color: rgba(217, 119, 6, 0.18);
+  color: #b45309;
+}
+
+body.sidebar-light .backend-icon-action--edit:hover,
+body.sidebar-light .backend-icon-action--edit:focus,
+body.sidebar-light .backend-icon-action:has(.fa-pencil):hover,
+body.sidebar-light .backend-icon-action:has(.fa-pencil):focus,
+body.sidebar-light .backend-icon-action:has(.fa-edit):hover,
+body.sidebar-light .backend-icon-action:has(.fa-edit):focus,
+body.sidebar-light .user-manager-icon-action:hover,
+body.sidebar-light .user-manager-icon-action:focus,
+body.sidebar-light .terms-admin-icon-action:not(.is-danger):hover,
+body.sidebar-light .terms-admin-icon-action:not(.is-danger):focus,
+body.sidebar-light .btn-edit:hover,
+body.sidebar-light .btn-edit:focus {
+  background: #d97706;
+  border-color: #d97706;
+  color: #ffffff;
+}
+
+body.sidebar-light .backend-icon-action--delete,
+body.sidebar-light .backend-icon-action.is-danger,
+body.sidebar-light .backend-danger-icon-action,
+body.sidebar-light .backend-icon-action:has(.fa-trash),
+body.sidebar-light .backend-icon-action:has(.fa-trash-o),
+body.sidebar-light .user-manager-icon-action.is-danger,
+body.sidebar-light .terms-admin-icon-action.is-danger,
+body.sidebar-light .btn-delete {
+  background: #fee2e2;
+  border-color: rgba(220, 38, 38, 0.18);
+  color: #b91c1c;
+}
+
+body.sidebar-light .backend-icon-action--delete:hover,
+body.sidebar-light .backend-icon-action--delete:focus,
+body.sidebar-light .backend-icon-action.is-danger:hover,
+body.sidebar-light .backend-icon-action.is-danger:focus,
+body.sidebar-light .backend-danger-icon-action:hover,
+body.sidebar-light .backend-danger-icon-action:focus,
+body.sidebar-light .backend-icon-action:has(.fa-trash):hover,
+body.sidebar-light .backend-icon-action:has(.fa-trash):focus,
+body.sidebar-light .backend-icon-action:has(.fa-trash-o):hover,
+body.sidebar-light .backend-icon-action:has(.fa-trash-o):focus,
+body.sidebar-light .user-manager-icon-action.is-danger:hover,
+body.sidebar-light .user-manager-icon-action.is-danger:focus,
+body.sidebar-light .terms-admin-icon-action.is-danger:hover,
+body.sidebar-light .terms-admin-icon-action.is-danger:focus,
+body.sidebar-light .btn-delete:hover,
+body.sidebar-light .btn-delete:focus {
+  background: var(--backend-danger);
+  border-color: var(--backend-danger);
+  color: #ffffff;
+}
+
+body.sidebar-light .backend-icon-action--wide {
+  min-width: 96px;
+  padding: 0 12px;
+  width: auto;
+}

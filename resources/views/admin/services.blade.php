@@ -4,6 +4,8 @@
     <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
         <div class="main-container">
+<x-backend.page-hero :title="__('messages.Service')" />
+
             <div class="card-box pd-20 height-100-p mb-30">
                 <div class="row align-items-center">
                     <div class="col-md-4">
@@ -135,36 +137,36 @@
                                                             <form action="/addtour" method="post"
                                                                 enctype="multipart/form-data">
                                                                 @csrf
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <h6 class="modal-title" id="exampleModalLongTitle">Image
                                                                     </h6>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Images</label>
                                                                     <div class="col-md-9">
                                                                         <input type="file"
-                                                                            class="form-control-file form-control height-auto"
+                                                                            class="backend-form-control-file backend-form-control height-auto"
                                                                             name="images[]" multiple>
                                                                     </div>
                                                                 </div>
 
                                                                 <hr>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <h6 class="modal-title" id="exampleModalLongTitle">Detail
                                                                         Tour Package</h6>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Name</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control"
+                                                                        <input type="text" class="backend-form-control"
                                                                             name="name">
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Type</label>
                                                                     <div class="col-md-9">
                                                                         <select name="type"
-                                                                            class="selectpicker custom-select"
+                                                                            class="selectpicker"
                                                                             data-style="btn-outline-primary"
                                                                             title="Not Chosen">
                                                                             <option>Private</option>
@@ -173,11 +175,11 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Duration</label>
                                                                     <div class="col-md-9">
                                                                         <select name="duration"
-                                                                            class="selectpicker custom-select"
+                                                                            class="selectpicker"
                                                                             data-style="btn-outline-primary"
                                                                             title="Not Chosen">
                                                                             <option>1D</option>
@@ -190,61 +192,61 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Deskription</label>
                                                                     <div class="col-md-9">
-                                                                        <textarea name="deskription" class="textarea_editor form-control"></textarea>
+                                                                        <textarea data-backend-richtext="true" name="deskription" class="textarea_editor backend-form-control"></textarea>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Destination</label>
                                                                     <div class="col-md-9">
-                                                                        <textarea name="destination" class="textarea_editor form-control"></textarea>
+                                                                        <textarea data-backend-richtext="true" name="destination" class="textarea_editor backend-form-control"></textarea>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Itinerary</label>
                                                                     <div class="col-md-9">
-                                                                        <textarea itinerary class="textarea_editor form-control"></textarea>
+                                                                        <textarea data-backend-richtext="true" itinerary class="textarea_editor backend-form-control"></textarea>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Include</label>
                                                                     <div class="col-md-9">
-                                                                        <textarea name="include" class="textarea_editor form-control"></textarea>
+                                                                        <textarea data-backend-richtext="true" name="include" class="textarea_editor backend-form-control"></textarea>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Exclude</label>
                                                                     <div class="col-md-9">
-                                                                        <textarea name="exclude" class="textarea_editor form-control"></textarea>
+                                                                        <textarea data-backend-richtext="true" name="exclude" class="textarea_editor backend-form-control"></textarea>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Note</label>
                                                                     <div class="col-md-9">
-                                                                        <textarea name="note" class="textarea_editor form-control"></textarea>
+                                                                        <textarea data-backend-richtext="true" name="note" class="textarea_editor backend-form-control"></textarea>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Price</label>
                                                                     <div class="col-md-9">
                                                                         <input name="price" type="number"
-                                                                            class="form-control">
+                                                                            class="backend-form-control">
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label class="col-md-3">Quantity</label>
                                                                     <div class="col-md-9">
                                                                         <input name="quantity" type="number"
-                                                                            class="form-control">
+                                                                            class="backend-form-control">
                                                                     </div>
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <button type="submit" class="btn btn-primary">Add Tour
+                                                                    <button type="submit" class="backend-button backend-button-primary">Add Tour
                                                                         Package</button>
-                                                                    <button type="button" class="btn btn-secondary"
+                                                                    <button type="button" class="backend-button backend-button-secondary"
                                                                         data-dismiss="modal">Cancel</button>
                                                                 </div>
                                                             </form>
@@ -426,23 +428,23 @@
                                                                 <ul>
                                                                     <li>
                                                                         <form>
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label class="col-md-4">Task Type</label>
                                                                                 <div class="col-md-8">
                                                                                     <input type="text"
-                                                                                        class="form-control">
+                                                                                        class="backend-form-control">
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label class="col-md-4">Task Message</label>
                                                                                 <div class="col-md-8">
-                                                                                    <textarea class="textarea_editor form-control"></textarea>
+                                                                                    <textarea data-backend-richtext="true" class="textarea_editor backend-form-control"></textarea>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label class="col-md-4">Assigned to</label>
                                                                                 <div class="col-md-8">
-                                                                                    <select class="selectpicker custom-select"
+                                                                                    <select class="selectpicker"
                                                                                         data-style="btn-outline-primary"
                                                                                         title="Not Chosen" multiple=""
                                                                                         data-selected-text-format="count"
@@ -456,11 +458,11 @@
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="form-group row mb-0">
+                                                                            <div class="backend-form-field row mb-0">
                                                                                 <label class="col-md-4">Due Date</label>
                                                                                 <div class="col-md-8">
                                                                                     <input type="text"
-                                                                                        class="form-control date-picker">
+                                                                                        class="backend-form-control date-picker">
                                                                                 </div>
                                                                             </div>
                                                                         </form>
@@ -472,23 +474,23 @@
                                                                             data-original-title="Remove Task"><i
                                                                                 class="ion-minus-circled"></i></a>
                                                                         <form>
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label class="col-md-4">Task Type</label>
                                                                                 <div class="col-md-8">
                                                                                     <input type="text"
-                                                                                        class="form-control">
+                                                                                        class="backend-form-control">
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label class="col-md-4">Task Message</label>
                                                                                 <div class="col-md-8">
-                                                                                    <textarea class="textarea_editor form-control"></textarea>
+                                                                                    <textarea data-backend-richtext="true" class="textarea_editor backend-form-control"></textarea>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label class="col-md-4">Assigned to</label>
                                                                                 <div class="col-md-8">
-                                                                                    <select class="selectpicker custom-select"
+                                                                                    <select class="selectpicker"
                                                                                         data-style="btn-outline-primary"
                                                                                         title="Not Chosen" multiple=""
                                                                                         data-selected-text-format="count"
@@ -502,11 +504,11 @@
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="form-group row mb-0">
+                                                                            <div class="backend-form-field row mb-0">
                                                                                 <label class="col-md-4">Due Date</label>
                                                                                 <div class="col-md-8">
                                                                                     <input type="text"
-                                                                                        class="form-control date-picker">
+                                                                                        class="backend-form-control date-picker">
                                                                                 </div>
                                                                             </div>
                                                                         </form>
@@ -521,8 +523,8 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-primary">Add</button>
-                                                            <button type="button" class="btn btn-secondary"
+                                                            <button type="button" class="backend-button backend-button-primary">Add</button>
+                                                            <button type="button" class="backend-button backend-button-secondary"
                                                                 data-dismiss="modal">Close</button>
                                                         </div>
                                                     </div>
@@ -543,24 +545,24 @@
                                             <ul class="profile-edit-list row">
                                                 <li class="weight-500 col-md-6">
                                                     <h4 class="text-blue h5 mb-20">Edit Your Personal Setting</h4>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Full Name</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Title</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Email</label>
-                                                        <input class="form-control form-control-lg" type="email">
+                                                        <input class="backend-form-control backend-form-control-lg" type="email">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Date of birth</label>
-                                                        <input class="form-control form-control-lg date-picker"
+                                                        <input class="backend-form-control backend-form-control-lg date-picker"
                                                             type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Gender</label>
                                                         <div class="d-flex">
                                                             <div class="custom-control custom-radio mb-5 mr-20">
@@ -577,40 +579,40 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Country</label>
-                                                        <select class="selectpicker custom-select form-control-lg"
+                                                        <select class="selectpicker  backend-form-control-lg"
                                                             data-style="btn-outline-secondary btn-lg" title="Not Chosen">
                                                             <option>United States</option>
                                                             <option>India</option>
                                                             <option>United Kingdom</option>
                                                         </select>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>State/Province/Region</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Postal Code</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Phone Number</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Address</label>
-                                                        <textarea class="textarea_editor form-control"></textarea>
+                                                        <textarea data-backend-richtext="true" class="textarea_editor backend-form-control"></textarea>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Visa Card Number</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Paypal ID</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <div class="custom-control custom-checkbox mb-5">
                                                             <input type="checkbox" class="custom-control-input"
                                                                 id="customCheck1-1">
@@ -619,65 +621,65 @@
                                                                 emails</label>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group mb-0">
-                                                        <input type="submit" class="btn btn-primary"
+                                                    <div class="backend-form-field mb-0">
+                                                        <input type="submit" class="backend-button backend-button-primary"
                                                             value="Update Information">
                                                     </div>
                                                 </li>
                                                 <li class="weight-500 col-md-6">
                                                     <h4 class="text-blue h5 mb-20">Edit Social Media links</h4>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Facebook URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Twitter URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Linkedin URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Instagram URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Dribbble URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Dropbox URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Google-plus URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Pinterest URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Skype URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Vine URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group mb-0">
-                                                        <input type="submit" class="btn btn-primary" value="Save & Update">
+                                                    <div class="backend-form-field mb-0">
+                                                        <input type="submit" class="backend-button backend-button-primary" value="Save & Update">
                                                     </div>
                                                 </li>
                                             </ul>
@@ -687,34 +689,34 @@
                                 <!-- Setting Tab End -->
                                 <!-- Transport Tab start -->
                                 <div class="tab-pane fade height-100-p" id="transport" role="tabpanel">
-                                    <div class="form-group has-search" style="margin: 17px;	max-width: 47%; ">
-                                        <input type="text" style="float:right;" class="form-control"
+                                    <div class="backend-form-field backend-form-search has-search" style="margin: 17px;	max-width: 47%; ">
+                                        <input type="text" style="float:right;" class="backend-form-control"
                                             placeholder="Cari data Transport">
-                                        <button type="button" class="btn btn-primary text-right">Cari Data</button>
+                                        <button type="button" class="backend-button backend-button-primary text-right">Cari Data</button>
                                     </div>
                                     <div class="profile-setting">
                                         <form>
                                             <ul class="profile-edit-list row">
                                                 <li class="weight-500 col-md-6">
                                                     <h4 class="text-blue h5 mb-20">Edit data Transport</h4>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Full Name</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Title</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Email</label>
-                                                        <input class="form-control form-control-lg" type="email">
+                                                        <input class="backend-form-control backend-form-control-lg" type="email">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Date of birth</label>
-                                                        <input class="form-control form-control-lg date-picker"
+                                                        <input class="backend-form-control backend-form-control-lg date-picker"
                                                             type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Gender</label>
                                                         <div class="d-flex">
                                                             <div class="custom-control custom-radio mb-5 mr-20">
@@ -731,40 +733,40 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Country</label>
-                                                        <select class="selectpicker custom-select form-control-lg"
+                                                        <select class="selectpicker  backend-form-control-lg"
                                                             data-style="btn-outline-secondary btn-lg" title="Not Chosen">
                                                             <option>United States</option>
                                                             <option>India</option>
                                                             <option>United Kingdom</option>
                                                         </select>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>State/Province/Region</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Postal Code</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Phone Number</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Address</label>
-                                                        <textarea class="textarea_editor form-control"></textarea>
+                                                        <textarea data-backend-richtext="true" class="textarea_editor backend-form-control"></textarea>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Visa Card Number</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Paypal ID</label>
-                                                        <input class="form-control form-control-lg" type="text">
+                                                        <input class="backend-form-control backend-form-control-lg" type="text">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <div class="custom-control custom-checkbox mb-5">
                                                             <input type="checkbox" class="custom-control-input"
                                                                 id="customCheck1-1">
@@ -773,65 +775,65 @@
                                                                 emails</label>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group mb-0">
-                                                        <input type="submit" class="btn btn-primary"
+                                                    <div class="backend-form-field mb-0">
+                                                        <input type="submit" class="backend-button backend-button-primary"
                                                             value="Update Information">
                                                     </div>
                                                 </li>
                                                 <li class="weight-500 col-md-6">
                                                     <h4 class="text-blue h5 mb-20">Edit Social Media links</h4>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Facebook URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Twitter URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Linkedin URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Instagram URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Dribbble URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Dropbox URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Google-plus URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Pinterest URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Skype URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label>Vine URL:</label>
-                                                        <input class="form-control form-control-lg" type="text"
+                                                        <input class="backend-form-control backend-form-control-lg" type="text"
                                                             placeholder="Paste your link here">
                                                     </div>
-                                                    <div class="form-group mb-0">
-                                                        <input type="submit" class="btn btn-primary" value="Save & Update">
+                                                    <div class="backend-form-field mb-0">
+                                                        <input type="submit" class="backend-button backend-button-primary" value="Save & Update">
                                                     </div>
                                                 </li>
                                             </ul>

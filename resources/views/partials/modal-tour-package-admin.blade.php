@@ -23,7 +23,7 @@
                     <div class="modal-galery">
                         @foreach ($tour->images as $image)
                             <img src="{{ asset('/storage/tours/tours-galery/' . $image->image) }}" alt="">
-                            
+
                         @endforeach
                     </div>
                     <div class="card-subtitle">Itinerary</div>
@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <div class="card-box-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                 </div>
             </div>
         </div>

@@ -12,7 +12,6 @@ use App\Models\Flights;
 use App\Models\ExtraBed;
 use App\Models\UsdRates;
 use App\Models\Weddings;
-use App\Models\Attention;
 use App\Models\Countries;
 use App\Models\HotelRoom;
 use App\Models\HotelPrice;
@@ -105,7 +104,6 @@ class OrderWeddingController extends Controller
             $bride = Brides::where('id',$orderWedding->brides_id)->first();
             if ($orderWedding->agent_id == $agent->id) {
                 $now = Carbon::now();
-                $attentions = Attention::where('page','weddings-admin')->get();
                 $usdrates = UsdRates::where('name','USD')->first();
                 $business = BusinessProfile::where('id','=',1)->first();
                 $hotel = Hotels::where('id',$orderWedding->hotel_id)->first();
@@ -177,7 +175,6 @@ class OrderWeddingController extends Controller
                         "ceremonyVenue"=>$ceremonyVenue,
                         "ceremonyVenues"=>$ceremonyVenues,
                         "bride"=>$bride,
-                        "attentions"=>$attentions,
                         "now"=>$now,
                         "usdrates"=>$usdrates,
                         "slots"=>$slots,
@@ -238,7 +235,6 @@ class OrderWeddingController extends Controller
                     $bride_transport_price = $orderWedding->transport_price;
                     $orderWedding->bride_transports_date ? $bride_transport_date = json_decode($orderWedding->bride_transports_date): $bride_transport_date = null;
                     $now = Carbon::now();
-                    $attentions = Attention::where('page','edit-order-wedding')->get();
                     $usdrates = UsdRates::where('name','USD')->first();
                     $business = BusinessProfile::where('id','=',1)->first();
                     $hotel = Hotels::where('id',$orderWedding->hotel_id)->first();
@@ -309,7 +305,6 @@ class OrderWeddingController extends Controller
                         "ceremonyVenue"=>$ceremonyVenue,
                         "ceremonyVenues"=>$ceremonyVenues,
                         "bride"=>$bride,
-                        "attentions"=>$attentions,
                         "now"=>$now,
                         "usdrates"=>$usdrates,
                         "slots"=>$slots,

@@ -5,16 +5,11 @@
     <div class="main-container">
         <div class="pd-ltr-20">
             <div class="min-height-200px">
-                <div class="page-header">
-                    <div class="title"><i class="dw dw-building-1"></i>&nbsp; @lang('messages.Villa')</div>
-                    @include('partials.breadcrumbs', [
-                        'breadcrumbs' => [
-                            ['url' => route('dashboard.index'), 'label' => __('messages.Dashboard')],
-                            ['url' => route('view.villas.index'), 'label' => __('messages.Private Villa')],
-                            ['label' => $villa->name],
-                        ]
-                    ])
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="dw dw-building-1"></i>  @lang('messages.Villa')
+                    </x-slot>
+                </x-backend.page-hero>
                 @include('partials.alerts')
                 
                 <div class="row">

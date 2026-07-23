@@ -54,7 +54,7 @@
                                                             $cp = count($room->prices->where('end_date','>=',$now));
                                                             $jh = count($hr_prices->where('hotels_id',$price->hotels_id)->where('end_date','>=',$now));
                                                         @endphp
-                                                        <tr> 
+                                                        <tr>
                                                             @if ($h == 1)
                                                                 <td rowspan="{{ $jh }}" style="padding: 0 0 0 8px !important; border:1px solid #cdcdcd">
                                                                     {{ ++$no }}
@@ -78,7 +78,7 @@
                                                                 @endif
                                                             <td style="padding: 0 0 0 8px !important; border:1px solid #cdcdcd">
                                                                 {{ dateFormat($price->start_date)." - ".dateFormat($price->end_date) }}<br>
-                                                            </td>    
+                                                            </td>
                                                             <td style="padding: 0 0 0 8px !important; border:1px solid #cdcdcd">
                                                                 {{ "$ ".$usd_prate }}<br>
                                                             </td>
@@ -88,7 +88,7 @@
                                             @endforeach
                                         </tbody>
                                     </table>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -128,7 +128,7 @@
                 }
             </script>
             <script>
-                function printFunction() { 
+                function printFunction() {
                     var css = '@page { size: landscape; }',
                     head = document.head || document.getElementsByTagName('head')[0],
                     style = document.createElement('style');
@@ -143,7 +143,7 @@
                     window.print();
                 }
             </script>
-           
+
         </body>
     @endcan
 </html>

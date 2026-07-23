@@ -147,9 +147,7 @@
             @endif
             <div class="row">
                 <div class="col-md-4 m-b-18 mobile">
-                    {{-- ATTENTIONS --}}
                     <div class="row">
-                        @include('layouts.attentions')
                     </div>
                     {{-- BOOKING CODE --}}
                     <div class="card-box">
@@ -525,9 +523,7 @@
                     </div>
                 </div>
                 <div class="col-md-4 desktop">
-                    {{-- ATTENTIONS --}}
                     <div class="row">
-                        @include('layouts.attentions')
                     </div>
                     {{-- BOOKING CODE --}}
                     <div class="card-box m-b-18">

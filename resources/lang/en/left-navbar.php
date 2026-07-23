@@ -4,7 +4,6 @@ return [
     'Tour Package' => 'Tour Packages',
     'Hotels' => 'Hotels',
     'Activities' => 'Activities',
-    'Activities' => 'Activities',
     'Transports' =>'Transports',
     'Wedding Packages' =>'Wedding Packages',
     'Admin Panel' =>'Admin Panel',

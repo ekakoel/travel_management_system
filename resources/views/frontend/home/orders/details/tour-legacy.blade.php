@@ -59,10 +59,9 @@
                 <div class="product-wrap">
                     <div class="product-detail-wrap">
                         <div class="row">
-                            @if (count($attentions)>0 || !is_null($receipts) || $invoice)
+                            @if (!is_null($receipts) || $invoice)
                                 <div class="col-md-4 mobile">
                                     <div class="row">
-                                        @include('layouts.attentions')
                                         @include('partials.user-order-payment-status',['device'=>"mobile"])
                                     </div>
                                 </div>
@@ -609,10 +608,9 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (count($attentions)>0 || !is_null($receipts) || $invoice)
+                            @if (!is_null($receipts) || $invoice)
                                 <div class="col-md-4 desktop">
                                     <div class="row">
-                                        @include('layouts.attentions')
                                         @include('partials.user-order-payment-status',['device'=>"desktop"])
                                     </div>
                                 </div>

@@ -24,7 +24,7 @@
                     <span class="badge bg-secondary">{{ $reservation->status }}</span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-info" data-toggle="modal"
+                    <button class="backend-table-action backend-table-action-view" data-toggle="modal"
                             data-target="#reservationArchiveDetail{{ $reservation->id }}">
                         View Detail
                     </button>
@@ -48,7 +48,7 @@
                                             <div class="col-6"><p>: {{ $reservation->rsv_no }}</p></div>
                                             <div class="col-6"><p><strong>Customer / Agent</strong></p></div>
                                             <div class="col-6"><p>: {{ $reservation->customer_name ?? '-' }}</p></div>
-                                            
+
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -86,7 +86,7 @@
                                             @endforeach
                                         </div>
                                     @empty
-                                        
+
                                     @endforelse
                                 {{-- <p>{{ date('l, d M Y',strtotime($spk->spk_date)) }}</p> --}}
                                 {{-- <div class="row">
@@ -117,7 +117,7 @@
                                 </div> --}}
                             </div>
                             <div class="card-box-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Close</button>
+                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Close</button>
                             </div>
                         </div>
                     </div>

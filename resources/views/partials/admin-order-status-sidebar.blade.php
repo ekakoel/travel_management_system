@@ -2,7 +2,7 @@
     <div class="card-box">
         <div class="card-box-title">
             <div class="title">Status</div>
-        </div> 
+        </div>
         <div class="order-status-container">
             @if ($order->status == "Active")
                 <div class="status-active-color">Confirmed</div>
@@ -52,7 +52,7 @@
                     <tr>
                         <td>{{ ++$no.". " }}</td>
                         <td> {{ dateTimeFormat($orderlog->created_at) }}</td>
-                        <td>{!! $adminorder->code !!}</td>
+                        <td>{!! $adminorder?->code ?? '-' !!}</td>
                         <td><i>{!! $orderlog->action !!}</i></td>
                     </tr>
                 @endforeach

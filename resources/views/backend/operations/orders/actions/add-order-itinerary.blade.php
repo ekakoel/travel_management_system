@@ -84,7 +84,7 @@
                                         </td>
                                         <td class="htd-2">
                                             <b>{{ dateFormat($order->checkout) }}</b>
-                                            
+
                                         </td>
                                     </tr>
                                 </table>
@@ -142,9 +142,9 @@
                                                                 <div class="card-text">
                                                                     <div class="row ">
                                                                         <div class="col-sm-4">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="date" class="form-label">Date</label>
-                                                                                <input readonly type="text" name="date" placeholder="@lang('messages.Select date')" class="form-control datetimepicker @error('date') is-invalid @enderror" value="{{ $day_one->date }}" required>
+                                                                                <input readonly type="text" name="date" placeholder="@lang('messages.Select date')" class="backend-form-control datetimepicker @error('date') is-invalid @enderror" value="{{ $day_one->date }}" required>
                                                                                 @error('date')
                                                                                     <div class="alert alert-danger">
                                                                                         {{ $message }}
@@ -153,9 +153,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-4 m-b-8">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="day">Day <span> *</span></label>
-                                                                                <select name="day" class="custom-select col-12 @error('day') is-invalid @enderror" required>
+                                                                                <select name="day" class="backend-form-control col-12 @error('day') is-invalid @enderror" required>
                                                                                     <option value="1" selected>Day 1</option>
                                                                                     <option value="2">Day 2</option>
                                                                                     <option value="3">Day 3</option>
@@ -171,9 +171,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="date">Activity /  Service</label>
-                                                                                <textarea name="itinerary" placeholder="@lang('messages.Optional')" class="textarea_editor form-control border-radius-0">{{ $day_one->itinerary }}</textarea>
+                                                                                <textarea name="itinerary" placeholder="@lang('messages.Optional')" class="textarea_editor backend-form-control border-radius-0">{{ $day_one->itinerary }}</textarea>
                                                                                 @error('itinerary')
                                                                                     <div class="alert alert-danger">
                                                                                         {{ $message }}
@@ -185,8 +185,8 @@
                                                                 </div>
                                                             </form>
                                                             <div class="card-box-footer">
-                                                                <button type="submit" form="updateItinerary{{ $day_one->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Save')</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                <button type="submit" form="updateItinerary{{ $day_one->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Save')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -225,9 +225,9 @@
                                                                 <div class="card-text">
                                                                     <div class="row ">
                                                                         <div class="col-sm-4">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="date" class="form-label">Date</label>
-                                                                                <input readonly type="text" name="date" placeholder="@lang('messages.Select date')" class="form-control datetimepicker @error('date') is-invalid @enderror" value="{{ $day_two->date }}" required>
+                                                                                <input readonly type="text" name="date" placeholder="@lang('messages.Select date')" class="backend-form-control datetimepicker @error('date') is-invalid @enderror" value="{{ $day_two->date }}" required>
                                                                                 @error('date')
                                                                                     <div class="alert alert-danger">
                                                                                         {{ $message }}
@@ -236,9 +236,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-4 m-b-8">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="day">Day <span> *</span></label>
-                                                                                <select name="day" class="custom-select col-12 @error('day') is-invalid @enderror" required>
+                                                                                <select name="day" class="backend-form-control col-12 @error('day') is-invalid @enderror" required>
                                                                                     <option value="1">Day 1</option>
                                                                                     <option value="2" selected>Day 2</option>
                                                                                     <option value="3">Day 3</option>
@@ -254,9 +254,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="date">Activity /  Service</label>
-                                                                                <textarea name="itinerary" placeholder="@lang('messages.Optional')" class="textarea_editor form-control border-radius-0">{{ $day_two->itinerary }}</textarea>
+                                                                                <textarea name="itinerary" placeholder="@lang('messages.Optional')" class="textarea_editor backend-form-control border-radius-0">{{ $day_two->itinerary }}</textarea>
                                                                                 @error('itinerary')
                                                                                     <div class="alert alert-danger">
                                                                                         {{ $message }}
@@ -268,8 +268,8 @@
                                                                 </div>
                                                             </form>
                                                             <div class="card-box-footer">
-                                                                <button type="submit" form="updateItinerary{{ $day_two->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Save')</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                <button type="submit" form="updateItinerary{{ $day_two->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Save')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -308,9 +308,9 @@
                                                                 <div class="card-text">
                                                                     <div class="row ">
                                                                         <div class="col-sm-4">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="date" class="form-label">Date</label>
-                                                                                <input readonly type="text" name="date" placeholder="@lang('messages.Select date')" class="form-control datetimepicker @error('date') is-invalid @enderror" value="{{ $day_thre->date }}" required>
+                                                                                <input readonly type="text" name="date" placeholder="@lang('messages.Select date')" class="backend-form-control datetimepicker @error('date') is-invalid @enderror" value="{{ $day_thre->date }}" required>
                                                                                 @error('date')
                                                                                     <div class="alert alert-danger">
                                                                                         {{ $message }}
@@ -319,9 +319,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-4 m-b-8">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="day">Day <span> *</span></label>
-                                                                                <select name="day" class="custom-select col-12 @error('day') is-invalid @enderror" required>
+                                                                                <select name="day" class="backend-form-control col-12 @error('day') is-invalid @enderror" required>
                                                                                     <option value="1">Day 1</option>
                                                                                     <option value="2">Day 2</option>
                                                                                     <option value="3" selected>Day 3</option>
@@ -337,9 +337,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="date">Activity /  Service</label>
-                                                                                <textarea name="itinerary" placeholder="@lang('messages.Optional')" class="textarea_editor form-control border-radius-0">{{ $day_thre->itinerary }}</textarea>
+                                                                                <textarea name="itinerary" placeholder="@lang('messages.Optional')" class="textarea_editor backend-form-control border-radius-0">{{ $day_thre->itinerary }}</textarea>
                                                                                 @error('itinerary')
                                                                                     <div class="alert alert-danger">
                                                                                         {{ $message }}
@@ -351,8 +351,8 @@
                                                                 </div>
                                                             </form>
                                                             <div class="card-box-footer">
-                                                                <button type="submit" form="updateItinerary{{ $day_thre->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Save')</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                <button type="submit" form="updateItinerary{{ $day_thre->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Save')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -360,7 +360,7 @@
                                             </div>
                                         @endforeach
                                     @endif
-                                    
+
                                 </table>
                             </div>
                         </div>
@@ -385,9 +385,9 @@
                                                 <div class="control-group">
                                                     <div class="row">
                                                         <div class="col-sm-2">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="additional_service_date[{{ $i }}]">Date</label>
-                                                                <input type="date" name="additional_service_date[{{ $i }}]" class="form-control @error('additional_service_date[{{ $i }}]') is-invalid @enderror" placeholder="Service" value="{{ $additional_service_date[$i] }}" required>
+                                                                <input type="date" name="additional_service_date[{{ $i }}]" class="backend-form-control @error('additional_service_date[{{ $i }}]') is-invalid @enderror" placeholder="Service" value="{{ $additional_service_date[$i] }}" required>
                                                                 @error('additional_service_date[{{ $i }}]')
                                                                     <div class="alert alert-danger">
                                                                         {{ $message }}
@@ -396,9 +396,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="additional_service[{{ $i }}]">Additional Service</label>
-                                                                <input type="text" name="additional_service[{{ $i }}]" class="form-control @error('additional_service[{{ $i }}]') is-invalid @enderror" placeholder="Service" value="{{ $additional_service[$i] }}" required>
+                                                                <input type="text" name="additional_service[{{ $i }}]" class="backend-form-control @error('additional_service[{{ $i }}]') is-invalid @enderror" placeholder="Service" value="{{ $additional_service[$i] }}" required>
                                                                 @error('additional_service[{{ $i }}]')
                                                                     <div class="alert alert-danger">
                                                                         {{ $message }}
@@ -407,9 +407,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-2">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="additional_service_qty[{{ $i }}]">Quantity</label>
-                                                                <input type="number" name="additional_service_qty[{{ $i }}]" min="1" class="form-control m-0 @error('additional_service_qty[{{ $i }}]') is-invalid @enderror" placeholder="Service" value="{{ $additional_service_qty[$i] }}" required>
+                                                                <input type="number" name="additional_service_qty[{{ $i }}]" min="1" class="backend-form-control m-0 @error('additional_service_qty[{{ $i }}]') is-invalid @enderror" placeholder="Service" value="{{ $additional_service_qty[$i] }}" required>
                                                                 @error('additional_service_qty[{{ $i }}]')
                                                                     <div class="alert alert-danger">
                                                                         {{ $message }}
@@ -418,9 +418,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-3">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="additional_service_price[{{ $i }}]">Price /pax</label>
-                                                                <input type="number" name="additional_service_price[{{ $i }}]" min="1" class="form-control @error('additional_service_price[{{ $i }}]') is-invalid @enderror" placeholder="Price in USD" value="{{ $additional_service_price[$i] }}" required>
+                                                                <input type="number" name="additional_service_price[{{ $i }}]" min="1" class="backend-form-control @error('additional_service_price[{{ $i }}]') is-invalid @enderror" placeholder="Price in USD" value="{{ $additional_service_price[$i] }}" required>
                                                                 @error('additional_service_price[{{ $i }}]')
                                                                     <div class="alert alert-danger">
                                                                         {{ $message }}
@@ -429,7 +429,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-1" style="align-self: center; padding-bottom:17px;">
-                                                            <button class="btn btn-remove remove"  type="button"><i class="icon-copy fa fa-close" aria-hidden="true"></i> </button>
+                                                            <button class="backend-button backend-button-danger remove"  type="button"><i class="icon-copy fa fa-close" aria-hidden="true"></i> </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -438,9 +438,9 @@
                                             <div class="control-group">
                                                 <div class="row">
                                                     <div class="col-sm-2">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="additional_service_date[]">Date</label>
-                                                            <input type="date" name="additional_service_date[]" class="form-control @error('additional_service_date[]') is-invalid @enderror" placeholder="Service" value="" required>
+                                                            <input type="date" name="additional_service_date[]" class="backend-form-control @error('additional_service_date[]') is-invalid @enderror" placeholder="Service" value="" required>
                                                             @error('additional_service_date[]')
                                                                 <div class="alert alert-danger">
                                                                     {{ $message }}
@@ -449,9 +449,9 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-4">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="additional_service[]">Additional Service</label>
-                                                            <input type="text" name="additional_service[]" class="form-control @error('additional_service[]') is-invalid @enderror" placeholder="Service" value="" required>
+                                                            <input type="text" name="additional_service[]" class="backend-form-control @error('additional_service[]') is-invalid @enderror" placeholder="Service" value="" required>
                                                             @error('additional_service[]')
                                                                 <div class="alert alert-danger">
                                                                     {{ $message }}
@@ -460,9 +460,9 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-2">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="additional_service_qty[]">Quantity</label>
-                                                            <input type="number" name="additional_service_qty[]" min="1" class="form-control m-0 @error('additional_service_qty[]') is-invalid @enderror" placeholder="Service" value="" required>
+                                                            <input type="number" name="additional_service_qty[]" min="1" class="backend-form-control m-0 @error('additional_service_qty[]') is-invalid @enderror" placeholder="Service" value="" required>
                                                             @error('additional_service_qty[]')
                                                                 <div class="alert alert-danger">
                                                                     {{ $message }}
@@ -471,9 +471,9 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-3">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="additional_service_price[]">Price</label>
-                                                            <input type="number" name="additional_service_price[]" min="1" class="form-control @error('additional_service_price[]') is-invalid @enderror" placeholder="Price in USD" value="" required>
+                                                            <input type="number" name="additional_service_price[]" min="1" class="backend-form-control @error('additional_service_price[]') is-invalid @enderror" placeholder="Price in USD" value="" required>
                                                             @error('additional_service_price[]')
                                                                 <div class="alert alert-danger">
                                                                     {{ $message }}
@@ -495,9 +495,9 @@
                                     <div class="control-group">
                                         <div class="row">
                                             <div class="col-sm-2">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="additional_service_date[]">Date</label>
-                                                    <input type="date" name="additional_service_date[]" class="form-control @error('additional_service_date[]') is-invalid @enderror" placeholder="Service" value="" required>
+                                                    <input type="date" name="additional_service_date[]" class="backend-form-control @error('additional_service_date[]') is-invalid @enderror" placeholder="Service" value="" required>
                                                     @error('additional_service_date[]')
                                                         <div class="alert alert-danger">
                                                             {{ $message }}
@@ -506,9 +506,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="additional_service[]">Additional Service</label>
-                                                    <input type="text" name="additional_service[]" class="form-control @error('additional_service[]') is-invalid @enderror" placeholder="Service" value="" required>
+                                                    <input type="text" name="additional_service[]" class="backend-form-control @error('additional_service[]') is-invalid @enderror" placeholder="Service" value="" required>
                                                     @error('additional_service[]')
                                                         <div class="alert alert-danger">
                                                             {{ $message }}
@@ -517,9 +517,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="additional_service_qty[]">Quantity</label>
-                                                    <input type="number" name="additional_service_qty[]" min="1" class="form-control m-0 @error('additional_service_qty[]') is-invalid @enderror" placeholder="Service" value="" required>
+                                                    <input type="number" name="additional_service_qty[]" min="1" class="backend-form-control m-0 @error('additional_service_qty[]') is-invalid @enderror" placeholder="Service" value="" required>
                                                     @error('additional_service_qty[]')
                                                         <div class="alert alert-danger">
                                                             {{ $message }}
@@ -528,9 +528,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="additional_service_price[]">Price/pax</label>
-                                                    <input type="number" name="additional_service_price[]" min="1" class="form-control @error('additional_service_price[]') is-invalid @enderror" placeholder="Price in USD" value="" required>
+                                                    <input type="number" name="additional_service_price[]" min="1" class="backend-form-control @error('additional_service_price[]') is-invalid @enderror" placeholder="Price in USD" value="" required>
                                                     @error('additional_service_price[]')
                                                         <div class="alert alert-danger">
                                                             {{ $message }}
@@ -539,7 +539,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-1" style="align-self: center; padding-bottom:17px;">
-                                                <button class="btn btn-remove remove"  type="button"><i class="icon-copy fa fa-close" aria-hidden="true"></i></button>
+                                                <button class="backend-button backend-button-danger remove"  type="button"><i class="icon-copy fa fa-close" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -548,21 +548,21 @@
                             <script type="text/javascript">
                                 $(document).ready(function() {
                                     var ro = 1;
-                                    $(".add-more").click(function(){ 
+                                    $(".add-more").click(function(){
                                         ro++;
                                         var html = $(".copy").html();
                                         $(".after-add-more").before(html);
                                     });
-                                    $("body").on("click",".remove",function(){ 
+                                    $("body").on("click",".remove",function(){
                                         $(this).parents(".control-group").remove();
                                     });
                                 });
                             </script>
                             <div class="card-box-footer">
-                                <button type="button" class="btn btn-primary add-more"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Service</button>
-                                <button type="submit" form="edit-additional-service" class="btn btn-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                                <button type="button" class="backend-button backend-button-primary add-more"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Service</button>
+                                <button type="submit" form="edit-additional-service" class="backend-button backend-button-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
                                 <a href="/orders-admin-{{ $order->id }}#optional_service">
-                                    <button type="button" class="btn btn-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                    <button type="button" class="backend-button backend-button-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                 </a>
                             </div>
                         </div>

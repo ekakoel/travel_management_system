@@ -20,24 +20,31 @@ class ReviewController extends Controller
     {
         $guides = Guide::where('status', 'active')->get();
         $drivers = Drivers::where('status', 'active')->get();
-        $reviews = Review::latest()->paginate(20);
+        $reviews = Review::with(['guide', 'driver'])->latest()->paginate(20);
         $serviceStats = Review::serviceStats();
         $transportStats = Review::transportStats();
         $guideStats = Review::guideStats();
         $driverStats = Review::driverStats();
-        $pendingReviews = Review::where('status', 'pending')
-            ->orderBy('booking_code', 'desc')
+        $pendingReviews = Review::with(['guide', 'driver'])
+            ->where('status', 'pending')
             ->latest()
-            ->get();
-        $approvedReviews = Review::where('status', 'accepted')
-            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'pending_page');
+        $approvedReviews = Review::with(['guide', 'driver'])
+            ->where('status', 'accepted')
             ->latest()
             ->paginate(10, ['*'], 'approved_page');
-        $rejectedReviews = Review::where('status', 'rejected')
-            ->orderBy('created_at', 'desc')
+        $rejectedReviews = Review::with(['guide', 'driver'])
+            ->where('status', 'rejected')
             ->latest()
             ->paginate(10, ['*'], 'rejected_page');
-        return view('frontend.home.reviews.index', compact('reviews', 'serviceStats',  'pendingReviews', 'approvedReviews','rejectedReviews','transportStats', 'guideStats', 'driverStats', 'guides', 'drivers'));
+        $summary = [
+            'total' => Review::count(),
+            'pending' => Review::where('status', 'pending')->count(),
+            'accepted' => Review::where('status', 'accepted')->count(),
+            'rejected' => Review::where('status', 'rejected')->count(),
+        ];
+
+        return view('backend.admin.reviews.index', compact('reviews', 'serviceStats', 'pendingReviews', 'approvedReviews', 'rejectedReviews', 'transportStats', 'guideStats', 'driverStats', 'guides', 'drivers', 'summary'));
     }
 
     public function wedding_review_index()
@@ -57,52 +64,6 @@ class ReviewController extends Controller
             ->latest()
             ->paginate(10, ['*'], 'rejected_page');
         return view('frontend.home.reviews.wedding-index', compact('reviews', 'weddingStats',  'pendingReviews', 'approvedReviews','rejectedReviews'));
-    }
-
-    public function print_reviews($bookingCode)
-    {
-        $reviews = Review::where('booking_code', $bookingCode)
-            ->where('status', 'accepted')
-            ->get();
-        $temporary_link = TemporaryReviewLink::where('booking_code', $bookingCode)->first();
-        $averageRatings = [
-            'accommodation' => round($reviews->avg('accommodation'), 1),
-            'meals' => round($reviews->avg('meals'), 1),
-            'tour_sites' => round($reviews->avg('tour_sites'), 1),
-            'transportation_cleanliness' => round($reviews->avg('transportation_cleanliness'), 1),
-            'transportation_air_condition' => round($reviews->avg('transportation_air_condition'), 1),
-            'driver_punctuality' => round($reviews->avg('driver_punctuality'), 1),
-            'driver_driving_skills' => round($reviews->avg('driver_driving_skills'), 1),
-            'driver_neatness' => round($reviews->avg('driver_neatness'), 1),
-            'attitude' => round($reviews->avg('attitude'), 1),
-            'explanation' => round($reviews->avg('explanation'), 1),
-            'knowledge' => round($reviews->avg('knowledge'), 1),
-            'time_control' => round($reviews->avg('time_control'), 1),
-            'guide_neatness' => round($reviews->avg('guide_neatness'), 1),
-        ];
-        $moodValues = [
-            'Very Satisfied' => 4,
-            'Satisfied' => 3,
-            'Normal' => 2,
-            'Need Improvement' => 1,
-        ];
-
-        $validMoodScores = $reviews->pluck('travel_mood')
-            ->filter()
-            ->map(fn($mood) => array_key_exists($mood, $moodValues) ? $moodValues[$mood] : null)
-            ->filter();
-
-        if ($validMoodScores->count() > 0) {
-            $averageMoodScore = round($validMoodScores->avg(), 1);
-
-            $reverseMoodValues = array_flip($moodValues);
-            $roundedScore = round($averageMoodScore);
-            $averageMoodLabel = $reverseMoodValues[$roundedScore] ?? 'Unknown';
-        } else {
-            $averageMoodScore = null;
-            $averageMoodLabel = 'No data';
-        }
-        return view('frontend.home.reviews.print-reviews', compact('reviews', 'bookingCode', 'averageRatings','averageMoodLabel', 'averageMoodScore','temporary_link'));
     }
 
     public function print_wedding_reviews($bookingCode)
@@ -308,6 +269,17 @@ class ReviewController extends Controller
         $review->save();
         return redirect()->back()->with('success', 'Review status updated successfully.');
     }
+
+    public function destroy(Review $review)
+    {
+        if ($review->status === 'accepted') {
+            return redirect()->back()->withErrors(['review' => 'Approved reviews cannot be deleted. Reject the review first if it must be removed.']);
+        }
+
+        $review->delete();
+
+        return redirect()->back()->with('success', 'Review deleted successfully.');
+    }
     public function updateWeddingStatus(Request $request, WeddingReview $wedding_review)
     {
         $request->validate([
@@ -346,7 +318,7 @@ class ReviewController extends Controller
         $reviewLinks = TemporaryReviewLink::where('expires_at', '>=', Carbon::now())
             ->orderByDesc('created_at')
             ->paginate(10);
-        return view('frontend.home.reviews.review_link_form', compact('reviewLinks'));
+        return view('backend.admin.reviews.link-form', compact('reviewLinks'));
     }
     public function showWeddingForm()
     {
@@ -358,24 +330,26 @@ class ReviewController extends Controller
 
     public function generate(Request $request)
     {
-        $request->validate([
-            'agent' => 'required|string',
-            'booking_code' => 'required|string|unique:temporary_review_links,booking_code',
+        $validated = $request->validate([
+            'agent' => 'required|string|max:150',
+            'booking_code' => 'required|string|max:50|unique:temporary_review_links,booking_code',
             'jumlah_review' => 'required|integer|min:1',
+            'arrival_date' => 'required|date',
+            'departure_date' => 'required|date|after_or_equal:arrival_date',
         ]);
-        $arrival_date = date('Y-m-d',strtotime($request->arrival_date));
-        $departure_date = date('Y-m-d',strtotime($request->departure_date));
-        $booking_code = Str::upper($request->booking_code);
-        $jumlah_review = $request->jumlah_review;
+        $arrival_date = Carbon::parse($validated['arrival_date'])->toDateString();
+        $departure_date = Carbon::parse($validated['departure_date'])->toDateString();
+        $booking_code = Str::upper($validated['booking_code']);
+        $jumlah_review = $validated['jumlah_review'];
         $link = "http://tourreview.site/{$booking_code}/{$jumlah_review}";
         $expiresAt = Carbon::now()->addHours(168);
         $qrSvg = QrCode::format('svg')->size(300)->generate($link);
         $filename = "{$booking_code}.svg";
         Storage::disk('public')->put("reviews/qrcodes/{$filename}", $qrSvg);
         TemporaryReviewLink::create([
-            'agent' => $request->agent,
+            'agent' => $validated['agent'],
             'booking_code' => $booking_code,
-            'jumlah_review' => $request->jumlah_review,
+            'jumlah_review' => $jumlah_review,
             'expires_at' => $expiresAt,
             'qr_code_path' => $filename,
             'link' => $link,

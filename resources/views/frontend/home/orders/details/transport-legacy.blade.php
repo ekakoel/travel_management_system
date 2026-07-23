@@ -1,7 +1,6 @@
 @if ($order->status == "Approved" or $order->status == "Paid")
     <div class="col-md-4 mobile">
         <div class="row">
-            @include('layouts.attentions')
             <div class="col-md-12">
                 <div class="card-box">
                     <div class="card-box-title">
@@ -726,7 +725,6 @@
 @if ($order->status == "Approved" or $order->status == "Paid")
     <div class="col-md-4 desktop">
         <div class="row">
-            @include('layouts.attentions')
             @include('frontend.home.orders.details.partials.legacy-order-payment-sidebar', [
                 'device' => 'desktop',
                 'backUrl' => '/orders#orderTransport',

@@ -14,7 +14,6 @@ use App\Models\ExtraBed;
 use App\Models\RoomView;
 use App\Models\UsdRates;
 use App\Models\ActionLog;
-use App\Models\Attention;
 use App\Models\HotelRoom;
 use App\Models\HotelPrice;
 use App\Models\HotelPromo;
@@ -39,6 +38,23 @@ class HotelsAdminController extends Controller
     {
         $this->middleware(['auth','verified','type:admin']);
     }
+
+    private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
+    {
+        return redirect()->route('hotels-admin.index')->with('error', $message);
+    }
+
+    private function redirectToHotelDetail($hotelId, ?string $anchor = null)
+    {
+        $url = route('admin.hotels.show', $hotelId);
+
+        if ($anchor) {
+            $url .= '#'.ltrim($anchor, '#');
+        }
+
+        return redirect($url);
+    }
+
 // View Admin Index =========================================================================================>
     public function index() {
     $now = Carbon::now();
@@ -73,7 +89,7 @@ class HotelsAdminController extends Controller
         }
     }
 
-    return view('admin.hotelsadmin', compact(
+    return view('backend.operations.hotels.index', compact(
         'hotels', 'cactivehotels', 'archivehotels', 'drafthotels', 
         'activerooms', 'normal_prices', 'now', 'promos', 'packages'
     ));
@@ -137,14 +153,13 @@ class HotelsAdminController extends Controller
         $moonnow = date('m', strtotime($now));
         $user = Auth::user()->all();
         $author = Auth::user()->where('id',$hotel->author_id)->first();
-        $attentions = Attention::where('page','admin-hotel-detail')->get();
         $action_log = ActionLog::where('service',"Hotel")->get();
         $weddingVenues = WeddingVenues::where('hotels_id',$id)->get();
         $latest_price = $hotel = Hotels::withMax(['prices as date'], 'end_date')->findOrFail($id);
         $priceokt = HotelPrice::where('hotels_id','=',$id)
             ->where('rooms_id','=', 1)
             ->orderBy('start_date', 'DESC')->get();
-            return view('admin.hotelsadmindetail',[
+            return view('backend.operations.hotels.detail',[
                 'taxes'=>$taxes,
                 'additional_charges'=>$additional_charges,
                 'extra_bed'=>$extra_bed,
@@ -153,7 +168,6 @@ class HotelsAdminController extends Controller
                 'markup'=>$markup,
                 'user'=>$user,
                 'action_log'=>$action_log,
-                'attentions'=>$attentions,
                 'packages' => $packages,
                 'priceokt'=>$priceokt,
                 'moonnow'=>$moonnow,
@@ -175,14 +189,12 @@ class HotelsAdminController extends Controller
     {
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotels=Hotels::findOrFail($id);
-            $attentions = Attention::where('page','admin-hotel-edit')->get();
             $usdrates=UsdRates::where('name','USD')->first();
             return view('backend.operations.hotels.forms.edit',[
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
                 ])->with('hotels',$hotels);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -191,7 +203,6 @@ class HotelsAdminController extends Controller
     {
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotels=Hotels::findOrFail($id);
-            $attentions = Attention::where('page','add-hotel-price')->get();
             $usdrates=UsdRates::where('name','USD')->first();
             $rooms = HotelRoom::where('hotels_id','=',$id)->orderBy('created_at', 'desc')->get();
             $markups = Markup::where('service','Hotel')
@@ -201,14 +212,13 @@ class HotelsAdminController extends Controller
             } else {
                 $markup = "";
             }
-            return view('backend.operations.hotels.forms.add-normal-price',[
+            return view('backend.operations.hotels.forms.normal-price-create',[
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
                 'markups'=>$markups,
                 'rooms'=>$rooms,
                 ])->with('hotels',$hotels);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -219,15 +229,13 @@ class HotelsAdminController extends Controller
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $room=HotelRoom::findOrFail($id);
             $hotel=Hotels::where('id','=', $room->hotels_id)->first();
-            $attentions = Attention::where('page','admin-room-edit')->get();
             $roomViews = RoomView::all();
             return view('backend.operations.hotels.forms.room-edit',[
                 'hotel'=>$hotel,
-                'attentions'=>$attentions,
                 'roomViews'=>$roomViews,
             ])->with('room',$room);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // View Room Edit =============================================================================================================>
@@ -236,13 +244,11 @@ class HotelsAdminController extends Controller
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $wedding_venue=WeddingVenues::findOrFail($id);
             $hotel=Hotels::where('id','=', $wedding_venue->hotels_id)->first();
-            $attentions = Attention::where('page','edit-wedding-venue')->get();
             return view('backend.operations.weddings.forms.venue-edit',[
                 'hotel'=>$hotel,
-                'attentions'=>$attentions,
             ])->with('wedding_venue',$wedding_venue);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -250,12 +256,10 @@ class HotelsAdminController extends Controller
     public function view_add_hotel(){
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotels = Hotels::all();
-            $attentions = Attention::where('page','admin-hotel-add')->get();
             return view('backend.operations.hotels.forms.create',[
-                'attentions'=>$attentions,
             ])->with('hotels',$hotels);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -265,35 +269,31 @@ class HotelsAdminController extends Controller
             $hotels=Hotels::findOrFail($id);
             return view('backend.operations.hotels.forms.gallery-edit')->with('hotels',$hotels);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // View Add Room =========================================================================================>
     public function view_add_room($id){
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotels=Hotels::findOrFail($id);
-            $attentions=Attention::where('page','admin-hotel-room-add')->get();
             $usdrates=UsdRates::where('name','USD')->first();
             return view('backend.operations.hotels.forms.room-create',[
-                'attentions'=>$attentions,
                 'usdrates'=>$usdrates,
             ])->with('hotels',$hotels);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // View Add Wedding Venue =========================================================================================>
     public function view_add_wedding_venue($id){
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotels=Hotels::findOrFail($id);
-            $attentions=Attention::where('page','admin-wedding-venue-add')->get();
             $usdrates=UsdRates::where('name','USD')->first();
             return view('backend.operations.weddings.forms.venue-create',[
-                'attentions'=>$attentions,
                 'usdrates'=>$usdrates,
             ])->with('hotels',$hotels);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -301,10 +301,106 @@ class HotelsAdminController extends Controller
     public function view_add_promo($id){
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotel=Hotels::findOrFail($id);
-            $rooms= HotelRoom::where('hotels_id','=');
-            return view('backend.operations.hotels.forms.add-promo')->with('hotel',$hotel);
+            $rooms = HotelRoom::where('hotels_id', $id)->get();
+            return view('backend.operations.hotels.forms.promo-create')->with('hotel',$hotel);
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
+        }
+    }
+
+    public function view_edit_hotel_price($id)
+    {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+            $price = HotelPrice::with(['rooms'])->findOrFail($id);
+            $hotels = Hotels::findOrFail($price->hotels_id);
+            $rooms = HotelRoom::where('hotels_id', $hotels->id)->orderBy('created_at', 'desc')->get();
+            $usdrates = UsdRates::where('name', 'USD')->first();
+
+            return view('backend.operations.hotels.forms.normal-price-edit', [
+                'price' => $price,
+                'hotels' => $hotels,
+                'rooms' => $rooms,
+                'usdrates' => $usdrates,
+            ]);
+        }else{
+            return $this->redirectToHotelsIndexWithError();
+        }
+    }
+
+    public function view_edit_promo($id)
+    {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+            $promo = HotelPromo::findOrFail($id);
+            $hotel = Hotels::with('rooms')->findOrFail($promo->hotels_id);
+            $rooms = HotelRoom::where('hotels_id', $hotel->id)->orderBy('created_at', 'desc')->get();
+
+            return view('backend.operations.hotels.forms.promo-edit', [
+                'promo' => $promo,
+                'hotel' => $hotel,
+                'rooms' => $rooms,
+            ]);
+        }else{
+            return $this->redirectToHotelsIndexWithError();
+        }
+    }
+
+    public function view_add_package($id)
+    {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+            $hotel = Hotels::with('rooms')->findOrFail($id);
+            $rooms = HotelRoom::where('hotels_id', $hotel->id)->orderBy('created_at', 'desc')->get();
+
+            return view('backend.operations.hotels.forms.package-create', [
+                'hotel' => $hotel,
+                'rooms' => $rooms,
+            ]);
+        }else{
+            return $this->redirectToHotelsIndexWithError();
+        }
+    }
+
+    public function view_edit_package($id)
+    {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+            $package = HotelPackage::with(['room'])->findOrFail($id);
+            $hotel = Hotels::with('rooms')->findOrFail($package->hotels_id);
+            $rooms = HotelRoom::where('hotels_id', $hotel->id)->orderBy('created_at', 'desc')->get();
+
+            return view('backend.operations.hotels.forms.package-edit', [
+                'package' => $package,
+                'hotel' => $hotel,
+                'rooms' => $rooms,
+            ]);
+        }else{
+            return $this->redirectToHotelsIndexWithError();
+        }
+    }
+
+    public function view_add_additional_charge($id)
+    {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+            $hotel = Hotels::findOrFail($id);
+
+            return view('backend.operations.hotels.forms.additional-charge-create', [
+                'hotel' => $hotel,
+            ]);
+        }else{
+            return $this->redirectToHotelsIndexWithError();
+        }
+    }
+
+    public function view_edit_additional_charge($id)
+    {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+            $additionalCharge = OptionalRate::findOrFail($id);
+            $hotel = Hotels::findOrFail($additionalCharge->service_id ?? $additionalCharge->hotels_id);
+
+            return view('backend.operations.hotels.forms.additional-charge-edit', [
+                'additionalCharge' => $additionalCharge,
+                'hotel' => $hotel,
+            ]);
+        }else{
+            return $this->redirectToHotelsIndexWithError();
         }
     }
     
@@ -381,9 +477,9 @@ class HotelsAdminController extends Controller
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-hotel-$hotel->id")->with('success', 'Hotel added successfully');
+            return $this->redirectToHotelDetail($hotel->id)->with('success', 'Hotel added successfully');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // Function Add Contract =========================================================================================>
@@ -438,9 +534,9 @@ public function func_add_contract(Request $request){
             }
         }
        
-        return redirect("/detail-hotel-$hotelsId")->with('success', 'Hotel contract added successfully');
+        return $this->redirectToHotelDetail($hotelsId)->with('success', 'Hotel contract added successfully');
     }else{
-        return redirect("/hotels-admin")->with('error','Akses ditolak');
+        return $this->redirectToHotelsIndexWithError();
     }
 }
 
@@ -458,7 +554,7 @@ public function func_add_contract(Request $request){
                     'beds' => 'required',
                     'custom_beds' => 'required_if:beds,custom|max:100',
                 ]);
-                $status="Draft";
+                $status="Active";
                 $service="Room";
                 $action="Add Room";
                 $roomViewName = $request->room_view === 'custom'
@@ -507,9 +603,9 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-hotel-$request->hotels_id#rooms")->with('success', 'Rooms added successfully');
+            return $this->redirectToHotelDetail($request->hotels_id, 'rooms')->with('success', 'Rooms added successfully');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -547,9 +643,9 @@ public function func_add_contract(Request $request){
                 $price->save();
                 // @dd($price);
             }
-            return redirect("/detail-hotel-$request->hotels_id#normalPrice")->with('success', 'Price added successfully');
+            return $this->redirectToHotelDetail($request->hotels_id, 'normalPrice')->with('success', 'Price added successfully');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // Function Add Additional Charge =========================================================================================>
@@ -561,25 +657,28 @@ public function func_add_contract(Request $request){
                 'hotel_id' => 'required',
                 'type' => 'required',
                 'name' => 'required',
-                'service_id' => 'required',
                 'markup' => 'required',
                 'contract_rate' => 'required',
-                'description' => 'required',
+                'description' => 'nullable',
             ]);
-            $mandatory_start = date('Y-m-d', strtotime($request->mandatory_start));
-            $mandatory_end = date('Y-m-d', strtotime($request->mandatory_end));
+            $hotelId = $request->service_id ?? $request->hotel_id;
+            $mandatory = (int) $request->mandatory === 1 ? 1 : 0;
+            $mandatory_start = $mandatory && $request->mandatory_start ? date('Y-m-d', strtotime($request->mandatory_start)) : null;
+            $mandatory_end = $mandatory && $request->mandatory_end ? date('Y-m-d', strtotime($request->mandatory_end)) : null;
             $optional_rate =new OptionalRate([
                 "type"=>$request->type,
-                "hotels_id"=>$request->hotel_id,
+                "hotels_id"=>$hotelId,
                 "name"=>$request->name,
                 "service"=>$service,
-                "service_id"=>$request->hotel_id,
-                "markup" =>$request->markup, 
-                "mandatory" =>$request->mandatory, 
-                "mandatory_start" =>$mandatory_start, 
-                "mandatory_end" =>$mandatory_end, 
-                "contract_rate" =>$request->contract_rate, 
-                "description" =>$request->description, 
+                "service_id"=>$hotelId,
+                "markup" =>$request->markup,
+                "mandatory" =>$mandatory,
+                "must_buy_start" =>$mandatory_start,
+                "must_buy_end" =>$mandatory_end,
+                "contract_rate" =>$request->contract_rate,
+                "description" =>$request->description,
+                "description_traditional" =>$request->description_traditional,
+                "description_simplified" =>$request->description_simplified,
             ]);
             $optional_rate->save();
 
@@ -587,8 +686,8 @@ public function func_add_contract(Request $request){
             $action = "Add Additional Charge";
             $service = "Hotel";
             $subservice = "Additional Charge";
-            $page = "detail-hotel#optional-rate";
-            $note = "Add optional rate to Hotel id : ".$request->service_id.", Optional rate id: ".$optional_rate->id;
+            $page = "detail-hotel#additional-charge";
+            $note = "Add optional rate to Hotel id : ".$hotelId.", Optional rate id: ".$optional_rate->id;
             $user_log =new UserLog([
                 "action"=>$action,
                 "service"=>$service,
@@ -600,9 +699,9 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-hotel-$request->service_id#optional-rate")->with('success', 'Additional Charge added successfully');
+            return $this->redirectToHotelDetail($hotelId, 'additional-charge')->with('success', 'Additional Charge added successfully');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
     
@@ -662,9 +761,9 @@ public function func_add_contract(Request $request){
                 "cancellation_policy_simplified"=>$request->cancellation_policy_simplified,
             ]);
             $promo->save();
-            return redirect("/detail-hotel-$request->hotels_id#promo")->with('success', 'Promo added successfully');
+            return $this->redirectToHotelDetail($request->hotels_id, 'promo')->with('success', 'Promo added successfully');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
     
@@ -716,11 +815,9 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-                // return redirect("/detail-hotel-$hotels->id");
-                // return dd($hotelroom);
-            return redirect("/detail-hotel-$request->hotels_id#package")->with('success', 'Package added successfully');
+            return $this->redirectToHotelDetail($request->hotels_id, 'package')->with('success', 'Package added successfully');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -799,9 +896,9 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-hotel-$hotel->id")->with('success','The Hotel has been updated!');
+            return $this->redirectToHotelDetail($hotel->id)->with('success','The Hotel has been updated!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
     
@@ -873,9 +970,9 @@ public function func_add_contract(Request $request){
             ]);
             $user_log->save();
             // return dd($room);
-            return redirect("/detail-hotel-$hotel_id#rooms")->with('success','The room has been updated!');
+            return $this->redirectToHotelDetail($hotel_id, 'rooms')->with('success','The room has been updated!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
     
@@ -918,16 +1015,16 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-hotel-$hotel_id")->with('success','The Price has been updated!');
+            return $this->redirectToHotelDetail($hotel_id, 'normalPrice')->with('success','The Price has been updated!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // Function Edit Additional Charge =============================================================================================================>
     public function func_edit_additional_charge(Request $request, $id)
     {
         if (!Gate::allows('posDev') && !Gate::allows('posAuthor')) {
-            return redirect("/hotels-admin")->with('error', 'Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
 
         $request->validate([
@@ -935,6 +1032,8 @@ public function func_add_contract(Request $request){
             'name' => 'required|string|max:255',
             'service_id' => 'required|integer',
             'description' => 'nullable|string',
+            'description_traditional' => 'nullable|string',
+            'description_simplified' => 'nullable|string',
             'mandatory' => 'required|boolean',
             'mandatory_start' => 'nullable|date',
             'mandatory_end' => 'nullable|date|after_or_equal:mandatory_start',
@@ -970,9 +1069,12 @@ public function func_add_contract(Request $request){
             'service' => $service,
             'service_id' => $request->service_id,
             'description' => $request->description,
+            'description_traditional' => $request->description_traditional,
+            'description_simplified' => $request->description_simplified,
             'mandatory' => $mandatory,
-            'mandatory_start' => $mandatory_start,
-            'mandatory_end' => $mandatory_end,
+            'hotels_id' => $request->service_id,
+            'must_buy_start' => $mandatory_start,
+            'must_buy_end' => $mandatory_end,
             'markup' => $request->markup,
             'contract_rate' => $request->contract_rate,
         ]);
@@ -983,13 +1085,13 @@ public function func_add_contract(Request $request){
             'service' => $service,
             'subservice' => 'Additional Charge',
             'subservice_id' => $id,
-            'page' => 'detail-hotel#optional-rate',
+            'page' => 'detail-hotel#additional-charge',
             'user_id' => $userId,
             'user_ip' => $request->ip(),
             'note' => 'Update optional rate to Hotel id : ' . $request->service_id,
         ]);
 
-        return redirect("/detail-hotel-$request->service_id#optional-rate")
+        return $this->redirectToHotelDetail($request->service_id, 'additional-charge')
             ->with('success', 'The Additional Charge has been updated!');
     }
 
@@ -1034,9 +1136,9 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-hotel-$request->hotels_id")->with('success','Contract has been updated!');
+            return $this->redirectToHotelDetail($request->hotels_id, 'contracts')->with('success','Contract has been updated!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1096,9 +1198,9 @@ public function func_add_contract(Request $request){
             ]);
             $user_log->save();
             // return dd($promo);
-            return redirect("/detail-hotel-$hotel_id#promo")->with('success','The Promo has been updated!');
+            return $this->redirectToHotelDetail($hotel_id, 'promo')->with('success','The Promo has been updated!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1116,6 +1218,7 @@ public function func_add_contract(Request $request){
                 "rooms_id"=>$request->rooms_id,
                 "hotels_id"=>$request->hotels_id,
                 "name"=>$request->name,
+                "duration"=>$request->duration,
                 "stay_period_start" =>$stay_period_start, 
                 "stay_period_end" =>$stay_period_end,
                 "contract_rate"=>$request->contract_rate,
@@ -1152,9 +1255,9 @@ public function func_add_contract(Request $request){
             ]);
             $user_log->save();
             // return dd($package);
-            return redirect("/detail-hotel-$hotel_id#package")->with('success','The Package has been updated!');
+            return $this->redirectToHotelDetail($hotel_id, 'package')->with('success','The Package has been updated!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1187,7 +1290,7 @@ public function func_add_contract(Request $request){
             $user_log->save();
             return back()->with('success','The Hotel has been successfully deleted!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // Function Delete Hotel =============================================================================================================>
@@ -1217,7 +1320,7 @@ public function func_add_contract(Request $request){
             $log->save();
             return back();
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
     
@@ -1250,9 +1353,9 @@ public function func_add_contract(Request $request){
             ]);
             $user_log->save();
             $room->delete();
-            return redirect("/detail-hotel-$request->hotels_id#rooms")->with('success','The Room has been successfully deleted!');
+            return $this->redirectToHotelDetail($request->hotels_id, 'rooms')->with('success','The Room has been successfully deleted!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1283,7 +1386,7 @@ public function func_add_contract(Request $request){
             $price->delete();
             return back()->with('success','The Price has been successfully deleted!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // Function Delete Additional Charge =============================================================================================================>
@@ -1295,7 +1398,7 @@ public function func_add_contract(Request $request){
             $action = "Remove";
             $service = "Hotel";
             $subservice = "Additional Charge";
-            $page = "detail-hotel#optional-rate";
+            $page = "detail-hotel#additional-charge";
             $note = "Remove optional rate on Hotel id : ".$request->hotels_id.", Optional rate id : ".$id;
             $user_log =new UserLog([
                 "action"=>$action,
@@ -1311,7 +1414,7 @@ public function func_add_contract(Request $request){
             $additional_charge->delete();
             return back()->with('success','The Additional Charge has been successfully deleted!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1340,7 +1443,7 @@ public function func_add_contract(Request $request){
             $promo->delete();
             return back()->with('success','The Promo has been successfully deleted!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1369,7 +1472,7 @@ public function func_add_contract(Request $request){
             $package->delete();
             return back()->with('success','The Package has been successfully deleted!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1384,7 +1487,7 @@ public function func_add_contract(Request $request){
             HotelsImages::find($id)->delete();
             return back();
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 
@@ -1398,7 +1501,7 @@ public function func_add_contract(Request $request){
             }
             return back();
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 // Function Delete Hotel Contract =============================================================================================================>
@@ -1427,9 +1530,9 @@ public function func_add_contract(Request $request){
             ]);
             $user_log->save();
             $contract->delete();
-            return redirect("/detail-hotel-$request->hotels_id")->with('success','The Contract has been successfully deleted!');
+            return $this->redirectToHotelDetail($request->hotels_id, 'contracts')->with('success','The Contract has been successfully deleted!');
         }else{
-            return redirect("/hotels-admin")->with('error','Akses ditolak');
+            return $this->redirectToHotelsIndexWithError();
         }
     }
 

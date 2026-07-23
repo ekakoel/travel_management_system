@@ -7,34 +7,11 @@
     <div class="main-container">
         <div class="pd-ltr-20 xs-pd-20-10">
             <div class="min-height-200px">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-7 col-sm-7">
-                            <div class="title">
-                                <h4>Reservation {{ $reservation->rsv_no }}</h4>
-                            </div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="reservation">Reservations</a></li>
-                                    <li class="breadcrumb-item"><a href="reservation-{{ $reservation->id }}">Detail Reservation</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Add Hotel Order</li>
-                                </ol>
-                            </nav>
-                        </div>
-                        <div class="col-md-5 col-sm-5 text-right">
-                            Status: 
-                            @if ($reservation->status === "Active")
-                                <h4 style="color: green">{{ $reservation->status }}</h4>
-                            @elseif ($reservation->status === "Nonactive")
-                                <h4 style="color: red">{{ $reservation->status }}</h4>
-                            @elseif ($reservation->status === "Draft")
-                                <h4 style="color: rgb(65, 65, 65)">{{ $reservation->status }}</h4>
-                            @else
-                                <h4 style="color: blue">{{ $reservation->status }}</h4>
-                            @endif
-                        </div>
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        Reservation {{ $reservation->rsv_no }}
+                    </x-slot>
+                </x-backend.page-hero>
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="product-wrap card-box mb-30 p-b-18">
@@ -55,7 +32,7 @@
                                         <div class="input-group row">
                                             <div class="col-md-4 p-b-8">
                                                 <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                <input id="searchHotelName" type="text" onkeyup="searchHotelName()" class="form-control" name="search-byno" placeholder="Sort by hotel name">
+                                                <input id="searchHotelName" type="text" onkeyup="searchHotelName()" class="backend-form-control" name="search-byno" placeholder="Sort by hotel name">
                                             </div>
                                         </div>
                                         @if (count($hotels) > 0)
@@ -70,7 +47,7 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($hotels as $no=>$hotel)
-                                                
+
                                                     <tr>
                                                         <td>{{ ++$no }}</td>
                                                         <td>
@@ -81,9 +58,9 @@
                                                                {{ $room->rooms.", " }}
                                                            @endforeach
                                                         </td>
-                                                        
+
                                                         <td class="text-right">
-                                                            <a href="#" data-toggle="modal" data-target="#add-hotel-{{ $hotel->id }}"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-hotel-{{ $hotel->id }}">
                                                                 <i class="icon-copy fa fa-plus-circle p-r-18" data-toggle="tooltip" data-placement="left" title="Add Accommodation" aria-hidden="true"></i>
                                                             </a>
                                                             {{-- Modal Add Accommodation --------------------------------------------------------------------------------------------------------------- --}}
@@ -91,9 +68,9 @@
                                                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                                                     <div class="modal-content text-left">
                                                                         <div class="product-detail-wrap">
-                                                                            
+
                                                                                 <div class="row">
-                                                                                    
+
                                                                                         <div class="col-md-12">
                                                                                             <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i>{{ $hotel->name }} - Add to Reservation</div>
                                                                                         </div>
@@ -106,10 +83,10 @@
                                                                                     @method('put')
                                                                                     <div class="row">
                                                                                         <div class="col-sm-6">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="servicename" class="col-sm-12 col-md-12 col-form-label">Check in - Check out <span>*</span></label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <input readonly name="checkincout" class="form-control @error('checkincout') is-invalid @enderror" type="text" placeholder="Select date" required>
+                                                                                                    <input readonly name="checkincout" class="backend-form-control @error('checkincout') is-invalid @enderror" type="text" placeholder="Select date" required>
                                                                                                     @error('checkincout')
                                                                                                         <span class="invalid-feedback">
                                                                                                             {{ $message }}
@@ -119,10 +96,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="servicename" class="col-sm-12 col-md-12 col-form-label">Rooms <span>*</span></label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <select name="servicename" class="custom-select @error('servicename') is-invalid @enderror" required>
+                                                                                                    <select name="servicename" class="backend-form-control @error('servicename') is-invalid @enderror" required>
                                                                                                         <option selected value="">Select Room</option>
                                                                                                         @foreach ($hotel->rooms as $room)
                                                                                                             <option value="{{ $room->rooms }}">{{ $room->rooms }}</option>
@@ -135,10 +112,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="extra_bed" class="col-sm-12 col-md-12 col-form-label">Extra Bed</label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <select name="extra_bed" class="custom-select @error('extra_bed') is-invalid @enderror" value="{{ old('extra_bed') }}">
+                                                                                                    <select name="extra_bed" class="backend-form-control @error('extra_bed') is-invalid @enderror" value="{{ old('extra_bed') }}">
                                                                                                         <option selected value="">Select</option>
                                                                                                         <option value="Yes">Yes</option>
                                                                                                         <option value="No">No</option>
@@ -150,10 +127,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="guest_1" class="col-sm-12 col-md-12 col-form-label">Guest 1 <span>*</span></label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <select name="guest_1" class="custom-select @error('guest_1') is-invalid @enderror" required>
+                                                                                                    <select name="guest_1" class="backend-form-control @error('guest_1') is-invalid @enderror" required>
                                                                                                         <option selected value="">Select Guest</option>
                                                                                                         @foreach ($guests as $guest)
                                                                                                             <option value="{{ $guest->id }}">{{ $guest->name }}</option>
@@ -166,10 +143,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="guest_2" class="col-sm-12 col-md-12 col-form-label">Guest 2</label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <select name="guest_2" class="custom-select @error('guest_2') is-invalid @enderror">
+                                                                                                    <select name="guest_2" class="backend-form-control @error('guest_2') is-invalid @enderror">
                                                                                                         <option selected value="">Select Guest</option>
                                                                                                         @foreach ($guests as $guest)
                                                                                                             <option value="{{ $guest->id }}">{{ $guest->name }}</option>
@@ -182,10 +159,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="guest_3" class="col-sm-12 col-md-12 col-form-label">Guest 3</label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <select name="guest_3" class="custom-select @error('guest_3') is-invalid @enderror">
+                                                                                                    <select name="guest_3" class="backend-form-control @error('guest_3') is-invalid @enderror">
                                                                                                         <option selected value="">Select Guest</option>
                                                                                                         @foreach ($guests as $guest)
                                                                                                             <option value="{{ $guest->id }}">{{ $guest->name }}</option>
@@ -198,10 +175,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="guest_4" class="col-sm-12 col-md-12 col-form-label">Guest 4</label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <select name="guest_4" class="custom-select @error('guest_4') is-invalid @enderror">
+                                                                                                    <select name="guest_4" class="backend-form-control @error('guest_4') is-invalid @enderror">
                                                                                                         <option selected value="">Select Guest</option>
                                                                                                         @foreach ($guests as $guest)
                                                                                                             <option value="{{ $guest->id }}">{{ $guest->name }}</option>
@@ -213,23 +190,23 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                        
+
                                                                                         <div class="col-sm-12 col-md-12 text-right">
                                                                                             <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                                                                                             <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
-                                                                                            <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                            <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                         </div>
                                                                                     </div>
                                                                                 </form>
-                                                                            
+
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                
+
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -244,7 +221,7 @@
                             <div class="product-detail-wrap">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        
+
                                         <table class="data-table table table-bordered">
                                             <thead>
                                                 <tr>
@@ -262,22 +239,22 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    
+
                                     <div class="col-md-12 text-right">
 
-                                        <a href="/reservation-{{ $reservation->id }}"><button type="button" class="btn btn-dark m-b-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
+                                        <a href="/reservation-{{ $reservation->id }}"><button type="button" class="backend-button backend-button-secondary m-b-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-               
 
 
 
 
-                
-                    
+
+
+
 					<div class="col-md-4">
                         <div class="card-box mb-30">
                             <div class="banner-right">

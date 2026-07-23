@@ -15,7 +15,7 @@ class CreateHotelPackagesTable extends Migration
         Schema::create('hotel_packages', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId("hotels_id")->constrained("hotels")->onDelete("cascade");
-            $table->foreignId("rooms_id")->constrained("hotels")->onDelete("cascade");
+            $table->foreignId("rooms_id")->constrained("hotel_rooms")->onDelete("cascade");
             $table->string("name");
             $table->string("duration");
             $table->date("stay_period_start");

@@ -40,6 +40,142 @@ Salin template ini setiap kali ada perubahan frontend baru:
 - Impact: jelaskan pengaruhnya terhadap UI, UX, consistency, reusability, atau performance
 ```
 
+## 2026-07-20 - Orders Admin Detail Backend Standardization
+- Status: done
+- Area: backend orders admin / order detail / backend assets
+- Summary: Halaman `orders-admin-{id}` distandarkan dengan hero backend, breadcrumb toolbar, status badge, operational snapshot, quick links, next-action recommendation, asset SCSS scoped, dan styling legacy card/table/modal agar lebih konsisten dengan theme backend tanpa memutus workflow validasi order yang sudah ada.
+- Impact: Detail order lebih mudah dipindai karena informasi utama diprioritaskan di atas, action yang butuh perhatian langsung terlihat, layout lebih rapi di desktop/mobile, query controller lebih ringan melalui eager loading dan pengurangan query master yang tidak perlu, serta beberapa akses data dibuat null-safe untuk mencegah error pada data lama.
+- Files:
+  - `app/Http/Controllers/OrdersAdminController.php`
+  - `resources/views/admin/ordersadmindetail.blade.php`
+  - `resources/views/partials/admin-order-note-sidebar.blade.php`
+  - `resources/views/partials/admin-order-status-sidebar.blade.php`
+  - `resources/backend/scss/operations/orders-admin/detail-entry.scss`
+  - `resources/backend/scss/operations/orders-admin/_detail.scss`
+  - `resources/lang/en/admin-orders.php`
+  - `webpack.mix.js`
+- Follow-up: Setelah stabil, pecah view legacy `ordersadmindetail.blade.php` menjadi partial kecil per domain data agar refactor berikutnya lebih aman dan testable.
+
+## 2026-07-20 - Orders Admin Backend Redesign
+- Status: done
+- Area: backend orders admin / order queue / backend assets
+- Summary: Halaman `orders-admin` direfactor dari layout legacy duplikatif menjadi workspace backend operasional dengan hero standar, breadcrumb toolbar, KPI ringkas, global search, status navigation, tabel standar backend, dan card-list mobile untuk tour serta wedding orders.
+- Impact: Admin order lebih mudah dipindai, pencarian tidak lagi bergantung pada inline function per tabel, visual mengikuti theme backend dan standard table User Manager, serta wedding/tour order memakai query relasi yang lebih efisien untuk agent dan data utama.
+- Files:
+  - `app/Http/Controllers/OrdersAdminController.php`
+  - `resources/views/admin/ordersadmin.blade.php`
+  - `resources/backend/js/operations/orders-admin/index.js`
+  - `resources/backend/scss/operations/orders-admin/index-entry.scss`
+  - `resources/backend/scss/operations/orders-admin/_index.scss`
+  - `resources/lang/en/admin-orders.php`
+  - `resources/lang/zh/admin-orders.php`
+  - `resources/lang/zh-CN/admin-orders.php`
+  - `webpack.mix.js`
+- Follow-up: Jalankan browser pass pada user dengan permission tour-only, wedding-only, dan full admin untuk memastikan section permission tampil sesuai role.
+
+## 2026-07-20 - SPK Detail Open Route Map
+- Status: done
+- Area: backend transport management / SPK detail / route map
+- Summary: Panel Route on Map pada `spks/{id}` memakai data `latitude` dan `longitude` dari tabel `spk_destinations` berdasarkan `spk_id` SPK terkait. Map menggunakan OpenStreetMap tile rendering internal, marker bernomor sesuai urutan destinasi, kontrol zoom in/out, drag-to-pan, dan rute OSRM dengan fallback polyline bila layanan routing tidak tersedia.
+- Impact: Halaman detail SPK tidak lagi bergantung pada Google Maps API key atau Leaflet CDN untuk visualisasi route panel. Route map sekarang mengikuti data koordinat yang tersimpan di database, dapat dizoom/digeser, dan sumber kebenaran UI sama dengan tabel operasional SPK Destination.
+- Files:
+  - `app/Http/Controllers/SpksController.php`
+  - `resources/views/admin/transportmanagement/spks/detail-spk.blade.php`
+  - `resources/backend/js/operations/transport-management/detail.js`
+  - `resources/backend/scss/operations/transport-management/_detail.scss`
+  - `resources/lang/en/transport-management.php`
+  - `resources/lang/zh/transport-management.php`
+  - `resources/lang/zh-CN/transport-management.php`
+- Follow-up: Jalankan browser pass pada SPK real dengan minimal dua destination shortlink untuk memastikan OSRM dapat menggambar rute jalan sesuai area operasional.
+
+## 2026-07-20 - SPK Detail Backend Redesign
+- Status: done
+- Area: backend transport management / SPK detail / backend assets
+- Summary: Halaman `spks/{id}` direfactor menjadi detail workspace backend modern dengan hero operasional, toolbar action, KPI ringkas, assignment overview, tabel standar, card-list mobile, modal CRUD konsisten, WhatsApp status panel, dan route map panel.
+- Impact: Detail SPK kini mengikuti theme backend dan standard table User Manager, mengurangi inline Blade behavior, menjaga action operasional tetap tersedia, dan membuat halaman lebih responsive untuk tablet/mobile.
+- Files:
+  - `app/Http/Controllers/SpksController.php`
+  - `resources/views/admin/transportmanagement/spks/detail-spk.blade.php`
+  - `resources/views/admin/transportmanagement/spks/partials/detail-modals.blade.php`
+  - `resources/views/admin/transportmanagement/spks/partials/guest-form.blade.php`
+  - `resources/views/admin/transportmanagement/spks/partials/airport-shuttle-form.blade.php`
+  - `resources/views/admin/transportmanagement/spks/partials/destination-form.blade.php`
+  - `resources/backend/js/operations/transport-management/detail.js`
+  - `resources/backend/scss/operations/transport-management/detail-entry.scss`
+  - `resources/backend/scss/operations/transport-management/_detail.scss`
+  - `resources/lang/en/transport-management.php`
+  - `resources/lang/zh/transport-management.php`
+  - `resources/lang/zh-CN/transport-management.php`
+  - `webpack.mix.js`
+- Follow-up: Lakukan browser pass pada data SPK real yang punya destination coordinates untuk memastikan polyline Google Maps tampil sesuai urutan operasional.
+
+## 2026-07-20 - Backend Table Standardization
+- Status: done
+- Area: backend global theme / table component / transport management
+- Summary: Pola tabel User Manager diekstrak menjadi class global `backend-*` untuk desktop table, action wrapper, empty state, dan responsive card-list. Halaman `transport-management` sekarang memakai class standar tersebut pada active SPK dan archive partial.
+- Impact: Halaman backend baru atau yang sedang di-refactor punya contract tabel yang sama, termasuk typography header, border, spacing, wrap behavior, empty state, dan table-to-card untuk tablet/mobile.
+- Files:
+  - `resources/backend/scss/components/_backend-theme.scss`
+  - `resources/backend/scss/operations/transport-management/_index.scss`
+  - `resources/views/admin/transportmanagement/spks/index.blade.php`
+  - `resources/views/admin/transportmanagement/partials/spk-archive.blade.php`
+  - `docs/backend-ui-standards.md`
+  - `docs/project-structure-standard.md`
+- Follow-up: Migrasi tabel backend legacy dilakukan bertahap per halaman dengan menambahkan alternate `backend-table-card-list` agar tidak hanya bergantung pada horizontal scroll.
+
+## 2026-07-20 - Transport Management Backend Redesign
+- Status: done
+- Area: backend transport management / SPK operations workspace / backend assets
+- Summary: Halaman `transport-management` direfactor menjadi workspace backend modern dengan hero operasional, breadcrumb toolbar, KPI SPK, table desktop, card stack mobile, form create SPK yang lebih rapi, archive filter, dan modal archive yang mengikuti struktur section/detail backend.
+- Impact: Transport operations lebih mudah dipindai, mobile/tablet tidak bergantung pada horizontal scroll sebagai UX utama, copy halaman kini memakai language file `transport-management` untuk `en`, `zh`, dan `zh-CN`, serta behavior DataTable/filter/submit dipindahkan dari inline Blade ke bundle backend page-level.
+- Files:
+  - `app/Http/Controllers/SpksController.php`
+  - `resources/views/admin/transportmanagement/spks/index.blade.php`
+  - `resources/views/admin/transportmanagement/partials/spk-archive.blade.php`
+  - `resources/backend/js/operations/transport-management/index.js`
+  - `resources/backend/scss/operations/transport-management/index-entry.scss`
+  - `resources/backend/scss/operations/transport-management/_index.scss`
+  - `resources/lang/en/transport-management.php`
+  - `resources/lang/zh/transport-management.php`
+  - `resources/lang/zh-CN/transport-management.php`
+  - `webpack.mix.js`
+- Follow-up: Setelah halaman detail SPK ikut direfactor, samakan action/detail state dengan pattern transport management index.
+
+## 2026-07-16 - Admin Registration Access Control
+- Status: done
+- Area: backend admin panel / auth registration flow / public agent registration
+- Summary: Admin Panel developer ditambahkan kontrol `Registration Access` untuk mengaktifkan atau menonaktifkan registrasi publik. Status disimpan di `system_settings`, dibaca melalui `RegistrationAccessService`, dan ditegakkan oleh middleware `registration.open` pada GET/POST Laravel auth register serta GET/POST agent pre-register.
+- Impact: Saat registration dinonaktifkan, halaman registrasi tidak bisa dibuka dan submit manual ke endpoint registrasi ditolak dari backend sebelum validasi atau create record berjalan. Halaman login juga menampilkan status unavailable alih-alih link create account.
+- Files:
+  - `app/Models/SystemSetting.php`
+  - `app/Services/RegistrationAccessService.php`
+  - `app/Http/Middleware/EnsureRegistrationIsOpen.php`
+  - `app/Http/Controllers/Auth/RegisterController.php`
+  - `app/Http/Controllers/AgentRegistrationController.php`
+  - `app/Http/Controllers/AdminPanelController.php`
+  - `app/Providers/AppServiceProvider.php`
+  - `routes/web.php`
+  - `resources/views/backend/developer/index.blade.php`
+  - `resources/views/auth/login.blade.php`
+  - `resources/backend/js/admin/panel/index.js`
+  - `resources/backend/scss/admin/panel/_index.scss`
+  - `database/migrations/2026_07_16_090000_create_system_settings_table.php`
+  - `tests/Feature/ProjectStructureStandardTest.php`
+- Follow-up: Jika nanti ada API registration endpoint terpisah, pasang middleware `registration.open` pada endpoint tersebut juga.
+
+## 2026-07-16 - Developer Analytics Interactive Chart
+- Status: done
+- Area: backend admin panel / website analytics / chart interaction
+- Summary: Website Analytics pada Admin Panel direfactor menjadi chart interaktif dengan pilihan Daily, Weekly, Monthly, dan Yearly. Data traffic kini dibentuk sebagai agregasi database per bucket periode, lalu panel KPI, chart, insight, dan breakdown countries/pages/devices/referrers/site areas dirender dari satu payload period-aware.
+- Impact: Dashboard developer lebih informatif tanpa dependency chart CDN, lebih ringan untuk traffic besar karena tidak menghitung seluruh visit row di PHP, dan admin dapat membandingkan tren harian/mingguan/bulanan/tahunan dari satu chart yang responsive.
+- Files:
+  - `app/Http/Controllers/AdminPanelController.php`
+  - `resources/views/backend/developer/index.blade.php`
+  - `resources/backend/js/admin/panel/index.js`
+  - `resources/backend/scss/admin/panel/_index.scss`
+  - `docs/frontend-roadmap.md`
+- Follow-up: Tambahkan cache analytics per periode jika volume visit meningkat sangat besar atau dashboard mulai dibuka oleh banyak role internal.
+
 ## 2026-07-15 - Footer Policies FAQ Link
 - Status: done
 - Area: shared frontend footer / database-driven footer links / public FAQ navigation
@@ -1962,3 +2098,52 @@ Gunakan variasi ini jika perubahan fokus pada UI/UX:
   - `resources/views/layouts/footjs.blade.php`
   - `tests/Feature/ProjectStructureStandardTest.php`
 - Follow-up: Jika kedepannya dibutuhkan feature flag, gunakan package atau config-driven feature flag yang punya ownership jelas, audit trail, dan test coverage, bukan page toggle ad-hoc di admin panel.
+
+## B4 - Developer Website Analytics
+- Status: completed
+- Area: backend admin panel, analytics, request tracking
+- Summary: Menambahkan analytics website untuk developer dashboard dengan total visits, unique visitors, negara pengakses, halaman teratas, device split, dan grafik akses per hari, minggu, bulan, dan tahun.
+- Impact: Developer dapat memantau pola akses website tanpa membuka data order/reservation. Request tracking hanya mencatat successful GET HTML response, menyimpan IP dalam bentuk hash, dan membaca negara dari header proxy/CDN seperti `CF-IPCountry` jika tersedia.
+- Files:
+  - `database/migrations/2026_07_15_180000_create_website_visits_table.php`
+  - `app/Models/WebsiteVisit.php`
+  - `app/Http/Middleware/TrackWebsiteVisit.php`
+  - `app/Http/Kernel.php`
+  - `app/Http/Controllers/AdminPanelController.php`
+  - `resources/views/backend/developer/index.blade.php`
+  - `resources/backend/scss/admin/panel/_index.scss`
+  - `tests/Feature/ProjectStructureStandardTest.php`
+- Follow-up: Untuk akurasi country tanpa CDN header, integrasikan MaxMind GeoLite2 atau provider geolocation server-side yang memiliki cache dan privacy policy jelas.
+
+## B5 - Backend Sidebar Theme Standardization
+- Status: completed
+- Area: backend layout, left navigation, backend theme standards
+- Summary: Sidebar kiri backend direstruktur secara visual dengan profile block, active state yang lebih jelas, promotion panel yang lebih ringkas, pending-order badge stabil, dan token theme backend yang scoped ke bundle `resources/backend`.
+- Impact: Backend memiliki baseline theme dan UI/UX yang konsisten tanpa mengubah frontend publik. Class legacy sidebar tetap dipertahankan agar accordion/menu script lama tetap kompatibel.
+- Files:
+  - `docs/backend-ui-standards.md`
+  - `README.md`
+  - `resources/views/layouts/head.blade.php`
+  - `resources/views/layouts/left-navbar.blade.php`
+  - `resources/backend/scss/app.scss`
+  - `resources/backend/scss/components/_backend-theme.scss`
+  - `resources/backend/scss/components/_backend-sidebar.scss`
+  - `tests/Feature/ProjectStructureStandardTest.php`
+- Follow-up: Redesign halaman backend berikutnya wajib memakai token `backend-*`, asset di `resources/backend`, dan menghindari selector global yang dapat mempengaruhi frontend.
+
+## B6 - Backend Currency Management Redesign
+- Status: completed
+- Area: backend currency, tax, bank account CRUD, backend assets
+- Summary: Halaman Currency direfactor menjadi halaman konfigurasi finance backend dengan rate cards, status external reference rate, tax panel, direktori bank account, modal CRUD konsisten, dan asset per halaman di `resources/backend`.
+- Impact: CRUD currency dan bank account menjadi lebih mudah dipindai, validasi bank account disesuaikan dengan form aktual, serta pemanggilan API kurs eksternal dicache dengan fallback lokal agar halaman tetap cepat dan tidak rapuh saat provider tidak tersedia.
+- Files:
+  - `app/Http/Controllers/UsdRatesController.php`
+  - `app/Http/Controllers/BankAccountController.php`
+  - `resources/views/backend/developer/currency.blade.php`
+  - `resources/views/backend/developer/partials/currency-bank-modal.blade.php`
+  - `resources/backend/js/admin/currency/index.js`
+  - `resources/backend/scss/admin/currency/index-entry.scss`
+  - `resources/backend/scss/admin/currency/_index.scss`
+  - `webpack.mix.js`
+  - `tests/Feature/ProjectStructureStandardTest.php`
+- Follow-up: Jika integrasi kurs eksternal menjadi business-critical, tambahkan scheduled sync ke database dengan audit trail agar rate yang dipakai invoice selalu dapat dilacak.

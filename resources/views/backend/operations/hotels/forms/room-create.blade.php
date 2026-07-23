@@ -1,61 +1,88 @@
 @section('title', __('messages.Hotel Room'))
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/operations/hotels/forms.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/operations/hotels/forms.js') }}" defer></script>
+@endpush
+
 @section('content')
     @extends('layouts.head')
     <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
-        <div class="main-container">
+        <div class="main-container hotel-form-page">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title">
-                            <i class="icon-copy fa fa-briefcase" aria-hidden="true"></i> Add New Room</div>
-                        <nav aria-label="breadcrumb" role="navigation">
+                    <x-backend.page-hero
+                        class="hotel-form-hero"
+                        eyebrow="Room Inventory"
+                        title="Add New Room"
+                        description="Create a room for {{ $hotels->name }} using the shared backend form standard."
+                    >
+                        <x-slot name="action">
+                            <a href="{{ route('admin.hotels.show', $hotels->id) }}#rooms" class="backend-page-primary-action">
+                                <i class="fa fa-arrow-left"></i>
+                                Back to Detail
+                            </a>
+                        </x-slot>
+                    </x-backend.page-hero>
+                    <section class="backend-page-toolbar hotel-form-toolbar">
+                        <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="/hotels-admin">Hotels</a></li>
-                                <li class="breadcrumb-item"><a href="/detail-hotel-{{ $hotels->id }}">{{ $hotels->name }}</a></li>
-                                <li class="breadcrumb-item active">Add New Rooms</li>
+                                <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('hotels-admin.index') }}">Hotel Manager</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.hotels.show', $hotels->id) }}">{{ $hotels->name }}</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Add Room</li>
                             </ol>
                         </nav>
-                    </div>
+                        <div class="backend-page-toolbar__actions">
+                            <span class="backend-status-badge backend-status-badge--draft">Room setup</span>
+                        </div>
+                    </section>
                     @if (count($errors) > 0)
-                        <div class="alert alert-danger">
+                        <div class="backend-feedback hotel-form-feedback">
+                            <div class="backend-alert backend-alert--danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
+                            </div>
                         </div>
                     @endif
                     @if (\Session::has('success'))
-                        <div class="alert alert-success">
+                        <div class="backend-feedback hotel-form-feedback">
+                            <div class="backend-alert backend-alert--success">
                             <ul>
                                 <li>{!! \Session::get('success') !!}</li>
                             </ul>
+                            </div>
                         </div>
                     @endif
                     <div class="row">
-                        {{-- ATTENTIONS --}}
                         <div class="col-md-4 mobile">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div class="card-box">
-                                <div class="card-box-title">
-                                    Detail Rooms
+                            <div class="backend-panel hotel-form-panel">
+                                <div class="backend-section-header hotel-form-panel__heading">
+                                    <div>
+                                        <span class="backend-section-header__label">Room Inventory</span>
+                                        <h2>Detail Rooms</h2>
+                                    </div>
                                 </div>
-                                <div class="card-box-body">
+                                <div class="hotel-form-panel__body">
                                     <form id="add-room" action="{{ route('func.room.add') }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
                                             <div class="col-12 col-sm-12 col-md-12">
                                                 <div class="row">
                                                     <div class="col-12 col-sm-6">
-                                                        <div class="form-group">
-                                                            <label for="cover" class="form-label">Cover Image</label>
+                                                        <div class="backend-form-field">
+                                                            <label for="cover" class="backend-form-label">Cover Image</label>
                                                             <div class="dropzone">
                                                                 <div class="cover-preview-div">
                                                                 </div>
@@ -65,65 +92,65 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <label for="cover" class="form-label">Cover Image </label><br>
-                                                    <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
+                                                <div class="backend-form-field">
+                                                    <label for="cover" class="backend-form-label">Cover Image </label><br>
+                                                    <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
                                                     @error('cover')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <label for="rooms" class="form-label">Rooms Name </label>
-                                                    <input type="text" id="rooms" name="rooms" class="form-control @error('rooms') is-invalid @enderror" placeholder="ex: Superior" value="{{ old('rooms') }}" required>
+                                                <div class="backend-form-field">
+                                                    <label for="rooms" class="backend-form-label">Rooms Name </label>
+                                                    <input type="text" id="rooms" name="rooms" class="backend-form-control @error('rooms') is-invalid @enderror" placeholder="ex: Superior" value="{{ old('rooms') }}" required>
                                                     @error('rooms')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="capacity_adult" class="form-label">Capacity Adult</label>
-                                                    <input type="number" id="capacity_adult" min="1" name="capacity_adult" class="form-control @error('capacity_adult') is-invalid @enderror" placeholder="Insert capacity for adult" value="{{ old('capacity_adult') }}" required>
+                                                <div class="backend-form-field">
+                                                    <label for="capacity_adult" class="backend-form-label">Capacity Adult</label>
+                                                    <input type="number" id="capacity_adult" min="1" name="capacity_adult" class="backend-form-control @error('capacity_adult') is-invalid @enderror" placeholder="Insert capacity for adult" value="{{ old('capacity_adult') }}" required>
                                                     @error('capacity_adult')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="capacity_child" class="form-label">Capacity Child</label>
-                                                    <input type="number" id="capacity_child" name="capacity_child" class="form-control @error('capacity_child') is-invalid @enderror" placeholder="Insert capacity for child" value="{{ old('capacity_child') }}">
+                                                <div class="backend-form-field">
+                                                    <label for="capacity_child" class="backend-form-label">Capacity Child</label>
+                                                    <input type="number" id="capacity_child" name="capacity_child" class="backend-form-control @error('capacity_child') is-invalid @enderror" placeholder="Insert capacity for child" value="{{ old('capacity_child') }}">
                                                     @error('capacity_child')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="room_view" class="form-label">Room View</label>
-                                                    <input required type="text" id="room_view" name="room_view" class="form-control @error('room_view') is-invalid @enderror" value="{{ old('room_view') }}" placeholder="Start typing...">
-                                                    <div id="room-view-suggestions" class="suggestion-box"></div>
+                                                <div class="backend-form-field">
+                                                    <label for="room_view" class="backend-form-label">Room View</label>
+                                                    <input required type="text" id="room_view" name="room_view" class="backend-form-control @error('room_view') is-invalid @enderror" value="{{ old('room_view') }}" placeholder="Start typing..." data-hotel-autocomplete="room-view" data-hotel-autocomplete-url="{{ route('autocomplate.room_view') }}" data-hotel-autocomplete-results="views" data-hotel-autocomplete-target="#room-view-suggestions">
+                                                    <div id="room-view-suggestions" class="hotel-form-suggestions" hidden></div>
                                                     @error('room_view')
                                                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="beds" class="form-label">Bed Type</label>
-                                                    <input required type="text" id="bed_type" name="beds" class="form-control @error('beds') is-invalid @enderror" value="{{ old('beds') }}" placeholder="Start typing...">
-                                                    <div id="bed-type-suggestions" class="suggestion-box"></div>
+                                                <div class="backend-form-field">
+                                                    <label for="beds" class="backend-form-label">Bed Type</label>
+                                                    <input required type="text" id="bed_type" name="beds" class="backend-form-control @error('beds') is-invalid @enderror" value="{{ old('beds') }}" placeholder="Start typing..." data-hotel-autocomplete="bed-type" data-hotel-autocomplete-url="{{ route('autocomplate.bed_type') }}" data-hotel-autocomplete-results="beds" data-hotel-autocomplete-target="#bed-type-suggestions">
+                                                    <div id="bed-type-suggestions" class="hotel-form-suggestions" hidden></div>
                                                     @error('beds')
                                                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="size" class="form-label">Room Size (m²)</label>
-                                                    <input type="number" id="size" name="size" class="form-control @error('size') is-invalid @enderror" value="{{ old('size') }}" placeholder="Insert size...">
+                                                <div class="backend-form-field">
+                                                    <label for="size" class="backend-form-label">Room Size (m²)</label>
+                                                    <input type="number" id="size" name="size" class="backend-form-control @error('size') is-invalid @enderror" value="{{ old('size') }}" placeholder="Insert size...">
                                                     @error('size')
                                                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                                                     @enderror
@@ -132,54 +159,54 @@
                                             <div class="col-md-12">
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="include" class="form-label">Include</label>
-                                                            <textarea id="include" name="include" class="textarea_editor form-control" placeholder="Insert include">{{ old('include') }}</textarea>
+                                                        <div class="backend-form-field">
+                                                            <label for="include" class="backend-form-label">Include</label>
+                                                            <textarea id="include" name="include" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert include">{{ old('include') }}</textarea>
                                                         </div>
                                                         @error('include')
                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="include_traditional" class="form-label">Include (Traditional)</label>
-                                                            <textarea id="include_traditional" name="include_traditional" class="textarea_editor form-control" placeholder="Insert include in Chinese traditional">{{ old('include_traditional') }}</textarea>
+                                                        <div class="backend-form-field">
+                                                            <label for="include_traditional" class="backend-form-label">Include (Traditional)</label>
+                                                            <textarea id="include_traditional" name="include_traditional" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert include in Chinese traditional">{{ old('include_traditional') }}</textarea>
                                                         </div>
                                                         @error('include_traditional')
                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="include_simplified" class="form-label">Include (Simplified)</label>
-                                                            <textarea id="include_simplified" name="include_simplified" class="textarea_editor form-control" placeholder="Insert include in Chinese Simplified">{{ old('include_simplified') }}</textarea>
+                                                        <div class="backend-form-field">
+                                                            <label for="include_simplified" class="backend-form-label">Include (Simplified)</label>
+                                                            <textarea id="include_simplified" name="include_simplified" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert include in Chinese Simplified">{{ old('include_simplified') }}</textarea>
                                                         </div>
                                                         @error('include_simplified')
                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="amenities" class="form-label">Amenities</label>
-                                                            <textarea id="amenities" name="amenities" class="textarea_editor form-control" placeholder="Insert amenities">{{ old('amenities') }}</textarea>
+                                                        <div class="backend-form-field">
+                                                            <label for="amenities" class="backend-form-label">Amenities</label>
+                                                            <textarea id="amenities" name="amenities" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert amenities">{{ old('amenities') }}</textarea>
                                                         </div>
                                                         @error('amenities')
                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="amenities_traditional" class="form-label">Amenities (Traditional)</label>
-                                                            <textarea id="amenities_traditional" name="amenities_traditional" class="textarea_editor form-control" placeholder="Insert amenities in Chinese traditional">{{ old('amenities_traditional') }}</textarea>
+                                                        <div class="backend-form-field">
+                                                            <label for="amenities_traditional" class="backend-form-label">Amenities (Traditional)</label>
+                                                            <textarea id="amenities_traditional" name="amenities_traditional" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert amenities in Chinese traditional">{{ old('amenities_traditional') }}</textarea>
                                                         </div>
                                                         @error('amenities_traditional')
                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="amenities_simplified" class="form-label">Amenities (Simplified)</label>
-                                                            <textarea id="amenities_simplified" name="amenities_simplified" class="textarea_editor form-control" placeholder="Insert amenities in Chinese Simplified">{{ old('amenities_simplified') }}</textarea>
+                                                        <div class="backend-form-field">
+                                                            <label for="amenities_simplified" class="backend-form-label">Amenities (Simplified)</label>
+                                                            <textarea id="amenities_simplified" name="amenities_simplified" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert amenities in Chinese Simplified">{{ old('amenities_simplified') }}</textarea>
                                                         </div>
                                                         @error('amenities_simplified')
                                                             <div class="alert alert-danger">{{ $message }}</div>
@@ -189,50 +216,46 @@
                                             </div>
 
                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="additional_info" class="form-label">Additional Information</label>
-                                                    <textarea id="additional_info" name="additional_info" class="textarea_editor form-control" placeholder="Insert additional information">{{ old('additional_info') }}</textarea>
+                                                <div class="backend-form-field">
+                                                    <label for="additional_info" class="backend-form-label">Additional Information</label>
+                                                    <textarea id="additional_info" name="additional_info" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert additional information">{{ old('additional_info') }}</textarea>
                                                 </div>
                                                 @error('additional_info')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="additional_info_traditional" class="form-label">Additional Information (Traditional)</label>
-                                                    <textarea id="additional_info_traditional" name="additional_info_traditional" class="textarea_editor form-control" placeholder="Insert additional information in Chinese traditional">{{ old('additional_info_traditional') }}</textarea>
+                                                <div class="backend-form-field">
+                                                    <label for="additional_info_traditional" class="backend-form-label">Additional Information (Traditional)</label>
+                                                    <textarea id="additional_info_traditional" name="additional_info_traditional" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert additional information in Chinese traditional">{{ old('additional_info_traditional') }}</textarea>
                                                 </div>
                                                 @error('additional_info_traditional')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="additional_info_simplified" class="form-label">Additional Information (Simplified)</label>
-                                                    <textarea id="additional_info_simplified" name="additional_info_simplified" class="textarea_editor form-control" placeholder="Insert additional information in Chinese Simplified">{{ old('additional_info_simplified') }}</textarea>
+                                                <div class="backend-form-field">
+                                                    <label for="additional_info_simplified" class="backend-form-label">Additional Information (Simplified)</label>
+                                                    <textarea id="additional_info_simplified" name="additional_info_simplified" class="textarea_editor backend-form-control" data-backend-richtext="true" placeholder="Insert additional information in Chinese Simplified">{{ old('additional_info_simplified') }}</textarea>
                                                 </div>
                                                 @error('additional_info_simplified')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                            <input id="hotels_id" name="hotels_id" value="{{ $hotels->id }}" type="hidden">
+                                            <input class="backend-form-control" id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
+                                            <input class="backend-form-control" id="hotels_id" name="hotels_id" value="{{ $hotels->id }}" type="hidden">
                                         </div>
                                     </form>
                                 </div>
-                                <div class="card-box-footer">
-                                    <button type="submit" form="add-room" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add Rooms</button>
-                                    <a href="/detail-hotel-{{ $hotels->id }}">
-                                        <button type="button"class="btn btn-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                    </a>
+                                <div class="backend-form-actions">
+                                    <a href="{{ route('admin.hotels.show', $hotels->id) }}#rooms" class="backend-button backend-button-secondary"><i class="fa fa-times"></i> Cancel</a>
+                                    <button type="submit" form="add-room" class="backend-button backend-button-primary"><i class="fa fa-check" aria-hidden="true"></i> Add Rooms</button>
                                 </div>
                             </div>
                         </div>
-                        {{-- ATTENTIONS --}}
                         <div class="col-md-4 desktop">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                             </div>
                         </div>
                     </div>
@@ -241,83 +264,4 @@
             </div>
         </div>
     @endcan
-    <script>
-        $(document).ready(function() {
-            $('#room_view').on('keyup', function() {
-                let query = $(this).val();
-                if (query.length < 2) {
-                    $('#room-view-suggestions').hide();
-                    return;
-                }
-
-                $.ajax({
-                    url: "{{ route('autocomplate.room_view') }}",
-                    type: "GET",
-                    data: { query: query },
-                    success: function(response) {
-                        let suggestions = response.views;
-                        let dropdown = $('#room-view-suggestions');
-                        dropdown.html('');
-
-                        if (suggestions.length > 0) {
-                            suggestions.forEach(view => {
-                                if (view.name) {
-                                    dropdown.append(`<div class="suggestion-item view-item" data-name="${view.name}">${view.name}</div>`);
-                                }
-                            });
-                            dropdown.show();
-                        } else {
-                            dropdown.hide();
-                        }
-                    }
-                });
-            });
-
-            $('#bed_type').on('keyup', function() {
-                let query = $(this).val();
-                if (query.length < 2) {
-                    $('#bed-type-suggestions').hide();
-                    return;
-                }
-
-                $.ajax({
-                    url: "{{ route('autocomplate.bed_type') }}",
-                    type: "GET",
-                    data: { query: query },
-                    success: function(response) {
-                        let suggestions = response.beds;
-                        let dropdown = $('#bed-type-suggestions');
-                        dropdown.html('');
-
-                        if (suggestions.length > 0) {
-                            suggestions.forEach(bed => {
-                                if (bed.name) {
-                                    dropdown.append(`<div class="suggestion-item bed-item" data-name="${bed.name}">${bed.name}</div>`);
-                                }
-                            });
-                            dropdown.show();
-                        } else {
-                            dropdown.hide();
-                        }
-                    }
-                });
-            });
-
-            $(document).on('click', '.view-item', function() {
-                $('#room_view').val($(this).data('name'));
-                $('#room-view-suggestions').hide();
-            });
-            $(document).on('click', '.bed-item', function() {
-                $('#bed_type').val($(this).data('name'));
-                $('#bed-type-suggestions').hide();
-            });
-
-            $(document).click(function(e) {
-                if (!$(e.target).closest('.search-item').length) {
-                    $('#room-view-suggestions').hide();
-                    $('#bed-type-suggestions').hide();
-                }
-            });
-        });
-    </script>
 @endsection

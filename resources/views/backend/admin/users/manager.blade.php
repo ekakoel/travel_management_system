@@ -1,699 +1,545 @@
+@extends('layouts.head')
+
 @section('title', __('messages.User Manager'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/admin/users/manager.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/admin/users/manager.js') }}" defer></script>
+@endpush
+
 @section('content')
-    @extends('layouts.head')
-    <div class="mobile-menu-overlay"></div>
     @can('posDev')
-        <div class="main-container">
+        @php
+            $selectedSearch = $filters['search'] ?? '';
+            $selectedPosition = $filters['position'] ?? '';
+            $selectedStatus = $filters['status'] ?? '';
+            $selectedApproval = $filters['approval'] ?? '';
+
+            $statusLabel = function ($status) {
+                return $status === 'Block' ? 'Blocked' : ($status ?: 'Unset');
+            };
+
+            $activityLabel = function ($user) use ($now) {
+                if (!$user->session_id) {
+                    return ['label' => 'No recent session', 'state' => 'muted'];
+                }
+
+                $lastSeen = \Carbon\Carbon::parse($user->session_id);
+
+                if ($lastSeen->greaterThanOrEqualTo($now->copy()->subMinutes(5))) {
+                    return ['label' => 'Online now', 'state' => 'online'];
+                }
+
+                return ['label' => 'Seen '.$lastSeen->diffForHumans(), 'state' => 'away'];
+            };
+
+            $profileImage = function ($user) {
+                return $user->profileimg
+                    ? asset('storage/user/profile/'.$user->profileimg)
+                    : asset('storage/user/profile/default_user_img.png');
+            };
+        @endphp
+
+        <div class="main-container user-manager-page">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="title">
-                                <i class="fa fa-users" aria-hidden="true"></i> User Manager
-                            </div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">User Manager</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-                <div class="info-action">
-                    
-                    @if (count($errors) > 0)
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    <x-backend.page-hero class="user-manager-hero">
+                        <x-slot name="kicker">
+                            Access Administration
+                        </x-slot>
+                        <x-slot name="heading">
+                            User Manager
+                        </x-slot>
+                        <x-slot name="copy">
+                            <p>
+                                Manage staff, partner access, verification state, approval status, and account availability from one operational view.
+                            </p>
+                        </x-slot>
+                        <x-slot name="action">
+                            <button type="button" class="backend-page-primary-action" data-toggle="modal" data-target="#user-add">
+                                <i class="fa fa-plus"></i>
+                                Add User
+                            </button>
+                        </x-slot>
+                    </x-backend.page-hero>
+
+                    <section class="backend-page-toolbar user-manager-toolbar">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">User Manager</li>
+                            </ol>
+                        </nav>
+                    </section>
+
+                    @if ($errors->any() || session('success') || session('invalid'))
+                        <section class="backend-feedback user-manager-feedback">
+                            @if ($errors->any())
+                                <div class="backend-alert backend-alert--danger user-manager-alert user-manager-alert--danger">
+                                    <strong>Form needs attention</strong>
+                                    @foreach ($errors->all() as $error)
+                                        <span>{{ $error }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if (session('success'))
+                                <div class="backend-alert backend-alert--success user-manager-alert user-manager-alert--success">
+                                    <strong>{{ session('success') }}</strong>
+                                </div>
+                            @endif
+
+                            @if (session('invalid'))
+                                <div class="backend-alert backend-alert--danger user-manager-alert user-manager-alert--danger">
+                                    <strong>{{ session('invalid') }}</strong>
+                                </div>
+                            @endif
+                        </section>
                     @endif
-                    @if (\Session::has('success'))
-                        <div class="alert alert-success">
-                            <ul>
-                                <li>{!! \Session::get('success') !!}</li>
-                            </ul>
-                        </div>
-                    @endif
-                    @if (\Session::has('invalid'))
-                        <div class="alert alert-danger">
-                            <ul>
-                                <li>{!! \Session::get('invalid') !!}</li>
-                            </ul>
-                        </div>
-                    @endif
-                </div>
-                <div class="row">
-                    {{-- ATTENTIONS --}}
-                    <div class="col-md-4 mobile">
-                        <div class="row">
-                            @include('layouts.attentions')
-                        </div>
-                        <div class="col-md-12">
-                            <div class="card-box">
-                                <div class="card-box-title">
-                                    <div class="subtitle"><i class="icon-copy ion-alert-circled"></i> Activities</div>
-                                </div>
-                                <div class="banner-right">
-                                    <ul class="attention">
-                                        @foreach($notifications as $notification)
-                                            <li>
-                                                <strong>New Agent</strong><br>
-                                                <p>
-                                                    {{ $notification->data['message'] }}
-                                                </p>
-                                                <p>
-                                                    <i>at {{ dateTimeFormat($notification->created_at) }}</i>
-                                                </p>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
+
+                    <section class="backend-kpi-grid backend-kpi-grid--4" aria-label="User summary">
+                        <article class="backend-kpi-card backend-kpi-card--teal">
+                            <div class="backend-kpi-card__icon">
+                                <i class="fa fa-users" aria-hidden="true"></i>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-box">
-                            <div class="card-box-title">
-                                <div class="subtitle">All User</div>
+                            <div>
+                                <span>Total Users</span>
+                                <strong>{{ number_format($summary['total']) }}</strong>
+                                <small>All registered backend and partner accounts</small>
                             </div>
-                            <div class="input-container">
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                    <input id="searchUserByName" type="text" onkeyup="searchUserByName()" class="form-control" name="search-user-byname" placeholder="Search by name">
-                                </div>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                    <input id="searchUserByGroup" type="text" onkeyup="searchUserByGroup()" class="form-control" name="search-user-group" placeholder="Search by group">
-                                </div>
+                        </article>
+                        <article class="backend-kpi-card backend-kpi-card--green">
+                            <div class="backend-kpi-card__icon">
+                                <i class="fa fa-check-circle" aria-hidden="true"></i>
                             </div>
-                            <div class="table-container">
-                                <table id="tbUsers" class="data-table table stripe hover" >
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 10%">No</th>
-                                            <th style="width: 20%">Name</th>
-                                            <th style="width: 20%">Position</th>
-                                            <th style="width: 10%">Status</th>
-                                            <th style="width: 10%">Approval</th>
-                                            <th style="width: 20%">Activity</th>
-                                            <th style="width: 10%">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($users as $no=>$user)
-                                            @php
-                                                $cmi = (int)$now->diffInMinutes($user->session_id);
-                                                $cho = (int)$now->diffInHours($user->session_id);
-                                                $cha = (int)$now->diffInDays($user->session_id);
-                                                $cwe = (int)$now->diffInWeeks($user->session_id);
-                                                $cmo = (int)$now->diffInMonths($user->session_id);
-                                                $cye = (int)$now->diffInYears($user->session_id);
-                                            @endphp
-                                            @if ($user->status == "Block")
-                                                <tr style="background-color: #ffd9d9;">
-                                            @else
-                                                <tr>
-                                            @endif
-                                            @if ($user->status == "Block")
-                                                <td style="color: red;">{{ ++$no }}</td>
-                                                <td style="color: red;">{{ $user->name }}</td>
-                                                <td style="color: red;">{{ $user->position }}</td>
-                                                <td style="color: red;">{{ $user->status }}</td>
-                                                @if ($user->status == "Block")
-                                                    <td style="color: red;"><i class="icon-copy ion-close-circled"></i> Rejected</td>
-                                                @else
-                                                    @if ($user->is_approved == 0)
-                                                        <td style="color: #919191;"><i class="icon-copy ion-ios-clock"></i> Pending</td>
-                                                    @else
-                                                        <td style="color: #005900;"><i class="icon-copy ion-checkmark-circled"></i> Approved</td>
-                                                    @endif
-                                                @endif
-                                                @if (isset($user->session_id))
-                                                    @if ($cmi < 5)
-                                                        <td><div class="online-status">Online</div></td>
-                                                    @elseif ($cmi < 120)
-                                                        <td style="color: red;">{{ $cmi }} <span>Minutes ago</span></td>
-                                                    @elseif($cmi < 1440)
-                                                        <td style="color: red;">{{ $cho }} <span>Hours ago</span></td>
-                                                    @elseif($cmi < 10080)
-                                                        <td style="color: red;">{{ $cha }} <span>Days ago</span></td>
-                                                    @elseif($cmi < 43800)
-                                                        <td style="color: red;">{{ $cwe }} <span>Weeks ago</span></td>
-                                                    @elseif($cmi < 525600)
-                                                        <td style="color: red;">{{ $cmo }} <span>Months ago</span></td>
-                                                    @else
-                                                        <td style="color: red;">{{ $cye }} <span>Years ago</span></td>
-                                                    @endif
-                                                @else
-                                                    <td><div class="online-status">-</div></td>
-                                                @endif
-                                                
-                                            @else
-                                                <td>{{ ++$no }}</td>
-                                                <td>{{ $user->name." (".$user->code.")" }}</td>
-                                                <td>{{ $user->position }}</td>
-                                                <td>@if ($user->status == "Active")
-                                                        <div class="status-active"></div>
-                                                    @elseif ($user->status == "Draft")
-                                                        <div class="status-draft"></div>
-                                                    @elseif ($user->status == "Usedup")
-                                                        <div class="status-usedup"></div>
-                                                    @elseif ($user->status == "Expired")
-                                                        <div class="status-expired"></div>
-                                                    @elseif ($user->status == "Pending")
-                                                        <div class="status-pending"></div>
-                                                    @elseif ($user->status == "Invalid")
-                                                        <div class="status-invalid"></div>
-                                                    @elseif ($user->status == "Rejected")
-                                                        <div class="status-rejected"></div>
-                                                    @else
-                                                    @endif
-                                                </td>
-                                                @if ($user->status == "Block")
-                                                    <td style="color: red;"><i class="icon-copy ion-close-circled"></i> Rejected</td>
-                                                @else
-                                                    @if ($user->is_approved == 0)
-                                                        <td style="color: #919191;"><i class="icon-copy ion-ios-clock"></i> Pending</td>
-                                                    @else
-                                                        <td style="color: #005900;"><i class="icon-copy ion-checkmark-circled"></i> Approved</td>
-                                                    @endif
-                                                @endif
-                                                @if (isset($user->session_id))
-                                                    @if ($cmi < 5)
-                                                        <td><div class="online-status"><p>Online</p></div></td>
-                                                    @elseif ($cmi < 120)
-                                                        <td><p>{{ $cmi }} <span>Minutes ago</span></p></td>
-                                                    @elseif($cmi < 1440)
-                                                        <td><p>{{ $cho }} <span>Hours ago</span></p></td>
-                                                    @elseif($cmi < 10080)
-                                                        <td><p>{{ $cha }} <span>Days ago</span></p></td>
-                                                    @elseif($cmi < 43800)
-                                                        <td><p>{{ $cwe }} <span>Weeks ago</span></p></td>
-                                                    @elseif($cmi < 525600)
-                                                        <td><p>{{ $cmo }} <span>Months ago</span></p></td>
-                                                    @else
-                                                        <td><p>{{ $cye }} <span>Years ago</span></p></td>
-                                                    @endif
-                                                @else
-                                                    <td><p><div class="online-status">-</div></p></td>
-                                                @endif
-                                                
-                                            @endif
-                                            <form id="verified-user-{{ $user->id }}" action="/fverified-user-{{ $user->id }}" method="post" enctype="multipart/form-data">
-                                                @csrf
-                                                @method('put')
-                                                <input type="hidden" name="verified" value="{{ $now }}">
-                                            </form>
-                                            <td class="text-right">
-                                                <div class="table-action">
-                                                    @if ($user->email_verified_at == "")
-                                                        <button type="submit" form="verified-user-{{ $user->id }}" class="btn-validate"><i class="fa fa-check"></i></button>
-                                                    @endif
-                                                    <a href="#" data-toggle="modal" data-target="#user-view-{{ $user->id }}">
-                                                        <button class="btn-view"><i class="dw dw-eye"></i></button>
-                                                    </a>
-                                                    <a href="#" data-toggle="modal" data-target="#user-edit-{{ $user->id }}">
-                                                        <button class="btn-edit"><i class="icon-copy fa fa-edit"></i></button>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {{-- MODAL VIEW USER DETAIL ----------------------------------------------------------------------------------------------------------- --}}
-                                        <div class="modal fade" id="user-view-{{ $user->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">
-                                                    <div class="card-box">
-                                                        <div class="card-box-title">
-                                                            <div class="subtitle"><i class="icon-copy fa fa-user" aria-hidden="true"></i> User Detail</div>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <div class="row">
-                                                                <div class="col-md-3">
-                                                                    <div class="user-manager-img m-b-18">
-                                                                        @if (Auth::user()->profileimg == '')
-                                                                                <img src="{{ asset('storage/user/profile/default_user_img.png') }}" alt="{{ Auth::user()->name }}">
-                                                                        @else
-                                                                                <img src="{{ asset('storage/user/profile' . '/' . Auth::user()->profileimg) }}" alt="{{ Auth::user()->name }}">
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-3 col-md-2">
-                                                                    <p>Name</p>
-                                                                    <p>Username</p>
-                                                                    <p>Email</p>
-                                                                    <p>Phone</p>
-                                                                    <p>Type</p>
-                                                                    <p>Position</p>
-                                                                    <p>Address</p>
-                                                                    <p>Registered Date</p>
-                                                                    <p>Activity</p>
-                                                                </div>
-                                                                <div class="col-9 col-md-6">
-                                                                    <P>: {{ $user->name }}</P>
-                                                                    <P>: {{ $user->username }}</P>
-                                                                    <P>: {{ $user->email }}</P>
-                                                                    <P>: {{ $user->phone }}</P>
-                                                                    <P>: {{ $user->type }}</P>
-                                                                    <P>: {{ $user->position }}</P>
-                                                                    <P>: {{ $user->address." - ".$user->country }}</P>
-                                                                    <P>: {{ dateFormat($user->created_at) }}</P>
-                                                                    @if ($cmi < 5)
-                                                                        <p><div class="online-status">: Online</div></p>
-                                                                    @elseif ($cmi < 120)
-                                                                        <p>: {{ $cmi }} <span>Minutes ago</span></p>
-                                                                    @elseif($cmi < 1140)
-                                                                        <p>: {{ $cho }} <span>Hours ago</span></p>
-                                                                    @elseif($cmi < 10080)
-                                                                        <p>: {{ $cha }} <span>Days ago</span></p>
-                                                                    @elseif($cmi < 43800)
-                                                                        <p>: {{ $cwe }} <span>Weeks ago</span></p>
-                                                                    @elseif($cmi < 525600)
-                                                                        <p>: {{ $cmo }} <span>Months ago</span></p>
-                                                                    @else
-                                                                        <p>: {{ $cye }} <span>Years ago</span></p>
-                                                                    @endif
-                                                                </div>
+                            <div>
+                                <span>Active</span>
+                                <strong>{{ number_format($summary['active']) }}</strong>
+                                <small>Accounts currently allowed to sign in</small>
+                            </div>
+                        </article>
+                        <article class="backend-kpi-card backend-kpi-card--amber">
+                            <div class="backend-kpi-card__icon">
+                                <i class="fa fa-hourglass-half" aria-hidden="true"></i>
+                            </div>
+                            <div>
+                                <span>Pending Approval</span>
+                                <strong>{{ number_format($summary['pendingApproval']) }}</strong>
+                                <small>Need developer review before full access</small>
+                            </div>
+                        </article>
+                        <article class="backend-kpi-card backend-kpi-card--blue">
+                            <div class="backend-kpi-card__icon">
+                                <i class="fa fa-circle" aria-hidden="true"></i>
+                            </div>
+                            <div>
+                                <span>Online</span>
+                                <strong>{{ number_format($summary['online']) }}</strong>
+                                <small>Seen in the last 5 minutes</small>
+                            </div>
+                        </article>
+                    </section>
+
+                    <section class="user-manager-layout">
+                        <div class="user-manager-main">
+                            <div class="backend-panel user-manager-panel user-manager-directory-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Directory</span>
+                                        <h2>User Access Directory</h2>
+                                        <p>{{ $users->total() }} matching records. Use filters to review role, access, approval, and activity status.</p>
+                                    </div>
+                                </div>
+
+                                <form class="backend-filter-panel backend-filter-grid user-manager-filter" method="GET" action="{{ route('user-manager') }}">
+                                    <label class="backend-filter-field">
+                                        <span>Search</span>
+                                        <input class="backend-form-control" type="search" name="search" value="{{ $selectedSearch }}" placeholder="Name, username, email, code, office">
+                                    </label>
+                                    <label class="backend-filter-field">
+                                        <span>Group</span>
+                                        <select class="backend-form-control" name="position">
+                                            <option value="">All groups</option>
+                                            @foreach ($positions as $value => $label)
+                                                <option value="{{ $value }}" @selected($selectedPosition === $value)>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
+                                    <label class="backend-filter-field">
+                                        <span>Status</span>
+                                        <select class="backend-form-control" name="status">
+                                            <option value="">All statuses</option>
+                                            @foreach ($statuses as $value => $label)
+                                                <option value="{{ $value }}" @selected($selectedStatus === $value)>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
+                                    <label class="backend-filter-field">
+                                        <span>Approval</span>
+                                        <select class="backend-form-control" name="approval">
+                                            <option value="">All approvals</option>
+                                            <option value="approved" @selected($selectedApproval === 'approved')>Approved</option>
+                                            <option value="pending" @selected($selectedApproval === 'pending')>Pending</option>
+                                        </select>
+                                    </label>
+                                    <div class="backend-filter-actions user-manager-filter__actions">
+                                        <button type="submit" class="backend-button backend-button-primary">
+                                            <i class="fa fa-filter"></i>
+                                            Apply
+                                        </button>
+                                        <a href="{{ route('user-manager') }}" class="user-manager-secondary-action">Reset</a>
+                                    </div>
+                                </form>
+
+                                <div class="backend-table-wrap user-manager-table-wrap">
+                                    <table class="backend-table user-manager-table">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Group</th>
+                                                <th>Status</th>
+                                                <th>Approval</th>
+                                                <th>Activity</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($users as $user)
+                                                @php
+                                                    $activity = $activityLabel($user);
+                                                    $isBlocked = $user->status === 'Block';
+                                                @endphp
+                                                <tr class="{{ $isBlocked ? 'is-blocked' : '' }}">
+                                                    <td data-label="User">
+                                                        <div class="user-manager-person">
+                                                            <img src="{{ $profileImage($user) }}" alt="{{ $user->name }}">
+                                                            <div>
+                                                                <strong>{{ $user->name }}</strong>
+                                                                <span>{{ $user->email }}</span>
+                                                                <small>{{ $user->username }}{{ $user->code ? ' / '.$user->code : '' }}</small>
                                                             </div>
                                                         </div>
-                                                        <div class="card-box-footer">
-                                                            @if ($user->status == "Active")
-                                                                <form id="approve-user-{{ $user->id }}" action="/fapprove-user-{{ $user->id }}" method="post" enctype="multipart/form-data">
+                                                    </td>
+                                                    <td data-label="Group">
+                                                        <strong>{{ $positions[$user->position] ?? ucfirst((string) $user->position) }}</strong>
+                                                        <span>{{ $types[$user->type] ?? ucfirst((string) $user->type) }}</span>
+                                                    </td>
+                                                    <td data-label="Status">
+                                                        <span class="backend-status-badge {{ $isBlocked ? 'backend-status-badge--danger' : 'backend-status-badge--success' }} user-manager-badge {{ $isBlocked ? 'is-danger' : 'is-success' }}">{{ $statusLabel($user->status) }}</span>
+                                                    </td>
+                                                    <td data-label="Approval">
+                                                        <span class="backend-status-badge {{ $user->is_approved ? 'backend-status-badge--success' : 'backend-status-badge--warning' }} user-manager-badge {{ $user->is_approved ? 'is-success' : 'is-warning' }}">
+                                                            {{ $user->is_approved ? 'Approved' : 'Pending' }}
+                                                        </span>
+                                                        <small>{{ $user->email_verified_at ? 'Verified' : 'Email unverified' }}</small>
+                                                    </td>
+                                                    <td data-label="Activity">
+                                                        <span class="user-manager-activity is-{{ $activity['state'] }}">{{ $activity['label'] }}</span>
+                                                    </td>
+                                                    <td data-label="Actions">
+                                                        <div class="backend-table-actions user-manager-row-actions">
+                                                            @if (!$user->email_verified_at)
+                                                                <form action="{{ route('verified-user', $user->id) }}" method="POST">
                                                                     @csrf
                                                                     @method('put')
-                                                                    <input type="hidden" name="note" value="Aprroved user {{ $user->id }}">
+                                                                    <input type="hidden" name="verified" value="{{ $now->toDateTimeString() }}">
+                                                                    <button type="submit" class="user-manager-icon-action" title="Verify email">
+                                                                        <i class="fa fa-check"></i>
+                                                                    </button>
                                                                 </form>
-                                                                @if ($user->is_approved == 0)
-                                                                    <button type="submit" form="approve-user-{{ $user->id }}" class="btn btn-primary"><i class="icon-copy ion-checkmark-circled"></i> Approve</button>
-                                                                @endif
                                                             @endif
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                                            <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-view-{{ $user->id }}" title="View user">
+                                                                <i class="dw dw-eye"></i>
+                                                            </button>
+                                                            <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-edit-{{ $user->id }}" title="Edit user">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                            <form action="{{ route('remove-user', $user->id) }}" method="POST" data-confirm-delete="Remove {{ $user->name }}? If related records exist, the account will be blocked instead.">
+                                                                @csrf
+                                                                @method('delete')
+                                                                <button type="submit" class="user-manager-icon-action is-danger" title="Remove user">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                            </form>
                                                         </div>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6">
+                                                        <div class="backend-table-empty user-manager-empty">
+                                                            <i class="fa fa-users"></i>
+                                                            <strong>No users found</strong>
+                                                            <span>Try adjusting the filters or add a new user.</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="backend-table-card-list user-manager-mobile-list" aria-label="User access directory mobile view">
+                                    @forelse ($users as $user)
+                                        @php
+                                            $activity = $activityLabel($user);
+                                            $isBlocked = $user->status === 'Block';
+                                        @endphp
+                                        <article class="backend-table-card user-manager-mobile-card {{ $isBlocked ? 'is-blocked' : '' }}">
+                                            <div class="user-manager-mobile-card__section">
+                                                <span class="backend-table-card__label user-manager-mobile-card__label">User</span>
+                                                <div class="user-manager-person">
+                                                    <img src="{{ $profileImage($user) }}" alt="{{ $user->name }}">
+                                                    <div>
+                                                        <strong>{{ $user->name }}</strong>
+                                                        <span>{{ $user->email }}</span>
+                                                        <small>{{ $user->username }}{{ $user->code ? ' / '.$user->code : '' }}</small>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        {{-- MODAL EDIT User ----------------------------------------------------------------------------------------------------------- --}}
-                                        <div class="modal fade" id="user-edit-{{ $user->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">
-                                                    <div class="card-box">
-                                                        <div class="card-box-title">
-                                                            <div class="title"><i class="fa fa-pencil"></i>Edit User</div>
-                                                        </div>
-                                                        <form id="update-user-{{ $user->id }}" action="/fedit-user-{{ $user->id }}" method="post" enctype="multipart/form-data">
+                                            <div class="user-manager-mobile-card__section">
+                                                <span class="backend-table-card__label user-manager-mobile-card__label">Group</span>
+                                                <strong>{{ $positions[$user->position] ?? ucfirst((string) $user->position) }}</strong>
+                                                <span>{{ $types[$user->type] ?? ucfirst((string) $user->type) }}</span>
+                                            </div>
+                                            <div class="user-manager-mobile-card__section">
+                                                <span class="backend-table-card__label user-manager-mobile-card__label">Status</span>
+                                                <span class="backend-status-badge {{ $isBlocked ? 'backend-status-badge--danger' : 'backend-status-badge--success' }} user-manager-badge {{ $isBlocked ? 'is-danger' : 'is-success' }}">{{ $statusLabel($user->status) }}</span>
+                                            </div>
+                                            <div class="user-manager-mobile-card__section">
+                                                <span class="backend-table-card__label user-manager-mobile-card__label">Approval</span>
+                                                <span class="backend-status-badge {{ $user->is_approved ? 'backend-status-badge--success' : 'backend-status-badge--warning' }} user-manager-badge {{ $user->is_approved ? 'is-success' : 'is-warning' }}">
+                                                    {{ $user->is_approved ? 'Approved' : 'Pending' }}
+                                                </span>
+                                                <small>{{ $user->email_verified_at ? 'Verified' : 'Email unverified' }}</small>
+                                            </div>
+                                            <div class="user-manager-mobile-card__section">
+                                                <span class="backend-table-card__label user-manager-mobile-card__label">Activity</span>
+                                                <span class="user-manager-activity is-{{ $activity['state'] }}">{{ $activity['label'] }}</span>
+                                            </div>
+                                            <div class="user-manager-mobile-card__section">
+                                                <span class="backend-table-card__label user-manager-mobile-card__label">Actions</span>
+                                                <div class="backend-table-actions user-manager-row-actions">
+                                                    @if (!$user->email_verified_at)
+                                                        <form action="{{ route('verified-user', $user->id) }}" method="POST">
                                                             @csrf
                                                             @method('put')
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="type" class="form-label">Type </label>
-                                                                                <select name="type" id="type" class="custom-select @error('type') is-invalid @enderror">
-                                                                                    <option selected value="{{ $user->type }}"><p>{{ $user->type }}</p></option>
-                                                                                    <option value="admin"><p>Admin</p></option>
-                                                                                    <option value="user"><p>User</p></option>
-                                                                                </select>
-                                                                                @error('type')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="positionInput" class="form-label">Group </label>
-                                                                                <select name="position" id="positionInput" class="custom-select @error('position') is-invalid @enderror">
-                                                                                    <option selected value="{{ $user->position }}"><p>{{ $user->position }}</p></option>
-                                                                                        <option {{ $user->position == "developer"?"selected":""; }} value="developer"><p>Developer</p></option>
-                                                                                        <option {{ $user->position == "weddingDvl"?"selected":""; }} value="weddingDvl"><p>Wedding Developer</p></option>
-                                                                                        <option {{ $user->position == "weddingRsv"?"selected":""; }}value="weddingRsv"><p>Wedding Reservation</p></option>
-                                                                                        <option {{ $user->position == "weddingSls"?"selected":""; }} value="weddingSls"><p>Wedding Sales</p></option>
-                                                                                        <option {{ $user->position == "weddingAuthor"?"selected":""; }} value="weddingAuthor"><p>Wedding Author</p></option>
-                                                                                        <option {{ $user->position == "reservation"?"selected":""; }} value="reservation"><p>Reservation</p></option>
-                                                                                        <option {{ $user->position == "staff"?"selected":""; }} value="staff"><p>Staff</p></option>
-                                                                                        <option {{ $user->position == "agent"?"selected":""; }} value="agent"><p>Agent</p></option>
-                                                                                </select>
-                                                                                @error('position')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="statusSelect" class="form-label">Status </label>
-                                                                                <select name="status" id="statusSelect" class="custom-select @error('status') is-invalid @enderror">
-                                                                                    @if (isset($user->status))
-                                                                                        <option selected value="{{ $user->status }}"><p>{{ $user->status }}</p></option>
-                                                                                    @else
-                                                                                        <option selected value="">Select status</option>
-                                                                                    @endif
-                                                                                    @if ($user->status == "Active")
-                                                                                        <option value="Block">Block</option>
-                                                                                    @elseif($user->status == "Block")
-                                                                                        <option value="Active">Active</option>
-                                                                                    @else
-                                                                                        <option value="Block">Block</option>
-                                                                                        <option value="Active">Active</option>
-                                                                                    @endif
-                                                                                </select>
-                                                                                @error('status')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="codeInput" class="form-label">Code </label>
-                                                                                <input type="text" id="codeInput" name="code" class="form-control @error('code') is-invalid @enderror" placeholder="Insert User Code" value="{{ $user->code }}">
-                                                                                @error('code')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="nameInput" class="form-label">Name </label>
-                                                                                <input type="text" id="nameInput" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Full Name" value="{{ $user->name }}">
-                                                                                @error('name')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="userNameInput" class="form-label">Username </label>
-                                                                                <input type="text" id="userNameInput" name="username" class="form-control @error('username') is-invalid @enderror" placeholder="Insert Username" value="{{ $user->username }}">
-                                                                                @error('username')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="emailInput" class="form-label">Email </label>
-                                                                                <input type="text" id="emailInput" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Insert Email" value="{{ $user->email }}">
-                                                                                @error('email')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="phoneInput" class="form-label">Telephone </label>
-                                                                                <input type="text" id="phoneInput" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ $user->phone }}">
-                                                                                @error('phone')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="officeInput" class="form-label">Office </label>
-                                                                                <input type="text" id="officeInput" name="office" class="form-control @error('office') is-invalid @enderror" placeholder="Insert Office Name" value="{{ $user->office }}">
-                                                                                @error('office')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="addressInput" class="form-label">Address </label>
-                                                                                <input type="text" id="addressInput" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Insert Address" value="{{ $user->address }}">
-                                                                                @error('address')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <div class="form-group">
-                                                                                <label for="countryInput" class="form-label">Country </label>
-                                                                                <input type="text" id="countryInput" name="country" class="form-control @error('country') is-invalid @enderror" placeholder="Insert Country" value="{{ $user->country }}">
-                                                                                @error('country')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-8">
-                                                                            <div class="form-group">
-                                                                                <label for="commentInput" class="form-label">Comment</label>
-                                                                                <input type="text" id="commentInput" name="comment" class="form-control @error('comment') is-invalid @enderror" placeholder="Insert comment" value="{{ $user->comment }}">
-                                                                                @error('comment')
-                                                                                    <span class="invalid-feedback">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                                            </div>
+                                                            <input type="hidden" name="verified" value="{{ $now->toDateTimeString() }}">
+                                                            <button type="submit" class="user-manager-icon-action" title="Verify email">
+                                                                <i class="fa fa-check"></i>
+                                                            </button>
                                                         </form>
-                                                        <div class="card-box-footer">
-                                                            <button type="submit" form="update-user-{{ $user->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save</button>
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                                        </div>
-                                                    </div>
+                                                    @endif
+                                                    <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-view-{{ $user->id }}" title="View user">
+                                                        <i class="dw dw-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-edit-{{ $user->id }}" title="Edit user">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <form action="{{ route('remove-user', $user->id) }}" method="POST" data-confirm-delete="Remove {{ $user->name }}? If related records exist, the account will be blocked instead.">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button type="submit" class="user-manager-icon-action is-danger" title="Remove user">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
+                                        </article>
+                                    @empty
+                                        <div class="backend-table-empty user-manager-empty">
+                                            <i class="fa fa-users"></i>
+                                            <strong>No users found</strong>
+                                            <span>Try adjusting the filters or add a new user.</span>
                                         </div>
-                                        {{-- END MODAL EDIT SERVICE ----------------------------------------------------------------------------------------------------------- --}}
-                                    @endforeach
-                                    </tbody>
-                                </table>
+                                    @endforelse
+                                </div>
+
+                                <div class="user-manager-pagination">
+                                    {{ $users->links() }}
+                                </div>
                             </div>
-                            <div class="card-box-footer">
-                                <a href="#" data-toggle="modal" data-target="#user-add">
-                                    <button class="btn btn-primary"><i class="icon-copy fa fa-plus"></i> Add User</button>
-                                </a>
-                            </div>
-                            {{-- MODAL ADD USER ----------------------------------------------------------------------------------------------------------- --}}
-                            <div class="modal fade" id="user-add" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="card-box">
-                                            <div class="card-box-title">
-                                                <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add New User</div>
+                        </div>
+
+                        <aside class="user-manager-side">
+                            <section class="backend-panel user-manager-panel user-manager-panel--compact">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Review Queue</span>
+                                        <h2>Pending Work</h2>
+                                    </div>
+                                </div>
+                                <div class="user-manager-review-list">
+                                    <div>
+                                        <strong>{{ number_format($summary['pendingApproval']) }}</strong>
+                                        <span>Approval pending</span>
+                                    </div>
+                                    <div>
+                                        <strong>{{ number_format($summary['blocked']) }}</strong>
+                                        <span>Blocked accounts</span>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="backend-panel user-manager-panel user-manager-panel--compact">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Activity</span>
+                                        <h2>Recent Notifications</h2>
+                                    </div>
+                                </div>
+                                <div class="user-manager-notes">
+                                    @forelse ($notifications as $notification)
+                                        <article>
+                                            <strong>{{ $notification->data['title'] ?? 'New Agent' }}</strong>
+                                            <p>{{ $notification->data['message'] ?? 'A new notification is available.' }}</p>
+                                            <small>{{ $notification->created_at->diffForHumans() }}</small>
+                                        </article>
+                                    @empty
+                                        <article>
+                                            <strong>No recent notifications</strong>
+                                            <p>Registration and agent updates will appear here.</p>
+                                        </article>
+                                    @endforelse
+                                </div>
+                            </section>
+                        </aside>
+                    </section>
+
+                    @foreach ($users as $user)
+                        @php
+                            $activity = $activityLabel($user);
+                        @endphp
+                        <div class="modal fade user-manager-modal" id="user-view-{{ $user->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="user-manager-modal__header">
+                                        <div>
+                                            <span>User Detail</span>
+                                            <h3>{{ $user->name }}</h3>
+                                        </div>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="user-manager-modal__body">
+                                        <div class="user-manager-profile">
+                                            <img src="{{ $profileImage($user) }}" alt="{{ $user->name }}">
+                                            <div>
+                                                <span class="backend-status-badge {{ $user->status === 'Block' ? 'backend-status-badge--danger' : 'backend-status-badge--success' }} user-manager-badge {{ $user->status === 'Block' ? 'is-danger' : 'is-success' }}">{{ $statusLabel($user->status) }}</span>
+                                                <h4>{{ $user->name }}</h4>
+                                                <p>{{ $user->email }}</p>
                                             </div>
-                                            <form id="add-user" method="POST" action="{{ route('create-user') }}">
+                                        </div>
+                                        <dl class="user-manager-detail-grid">
+                                            <div><dt>Username</dt><dd>{{ $user->username }}</dd></div>
+                                            <div><dt>Code</dt><dd>{{ $user->code ?: '-' }}</dd></div>
+                                            <div><dt>Type</dt><dd>{{ $types[$user->type] ?? ucfirst((string) $user->type) }}</dd></div>
+                                            <div><dt>Group</dt><dd>{{ $positions[$user->position] ?? ucfirst((string) $user->position) }}</dd></div>
+                                            <div><dt>Phone</dt><dd>{{ $user->phone ?: '-' }}</dd></div>
+                                            <div><dt>Office</dt><dd>{{ $user->office ?: '-' }}</dd></div>
+                                            <div><dt>Country</dt><dd>{{ $user->country ?: '-' }}</dd></div>
+                                            <div><dt>Approval</dt><dd>{{ $user->is_approved ? 'Approved' : 'Pending' }}</dd></div>
+                                            <div><dt>Email</dt><dd>{{ $user->email_verified_at ? 'Verified' : 'Unverified' }}</dd></div>
+                                            <div><dt>Activity</dt><dd>{{ $activity['label'] }}</dd></div>
+                                            <div class="is-wide"><dt>Address</dt><dd>{{ $user->address ?: '-' }}</dd></div>
+                                            <div class="is-wide"><dt>Comment</dt><dd>{{ $user->comment ?: '-' }}</dd></div>
+                                        </dl>
+                                    </div>
+                                    <div class="user-manager-modal__footer">
+                                        @if ($user->status === 'Active' && !$user->is_approved)
+                                            <form action="{{ route('approve-user', $user->id) }}" method="POST">
                                                 @csrf
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="nameInput" class="form-label">Name </label>
-                                                            <input type="text" id="nameInput" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Full Name" value="{{ old('name') }}" required>
-                                                            @error('name')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="userNameInput" class="form-label">Username </label>
-                                                            <input type="text" id="userNameInput" name="username" class="form-control @error('username') is-invalid @enderror" placeholder="Insert Username" value="{{ old('username') }}" required>
-                                                            @error('username')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="position" class="form-label">Position <span>*</span></label>
-                                                            <select name="position" id="position"  type="text" class="custom-select @error('position') is-invalid @enderror" placeholder="Select position" required>
-                                                                <option selected value=""><p>Select Position</p></option>
-                                                                <option value="developer"><p>Developer</p></option>
-                                                                <option value="weddingDvl"><p>Wedding Developer</p></option>
-                                                                <option value="weddingRsv"><p>Wedding Reservation</p></option>
-                                                                <option value="weddingSls"><p>Wedding Sales</p></option>
-                                                                <option value="weddingAuthor"><p>Wedding Author</p></option>
-                                                                <option value="reservation"><p>Reservation</p></option>
-                                                                <option value="staff"><p>Staff</p></option>
-                                                                <option value="agent"><p>Agent</p></option>
-                                                            </select>
-                                                            @error('position')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="codeInput" class="form-label">Code </label>
-                                                            <input type="text" id="codeInput" name="code" class="form-control @error('code') is-invalid @enderror" placeholder="Insert User Code" value="{{ old('code') }}" required>
-                                                            @error('code')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="emailInput" class="form-label">Email </label>
-                                                            <input type="text" id="emailInput" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Insert Email" value="{{ old('email') }}" required>
-                                                            @error('email')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="phoneInput" class="form-label">Telephone </label>
-                                                            <input type="text" id="phoneInput" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ old('phone') }}" required>
-                                                            @error('phone')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="officeInput" class="form-label">Office </label>
-                                                            <input type="text" id="officeInput" name="office" class="form-control @error('office') is-invalid @enderror" placeholder="Insert Office Name" value="{{ old('office') }}" required>
-                                                            @error('office')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="addressInput" class="form-label">Address </label>
-                                                            <input type="text" id="addressInput" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Insert Address" value="{{ old('address') }}" required>
-                                                            @error('address')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="countryInput" class="form-label">Country </label>
-                                                            <input type="text" id="countryInput" name="country" class="form-control @error('country') is-invalid @enderror" placeholder="Insert Country" value="{{ old('country') }}" required>
-                                                            @error('country')
-                                                                <span class="invalid-feedback">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    
-                                                </div>
-                                            
-                                                <hr class="form-hr">
-                                                <p class="form-notif">
-                                                    Make sure all the data is filled in correctly before the new user is added!.
-                                                </p>
+                                                @method('put')
+                                                <button type="submit" class="backend-button backend-button-primary">
+                                                    <i class="fa fa-check"></i>
+                                                    Approve
+                                                </button>
                                             </form>
-                                            <div class="card-box-footer">
-                                                <button type="submit" form="add-user" class="btn btn-primary ms-auto"><i class="fa fa-check"></i> Add User</button>
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
-                                            </div>
-                                        </div>
+                                        @endif
+                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {{-- ATTENTIONS --}}
-                    <div class="col-md-4 desktop">
-                        <div class="row">
-                            @include('layouts.attentions')
+
+                        <div class="modal fade user-manager-modal" id="user-edit-{{ $user->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="user-manager-modal__header">
+                                        <div>
+                                            <span>Edit Access</span>
+                                            <h3>{{ $user->name }}</h3>
+                                        </div>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form id="update-user-{{ $user->id }}" action="{{ route('edit-user', $user->id) }}" method="POST">
+                                        @csrf
+                                        @method('put')
+                                        <div class="user-manager-modal__body">
+                                            @include('backend.admin.users.partials.manager-form', [
+                                                'mode' => 'edit',
+                                                'user' => $user,
+                                                'positions' => $positions,
+                                                'statuses' => $statuses,
+                                                'types' => $types,
+                                            ])
+                                        </div>
+                                        <div class="user-manager-modal__footer">
+                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="backend-button backend-button-primary">
+                                                <i class="fa fa-check"></i>
+                                                Save User
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="card-box">
-                                <div class="card-box-title">
-                                    <div class="subtitle"><i class="icon-copy ion-alert-circled"></i> Activities</div>
+                    @endforeach
+
+                    <div class="modal fade user-manager-modal" id="user-add" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="user-manager-modal__header">
+                                    <div>
+                                        <span>New Access</span>
+                                        <h3>Add User</h3>
+                                    </div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
-                                <div class="banner-right">
-                                    <ul class="attention">
-                                        @foreach($notifications as $notification)
-                                            <li>
-                                                <strong>New Agent</strong><br>
-                                                <p>
-                                                    {{ $notification->data['message'] }}
-                                                </p>
-                                                <p>
-                                                    <i>at {{ dateTimeFormat($notification->created_at) }}</i>
-                                                </p>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
+                                <form id="add-user" method="POST" action="{{ route('create-user') }}">
+                                    @csrf
+                                    <div class="user-manager-modal__body">
+                                        @include('backend.admin.users.partials.manager-form', [
+                                            'mode' => 'create',
+                                            'user' => null,
+                                            'positions' => $positions,
+                                            'statuses' => $statuses,
+                                            'types' => $types,
+                                        ])
+                                        <p class="user-manager-help">Default password is set to 1234567890. Ask the user to change it after first login.</p>
+                                    </div>
+                                    <div class="user-manager-modal__footer">
+                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="backend-button backend-button-primary">
+                                            <i class="fa fa-check"></i>
+                                            Add User
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-                @include('layouts.footer')
-                </div>
             </div>
         </div>
     @endcan
-    <script>
-        function searchUserByName() {
-            let input = document.getElementById("searchUserByName").value.toLowerCase();
-            let table = document.getElementById("tbUsers");
-            let rows = table.getElementsByTagName("tr");
-            
-            for (let i = 1; i < rows.length; i++) { // Mulai dari 1 agar tidak memfilter header
-                let nameCell = rows[i].getElementsByTagName("td")[1]; // Kolom Name
-                if (nameCell) {
-                    let nameText = nameCell.textContent.toLowerCase();
-                    rows[i].style.display = nameText.includes(input) ? "" : "none";
-                }
-            }
-        }
-
-        function searchUserByGroup() {
-            let input = document.getElementById("searchUserByGroup").value.toLowerCase();
-            let table = document.getElementById("tbUsers");
-            let rows = table.getElementsByTagName("tr");
-            
-            for (let i = 1; i < rows.length; i++) { // Mulai dari 1 agar tidak memfilter header
-                let positionCell = rows[i].getElementsByTagName("td")[2]; // Kolom Position (Group)
-                if (positionCell) {
-                    let positionText = positionCell.textContent.toLowerCase();
-                    rows[i].style.display = positionText.includes(input) ? "" : "none";
-                }
-            }
-        }
-
-    </script>
 @endsection

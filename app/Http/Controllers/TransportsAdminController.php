@@ -5,13 +5,13 @@ use Carbon\Carbon;
 use App\Models\Tax;
 use App\Models\UserLog;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use App\Models\Transports;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\TransportType;
 use App\Models\TransportBrand;
 use App\Models\TransportPrice;
+use App\Models\TransportsImages;
 use App\Models\BusinessProfile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -34,7 +34,7 @@ class TransportsAdminController extends Controller
         $archivetransports=Transports::where('status', '=','Archived')->get();
         $drafttransports=Transports::where('status', '=','Draft')->get();
         $usdrates = UsdRates::where('name','USD')->first();
-        return view('admin.transportsadmin', compact('activetransports'),[
+        return view('backend.operations.transports.index', compact('activetransports'),[
             'usdrates'=>$usdrates,
             "cactivetransports" => $cactivetransports,
             "activetransports" => $activetransports,
@@ -50,14 +50,12 @@ class TransportsAdminController extends Controller
             $transports = Transports::all();
             $type = TransportType::all();
             $brand = TransportBrand::all();
-            $attentions = Attention::where('page','add-transport')->get();
             return view('backend.operations.transports.forms.create',[
-                'attentions'=>$attentions,
                 'type'=>$type,
                 'brand'=>$brand,
             ])->with('transports',$transports);
         }else{
-            return redirect("/transports-admin")->with('error','Akses ditolak');
+            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
         }
     }
 
@@ -68,16 +66,14 @@ class TransportsAdminController extends Controller
             $transport=Transports::findOrFail($id);
             $type = TransportType::all();
             $brand = TransportBrand::all();
-            $attentions = Attention::where('page','edit-transport')->get();
             $usdrates=UsdRates::where('name','USD')->first();
             return view('backend.operations.transports.forms.edit',[
                 'usdrates'=>$usdrates,
                 'type'=>$type,
                 'brand'=>$brand,
-                'attentions'=>$attentions,
             ])->with('transport',$transport);
         }else{
-            return redirect("/transports-admin")->with('error','Akses ditolak');
+            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
         }
     }
 
@@ -89,12 +85,10 @@ class TransportsAdminController extends Controller
         $business = BusinessProfile::where('id','=',1)->first();
         $transport = Transports::find($id);
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','detail-transport')->get();
         $prices = TransportPrice::where('transports_id',$id)->orderBy('created_at', 'desc')->get();
-        return view('admin.transportsadmindetail',[
+        return view('backend.operations.transports.detail',[
             'taxes'=>$taxes,
             'prices'=>$prices,
-            'attentions'=>$attentions,
             'usdrates'=>$usdrates,
             'now' => $now,
             'business'=>$business,
@@ -145,9 +139,9 @@ class TransportsAdminController extends Controller
                     "note" =>$note, 
                 ]);
                 $user_log->save();
-                return redirect("/detail-transport-$transport->id")->with('success','The Transportation has been Added!');
+                return redirect()->route('admin.transports.show', $transport->id)->with('success','The Transportation has been Added!');
             }else{
-                return redirect("/transports-admin")->with('error','Akses ditolak');
+                return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
             }
         }
 // Function Add Transports Price =========================================================================================>
@@ -186,9 +180,9 @@ class TransportsAdminController extends Controller
                     "note" =>$note, 
                 ]);
                 $user_log->save();
-                return redirect("/detail-transport-$request->transports_id")->with('success','The Price has been Added!');
+                return redirect()->route('admin.transports.show', $request->transports_id)->with('success','The Price has been Added!');
             }else{
-                return redirect("/transports-admin")->with('error','Akses ditolak');
+                return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
             }
         }
 
@@ -219,6 +213,16 @@ class TransportsAdminController extends Controller
                 "status"=>$request->status,
                 "author_id"=>$request->author,
             ]);
+            if($request->hasFile("images")){
+                foreach($request->file("images") as $image){
+                    $imageName=time().'_'.$image->getClientOriginalName();
+                    $image->move("storage/transports/transports-gallery/",$imageName);
+                    TransportsImages::create([
+                        "transports_id"=>$transport->id,
+                        "image"=>$imageName,
+                    ]);
+                }
+            }
             // USER LOG
             $action = "Update Transportation";
             $service = "Transportation";
@@ -236,9 +240,9 @@ class TransportsAdminController extends Controller
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-transport-$transport->id")->with('success','The Transportation has been successfully updated!');
+            return redirect()->route('admin.transports.show', $transport->id)->with('success','The Transportation has been successfully updated!');
         }else{
-            return redirect("/transports-admin")->with('error','Akses ditolak');
+            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
         }
     }
 // function Update Transport Price =============================================================================================================>
@@ -279,7 +283,7 @@ class TransportsAdminController extends Controller
             $user_log->save();
             return back()->with('success','The price has been successfully updated!');
         }else{
-            return redirect("/transports-admin")->with('error','Akses ditolak');
+            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
         }
     }
     // function Remove Transport =============================================================================================================>
@@ -310,7 +314,7 @@ class TransportsAdminController extends Controller
             $user_log->save();
             return back()->with('success','The Transportation Package has been successfully deleted!');
         }else{
-            return redirect("/transports-admin")->with('error','Akses ditolak');
+            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
         }
     }
     // function Remove Transport Price =============================================================================================================>
@@ -336,9 +340,9 @@ class TransportsAdminController extends Controller
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-transport-$request->transport_id#prices")->with('success','The Price has been successfully deleted!');
+            return redirect()->route('admin.transports.show', $request->transport_id)->withFragment('prices')->with('success','The Price has been successfully deleted!');
         }else{
-            return redirect("/transports-admin")->with('error','Akses ditolak');
+            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
         }
     }
 }

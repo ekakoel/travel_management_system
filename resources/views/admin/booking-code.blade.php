@@ -6,21 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Booking Code {{ Auth::user()->position }}
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Booking Code</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Booking Code {{ Auth::user()->position }}
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -157,9 +147,7 @@
                                     @endif
                                 </div>
                             @endif
-                            {{-- ATTENTIONS --}}
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -171,11 +159,11 @@
                                     <div class="input-container">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                            <input id="searchBookingCodeByName" type="text" onkeyup="searchBookingCodeByName()" class="form-control" name="search-bookingcode-byname" placeholder="Search by name">
+                                            <input id="searchBookingCodeByName" type="text" onkeyup="searchBookingCodeByName()" class="backend-form-control" name="search-bookingcode-byname" placeholder="Search by name">
                                         </div>
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                            <input id="searchPartnerByCode" type="text" onkeyup="searchPartnerByCode()" class="form-control" name="search-bookingcode-location" placeholder="Search by location">
+                                            <input id="searchPartnerByCode" type="text" onkeyup="searchPartnerByCode()" class="backend-form-control" name="search-bookingcode-location" placeholder="Search by location">
                                         </div>
                                     </div>
                                     <table id="tbPartners" class="data-table table stripe hover" >
@@ -219,7 +207,7 @@
                                                     <td>
                                                         <p>{{ '$ '. $bookingcode->discounts }}</p>
                                                     </td>
-                                                    
+
                                                     <td>
                                                         <p>{{ $bookingcode->amount }}</p>
                                                     </td>
@@ -272,27 +260,27 @@
                                                                             <div class="col-md-12">
                                                                                 <div class="row">
                                                                                     <div class="col-12 col-sm-4">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="name" class="form-label col-form-label">Name</label>
-                                                                                            <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $bookingcode->name }}" required>
+                                                                                            <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $bookingcode->name }}" required>
                                                                                             @error('name')
                                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                                             @enderror
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-12 col-sm-4">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="code" class="form-label col-form-label">Booking Code</label>
-                                                                                            <input style="text-transform:uppercase"  type="text" id="code" name="code" class="form-control @error('code') is-invalid @enderror" placeholder="Insert code" value="{{ $bookingcode->code }}" required>
+                                                                                            <input style="text-transform:uppercase"  type="text" id="code" name="code" class="backend-form-control @error('code') is-invalid @enderror" placeholder="Insert code" value="{{ $bookingcode->code }}" required>
                                                                                             @error('code')
                                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                                             @enderror
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-12 col-sm-4">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="status" class="form-label col-form-label">Status</label>
-                                                                                            <select name="status" id="status"  type="text" class="custom-select @error('status') is-invalid @enderror" placeholder="Select status" required>
+                                                                                            <select name="status" id="status"  type="text" class="backend-form-control @error('status') is-invalid @enderror" placeholder="Select status" required>
                                                                                                 <option selected value="{{ $bookingcode->status }}">{{ $bookingcode->status }}</option>
                                                                                                 <option value="Active">Active</option>
                                                                                                 <option value="Draft">Draft</option>
@@ -306,29 +294,29 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-12 col-sm-4">
-                                                                                        <div class="form-group row">
+                                                                                        <div class="backend-form-field row">
                                                                                             <label for="discounts" class="col-12 col-sm-12 col-md-12 col-form-label">Discounts</label>
                                                                                             <div class="col-md-12">
                                                                                                 <div class="btn-icon">
                                                                                                     <span>$</span>
-                                                                                                    <input type="number" min="1" id="discounts" name="discounts" class="input-icon form-control @error('discounts') is-invalid @enderror" placeholder="Insert discount" value="{{ $bookingcode->discounts }}">
+                                                                                                    <input type="number" min="1" id="discounts" name="discounts" class="input-icon backend-form-control @error('discounts') is-invalid @enderror" placeholder="Insert discount" value="{{ $bookingcode->discounts }}">
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-12 col-sm-4">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="amount" class="form-label col-form-label">Amount</label>
-                                                                                            <input type="number" min="0" id="amount" name="amount" class="form-control @error('amount') is-invalid @enderror" placeholder="Insert amount" value="{{ $bookingcode->amount }}" required>
+                                                                                            <input type="number" min="0" id="amount" name="amount" class="backend-form-control @error('amount') is-invalid @enderror" placeholder="Insert amount" value="{{ $bookingcode->amount }}" required>
                                                                                             @error('amount')
                                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                                             @enderror
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-12 col-sm-4">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="expired_date" class="form-label col-form-label">Expired Date</label>
-                                                                                            <input readonly type="text" id="expired_date" name="expired_date" class="form-control date-picker @error('expired_date') is-invalid @enderror" placeholder="Expired Date" value="{{ date('d M Y', strtotime($bookingcode->expired_date)) }}" required>
+                                                                                            <input readonly type="text" id="expired_date" name="expired_date" class="backend-form-control date-picker @error('expired_date') is-invalid @enderror" placeholder="Expired Date" value="{{ date('d M Y', strtotime($bookingcode->expired_date)) }}" required>
                                                                                             @error('expired_date')
                                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                                             @enderror
@@ -343,8 +331,8 @@
                                                                             </div>
                                                                         </form>
                                                                         <div class="card-box-footer">
-                                                                            <button type="submit" form="update-bcode-{{ $bookingcode->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                            <button type="submit" form="update-bcode-{{ $bookingcode->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -362,7 +350,7 @@
                                 @endif
                                 @canany(['posDev','posAuthor'])
                                     <div class="card-box-footer">
-                                        <a href="#" data-toggle="modal" data-target="#add-bookingcode"><button class="btn btn-primary"><i class="ion-plus-round"></i> Create Booking Code</button></a>
+                                        <a href="#" data-toggle="modal" data-target="#add-bookingcode"><button class="backend-button backend-button-primary"><i class="ion-plus-round"></i> Create Booking Code</button></a>
                                     </div>
                                     {{-- MODAL ADD BOOKING CODE --------------------------------------------------------------------------------------------------------------- --}}
                                     <div class="modal fade" id="add-bookingcode" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -378,66 +366,66 @@
                                                         {{ csrf_field() }}
                                                             <div class="row">
                                                                 <div class="col-12 col-sm-4">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="name">Name</label>
-                                                                        <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
+                                                                        <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
                                                                         @error('name')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-4">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="code">Booking Code</label>
-                                                                        <input style="text-transform:uppercase"  type="text" id="code" name="code" class="form-control @error('code') is-invalid @enderror" placeholder="Insert code" value="{{ old('code') }}" required>
+                                                                        <input style="text-transform:uppercase"  type="text" id="code" name="code" class="backend-form-control @error('code') is-invalid @enderror" placeholder="Insert code" value="{{ old('code') }}" required>
                                                                         @error('code')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-4">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="discounts">Discounts <span> *</span></label>
                                                                         <div class="btn-icon">
                                                                             <span>$</span>
-                                                                            <input type="number" min="1" id="discounts" name="discounts" class="input-icon form-control @error('discounts') is-invalid @enderror" placeholder="Insert discount" value="{{ old("discounts") }}" required>
+                                                                            <input type="number" min="1" id="discounts" name="discounts" class="input-icon backend-form-control @error('discounts') is-invalid @enderror" placeholder="Insert discount" value="{{ old("discounts") }}" required>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-4">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="amount">Amount</label>
-                                                                        <input type="number" min="0" id="amount" name="amount" class="form-control @error('amount') is-invalid @enderror" placeholder="Insert amount" value="{{ old('amount') }}" required>
+                                                                        <input type="number" min="0" id="amount" name="amount" class="backend-form-control @error('amount') is-invalid @enderror" placeholder="Insert amount" value="{{ old('amount') }}" required>
                                                                         @error('amount')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-sm-4">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="expired_date">Expired Date</label>
-                                                                        <input readonly type="text" id="expired_date" name="expired_date" class="form-control date-picker @error('expired_date') is-invalid @enderror" placeholder="Expired Date" value="{{ old('expired_date') }}" required>
+                                                                        <input readonly type="text" id="expired_date" name="expired_date" class="backend-form-control date-picker @error('expired_date') is-invalid @enderror" placeholder="Expired Date" value="{{ old('expired_date') }}" required>
                                                                         @error('expired_date')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
-                                                            
-                                                        
-                                                                
+
+
+
                                                                 <div class="col-12 m-t-8">
                                                                     <hr class="form-hr">
-                                                            
+
                                                                     <div class="form-notif">This form is used to generate a booking code, Please ensure that all inputs are filled with accurate data before publishing.</div>
-                                                                
+
                                                                 </div>
                                                                 <input id="author_id" name="author_id" value="{{ Auth::user()->id }}" type="hidden">
                                                             </div>
-                                                            
+
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="create-bcode" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Create</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                        <button type="submit" form="create-bcode" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Create</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -556,9 +544,7 @@
                                     @endif
                                 </div>
                             @endif
-                            {{-- ATTENTIONS --}}
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                     </div>
@@ -584,7 +570,7 @@ function searchBookingCodeByName() {
             } else {
                 tr[i].style.display = "none";
             }
-        }       
+        }
     }
 }
 </script>
@@ -604,7 +590,7 @@ function searchPartnerByCode() {
             } else {
                 tr[i].style.display = "none";
             }
-        }       
+        }
     }
 }
 </script>

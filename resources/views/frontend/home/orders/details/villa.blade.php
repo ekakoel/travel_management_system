@@ -27,10 +27,9 @@
             </div>
             @include('partials.alerts')
             <div class="row">
-                @if (count($attentions)>0 || $order->status == "Approved" || $order->status == "Paid" || !is_null($receipts) || $invoice)
+                @if ($order->status == "Approved" || $order->status == "Paid" || !is_null($receipts) || $invoice)
                     <div class="col-md-4 mobile">
                         <div class="row">
-                            @include('layouts.attentions')
                             <div class="col-md-12">
                                 <div class="card-box">
                                     @if ($order->status == "Approved" || $order->status == "Paid")
@@ -731,10 +730,9 @@
                         </div>
                     </div>
                 </div>
-                @if (count($attentions)>0 || !is_null($receipts) || $invoice)
+                @if (!is_null($receipts) || $invoice)
                     <div class="col-md-4 desktop">
                         <div class="row">
-                            @include('layouts.attentions')
                             @include('frontend.home.orders.details.partials.legacy-order-payment-sidebar', [
                                 'device' => 'desktop',
                                 'backUrl' => '/orders#orderHotel',

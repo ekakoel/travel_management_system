@@ -11,7 +11,6 @@ class TourPackageLocation extends Model
 
     protected $fillable = [
         'tour_id',
-        'itinerary_id',
         'location_reference_id',
         'day_number',
         'visit_order',
@@ -38,11 +37,6 @@ class TourPackageLocation extends Model
     public function tour()
     {
         return $this->belongsTo(Tours::class, 'tour_id');
-    }
-
-    public function itinerary()
-    {
-        return $this->belongsTo(Itineraries::class, 'itinerary_id');
     }
 
     public function reference()

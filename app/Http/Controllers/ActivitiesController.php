@@ -5,22 +5,15 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Tax;
 use App\Models\Orders;
-use App\Models\UserLog;
 use App\Models\Partners;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use App\Models\Promotion;
 use App\Models\Activities;
 use App\Models\BookingCode;
-use Illuminate\Support\Str;
 use App\Models\ActivityType;
 use Illuminate\Http\Request;
 use App\Models\BusinessProfile;
-use App\Models\ActivitiesImages;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
-use App\Http\Requests\StoreactivitiesRequest;
-use App\Http\Requests\UpdateactivitiesRequest;
 
 class ActivitiesController extends Controller
 {   
@@ -298,103 +291,5 @@ class ActivitiesController extends Controller
         }
 
 
-
-// View Admin Activities =========================================================================================>
-    public function view_activities()
-    {   
-        $activities = Activities::all();
-        $activeactivities=Activities::where('status', '=','active')->get();
-        $nonactiveactivities=Activities::where('status', '=','nonactive')->get();
-        $draftactivities=Activities::where('status', '=','draft')->get();
-        return view('admin.activitiesadmin', compact('activeactivities'),[
-            "nonactivactivities" => Activities::where('status', '=',"nonactive"),
-            "activeactivities" => Activities::where('status', '=',"active"),
-            "draftactivities" => Activities::where('status', '=',"draft"),
-            "activeactivities" => $activeactivities,
-            "nonactiveactivities" => $nonactiveactivities,
-            "draftactivities" => $draftactivities,
-            
-        ]);
-    }
-
-
-
-// View Galery Edit =============================================================================================================>
-    public function view_edit_galery_activity($id)
-    {
-        $activities=Activities::findOrFail($id);
-        return view('backend.operations.activities.forms.gallery-edit')->with('activities',$activities);
-    }
-
-
-// Function Activity delete =============================================================================================================>
-    public function destroy_activity(Request $request,$id)
-    {
-        $activity=Activities::findOrFail($id);
-        $status = "Removed";
-        $author = Auth::user()->id;
-        $activity->update([
-            "status"=>$status,
-        ]);
-        // USER LOG
-        $action = "Remove Activity";
-        $service = "Activity";
-        $subservice = "Activity";
-        $page = "detail-partner";
-        $note = "Remove Activity: ".$id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        return back()->with('success','The Activity has been successfully deleted!');
-    }
-    // public function destroy_activity($id)
-    // {
-    //      $activities=Activities::findOrFail($id);
-
-    //      if (File::exists("images/cover/".$activities->cover)) {
-    //          File::delete("images/cover/".$activities->cover);
-    //      }
-    //      $images=ActivitiesImages::where("activities_id",$activities->id)->get();
-    //      foreach($images as $image){
-    //      if (File::exists("images/activities".$image->image)) {
-    //         File::delete("images/activities".$image->image);
-    //     }
-    //      }
-    //      $activities->delete();
-    //      return back();
-
-
-    // }
-
-// Function Activity image delete =============================================================================================================>
-    public function delete_image_activity($id){
-        $images=ActivitiesImages::findOrFail($id);
-        if (File::exists("images/activities/".$images->image)) 
-        {
-           File::delete("images/activities/".$images->image);
-        }
-
-       ActivitiesImages::find($id)->delete();
-       return back();
-    }
-
-// Function Cover Activity delete =============================================================================================================>
-    public function delete_cover_activity($id){
-        $cover=Activities::findOrFail($id)->cover;
-        if (File::exists("images/cover/".$cover)) 
-        {
-            File::delete("images/cover/".$cover);
-        }
-        return back();
-    }
-    
 
 }

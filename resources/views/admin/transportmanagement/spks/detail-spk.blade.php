@@ -1,1448 +1,911 @@
 @extends('layouts.head')
-@section('title', __('messages.Detail SPK'))
+
+@section('title', __('transport-management.detail.title'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/operations/transport-management/detail.css') }}">
+@endpush
+
 @section('content')
+    @php
+        $statusClass = \Illuminate\Support\Str::slug($spk->status ?? 'pending');
+        $vehicleName = trim(($spk->transport?->brand ?? '') . ' ' . ($spk->transport?->name ?? '')) ?: __('transport-management.empty.na');
+        $spkDate = $spk->spk_date ? \Carbon\Carbon::parse($spk->spk_date) : null;
+        $hasDestinations = $spk->destinations->isNotEmpty();
+        $firstDestinationMapLink = optional($spk->destinations->first(fn ($destination) => filled($destination->destination_address)))->destination_address;
+        $firstDestinationMapLink = \Illuminate\Support\Str::startsWith($firstDestinationMapLink, ['http://', 'https://']) ? $firstDestinationMapLink : null;
+        $mapRouteReady = $mapRouteReady ?? false;
+    @endphp
+
     <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
-    <div class="main-container">
-        <div class="pd-ltr-20">
-            <div class="page-header">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="title">
-                            <i class="icon-copy dw dw-file-31"></i> SPK Detail
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('view.transport-management.index') }}">Surat Perintah Kerja (SPK)</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ $spk->order_number }}</li>
-                            </ol>
-                        </nav>
+        <main
+            class="main-container transport-spk-detail-page"
+            data-transport-spk-detail
+            data-destinations="{{ e($destinationsJson) }}"
+            data-wa-status-route="{{ route('wa.status') }}"
+            data-wa-qr-route="{{ route('wa.qr') }}"
+            data-wa-disconnect-route="{{ route('wa.disconnect') }}"
+            data-label-sending="{{ __('transport-management.detail.actions.sending') }}"
+            data-label-sent="{{ __('transport-management.detail.actions.sent') }}"
+            data-label-send-failed="{{ __('transport-management.detail.actions.send_failed') }}"
+            data-label-missing-phone="{{ __('transport-management.detail.actions.missing_phone') }}"
+            data-label-select-time="{{ __('transport-management.detail.actions.select_time') }}"
+            data-label-checking="{{ __('transport-management.detail.wa.checking') }}"
+            data-label-connected="{{ __('transport-management.detail.wa.connected') }}"
+            data-label-not-connected="{{ __('transport-management.detail.wa.not_connected') }}"
+            data-label-request-failed="{{ __('transport-management.detail.wa.request_failed') }}"
+            data-label-loading-qr="{{ __('transport-management.detail.wa.loading_qr') }}"
+            data-label-waiting-qr="{{ __('transport-management.detail.wa.waiting_qr') }}"
+            data-label-open-map="{{ __('transport-management.detail.map.open_map') }}"
+            data-label-route-unavailable="{{ __('transport-management.detail.map.route_unavailable') }}"
+            data-label-no-coordinate="{{ __('transport-management.detail.map.no_coordinate') }}"
+            data-map-ready="{{ $mapRouteReady ? 'true' : 'false' }}"
+        >
+            <script id="transportSpkMapData" type="application/json">{!! $destinationsJson !!}</script>
+            <div class="pd-ltr-20">
+                <x-backend.page-hero class="transport-spk-detail-hero">
+                    <x-slot name="kicker">
+                        @lang('transport-management.detail.eyebrow')
+                    </x-slot>
+                    <x-slot name="heading">
+                        {{ $spk->spk_number ?? __('transport-management.detail.title') }}
+                    </x-slot>
+                    <x-slot name="copy">
+                        <p>
+                            @lang('transport-management.detail.subtitle', ['order' => $spk->order_number ?? '-'])
+                        </p>
+                    </x-slot>
+                    <x-slot name="action">
+                        <span class="backend-status-badge backend-status-badge--{{ $statusClass }} transport-spk-detail-status transport-spk-detail-status--{{ $statusClass }}">
+                            {{ $spk->status ?? __('transport-management.empty.na') }}
+                        </span>
+                    </x-slot>
+                </x-backend.page-hero>
+
+                <div class="backend-page-toolbar transport-spk-detail-toolbar">
+                    <nav aria-label="{{ __('transport-management.breadcrumb.label') }}">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url('/admin-panel') }}">@lang('transport-management.detail.breadcrumb.admin')</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('view.transport-management.index') }}">@lang('transport-management.title')</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ $spk->order_number ?? '-' }}</li>
+                        </ol>
+                    </nav>
+                    <div class="transport-spk-detail-toolbar__actions">
+                        @if($spk->send_report === 1 && $spk->operator?->phone)
+                            <button
+                                id="btnSendWaToDriver"
+                                class="backend-button backend-button-secondary sendWA"
+                                type="button"
+                                data-route="{{ route('send.whatsapp-driver') }}"
+                                data-phone="{{ $spk->driver?->phone }}"
+                                data-spk="{{ $spk->id }}"
+                            >
+                                <i class="fa fa-share" aria-hidden="true"></i>
+                                @lang('transport-management.detail.actions.share_driver')
+                            </button>
+                            <button
+                                id="btnSendWaToOperator"
+                                class="backend-button backend-button-secondary sendWA"
+                                type="button"
+                                data-route="{{ route('send.whatsapp-operator') }}"
+                                data-phone="{{ $spk->operator?->phone }}"
+                                data-spk="{{ $spk->id }}"
+                            >
+                                <i class="fa fa-share" aria-hidden="true"></i>
+                                @lang('transport-management.detail.actions.share_operator')
+                            </button>
+                        @endif
+                        @if($spk->send_report === 0 && $spk->operator?->phone)
+                            <button
+                                id="btnSendWa"
+                                class="backend-button backend-button-secondary sendWA"
+                                type="button"
+                                data-route="{{ route('send.whatsapp-both') }}"
+                                data-phone="{{ $spk->driver?->phone }}"
+                                data-spk="{{ $spk->id }}"
+                            >
+                                <i class="fa fa-share" aria-hidden="true"></i>
+                                @lang('transport-management.detail.actions.share_both')
+                            </button>
+                        @endif
+                        <a class="backend-button backend-button-secondary" href="{{ route('spks.print', $spk->id) }}" target="_blank" rel="noopener">
+                            <i class="fa fa-print" aria-hidden="true"></i>
+                            @lang('transport-management.detail.actions.print')
+                        </a>
+                        <button class="backend-button backend-button-primary" type="button" data-toggle="modal" data-target="#editSpkDetail">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                            @lang('transport-management.detail.actions.edit_spk')
+                        </button>
+                        <a class="backend-button backend-button-danger" href="{{ route('view.transport-management.index') }}">
+                            <i class="icon-copy dw dw-left-arrow1" aria-hidden="true"></i>
+                            @lang('transport-management.detail.actions.back')
+                        </a>
                     </div>
                 </div>
-            </div>
-            @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="card-box mb-4">
-                        <div class="card-box-title">
-                            <strong>{{ $spk->spk_number }}</strong>
-                            <div class="status-badge badge {{ $bgStatus[$spk->status] ?? 'bg-secondary' }}">{{ $spk->status }}</div>
-                        </div>
-                        <div class="card-box-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="rd-list">
-                                        <div class="rd-item">
-                                            <div class="rd-label">Order Number</div>
-                                            <div class="rd-value"><b>{{ $spk->order_number }}</b></div>
-                                        </div>
-                                        <div class="rd-item">
-                                            <div class="rd-label">SPK Date</div>
-                                            <div class="rd-value">{{ \Carbon\Carbon::parse($spk->spk_date)->locale('en')->translatedFormat('l, d M Y') }}</div>
-                                        </div>
-                                        <div class="rd-item">
-                                            <div class="rd-label">Type</div>
-                                            <div class="rd-value">{{ $spk->type ?? '-' }}</div>
-                                        </div>
-                                        <div class="rd-item">
-                                            <div class="rd-label">Reserved by</div>
-                                            <div class="rd-value">{{ $spk->operator?->name ?? '-' }}</div>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                            
-                                <div class="col-md-6">
-                                    <div class="rd-list">
-                                        <div class="rd-item">
-                                            <div class="rd-label">Number of Guests</div>
-                                            <div class="rd-value">{{ $spk->number_of_guests? $spk->number_of_guests." guests":"-" }}</div>
-                                        </div>
-                                        <div class="rd-item">
-                                            <div class="rd-label">Vehicle</div>
-                                            <div class="rd-value">{{ $spk->transport?->brand." ".$spk->transport?->name }}</div>
-                                        </div>
-                                        <div class="rd-item">
-                                            <div class="rd-label">License Number</div>
-                                            <div class="rd-value">{{ $spk->plate_number }}</div>
-                                        </div>
-                                        <div class="rd-item">
-                                            <div class="rd-label">Driver</div>
-                                            <div class="rd-value">{{ $spk->driver?->name }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12"><hr></div>
+
+                @if(session('success') || session('error') || $errors->any())
+                    <div class="backend-feedback transport-spk-detail-feedback">
+                        @if(session('success'))
+                            <div class="backend-alert backend-alert--success transport-spk-detail-alert transport-spk-detail-alert--success">
+                                <strong>@lang('transport-management.feedback.success')</strong>
+                                <span>{{ session('success') }}</span>
                             </div>
-                            @if ($spk->type == "Airport Shuttle")
-                                <h5>
-                                    <strong>Flight</strong>
-                                </h5>
-                                <div class="m-b-18">
-                                    <table class="data-table table nowrap dataTable no-footer dtr-inline">
+                        @endif
+                        @if(session('error'))
+                            <div class="backend-alert backend-alert--danger transport-spk-detail-alert transport-spk-detail-alert--danger">
+                                <strong>@lang('transport-management.feedback.error')</strong>
+                                <span>{{ session('error') }}</span>
+                            </div>
+                        @endif
+                        @if($errors->any())
+                            <div class="backend-alert backend-alert--danger transport-spk-detail-alert transport-spk-detail-alert--danger">
+                                <strong>@lang('transport-management.feedback.validation')</strong>
+                                <span>{{ $errors->first() }}</span>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                <section class="transport-spk-detail-summary" aria-label="{{ __('transport-management.detail.summary.label') }}">
+                    <article>
+                        <span>@lang('transport-management.detail.summary.guests')</span>
+                        <strong>{{ $detailSummary['guests'] }}</strong>
+                        <small>{{ trans_choice('transport-management.table.pax', (int) $spk->number_of_guests, ['count' => (int) $spk->number_of_guests]) }}</small>
+                    </article>
+                    <article>
+                        <span>@lang('transport-management.detail.summary.destinations')</span>
+                        <strong>{{ $detailSummary['destinations'] }}</strong>
+                        <small>@lang('transport-management.detail.summary.visited', ['count' => $detailSummary['visited_destinations']])</small>
+                    </article>
+                    <article>
+                        <span>@lang('transport-management.detail.summary.flights')</span>
+                        <strong>{{ $detailSummary['airport_shuttles'] }}</strong>
+                        <small>{{ $spk->type ?? '-' }}</small>
+                    </article>
+                    <article>
+                        <span>@lang('transport-management.detail.summary.distance')</span>
+                        <strong>{{ $spk->total_distance ?? 0 }}</strong>
+                        <small>@lang('transport-management.detail.summary.km')</small>
+                    </article>
+                </section>
+
+                <div class="transport-spk-detail-layout">
+                    <div class="transport-spk-detail-main">
+                        <section class="backend-panel transport-spk-detail-panel">
+                            <div class="backend-section-header transport-spk-detail-panel__heading">
+                                <div>
+                                    <span class="backend-section-header__label">@lang('transport-management.detail.overview.eyebrow')</span>
+                                    <h2>@lang('transport-management.detail.overview.title')</h2>
+                                </div>
+                                <span class="backend-status-badge backend-status-badge--{{ $statusClass }} transport-spk-detail-status transport-spk-detail-status--{{ $statusClass }}">
+                                    {{ $spk->status ?? __('transport-management.empty.na') }}
+                                </span>
+                            </div>
+                            <dl class="transport-spk-detail-grid">
+                                <div>
+                                    <dt>@lang('transport-management.form.order_number')</dt>
+                                    <dd>{{ $spk->order_number ?? '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.table.spk_number')</dt>
+                                    <dd>{{ $spk->spk_number ?? '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.form.spk_date')</dt>
+                                    <dd>{{ $spkDate ? $spkDate->locale('en')->translatedFormat('l, d M Y') : '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.form.service')</dt>
+                                    <dd>{{ $spk->type ?? '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.modal.reserved_by')</dt>
+                                    <dd>{{ $spk->operator?->name ?? '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.form.guests')</dt>
+                                    <dd>{{ trans_choice('transport-management.table.pax', (int) $spk->number_of_guests, ['count' => (int) $spk->number_of_guests]) }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.form.vehicle')</dt>
+                                    <dd>{{ $vehicleName }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.form.driver')</dt>
+                                    <dd>{{ $spk->driver?->name ?? '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.form.plate_number')</dt>
+                                    <dd>{{ $spk->plate_number ?: '-' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>@lang('transport-management.detail.overview.reservation')</dt>
+                                    <dd>{{ $spk->reservation?->rsv_no ?? '-' }}</dd>
+                                </div>
+                            </dl>
+                        </section>
+
+                        @if ($spk->type === 'Airport Shuttle')
+                            <section class="backend-panel transport-spk-detail-panel">
+                                <div class="transport-spk-detail-section">
+                                    <div class="backend-section-header transport-spk-detail-section__heading">
+                                        <div>
+                                            <span class="backend-section-header__label">@lang('transport-management.detail.flight.eyebrow')</span>
+                                            <h3>@lang('transport-management.modal.airport_shuttle')</h3>
+                                        </div>
+                                        <button class="backend-button backend-button-primary" type="button" data-toggle="modal" data-target="#addAirportShuttle">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                            @lang('transport-management.detail.actions.add_airport_shuttle')
+                                        </button>
+                                    </div>
+
+                                    <div class="backend-table-wrap transport-spk-detail-desktop-table">
+                                        <table class="backend-table">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
-                                                    <th>Date</th>
-                                                    <th>Flight Number</th>
-                                                    <th>Type</th>
-                                                    <th>Action</th>
+                                                    <th>@lang('transport-management.table.no')</th>
+                                                    <th>@lang('transport-management.table.date')</th>
+                                                    <th>@lang('transport-management.detail.flight.number')</th>
+                                                    <th>@lang('transport-management.detail.flight.type')</th>
+                                                    <th class="text-right">@lang('transport-management.table.actions')</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($airport_shuttles as $index=>$airport_shuttle)
+                                                @forelse ($airport_shuttles as $airportShuttle)
                                                     <tr>
-                                                        <td>{{ ++$index }}</td>
-                                                        <td>{{ date('d F Y (H:i)', strtotime($airport_shuttle->date)) }}</td>
-                                                        <td>{{ $airport_shuttle->flight_number }}</td>
-                                                        <td>{{ $airport_shuttle->nav }}</td>
-                                                        <td>
-                                                            <form id="deleteGuest{{ $airport_shuttle->id }}" action="{{ route('func.spk-airport-shuttle.delete', $airport_shuttle->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus airport shuttle ini?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                            </form>
-                                                            <a href="#" data-toggle="modal" data-target="#editAirportShuttle{{ $airport_shuttle->id }}">Edit</a>
-                                                            |
-                                                            <button type="submit" form="deleteGuest{{ $airport_shuttle->id }}" class="btn-text">Delete</button>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td><strong>{{ $airportShuttle->date ? dateTimeFormat($airportShuttle->date) : '-' }}</strong></td>
+                                                        <td>{{ $airportShuttle->flight_number ?? '-' }}</td>
+                                                        <td>{{ $airportShuttle->nav ?? '-' }}</td>
+                                                        <td class="text-right">
+                                                            <div class="backend-table-actions">
+                                                                <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editAirportShuttle{{ $airportShuttle->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
+                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                </button>
+                                                                <form action="{{ route('func.spk-airport-shuttle.delete', $airportShuttle->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_airport_delete') }}">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
+                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
                                                         </td>
                                                     </tr>
-                                                    {{-- MODAL UPDATE AIRPORT SHUTTLE --}}
-                                                    <div class="modal fade" id="editAirportShuttle{{ $airport_shuttle->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="card-box">
-                                                                    <div class="card-box-title">
-                                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Guest</div>
-                                                                    </div>
-                                                                    <div class="card-box-body">
-                                                                        <form id="updateAirportShuttle{{ $airport_shuttle->id }}" action="{{ route('func.spk-airport-shuttle.update',$airport_shuttle->id) }}" method="POST" class="modal-content">
-                                                                            @csrf
-                                                                            <div class="alert alert-info" role="alert">
-                                                                                <p>• Gunakan form ini untuk merubah data airport shuttle di dalam Surat Perintah Kerja (SPK).</p>
-                                                                                <p>• Perubahan SPK akan memengaruhi dokumen resmi operasional bagi driver atau tim lapangan.</p>
-                                                                                <p>• Pastikan data yang Anda perbarui sudah benar dan sesuai dengan reservasi terkait.</p>
-                                                                            </div>
-                                                                            <hr class="form-hr">
-                                                                            <div class="row">
-                                                                                <div class="col-md-6">
-                                                                                    <div class="form-group">
-                                                                                        <label>Flight Type <span>*</span></label>
-                                                                                        <div class="btn-icon">
-                                                                                            <span><i class="icon-copy dw dw-list3"></i></span>
-                                                                                            <select name="nav" class="custom-select input-icon form-select" required>
-                                                                                                <option {{ $airport_shuttle->nav == "In"? "selected":""; }} value="In">In</option>
-                                                                                                <option {{ $airport_shuttle->nav == "Out"? "selected":""; }} value="Out">Out</option>
-                                                                                            </select>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="form-group">
-                                                                                        <label for="flight_number">Flight Number <span>*</span></label>
-                                                                                        <div class="btn-icon">
-                                                                                            <span><i class="icon-copy fa fa-plane" aria-hidden="true"></i></span>
-                                                                                            <input  name="flight_number" class="form-control input-icon @error('flight_number') is-invalid @enderror" type="text" value="{{ $airport_shuttle->flight_number }}" placeholder="Insert flight number">
-                                                                                        </div>
-                                                                                        @error('flight_number')
-                                                                                            <span class="invalid-feedback">
-                                                                                                {{ $message }}
-                                                                                            </span>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6" style="position: relative">
-                                                                                    <div class="form-group">
-                                                                                        <label for="flight_date">Date <span>*</span></label>
-                                                                                        <div class="btn-icon">
-                                                                                        <span><i class="icon-copy fa fa-calendar" aria-hidden="true"></i></span>
-                                                                                        <input readonly type="text" name="flight_date" maxlength="5"
-                                                                                                class="form-control input-icon @error('flight_date') is-invalid @enderror"
-                                                                                                placeholder="DD/MM/YYYY" autocomplete="off" readonly value="{{ dateFormat($airport_shuttle->date) }}" required>
-                                                                                        </div>
-                                                                                        @error('flight_date')
-                                                                                        <div class="alert alert-danger">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6" style="position: relative">
-                                                                                    <div class="form-group">
-                                                                                        <label for="flight_time">Time <span>*</span></label>
-                                                                                        <div class="btn-icon">
-                                                                                        <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                                                        <input readonly type="text" max="5" name="flight_time" maxlength="5"
-                                                                                                class="form-control time-input input-icon @error('flight_time') is-invalid @enderror"
-                                                                                                placeholder="HH:MM" autocomplete="off" readonly value="{{ date('H:i',strtotime($airport_shuttle->date)) }}" required>
-                                                                                        </div>
-                                                                                        @error('flight_time')
-                                                                                        <div class="alert alert-danger">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                    <div class="card-box-footer">
-                                                                        <button type="submit" form="updateAirportShuttle{{ $airport_shuttle->id }}" class="btn btn-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
-                                                                    </div>
-                                                                </div>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="5">
+                                                            <div class="backend-table-empty">
+                                                                <i class="fa fa-plane" aria-hidden="true"></i>
+                                                                <strong>@lang('transport-management.empty.airport_shuttle')</strong>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
-                                    </table>
-                                    <div class="button-container">
-                                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addAirportShuttle"><i class="fa fa-plus"></i> Add Airport Shuttle</button>
+                                        </table>
                                     </div>
-                                    {{-- MODAL ADD AIRPORT SHUTTLE --}}
-                                    <div class="modal fade" id="addAirportShuttle" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content">
-                                                <div class="card-box">
-                                                    <div class="card-box-title">
-                                                        <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Airport Shuttle</div>
+
+                                    <div class="backend-table-card-list transport-spk-detail-mobile-list">
+                                        @forelse ($airport_shuttles as $airportShuttle)
+                                            <article class="backend-table-card transport-spk-detail-card">
+                                                <div class="backend-table-card__header">
+                                                    <div>
+                                                        <span>{{ $airportShuttle->date ? dateTimeFormat($airportShuttle->date) : '-' }}</span>
+                                                        <strong>{{ $airportShuttle->flight_number ?? '-' }}</strong>
                                                     </div>
-                                                    <div class="card-box-body">
-                                                        <form id="addAirportShuttle{{ $spk->id }}" action="{{ route('func.spk-airport-shuttle.add',$spk->id) }}" method="POST" class="modal-content">
-                                                            @csrf
-                                                            <div class="alert alert-info" role="alert">
-                                                                <p>• Gunakan form ini untuk menambahkan data airport shuttle ke dalam Surat Perintah Kerja (SPK).</p>
-                                                                <p>• Perubahan (SPK) akan memengaruhi dokumen resmi operasional bagi driver atau tim lapangan.</p>
-                                                                <p>• Pastikan data yang Anda perbarui sudah benar dan sesuai dengan reservasi terkait.</p>
-                                                            </div>
-                                                            <hr class="form-hr">
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label>Flight Type <span>*</span></label>
-                                                                        <div class="btn-icon">
-                                                                            <span><i class="icon-copy dw dw-list3"></i></span>
-                                                                            <select name="nav" class="custom-select input-icon form-select" required>
-                                                                                <option disabled selected value="">Select flight type</option>
-                                                                                <option value="In">In</option>
-                                                                                <option value="Out">Out</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="flight_number">Flight Number <span>*</span></label>
-                                                                        <div class="btn-icon">
-                                                                            <span><i class="icon-copy fa fa-plane" aria-hidden="true"></i></span>
-                                                                            <input  name="flight_number" class="form-control input-icon @error('flight_number') is-invalid @enderror" type="text" value="{{ old("flight_number") }}" placeholder="Insert flight number">
-                                                                        </div>
-                                                                        @error('flight_number')
-                                                                            <span class="invalid-feedback">
-                                                                                {{ $message }}
-                                                                            </span>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6" style="position: relative">
-                                                                    <div class="form-group">
-                                                                        <label for="flight_date">Date <span>*</span></label>
-                                                                        <div class="btn-icon">
-                                                                        <span><i class="icon-copy fa fa-calendar" aria-hidden="true"></i></span>
-                                                                        <input readonly type="text" name="flight_date" maxlength="5"
-                                                                                class="form-control input-icon @error('flight_date') is-invalid @enderror"
-                                                                                placeholder="DD/MM/YYYY" autocomplete="off" readonly required>
-                                                                        </div>
-                                                                        @error('flight_date')
-                                                                        <div class="alert alert-danger">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6" style="position: relative">
-                                                                    <div class="form-group">
-                                                                        <label for="flight_time">Time <span>*</span></label>
-                                                                        <div class="btn-icon">
-                                                                        <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                                        <input readonly type="text" max="5" name="flight_time" maxlength="5"
-                                                                                class="form-control time-input input-icon @error('flight_time') is-invalid @enderror"
-                                                                                placeholder="HH:MM" autocomplete="off" readonly required>
-                                                                        </div>
-                                                                        @error('flight_time')
-                                                                        <div class="alert alert-danger">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="card-box-footer">
-                                                        <button type="submit" form="addAirportShuttle{{ $spk->id }}" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
-                                                    </div>
+                                                    <span class="backend-status-badge backend-status-badge--pending transport-spk-detail-status transport-spk-detail-status--pending">{{ $airportShuttle->nav ?? '-' }}</span>
                                                 </div>
+                                                <dl class="backend-table-card-grid">
+                                                    <div>
+                                                        <dt>@lang('transport-management.detail.flight.number')</dt>
+                                                        <dd>{{ $airportShuttle->flight_number ?? '-' }}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>@lang('transport-management.detail.flight.type')</dt>
+                                                        <dd>{{ $airportShuttle->nav ?? '-' }}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>@lang('transport-management.table.actions')</dt>
+                                                        <dd>
+                                                            <div class="backend-table-actions">
+                                                                <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editAirportShuttle{{ $airportShuttle->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
+                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                </button>
+                                                                <form action="{{ route('func.spk-airport-shuttle.delete', $airportShuttle->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_airport_delete') }}">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
+                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                </dl>
+                                            </article>
+                                        @empty
+                                            <div class="backend-table-empty">
+                                                <i class="fa fa-plane" aria-hidden="true"></i>
+                                                <strong>@lang('transport-management.empty.airport_shuttle')</strong>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
                                 </div>
-                            @endif
-                            <h5>
-                                <strong>Guests</strong>
-                            </h5>
-                            <div class="m-b-18">
-                                <table class="data-table table nowrap dataTable no-footer dtr-inline">
+                            </section>
+                        @endif
+
+                        <section class="backend-panel transport-spk-detail-panel">
+                            <div class="transport-spk-detail-section">
+                                <div class="backend-section-header transport-spk-detail-section__heading">
+                                    <div>
+                                        <span class="backend-section-header__label">@lang('transport-management.detail.guests.eyebrow')</span>
+                                        <h3>@lang('transport-management.modal.guests')</h3>
+                                    </div>
+                                    <button class="backend-button backend-button-primary" type="button" data-toggle="modal" data-target="#addGuest">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        @lang('transport-management.detail.actions.add_guest')
+                                    </button>
+                                </div>
+
+                                <div class="backend-table-wrap transport-spk-detail-desktop-table">
+                                    <table class="backend-table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Sex / Age</th>
-                                                <th>Contact</th>
-                                                <th>Action</th>
+                                                <th>@lang('transport-management.table.no')</th>
+                                                <th>@lang('transport-management.detail.guests.name')</th>
+                                                <th>@lang('transport-management.detail.guests.profile')</th>
+                                                <th>@lang('transport-management.detail.guests.contact')</th>
+                                                <th class="text-right">@lang('transport-management.table.actions')</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($guests as $guest_no=>$guest)
+                                            @forelse ($guests as $guest)
                                                 <tr>
-                                                    <td>{{ ++$guest_no }}</td>
-                                                    <td>{{ $guest->name }} {{ isset($guest->name_mandarin)?"(".$guest->name_mandarin.")":"";  }}</td>
-                                                    <td>{{ $guest->sex == "m"?"Male":"Female"; }} / {{ $guest->age }}</td>
-                                                    <td>{{ $guest->phone??"-" }}</td>
+                                                    <td>{{ $loop->iteration }}</td>
                                                     <td>
-                                                        <form id="deleteGuest{{ $guest->id }}" action="{{ route('func.spk-guest.delete', $guest->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus guest ini?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
-                                                        <a href="#" data-toggle="modal" data-target="#editGuest{{ $guest->id }}">Edit</a>
-                                                        |
-                                                        <button type="submit" form="deleteGuest{{ $guest->id }}" class="btn-text">Delete</button>
+                                                        <strong>{{ $guest->name }}</strong>
+                                                        @if($guest->name_mandarin)
+                                                            <small>{{ $guest->name_mandarin }}</small>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ ($guest->sex === 'm' ? __('transport-management.detail.guests.male') : __('transport-management.detail.guests.female')) }} / {{ $guest->age }}</td>
+                                                    <td>{{ $guest->phone ?: '-' }}</td>
+                                                    <td class="text-right">
+                                                        <div class="backend-table-actions">
+                                                            <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editGuest{{ $guest->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
+                                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                            </button>
+                                                            <form action="{{ route('func.spk-guest.delete', $guest->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_guest_delete') }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
+                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
                                                     </td>
                                                 </tr>
-                                                {{-- MODAL UPDATE GUEST --}}
-                                                <div class="modal fade" id="editGuest{{ $guest->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="card-box">
-                                                                <div class="card-box-title">
-                                                                    <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Guest</div>
-                                                                </div>
-                                                                <div class="card-box-body">
-                                                                    <form id="updateGuest{{ $guest->id }}" action="{{ route('func.spk-guest.update',$guest->id) }}" method="POST" class="modal-content">
-                                                                        @csrf
-                                                                        <div class="alert alert-info" role="alert">
-                                                                            <p>• Gunakan form ini untuk merubah data tamu <span><i>(Guest)</i></span> di dalam Surat Perintah Kerja (SPK).</p>
-                                                                            <p>• Perubahan SPK akan memengaruhi dokumen resmi operasional bagi driver atau tim lapangan.</p>
-                                                                            <p>• Pastikan data yang Anda perbarui sudah benar dan sesuai dengan reservasi terkait.</p>
-                                                                        </div>
-                                                                        <hr class="form-hr">
-                                                                        <div class="row">
-                                                                            <div class="col-md-6">
-                                                                                <div class="form-group">
-                                                                                    <label for="name">Name <span>*</span></label>
-                                                                                    <div class="btn-icon">
-                                                                                        <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                                        <input  name="name" class="form-control input-icon @error('name') is-invalid @enderror" type="text" value="{{ $guest->name }}" placeholder="Insert guest name" required>
-                                                                                    </div>
-                                                                                    @error('name')
-                                                                                        <span class="invalid-feedback">
-                                                                                            {{ $message }}
-                                                                                        </span>
-                                                                                    @enderror
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div class="form-group">
-                                                                                    <label for="name_mandarin">Mandarin Name</label>
-                                                                                    <div class="btn-icon">
-                                                                                        <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                                        <input  name="name_mandarin" class="form-control input-icon @error('name_mandarin') is-invalid @enderror" type="text" value="{{ $guest->name_mandarin }}" placeholder="Insert guest Mandarin name">
-                                                                                    </div>
-                                                                                    @error('name_mandarin')
-                                                                                        <span class="invalid-feedback">
-                                                                                            {{ $message }}
-                                                                                        </span>
-                                                                                    @enderror
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div class="form-group">
-                                                                                    <label>Sex <span>*</span></label>
-                                                                                    <div class="btn-icon">
-                                                                                        <span><i class="icon-copy fa fa-venus-mars" aria-hidden="true"></i></span>
-                                                                                        <select name="sex" class="custom-select input-icon form-select" required>
-                                                                                            <option disabled selected value="">Select Sex</option>
-                                                                                            <option {{ $guest->sex == "m"?"selected":"" }} value="m">Male</option>
-                                                                                            <option {{ $guest->sex == "f"?"selected":"" }} value="f">Female</option>
-                                                                                        </select>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div class="form-group">
-                                                                                    <label>Age <span>*</span></label>
-                                                                                    <div class="btn-icon">
-                                                                                        <span><i class="icon-copy fa fa-male" aria-hidden="true"></i></span>
-                                                                                        <select name="age" class="custom-select input-icon form-select" required>
-                                                                                            <option disabled selected value="">Select Age</option>
-                                                                                            <option {{ $guest->age == "Adult"?"selected":"" }} value="Adult">Adult</option>
-                                                                                            <option {{ $guest->age == "Child"?"selected":"" }} value="Child">Child</option>
-                                                                                        </select>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div class="form-group">
-                                                                                    <label for="phone">Telephone</label>
-                                                                                    <div class="btn-icon">
-                                                                                        <span><i class="icon-copy fa fa-mobile-phone" aria-hidden="true"></i></span>
-                                                                                        <input  name="phone" class="form-control input-icon @error('phone') is-invalid @enderror" type="number" value="{{ $guest->phone }}" placeholder="Insert telephone number">
-                                                                                    </div>
-                                                                                    @error('phone')
-                                                                                        <span class="invalid-feedback">
-                                                                                            {{ $message }}
-                                                                                        </span>
-                                                                                    @enderror
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                                <div class="card-box-footer">
-                                                                    <button type="submit" form="updateGuest{{ $guest->id }}" class="btn btn-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
-                                                                </div>
-                                                            </div>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <div class="backend-table-empty">
+                                                            <i class="fa fa-users" aria-hidden="true"></i>
+                                                            <strong>@lang('transport-management.empty.guests')</strong>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
+                                                    </td>
+                                                </tr>
+                                            @endforelse
                                         </tbody>
-                                </table>
-                                <div class="button-container">
-                                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addGuest"><i class="fa fa-plus"></i> Add Guest</button>
+                                    </table>
                                 </div>
-                                {{-- MODAL ADD GUEST --}}
-                                <div class="modal fade" id="addGuest" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                            <div class="card-box">
-                                                <div class="card-box-title">
-                                                    <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add More Guest</div>
+
+                                <div class="backend-table-card-list transport-spk-detail-mobile-list">
+                                    @forelse ($guests as $guest)
+                                        <article class="backend-table-card transport-spk-detail-card">
+                                            <div class="backend-table-card__header">
+                                                <div>
+                                                    <span>@lang('transport-management.detail.guests.name')</span>
+                                                    <strong>{{ $guest->name }}</strong>
                                                 </div>
-                                                <div class="card-box-body">
-                                                    <form id="addMoreGuest" action="{{ route('func.spk-guest.add',$spk->id) }}" method="POST" class="modal-content">
-                                                        @csrf
-                                                        <div class="alert alert-info" role="alert">
-                                                            <p>• Gunakan form ini untuk menambahkan data tamu <span><i>(Guest)</i></span> ke dalam Surat Perintah Kerja (SPK).</p>
-                                                            <p>• Perubahan SPK akan memengaruhi dokumen resmi operasional bagi driver atau tim lapangan.</p>
-                                                            <p>• Pastikan data yang Anda perbarui sudah benar dan sesuai dengan reservasi terkait.</p>
-                                                        </div>
-                                                        <hr class="form-hr">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label for="name">Name <span>*</span></label>
-                                                                    <div class="btn-icon">
-                                                                        <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                        <input  name="name" class="form-control input-icon @error('name') is-invalid @enderror" type="text" value="{{ old('name') }}" placeholder="Insert guest name" required>
-                                                                    </div>
-                                                                    @error('name')
-                                                                        <span class="invalid-feedback">
-                                                                            {{ $message }}
-                                                                        </span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label for="name_mandarin">Mandarin Name</label>
-                                                                    <div class="btn-icon">
-                                                                        <span><i class="icon-copy fa fa-user" aria-hidden="true"></i></span>
-                                                                        <input  name="name_mandarin" class="form-control input-icon @error('name_mandarin') is-invalid @enderror" type="text" value="{{ old('name_mandarin') }}" placeholder="Insert guest Mandarin name">
-                                                                    </div>
-                                                                    @error('name_mandarin')
-                                                                        <span class="invalid-feedback">
-                                                                            {{ $message }}
-                                                                        </span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>Sex <span>*</span></label>
-                                                                    <div class="btn-icon">
-                                                                        <span><i class="icon-copy fa fa-venus-mars" aria-hidden="true"></i></span>
-                                                                        <select name="sex" class="custom-select input-icon form-select" required>
-                                                                            <option disabled selected value="">Select Sex</option>
-                                                                            <option value="m">Male</option>
-                                                                            <option value="f">Female</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>Age <span>*</span></label>
-                                                                    <div class="btn-icon">
-                                                                        <span><i class="icon-copy fa fa-male" aria-hidden="true"></i></span>
-                                                                        <select name="age" class="custom-select input-icon form-select" required>
-                                                                            <option disabled selected value="">Select Age</option>
-                                                                            <option value="Adult">Adult</option>
-                                                                            <option value="Child">Child</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label for="phone">Telephone</label>
-                                                                    <div class="btn-icon">
-                                                                        <span><i class="icon-copy fa fa-mobile-phone" aria-hidden="true"></i></span>
-                                                                        <input  name="phone" class="form-control input-icon @error('phone') is-invalid @enderror" type="number" value="{{ old("phone") }}" placeholder="Insert telephone number">
-                                                                    </div>
-                                                                    @error('phone')
-                                                                        <span class="invalid-feedback">
-                                                                            {{ $message }}
-                                                                        </span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div class="card-box-footer">
-                                                    <button type="submit" form="addMoreGuest" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
-                                                </div>
+                                                <span class="transport-spk-detail-status transport-spk-detail-status--pending">{{ $guest->age }}</span>
                                             </div>
+                                            <dl class="backend-table-card-grid">
+                                                <div>
+                                                    <dt>@lang('transport-management.detail.guests.profile')</dt>
+                                                    <dd>{{ ($guest->sex === 'm' ? __('transport-management.detail.guests.male') : __('transport-management.detail.guests.female')) }} / {{ $guest->age }}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt>@lang('transport-management.detail.guests.contact')</dt>
+                                                    <dd>{{ $guest->phone ?: '-' }}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt>@lang('transport-management.table.actions')</dt>
+                                                    <dd>
+                                                        <div class="backend-table-actions">
+                                                            <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editGuest{{ $guest->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
+                                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                            </button>
+                                                            <form action="{{ route('func.spk-guest.delete', $guest->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_guest_delete') }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
+                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </dd>
+                                                </div>
+                                            </dl>
+                                        </article>
+                                    @empty
+                                        <div class="backend-table-empty">
+                                            <i class="fa fa-users" aria-hidden="true"></i>
+                                            <strong>@lang('transport-management.empty.guests')</strong>
                                         </div>
-                                    </div>
+                                    @endforelse
                                 </div>
                             </div>
-                            <div>
-                                <hr>
-                            </div>
-                            <h5>
-                                <strong>Destinations</strong>
-                            </h5>
-                            @if($spk->destinations->count() > 0)
-                                <table class="data-table table nowrap dataTable no-footer dtr-inline">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Destination Name</th>
-                                            <th>Status</th>
-                                            <th>Check-in At</th>
-                                            <th>Check-in location</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($spk->destinations as $dest)
+                        </section>
+
+                        <section class="backend-panel transport-spk-detail-panel">
+                            <div class="transport-spk-detail-section">
+                                <div class="backend-section-header transport-spk-detail-section__heading">
+                                    <div>
+                                        <span class="backend-section-header__label">@lang('transport-management.detail.destinations.eyebrow')</span>
+                                        <h3>@lang('transport-management.modal.destinations')</h3>
+                                    </div>
+                                    <button class="backend-button backend-button-primary" type="button" data-toggle="modal" data-target="#addDestination">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        @lang('transport-management.detail.actions.add_destination')
+                                    </button>
+                                </div>
+
+                                <div class="backend-table-wrap transport-spk-detail-desktop-table">
+                                    <table class="backend-table">
+                                        <thead>
                                             <tr>
-                                                <td>{{ date('d M Y (H:i)',strtotime($dest->date)) }}</td>
-                                                <td>
-                                                    <a href="{{ $dest->destination_address }}" target="__blank" data-toggle="tooltip" data-placement="top" title="{!! $dest->description !!}">
-                                                        <i class="icon-copy fa fa-map-marker" aria-hidden="true"></i> {{ $dest->destination_name }}
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    @if($dest->status === 'Visited')
-                                                        <span class="badge bg-success">Visited</span>
-                                                    @else
-                                                        <span class="badge bg-secondary">Pending</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $dest->visited_at ?? '-' }}</td>
-                                                <td>
-                                                    @if($dest->status === 'Visited')
-                                                        <a href="{{ $dest->checkin_map_link }}" target="_blank" class="btn btn-sm btn-success color-white">
-                                                            See on Map
-                                                        </a>
-                                                    @else
-                                                        <em>Belum dikunjungi</em>
-                                                    @endif
-                                                </td>
-                                                <td class="text-right pd-2-8">
-                                                    <div class="table-action">
-                                                        @if ($dest->status !== 'Visited')
-                                                            <form id="deleteSpkDestination{{ $dest->id }}" action="{{ route('func.spk-destination.delete',$dest->id) }}" method="post" enctype="multipart/form-data">
-                                                                @csrf
-                                                                @method('delete')
-                                                            </form>
-                                                            <a href="#" data-toggle="modal" data-target="#updateSpkDestination-{{ $dest->id }}">
-                                                                Edit
-                                                            </a>
-                                                            |
-                                                            <button form="deleteSpkDestination{{ $dest->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove">Delete</button>
-                                                        @endif
-                                                    </div>
-                                                </td>
+                                                <th>@lang('transport-management.table.date')</th>
+                                                <th>@lang('transport-management.detail.destinations.name')</th>
+                                                <th>@lang('transport-management.table.status')</th>
+                                                <th>@lang('transport-management.detail.destinations.checkin_at')</th>
+                                                <th>@lang('transport-management.detail.destinations.checkin_location')</th>
+                                                <th class="text-right">@lang('transport-management.table.actions')</th>
                                             </tr>
-                                            {{-- MODAL EDIT DESTINATION --}}
-                                            <div class="modal fade" id="updateSpkDestination-{{ $dest->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="card-box">
-                                                            <div class="card-box-title">
-                                                                <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Destinasi</div>
-                                                            </div>
-                                                            <div class="card-box-body">
-                                                                <form id="updateSpk{{ $dest->id }}" action="{{ route('func.spk-destinations.update',$dest->id) }}" method="POST" class="modal-content">
+                                        </thead>
+                                        <tbody>
+                                            @forelse($spk->destinations as $destination)
+                                                @php $destinationStatus = \Illuminate\Support\Str::slug($destination->status ?? 'pending'); @endphp
+                                                <tr>
+                                                    <td><strong>{{ $destination->date ? dateTimeFormat($destination->date) : '-' }}</strong></td>
+                                                    <td>
+                                                        @if($destination->destination_address)
+                                                            <a href="{{ $destination->destination_address }}" target="_blank" rel="noopener">
+                                                                <strong>{{ $destination->destination_name ?? '-' }}</strong>
+                                                            </a>
+                                                        @else
+                                                            <strong>{{ $destination->destination_name ?? '-' }}</strong>
+                                                        @endif
+                                                        @if($destination->description)
+                                                            <small>{{ strip_tags($destination->description) }}</small>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <span class="transport-spk-detail-status transport-spk-detail-status--{{ $destinationStatus }}">
+                                                            {{ $destination->status ?? 'Pending' }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ $destination->visited_at ? dateTimeFormat($destination->visited_at) : '-' }}</td>
+                                                    <td>
+                                                        @if($destination->status === 'Visited' && $destination->checkin_map_link)
+                                                            <a class="backend-button backend-button-secondary" href="{{ $destination->checkin_map_link }}" target="_blank" rel="noopener">
+                                                                <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                                                <span>@lang('transport-management.detail.destinations.see_map')</span>
+                                                            </a>
+                                                        @else
+                                                            <span class="transport-spk-detail-muted">@lang('transport-management.detail.destinations.not_visited')</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-right">
+                                                        @if ($destination->status !== 'Visited')
+                                                            <div class="backend-table-actions">
+                                                                <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#updateSpkDestination{{ $destination->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
+                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                </button>
+                                                                <form action="{{ route('func.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
                                                                     @csrf
-                                                                    <div class="alert alert-info" role="alert">
-                                                                        <p>• Gunakan form ini untuk memperbarui data destinasi wisata yang sudah ada.</p>
-                                                                        <p>• Perubahan data akan memengaruhi dokumen resmi operasional bagi driver atau tim lapangan.</p>
-                                                                        <p>• Pastikan data yang Anda perbarui sudah benar dan sesuai dengan SPK terkait.</p>
-                                                                    </div>
-                                                                    <hr class="form-hr">
-                                                                    <div class="row">
-                                                                        <div class="col-md-4 m-b-18" style="position: relative">
-                                                                            <div class="form-group-icon">
-                                                                                <label for="time">Date <span>*</span></label>
-                                                                                <div class="btn-icon">
-                                                                                <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                                                <input readonly type="text" name="date" maxlength="5"
-                                                                                        class="form-control date-picker input-icon @error('date') is-invalid @enderror"
-                                                                                        placeholder="DD/MM/YYYY" autocomplete="off" readonly value="{{ date('d F Y', strtotime($dest->date)) }}" required>
-                                                                                </div>
-                                                                                @error('time')
-                                                                                <div class="alert alert-danger">{{ $message }}</div>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-2 m-b-18">
-                                                                            <div class="form-group-icon">
-                                                                                <label for="time">Time <span>*</span></label>
-                                                                                <div class="btn-icon">
-                                                                                    <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                                                    <input readonly type="text" name="time" max="5" class="form-control time-input input-icon @error('time') is-invalid @enderror" placeholder="Select time" value="{{ date('H:i',strtotime($dest->date)) }}"  required>
-                                                                                </div>
-                                                                                @error('time')
-                                                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6 m-b-18">
-                                                                            <div class="form-group-icon">
-                                                                                <label for="destinationName">Destination Name <span>*</span></label>
-                                                                                <div class="btn-icon">
-                                                                                    <span><i class="icon-copy dw dw-edit1"></i></span>
-                                                                                    <input type="text" name="destination_name" class="form-control input-icon @error('destination_name') is-invalid @enderror" placeholder="Insert destination name" value="{{ $dest->destination_name }}" required>
-                                                                                    @error('destination_name')
-                                                                                        <div class="alert alert-danger">{{ $message }}</div>
-                                                                                    @enderror
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-12 m-b-18">
-                                                                            <div class="form-group-icon">
-                                                                                <label for="destinationAddress">Map Location</label>
-                                                                                <div class="btn-icon">
-                                                                                    <span><i class="icon-copy dw dw-map2"></i></span>
-                                                                                    <input type="text" name="destination_address" class="form-control input-icon" placeholder="Copy url from Google Map" value="{{ $dest->destination_address }}">
-                                                                                    @error('destination_address')
-                                                                                        <div class="alert alert-danger">{{ $message }}</div>
-                                                                                    @enderror
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-12">
-                                                                            <div class="form-group">
-                                                                                <label for="description" class="form-label">Description</label>
-                                                                                <textarea name="description" class="textarea_editor form-control" placeholder="Insert description">{{ $dest->description }}</textarea>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
+                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                    </button>
                                                                 </form>
                                                             </div>
-                                                            <div class="card-box-footer">
-                                                                <button type="submit" form="updateSpk{{ $dest->id }}" class="btn btn-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
-                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6">
+                                                        <div class="backend-table-empty">
+                                                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                                            <strong>@lang('transport-management.empty.destinations')</strong>
                                                         </div>
-                                                    </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="backend-table-card-list transport-spk-detail-mobile-list">
+                                    @forelse($spk->destinations as $destination)
+                                        @php $destinationStatus = \Illuminate\Support\Str::slug($destination->status ?? 'pending'); @endphp
+                                        <article class="backend-table-card transport-spk-detail-card">
+                                            <div class="backend-table-card__header">
+                                                <div>
+                                                    <span>{{ $destination->date ? dateTimeFormat($destination->date) : '-' }}</span>
+                                                    <strong>{{ $destination->destination_name ?? '-' }}</strong>
                                                 </div>
+                                                    <span class="backend-status-badge backend-status-badge--{{ $destinationStatus }} transport-spk-detail-status transport-spk-detail-status--{{ $destinationStatus }}">{{ $destination->status ?? 'Pending' }}</span>
                                             </div>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <p class="text-muted">No destinations added yet.</p>
-                            @endif
-                            <div class="button-container">
-                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addDestination"><i class="fa fa-plus"></i> Add Destination</button>
-                            </div>
-                        </div>
-                        <div class="card-box-footer">
-                            {{-- <a href="https://api.whatsapp.com/send?text={{ urlencode('https://online.balikamitour.com/spk/'.$spk->id.'/'.$spk->spk_number) }}" 
-                                target="_blank" 
-                                class="btn btn-success">
-                                <i class="bi bi-whatsapp"></i> Share SPK
-                            </a> --}}
-                            {{-- @if($spk->send_report === 1 && isset($spk->operator->phone) )
-                                <button type="button" class="btn btn-success" id="btnSendWaToDriver"
-                                    data-phone="{{ $spk->driver?->phone }}"
-                                    data-spk="{{ $spk->id }}"
-                                    data-url="{{ route('view.spk', ['id' => $spk->id,'spkNumber'=>$spk->spk_number]) }}">
-                                    <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Driver
-                                </button>
-                                <button type="button" class="btn btn-success" id="btnSendWaToOperator"
-                                    data-phone="{{ $spk->operator?->phone }}"
-                                    data-spk="{{ $spk->id }}"
-                                    data-url="{{ route('view.spk', ['id' => $spk->id,'spkNumber'=>$spk->spk_number]) }}">
-                                    <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Operator
-                                </button>
-                            @endif
-                            @if($spk->send_report === 0 && isset($spk->operator->phone) )
-                                <button type="button" class="btn btn-success" id="btnSendWa"
-                                    data-phone="{{ $spk->operator?->phone }}"
-                                    data-spk="{{ $spk->id }}"
-                                    data-url="{{ route('view.spk', ['id' => $spk->id,'spkNumber'=>$spk->spk_number]) }}">
-                                    <i class="icon-copy fa fa-share" aria-hidden="true"></i> Share to Reservation
-                                </button>
-                            @endif --}}
-                            @if($spk->send_report === 1 && isset($spk->operator->phone) )
-                                <button id="btnSendWaToDriver"
-                                    class="btn btn-warning sendWA"
-                                    data-route="{{ route('send.whatsapp-driver') }}"
-                                    data-phone="{{ $spk->driver->phone }}"
-                                    data-spk="{{ $spk->id }}">
-                                    Share to Driver
-                                </button>
-                                <button id="btnSendWaToOperator"
-                                    class="btn btn-primary sendWA"
-                                    data-route="{{ route('send.whatsapp-operator') }}"
-                                    data-phone="{{ $spk->operator->phone }}"
-                                    data-spk="{{ $spk->id }}">
-                                    Share to Operator
-                                </button>
-                            @endif
-                            @if($spk->send_report === 0 && isset($spk->operator->phone) )
-                                <button id="btnSendWa"
-                                    class="btn btn-success sendWA"
-                                    data-route="{{ route('send.whatsapp-both') }}"
-                                    data-phone="{{ $spk->driver->phone }}"
-                                    data-spk="{{ $spk->id }}">
-                                    Share to Driver & Operator
-                                </button>
-                            @endif
-                            <a href="{{ route('spks.print',$spk->id) }}" target="__blank">
-                                <button class="btn btn-sm btn-light" data-toggle="modal" data-target="#changeDate"><i class="fa fa-print"></i> Print</button>
-                            </a>
-                            
-                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editSpkDetail"><i class="fa fa-pencil"></i> Edit SPK</button>
-                            
-                            <a href="{{ route('view.transport-management.index') }}">
-                                <button class="btn btn-danger"><i class="icon-copy dw dw-left-arrow1"></i> Back</button>
-                            </a>
-                        </div>
-                        {{-- MODAL EDIT SPK --}}
-                        <div class="modal fade" id="editSpkDetail" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="card-box">
-                                        <div class="card-box-title">
-                                            <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit SPK</div>
-                                        </div>
-                                        <div class="card-box-body">
-                                            <form id="updateSpkDetail" action="{{ route('func.spk.update',$spk->id) }}" method="POST" class="modal-content">
-                                                @csrf
-                                                <div class="alert alert-info" role="alert">
-                                                    <p>• Gunakan form ini untuk memperbarui data Surat Perintah Kerja (SPK) yang sudah ada.</p>
-                                                    <p>• Perubahan SPK akan memengaruhi dokumen resmi operasional bagi driver atau tim lapangan.</p>
-                                                    <p>• Pastikan data yang Anda perbarui sudah benar dan sesuai dengan reservasi terkait.</p>
+                                            <dl class="backend-table-card-grid">
+                                                <div>
+                                                    <dt>@lang('transport-management.detail.destinations.checkin_at')</dt>
+                                                    <dd>{{ $destination->visited_at ? dateTimeFormat($destination->visited_at) : '-' }}</dd>
                                                 </div>
-                                                <hr class="form-hr">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>Reservation <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy dw dw-user2"></i></span>
-                                                                <select name="operator_id" class="custom-select input-icon form-select" required>
-                                                                    <option disabled value="">Select Reservation</option>
-                                                                    @foreach ($operators as $operator)
-                                                                        <option {{ $operator->id == $spk->operator_id?"selected":"" }} value="{{ $operator->id }}">{{ $operator->name }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>Order Number <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy fa fa-qrcode" aria-hidden="true"></i></span>
-                                                                <input
-                                                                    class="form-control input-icon @error('order_number') is-invalid @enderror"
-                                                                    name="order_number"
-                                                                    type="text"
-                                                                    value="{{ $spk->order_number }}"
-                                                                    placeholder="@lang('messages.Insert order number')" 
-                                                                    required>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>Status <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy fa fa-check-square-o" aria-hidden="true"></i></span>
-                                                                <select name="status" class="custom-select input-icon form-select" required>
-                                                                    <option disabled selected value="">Select Status</option>
-                                                                    <option {{ $spk->status == "Canceled"?"selected":"" }} value="Canceled">Cancelled</option>
-                                                                    <option {{ $spk->status == "Pending"?"selected":"" }} value="Pending">Pending</option>
-                                                                    <option {{ $spk->status == "In Progress"?"selected":"" }} value="In Progress">In Progress</option>
-                                                                    <option {{ $spk->status == "Completed"?"selected":"" }} value="Completed">Completed</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>Transport Service <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy fa fa-server" aria-hidden="true"></i></span>
-                                                                <select name="spk_type" class="custom-select input-icon form-select" required>
-                                                                    <option disabled selected value="">Select Service</option>
-                                                                    <option {{ $spk->type == "Airport Shuttle"?"selected":""; }} value="Airport Shuttle">Airport Shuttle</option>
-                                                                    <option {{ $spk->type == "Hotel Transfer"?"selected":""; }} value="Hotel Transfer">Hotel Transfer</option>
-                                                                    <option {{ $spk->type == "Tour"?"selected":""; }} value="Tour">Tour</option>
-                                                                    <option {{ $spk->type == "Daily Rent"?"selected":""; }} value="Daily Rent">Daily Rent</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>SPK Date <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy fa fa-calendar-check-o" aria-hidden="true"></i></span>
-                                                                <input readonly
-                                                                    class="form-control input-icon @error('spk_date') is-invalid @enderror"
-                                                                    name="spk_date"
-                                                                    type="text"
-                                                                    value="{{ old('spk_date') }}"
-                                                                    placeholder="@lang('messages.Select date')" 
-                                                                    required>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="number_of_guests">Number of Guests <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy fa fa-users" aria-hidden="true"></i></span>
-                                                                <input  name="number_of_guests" min="1" class="form-control input-icon @error('number_of_guests') is-invalid @enderror" type="number" value="{{ $spk->number_of_guests }}" placeholder="@lang('messages.Number of guests')" required>
-                                                            </div>
-                                                            @error('number_of_guests')
-                                                                <span class="invalid-feedback">
-                                                                    {{ $message }}
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>Vehicle <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy fa fa-car" aria-hidden="true"></i></span>
-                                                                <select name="transport_id" class="custom-select form-select" required>
-                                                                    <option disabled selected value="">Select Vehicle</option>
-                                                                    @foreach ($vehicles as $vehicle)
-                                                                        <option {{ $spk->transport->id == $vehicle->id?"selected":""; }} value="{{ $vehicle->id }}">{{ $vehicle->brand." ".$vehicle->name }} {{ $vehicle->number_plate?" (".$vehicle->number_plate.")":"" }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="plateNumber">Nomor Kendaraan</label>
-                                                            <input type="text" name="plate_number" class="form-control @error('plate_number') is-invalid @enderror" placeholder="ex: DK 1234 ABC" value="{{ $spk->plate_number }}" required>
-                                                            @error('plate_number')
-                                                                <span class="invalid-feedback">
-                                                                    {{ $message }}
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>Driver <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy fa fa-user-circle-o" aria-hidden="true"></i></span>
-                                                                <select name="driver_id" class="custom-select form-select" required>
-                                                                    <option disabled selected value="">Select Driver</option>
-                                                                    @foreach ($drivers as $driver)
-                                                                        <option {{ $spk->driver->id == $driver->id?"selected":""; }} value="{{ $driver->id }}">{{ $driver->name }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                <div>
+                                                    <dt>@lang('transport-management.detail.destinations.checkin_location')</dt>
+                                                    <dd>
+                                                        @if($destination->status === 'Visited' && $destination->checkin_map_link)
+                                                            <a href="{{ $destination->checkin_map_link }}" target="_blank" rel="noopener">@lang('transport-management.detail.destinations.see_map')</a>
+                                                        @else
+                                                            @lang('transport-management.detail.destinations.not_visited')
+                                                        @endif
+                                                    </dd>
                                                 </div>
-                                            </form>
+                                                <div>
+                                                    <dt>@lang('transport-management.table.actions')</dt>
+                                                    <dd>
+                                                        @if ($destination->status !== 'Visited')
+                                                            <div class="backend-table-actions">
+                                                                <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#updateSpkDestination{{ $destination->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
+                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                </button>
+                                                                <form action="{{ route('func.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
+                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        @endif
+                                                    </dd>
+                                                </div>
+                                            </dl>
+                                        </article>
+                                    @empty
+                                        <div class="backend-table-empty">
+                                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                            <strong>@lang('transport-management.empty.destinations')</strong>
                                         </div>
-                                        <div class="card-box-footer">
-                                            <button type="submit" form="updateSpkDetail" class="btn btn-primary"><i class="icon-copy dw dw-diskette1"></i> Save</button>
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
-                                        </div>
-                                    </div>
+                                    @endforelse
                                 </div>
                             </div>
-                        </div>
-                        {{-- MODAL ADD DESTINATION --}}
-                        <div class="modal fade" id="addDestination" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="card-box">
-                                        <div class="card-box-title">
-                                            <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Destination</div>
-                                        </div>
-                                        <div class="card-box-body">
-                                            <form id="addSpkDestination" action="{{ route('func.spk-destinations.add',$spk->id) }}" method="POST" class="modal-content">
-                                                @csrf
-                                                <div class="row">
-                                                    <div class="col-md-4" style="position: relative">
-                                                        <div class="form-group">
-                                                            <label for="time">Date <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                            <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                            <input readonly type="text" name="date" maxlength="5"
-                                                                    class="form-control date-picker input-icon @error('date') is-invalid @enderror"
-                                                                    placeholder="DD/MM/YYYY" autocomplete="off" readonly required>
-                                                            </div>
-                                                            @error('time')
-                                                            <div class="alert alert-danger">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2" style="position: relative">
-                                                        <div class="form-group">
-                                                            <label for="time">Time <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                            <span><i class="icon-copy dw dw-wall-clock1"></i></span>
-                                                            <input readonly type="text" max="5" name="time" maxlength="5"
-                                                                    class="form-control time-input input-icon @error('time') is-invalid @enderror"
-                                                                    placeholder="HH:MM" autocomplete="off" readonly required>
-                                                            </div>
-                                                            @error('time')
-                                                            <div class="alert alert-danger">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="destinationName">Destination Name <span>*</span></label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy dw dw-edit1"></i></span>
-                                                                <input type="text" id="destinationName" name="destination_name" class="form-control input-icon" placeholder="Insert destination name" value="{{ old('destination_name') }}" required>
-                                                                @error('destination_name')
-                                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="destinationAddress">Map Location</label>
-                                                            <div class="btn-icon">
-                                                                <span><i class="icon-copy dw dw-map2"></i></span>
-                                                                <input type="text" id="destinationAddress" name="destination_address" class="form-control input-icon" placeholder="Copy url from Google Map">
-                                                                @error('destination_name')
-                                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="description" class="form-label">Deskription</label>
-                                                            <textarea name="description" class="textarea_editor form-control" placeholder="Insert description">{{ old('description') }}</textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="card-box-footer">
-                                            <button type="submit" form="addSpkDestination" class="btn btn-primary"><i class="icon-copy dw dw-add"></i> Add</button>
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy dw dw-cancel"></i> Cancel</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        </section>
                     </div>
+
+                    <aside class="transport-spk-detail-side">
+                        <section class="backend-panel transport-spk-detail-panel">
+                            <div class="backend-section-header transport-spk-detail-panel__heading">
+                                <div>
+                                    <span class="backend-section-header__label">@lang('transport-management.detail.wa.eyebrow')</span>
+                                    <h2>@lang('transport-management.detail.wa.title')</h2>
+                                </div>
+                            </div>
+                            <div class="transport-spk-detail-section">
+                                <div id="wa-status" class="transport-spk-detail-wa-status">
+                                    <span class="backend-status-badge backend-status-badge--checking transport-spk-detail-status transport-spk-detail-status--checking">@lang('transport-management.detail.wa.checking')</span>
+                                </div>
+                                <div id="wa-status-box" class="transport-spk-detail-wa-box"></div>
+                                <div class="transport-spk-detail-wa-actions">
+                                    <button id="btnConnectWA" type="button" class="backend-button backend-button-primary" hidden>
+                                        <i class="fa fa-qrcode" aria-hidden="true"></i>
+                                        @lang('transport-management.detail.wa.connect')
+                                    </button>
+                                    <button id="btnDisconnectWA" type="button" class="backend-button backend-button-danger" hidden>
+                                        <i class="fa fa-unlink" aria-hidden="true"></i>
+                                        @lang('transport-management.detail.wa.disconnect')
+                                    </button>
+                                    <button id="btnRefreshWA" type="button" class="backend-button backend-button-secondary">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                        @lang('transport-management.detail.wa.refresh')
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="backend-panel transport-spk-detail-panel">
+                            <div class="backend-section-header transport-spk-detail-panel__heading">
+                                <div>
+                                    <span class="backend-section-header__label">@lang('transport-management.detail.map.eyebrow')</span>
+                                    <h2>@lang('transport-management.detail.map.title')</h2>
+                                </div>
+                            </div>
+                            <div class="transport-spk-detail-section">
+                                <p class="transport-spk-detail-muted">
+                                    @lang('transport-management.detail.map.total_distance'):
+                                    <strong>{{ $spk->total_distance ?? 0 }} @lang('transport-management.detail.summary.km')</strong>
+                                </p>
+                                @if($hasDestinations)
+                                    <div id="transportSpkMap" class="transport-spk-detail-map">
+                                        <div class="transport-spk-detail-map-fallback" data-map-fallback>
+                                            <i class="fa fa-map" aria-hidden="true"></i>
+                                            <strong>
+                                                @if($mapRouteReady)
+                                                    @lang('transport-management.detail.map.loading')
+                                                @else
+                                                    @lang('transport-management.detail.map.no_coordinate')
+                                                @endif
+                                            </strong>
+                                            <small>
+                                                @if($mapRouteReady)
+                                                    @lang('transport-management.detail.map.loading_help')
+                                                @else
+                                                    @lang('transport-management.detail.map.no_coordinate_help')
+                                                @endif
+                                            </small>
+                                            @if($firstDestinationMapLink)
+                                                <a class="backend-button backend-button-secondary" href="{{ $firstDestinationMapLink }}" target="_blank" rel="noopener">
+                                                    <i class="fa fa-external-link" aria-hidden="true"></i>
+                                                    @lang('transport-management.detail.map.open_map')
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="backend-table-empty">
+                                        <i class="fa fa-map" aria-hidden="true"></i>
+                                        <strong>@lang('transport-management.detail.map.no_coordinate')</strong>
+                                    </div>
+                                @endif
+                                <ol class="transport-spk-detail-route-list">
+                                    @forelse($spk->destinations as $destination)
+                                        <li>
+                                            <span class="transport-spk-detail-route-marker {{ $destination->status === 'Visited' ? 'is-visited' : '' }}">{{ $loop->iteration }}</span>
+                                            <div>
+                                                <strong>{{ $destination->destination_name ?? '-' }}</strong>
+                                                <small>{{ $destination->date ? \Carbon\Carbon::parse($destination->date)->format('H:i') : '-' }}</small>
+                                            </div>
+                                        </li>
+                                    @empty
+                                        <li class="transport-spk-detail-muted">@lang('transport-management.empty.destinations')</li>
+                                    @endforelse
+                                </ol>
+                            </div>
+                        </section>
+                    </aside>
                 </div>
-                <div class="col-md-4">
-                    <div class="card-box m-b-18">
-                        <div class="card-box-title">
-                            <strong>WhatsApp Connection Status</strong>
+            </div>
+        </main>
+
+        @include('admin.transportmanagement.spks.partials.detail-modals', [
+            'spk' => $spk,
+            'operators' => $operators,
+            'vehicles' => $vehicles,
+            'drivers' => $drivers,
+            'guests' => $guests,
+            'airport_shuttles' => $airport_shuttles,
+        ])
+
+        <div id="transportSpkTimePicker" class="transport-spk-detail-time-picker" aria-hidden="true">
+            <div class="transport-spk-detail-time-picker__header">
+                <strong>@lang('transport-management.detail.actions.select_time_title')</strong>
+                <button type="button" class="backend-icon-action" data-time-close aria-label="{{ __('messages.Close') }}">
+                    <i class="fa fa-close" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="transport-spk-detail-time-picker__columns">
+                <div class="transport-spk-detail-time-picker__column" data-time-hours></div>
+                <div class="transport-spk-detail-time-picker__column" data-time-minutes></div>
+            </div>
+            <div class="transport-spk-detail-time-picker__footer">
+                <span class="transport-spk-detail-muted">HH:MM</span>
+                <button type="button" class="backend-button backend-button-primary" data-time-set>@lang('transport-management.detail.actions.set_time')</button>
+            </div>
+        </div>
+
+        <div class="modal fade backend-modal transport-spk-detail-modal" id="waModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="backend-modal__header transport-spk-detail-modal__header">
+                        <div>
+                            <span class="backend-section-header__label">@lang('transport-management.detail.wa.eyebrow')</span>
+                            <h3>@lang('transport-management.detail.wa.scan_title')</h3>
                         </div>
-
-                        <div class="card-box-body">
-
-                            <!-- Status -->
-                            <div id="wa-status" class="mb-3">
-                                <span class="badge badge-secondary">Checking status...</span>
-                            </div>
-
-                            <div id="wa-status-box"></div>
-
-                            <!-- Actions -->
-                            <div id="wa-actions">
-                                <button id="btnConnectWA" class="btn btn-success mb-2" style="display:none;">Hubungkan Akun</button>
-                                <button id="btnDisconnectWA" class="btn btn-danger mb-2" style="display:none;">Putuskan Koneksi</button>
-                                <button id="btnRefreshWA" class="btn btn-primary mb-2">Refresh Status</button>
-                            </div>
-
-                            <!-- Modal QR Code -->
-                            <div class="modal fade" id="waModal" tabindex="-1">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Scan QR Code WhatsApp</h5>
-                                            <button type="button" class="close" data-bs-dismiss="modal">
-                                                <span>&times;</span>
-                                            </button>
-                                        </div>
-
-                                        <div class="modal-body text-center">
-                                            <div id="wa-qrcode"></div>
-                                            <p class="mt-2">Gunakan WhatsApp di HP Anda untuk scan QR ini.</p>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('messages.Close') }}">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-
-
-                    <div class="card-box">
-                        <div class="card-box-title">
-                            <strong>Route on Map</strong>
-                        </div>
-                        <div class="card-box-body">
-                            <p>Total Distance: <strong>{{ $spk->total_distance }} km</strong></p>
-                            <div id="map" style="width: 100%; height: 500px; border-radius: 10px; margin-bottom:20px;"></div>
-                            <ul>
-                                @foreach($spk->destinations as $no => $dest)
-                                    <li style="list-style: none; margin-left:0;"><p><span class="circle-number-{{ $dest->status }}">{{ $no+1 }}</span> {{ $dest->destination_name }} ({{ date('H:i',strtotime($dest->date)) }})</p></li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        <div class="card-box-footer"></div>
+                    <div class="backend-modal__body transport-spk-detail-modal__body">
+                        <div id="wa-qrcode" class="transport-spk-detail-qr"></div>
+                        <p class="transport-spk-detail-muted">@lang('transport-management.detail.wa.scan_help')</p>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Custom Time Picker Popup -->
-    <div id="time-picker" class="time-picker-popup shadow-lg">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-        <strong>Select Time</strong>
-        <button type="button" class="btn-close btn-sm" id="close-timepicker"></button>
-        </div>
-        <div class="time-picker-container">
-        <div class="time-column" id="hours">
-            <!-- Hours populated by JS -->
-        </div>
-        <div class="time-column" id="minutes">
-            <!-- Minutes populated by JS -->
-        </div>
-        </div>
-        <div class="text-center mt-2">
-        <button type="button" id="set-time" class="btn btn-primary btn-sm px-4">Set</button>
-        </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        $(document).ready(function () {
-        const $picker = $('#time-picker');
-        const $hours = $('#hours');
-        const $minutes = $('#minutes');
-        let activeInput = null;
-        let selectedHour = null;
-        let selectedMinute = null;
-
-        // Generate jam & menit hanya sekali
-        for (let h = 0; h < 24; h++) {
-            const hh = h.toString().padStart(2, '0');
-            $hours.append(`<div data-hour="${hh}">${hh}</div>`);
-        }
-        for (let m = 0; m < 60; m += 1) {
-            const mm = m.toString().padStart(2, '0');
-            $minutes.append(`<div data-minute="${mm}">${mm}</div>`);
-        }
-
-        // Klik input manapun → tampilkan picker
-        $(document).on('click', '.time-input', function (e) {
-            e.stopPropagation();
-            activeInput = $(this);
-
-            const inputOffset = activeInput.offset();
-            const inputHeight = activeInput.outerHeight();
-
-            $('.time-picker-popup').not($picker).hide();
-            $picker.css({
-            top: inputOffset.top + inputHeight + 8,
-            left: inputOffset.left
-            }).fadeIn(150);
-
-            // Reset highlight
-            $hours.find('div').removeClass('active');
-            $minutes.find('div').removeClass('active');
-
-            // Jika input sudah ada nilai, highlight jam & menit-nya
-            const currentValue = activeInput.val();
-            if (/^\d{2}:\d{2}$/.test(currentValue)) {
-            const [hh, mm] = currentValue.split(':');
-            $hours.find(`[data-hour="${hh}"]`).addClass('active');
-            $minutes.find(`[data-minute="${mm}"]`).addClass('active');
-            selectedHour = hh;
-            selectedMinute = mm;
-            } else {
-            selectedHour = null;
-            selectedMinute = null;
-            }
-        });
-
-        // Tutup picker
-        $('#close-timepicker').on('click', () => $picker.fadeOut(100));
-        $(document).on('click', function (e) {
-            if (!$(e.target).closest('#time-picker, .time-input').length) {
-            $picker.fadeOut(100);
-            }
-        });
-
-        // Pilih jam
-        $hours.on('click', 'div', function () {
-            $hours.find('div').removeClass('active');
-            $(this).addClass('active');
-            selectedHour = $(this).data('hour');
-        });
-
-        // Pilih menit
-        $minutes.on('click', 'div', function () {
-            $minutes.find('div').removeClass('active');
-            $(this).addClass('active');
-            selectedMinute = $(this).data('minute');
-        });
-
-        // Set waktu
-        $('#set-time').on('click', function () {
-            if (!activeInput) return;
-
-            if (selectedHour === null || selectedMinute === null) {
-            alert('Please select both hour and minute.');
-            return;
-            }
-
-            const formatted = `${selectedHour}:${selectedMinute}`;
-            activeInput.val(formatted);
-            $picker.fadeOut(100);
-        });
-        });
-
-    </script>
-    <!-- jQuery wajib -->
-    
-    <script>
-        $(document).ready(function () {
-            $('.sendWA').on('click', function () {
-                const btn = $(this);
-                const route = btn.data('route');
-                const phone = btn.data('phone');
-                const spk   = btn.data('spk');
-                if (!phone) {
-                    alert('Nomor telepon tidak ditemukan!');
-                    return;
-                }
-                $.ajax({
-                    url: route,
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        phone: phone,
-                        spk: spk
-                    },
-                    beforeSend: function () {
-                        btn.prop('disabled', true).text('Sending...');
-                    },
-                    success: function (res) {
-                        btn.text('Sent');
-
-                        if (res.success) {
-                            alert('✅ ' + res.message);
-                        } else {
-                            alert('❌ ' + res.message);
-                            console.error(res.data);
-                        }
-                    },
-                    error: function (xhr) {
-                        btn.prop('disabled', false).text('Send WhatsApp');
-                        alert('❌ Terjadi kesalahan! Lihat console untuk detail.');
-                        console.error(xhr.responseText);
-                    }
-                });
-            });
-        });
-    </script>
-    
-    <script>
-        document.addEventListener("submit", function(e) {
-            const form = e.target.closest("form");
-            if (!form) return;
-
-            // Cari tombol submit yang ada di dalam form
-            let submitBtn = form.querySelector("[type=submit]");
-
-            // Kalau nggak ada, coba cari tombol di luar form yang pakai atribut form="idForm"
-            if (!submitBtn && form.id) {
-                submitBtn = document.querySelector(`[type=submit][form="${form.id}"]`);
-            }
-
-            if (submitBtn) {
-                // Disable tombol
-                submitBtn.disabled = true;
-
-                // Simpan teks asli
-                const originalText = submitBtn.innerHTML;
-
-                // Ganti dengan spinner
-                submitBtn.innerHTML = `
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                `;
-
-                // Kalau butuh restore (misalnya request AJAX gagal)
-                form.addEventListener("ajaxError", function() {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                });
-            }
-        }, true);
-    </script>
-    <script>
-        function initMap() {
-            var destinations = {!! $destinationsJson !!};
-            if (!destinations.length) return;
-
-            var map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
-                center: destinations[0],
-            });
-
-            var directionsService = new google.maps.DirectionsService();
-            var directionsRenderer = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
-
-            var counts = {};
-            destinations.forEach((d,i) => {
-                var key = d.lat+','+d.lng;
-                counts[key] = (counts[key]||0)+1;
-                var pos = { lat: d.lat + 0.00005*(counts[key]-1), lng: d.lng + 0.00005*(counts[key]-1) };
-
-                new google.maps.Marker({
-                    position: pos,
-                    map: map,
-                    label: { text: (i+1).toString(), color:"white", fontSize:"14px", fontWeight:"bold" },
-                    title: d.name + ' ('+d.status+')',
-                    icon: { path: google.maps.SymbolPath.CIRCLE, scale:10, fillColor: d.status==='Visited'?'green':'grey', fillOpacity:1, strokeColor:'white', strokeWeight:2 }
-                });
-            });
-
-            if (destinations.length>1) {
-                var waypoints = destinations.slice(1,-1).map(d=>({location:{lat:d.lat,lng:d.lng}, stopover:true}));
-                directionsService.route({
-                    origin: {lat: destinations[0].lat,lng: destinations[0].lng},
-                    destination: {lat: destinations[destinations.length-1].lat,lng: destinations[destinations.length-1].lng},
-                    waypoints: waypoints,
-                    travelMode: google.maps.TravelMode.DRIVING
-                }, (res,status)=>{
-                    if(status==='OK') directionsRenderer.setDirections(res);
-                    else console.error('Gagal load route:',status);
-                });
-            }
-        }
-
-        window.initMap = initMap;
-    </script>
-    <script>
-        const waRoutes = {
-            status: "{{ route('wa.status') }}",
-            qr: "{{ route('wa.qr') }}",
-            disconnect: "{{ route('wa.disconnect') }}"
-        };
-
-        function waRequest(method, url, data, onSuccess) {
-            return $.ajax({
-                url: url,
-                type: method,
-                data: data || {},
-                success: onSuccess,
-                error: function (xhr) {
-                    const msg = xhr.responseJSON?.message || "Request gagal";
-                    $("#wa-status").html(`<span class="badge badge-danger">Error</span>`);
-                    $("#wa-status-box").html(`<div class="alert alert-danger">${msg}</div>`);
-                }
-            });
-        }
-
-        // function loadStatus() {
-        //     $("#wa-status").html(`<span class="badge badge-info">Checking...</span>`);
-
-        //     waRequest("GET", waRoutes.status, null, function (res) {
-        //         let html = "";
-        //         const number = res.number || res.phone || "-";
-
-        //         if (res.ready) {
-        //             $("#wa-status").html(`<span class="badge badge-success">Connected</span>`);
-
-        //             html = `
-        //                 <div class="alert alert-success">
-        //                     Status: ${res.status || ''}<br>
-        //                     Nomor: +${number}
-        //                 </div>
-        //             `;
-
-        //             $("#btnConnectWA").hide();
-        //             $("#btnDisconnectWA").show();
-
-        //         } else {
-        //             $("#wa-status").html(`<span class="badge badge-danger">Not Connected</span>`);
-
-        //             html = `
-        //                 <div class="alert alert-danger">
-        //                     ✖ Tidak Terhubung<br>
-        //                     Pesan: ${res.message || 'Unknown Error'}
-        //                 </div>
-        //             `;
-
-        //             $("#btnConnectWA").show();
-        //             $("#btnDisconnectWA").hide();
-
-        //             // Auto load QR when not connected
-        //             $("#wa-qrcode").html("Loading QR...");
-        //             $("#waModal").modal("show");
-        //             waRequest("GET", waRoutes.qr, null, function (qrRes) {
-        //                 if (qrRes.qr) {
-        //                     $("#wa-qrcode").html(`<img src="${qrRes.qr}" style="width: 260px;">`);
-        //                 } else {
-        //                     $("#wa-qrcode").html(`<p class="text-danger">Gagal memuat QR</p>`);
-        //                 }
-        //             });
-        //         }
-
-        //         $("#wa-status-box").html(html);
-        //     });
-        // }
-        function loadStatus() {
-            $("#wa-status").html(`<span class="badge badge-info">Checking...</span>`);
-
-            waRequest("GET", waRoutes.status, null, function (res) {
-                let html = "";
-
-                if (res.ready) {
-                    $("#wa-status").html(`<span class="badge badge-success">Connected</span>`);
-
-                    html = `
-                        <div class="alert alert-success">
-                            Status: READY<br>
-                            WhatsApp terhubung
-                        </div>
-                    `;
-
-                    $("#btnConnectWA").hide();
-                    $("#btnDisconnectWA").show();
-                    $("#waModal").modal("hide");
-
-                } else {
-                    $("#wa-status").html(`<span class="badge badge-danger">Not Connected</span>`);
-
-                    html = `
-                        <div class="alert alert-danger">
-                            ✖ Tidak Terhubung<br>
-                            Status: ${res.state || 'Belum siap'}
-                        </div>
-                    `;
-
-                    $("#btnConnectWA").show();
-                    $("#btnDisconnectWA").hide();
-
-                    $("#wa-qrcode").html("Loading QR...");
-                    $("#waModal").modal("show");
-
-                    waRequest("GET", waRoutes.qr, null, function (qrRes) {
-                        if (qrRes.qr) {
-                            $("#wa-qrcode").html(`<img src="${qrRes.qr}" style="width: 260px;">`);
-                        } else {
-                            $("#wa-qrcode").html(`<p class="text-warning">Menunggu QR...</p>`);
-                        }
-                    });
-                }
-
-                $("#wa-status-box").html(html);
-            });
-        }
-
-        let qrInterval = null;
-
-        $("#btnConnectWA").click(function () {
-
-            $("#wa-qrcode").html("Loading QR...");
-            $("#waModal").modal("show");
-
-            // clear interval lama kalau ada
-            if (qrInterval) clearInterval(qrInterval);
-
-            qrInterval = setInterval(function () {
-
-                waRequest("GET", waRoutes.qr, null, function (res) {
-
-                    if (res.qr) {
-
-                        $("#wa-qrcode").html(
-                            `<img src="${res.qr}" style="width:260px;">`
-                        );
-
-                    } else {
-
-                        $("#wa-qrcode").html(
-                            `<p class="text-warning">Menunggu QR...</p>`
-                        );
-
-                    }
-
-                });
-
-            }, 5000); // tiap 2 detik
-
-        });
-
-        // Klik tombol disconnect
-        $("#btnDisconnectWA").click(function () {
-            waRequest("POST", waRoutes.disconnect, { _token: "{{ csrf_token() }}" }, function () {
-                loadStatus();
-            });
-        });
-
-        // Klik Refresh
-        $("#btnRefreshWA").click(function () {
-            loadStatus();
-        });
-
-        // Auto load on open
-        loadStatus();
-    </script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap" async defer></script>
     @endcan
 @endsection
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/operations/transport-management/detail.js') }}"></script>
+    <script>
+        (function () {
+            if (window.initTransportSpkOpenMap) {
+                window.initTransportSpkOpenMap();
+            }
+
+            var mapElement = document.getElementById('transportSpkMap');
+            var mapData = document.getElementById('transportSpkMapData');
+
+            if (!mapElement || !mapData || mapElement.dataset.mapInitialized === 'true') {
+                return;
+            }
+
+            var destinations = [];
+            try {
+                destinations = JSON.parse(mapData.textContent || '[]');
+            } catch (error) {
+                destinations = [];
+            }
+
+            if (!destinations.length) {
+                return;
+            }
+
+            var points = [];
+            for (var i = 0; i < destinations.length; i += 1) {
+                var lat = parseFloat(destinations[i].lat);
+                var lng = parseFloat(destinations[i].lng);
+
+                if (isFinite(lat) && isFinite(lng)) {
+                    points.push({ lat: lat, lng: lng, destination: destinations[i] });
+                }
+            }
+
+            if (!points.length) {
+                return;
+            }
+
+            mapElement.dataset.mapInitialized = 'true';
+
+            var fallback = mapElement.querySelector('[data-map-fallback]');
+            if (fallback) {
+                fallback.parentNode.removeChild(fallback);
+            }
+
+            var width = Math.max(Math.round(mapElement.clientWidth || 360), 320);
+            var height = Math.max(Math.round(mapElement.clientHeight || 360), 320);
+            var tileSize = 256;
+
+            function clamp(value, min, max) {
+                return Math.min(Math.max(value, min), max);
+            }
+
+            function project(lat, lng, zoom) {
+                var scale = tileSize * Math.pow(2, zoom);
+                var safeLat = clamp(lat, -85.05112878, 85.05112878);
+                var sinLat = Math.sin((safeLat * Math.PI) / 180);
+
+                return {
+                    x: ((lng + 180) / 360) * scale,
+                    y: (0.5 - (Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI))) * scale
+                };
+            }
+
+            function chooseZoom() {
+                if (points.length < 2) {
+                    return 15;
+                }
+
+                for (var zoom = 17; zoom >= 9; zoom -= 1) {
+                    var minX = Infinity;
+                    var maxX = -Infinity;
+                    var minY = Infinity;
+                    var maxY = -Infinity;
+
+                    for (var p = 0; p < points.length; p += 1) {
+                        var projected = project(points[p].lat, points[p].lng, zoom);
+                        minX = Math.min(minX, projected.x);
+                        maxX = Math.max(maxX, projected.x);
+                        minY = Math.min(minY, projected.y);
+                        maxY = Math.max(maxY, projected.y);
+                    }
+
+                    if ((maxX - minX) <= width - 88 && (maxY - minY) <= height - 88) {
+                        return zoom;
+                    }
+                }
+
+                return 9;
+            }
+
+            function layer(className) {
+                var element = document.createElement('div');
+                element.className = className;
+                return element;
+            }
+
+            var zoomLevel = chooseZoom();
+            var centerLat = 0;
+            var centerLng = 0;
+            for (var c = 0; c < points.length; c += 1) {
+                centerLat += points[c].lat;
+                centerLng += points[c].lng;
+            }
+            centerLat /= points.length;
+            centerLng /= points.length;
+
+            var centerPixels = project(centerLat, centerLng, zoomLevel);
+            var tiles = layer('transport-spk-detail-map-tiles');
+            var route = layer('transport-spk-detail-map-route');
+            var markers = layer('transport-spk-detail-map-markers');
+            var attribution = layer('transport-spk-detail-map-attribution');
+            attribution.innerHTML = '&copy; OpenStreetMap contributors';
+            mapElement.appendChild(tiles);
+            mapElement.appendChild(route);
+            mapElement.appendChild(markers);
+            mapElement.appendChild(attribution);
+
+            var tileCount = Math.pow(2, zoomLevel);
+            var minTileX = Math.floor((centerPixels.x - (width / 2)) / tileSize);
+            var maxTileX = Math.floor((centerPixels.x + (width / 2)) / tileSize);
+            var minTileY = Math.floor((centerPixels.y - (height / 2)) / tileSize);
+            var maxTileY = Math.floor((centerPixels.y + (height / 2)) / tileSize);
+
+            for (var tileX = minTileX; tileX <= maxTileX; tileX += 1) {
+                for (var tileY = minTileY; tileY <= maxTileY; tileY += 1) {
+                    if (tileY < 0 || tileY >= tileCount) {
+                        continue;
+                    }
+
+                    var wrappedTileX = ((tileX % tileCount) + tileCount) % tileCount;
+                    var image = document.createElement('img');
+                    image.alt = '';
+                    image.src = 'https://tile.openstreetmap.org/' + zoomLevel + '/' + wrappedTileX + '/' + tileY + '.png';
+                    image.style.left = (((tileX * tileSize) - centerPixels.x) + (width / 2)) + 'px';
+                    image.style.top = (((tileY * tileSize) - centerPixels.y) + (height / 2)) + 'px';
+                    tiles.appendChild(image);
+                }
+            }
+
+            function viewportPoint(point) {
+                var projected = project(point.lat, point.lng, zoomLevel);
+                return {
+                    x: projected.x - centerPixels.x + (width / 2),
+                    y: projected.y - centerPixels.y + (height / 2)
+                };
+            }
+
+            var polyline = '';
+            for (var r = 0; r < points.length; r += 1) {
+                var routePoint = viewportPoint(points[r]);
+                polyline += routePoint.x.toFixed(1) + ',' + routePoint.y.toFixed(1) + ' ';
+            }
+            route.innerHTML = '<svg viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + polyline + '" class="is-routed" /></svg>';
+
+            for (var m = 0; m < points.length; m += 1) {
+                var markerPoint = viewportPoint(points[m]);
+                var marker = document.createElement('button');
+                marker.type = 'button';
+                marker.className = 'transport-spk-detail-map-marker' + (points[m].destination.status === 'Visited' ? ' is-visited' : '');
+                marker.style.left = markerPoint.x + 'px';
+                marker.style.top = markerPoint.y + 'px';
+                marker.textContent = points[m].destination.order || (m + 1);
+                marker.title = points[m].destination.name || '';
+                markers.appendChild(marker);
+            }
+        }());
+    </script>
+@endpush

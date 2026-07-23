@@ -6,17 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Room Villa</div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('villas-admin.index') }}">Villas</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.villa.show',$villa->id) }}">{{ $villa->name }}</a></li>
-                                <li class="breadcrumb-item active">Edit Room Villa</li>
-                            </ol>
-                        </nav>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Room Villa
+                        </x-slot>
+                    </x-backend.page-hero>
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
                             <ul>
@@ -34,10 +28,8 @@
                         </div>
                     @endif
                     <div class="row">
-                        {{-- ATTENTIONS --}}
                         <div class="col-md-4 mobile">
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -248,10 +240,8 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- ATTENTIONS --}}
                         <div class="col-md-4 desktop">
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                     </div>

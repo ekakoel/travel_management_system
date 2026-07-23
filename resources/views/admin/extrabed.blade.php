@@ -1,4 +1,4 @@
-{{-- EXTRA BED ----------------------------------------------------------------------------------------------------------- --}} 
+{{-- EXTRA BED ----------------------------------------------------------------------------------------------------------- --}}
 <div class="row m-b-18">
     <div class="col-md-8">
         <div class="card-box">
@@ -75,9 +75,9 @@
                                                         @method('put')
                                                         {{ csrf_field() }}
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="type">Type</label>
-                                                                <select name="type" id="type"  type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Insert type" required>
+                                                                <select name="type" id="type"  type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Insert type" required>
                                                                     <option {{ $extrabed->type === "Adult" ? "selected":""}} value="Adult">Adult</option>
                                                                     <option {{ $extrabed->type === "Children" ? "selected":""}} value="Children">Child</option>
                                                                     <option {{ $extrabed->type === "Guest" ? "selected":""}} value="Guest">Guest</option>
@@ -90,9 +90,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="min_age" >Min Age</label>
-                                                                <input name="min_age" id="min_age"  type="number" wire:model="min_age" class="form-control @error('min_age') is-invalid @enderror" placeholder="Insert min age" value="{{ $extrabed->min_age }}">
+                                                                <input name="min_age" id="min_age"  type="number" wire:model="min_age" class="backend-form-control @error('min_age') is-invalid @enderror" placeholder="Insert min age" value="{{ $extrabed->min_age }}">
                                                                 @error('min_age')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -101,9 +101,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="max_age">Max Age</label>
-                                                                <input name="max_age" id="max_age" type="number" wire:model="max_age" class="form-control @error('max_age') is-invalid @enderror" placeholder="Insert max age" value="{{ $extrabed->max_age }}">
+                                                                <input name="max_age" id="max_age" type="number" wire:model="max_age" class="backend-form-control @error('max_age') is-invalid @enderror" placeholder="Insert max age" value="{{ $extrabed->max_age }}">
                                                                 @error('max_age')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -112,27 +112,27 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="contract_rate">Contract Rate</label>
                                                                 <div class="btn-icon">
                                                                     <span>Rp</span>
-                                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ $extrabed->contract_rate }}" required>
+                                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon backend-form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ $extrabed->contract_rate }}" required>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="markup">Markup</label>
                                                                 <div class="btn-icon">
                                                                     <span>$</span>
-                                                                    <input type="number" id="markup" name="markup" class="input-icon form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ $extrabed->markup }}" required>
+                                                                    <input type="number" id="markup" name="markup" class="input-icon backend-form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ $extrabed->markup }}" required>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-12">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="description">Description</label>
-                                                                <textarea name="description" id="description" wire:model="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Insert description" type="text">{!! $extrabed->description !!}</textarea>
+                                                                <textarea data-backend-richtext="true" name="description" id="description" wire:model="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Insert description" type="text">{!! $extrabed->description !!}</textarea>
                                                                 @error('description')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -146,8 +146,8 @@
                                                     </form>
                                                 </div>
                                                 <div class="card-box-footer">
-                                                    <button type="submit" form="edit-extra-bed-{{ $extrabed->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                    <button type="submit" form="edit-extra-bed-{{ $extrabed->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -163,7 +163,7 @@
             @canany(['posDev','posAuthor'])
                 <div class="card-box-footer">
                     <a href="#" data-toggle="modal" data-target="#add-extrabed-{{ $hotel->id }}" data-toggle="tooltip" data-placement="top" title="Add Extra Bed">
-                        <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Extra Bed</button>
+                        <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Extra Bed</button>
                     </a>
                 </div>
                 {{-- MODAL ADD EXTRA BED --}}
@@ -178,9 +178,9 @@
                                     {{ csrf_field() }}
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="type">Type</label>
-                                                <select name="type" id="type"  type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Insert type" required>
+                                                <select name="type" id="type"  type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Insert type" required>
                                                     <option selected value="">Select type</option>
                                                     <option value="Adult">Adult</option>
                                                     <option value="Children">Child</option>
@@ -194,9 +194,9 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="min_age">Min Age</label>
-                                                    <input name="min_age" id="min_age"  type="number" wire:model="min_age" class="form-control @error('min_age') is-invalid @enderror" placeholder="Insert min age">
+                                                    <input name="min_age" id="min_age"  type="number" wire:model="min_age" class="backend-form-control @error('min_age') is-invalid @enderror" placeholder="Insert min age">
                                                 @error('min_age')
                                                     <span class="invalid-feedback">
                                                         <strong>{{ $message }}</strong>
@@ -205,40 +205,40 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="max_age" >Max Age</label>
-                                                
-                                                    <input name="max_age" id="max_age"  type="number" wire:model="max_age" class="form-control @error('max_age') is-invalid @enderror" placeholder="Insert max age">
+
+                                                    <input name="max_age" id="max_age"  type="number" wire:model="max_age" class="backend-form-control @error('max_age') is-invalid @enderror" placeholder="Insert max age">
                                                 @error('max_age')
                                                     <span class="invalid-feedback">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
-                                                
+
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="contract_rate">Contract Rate</label>
                                                 <div class="btn-icon">
                                                     <span>Rp</span>
-                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ old('contract_rate') }}" required>
+                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon backend-form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ old('contract_rate') }}" required>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="markup">Markup</label>
                                                 <div class="btn-icon">
                                                     <span>$</span>
-                                                    <input type="number" id="markup" name="markup" class="input-icon form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ old('markup') }}" required>
+                                                    <input type="number" id="markup" name="markup" class="input-icon backend-form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ old('markup') }}" required>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="description">Description</label>
-                                                <textarea name="description" id="description" wire:model="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! old('description') !!}</textarea>
+                                                <textarea data-backend-richtext="true" name="description" id="description" wire:model="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! old('description') !!}</textarea>
                                                 @error('description')
                                                     <span class="invalid-feedback">
                                                         <strong>{{ $message }}</strong>
@@ -252,8 +252,8 @@
                                     </div>
                                 </form>
                                 <div class="card-box-footer">
-                                    <button type="submit" form="add-extra-bed" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                    <button type="submit" form="add-extra-bed" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
+                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                 </div>
                             </div>
                         </div>

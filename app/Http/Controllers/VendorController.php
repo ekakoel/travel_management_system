@@ -7,7 +7,6 @@ use App\Models\Hotels;
 use App\Models\Vendor;
 use App\Models\UserLog;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\VendorPackage;
@@ -28,12 +27,10 @@ class VendorController extends Controller
         $vendors = Vendor::where('status','!=','Removed')->get();
         $activevendors = Vendor::where('status', 'Active')->get();
         $draftvendors = Vendor::where('status', 'Draft')->get();
-        $attentions = Attention::where('page','vendors-admin')->get();
         $packages = VendorPackage::where('status','!=',"Removed")->get();
         return view('admin.vendorsadmin', compact('vendors'),[
             "draftvendors" => $draftvendors,
             "activevendors" => $activevendors,
-            "attentions" => $attentions,
             "packages" => $packages,
         ]);
     }
@@ -278,7 +275,6 @@ class VendorController extends Controller
         $tax = Tax::where('id',1)->first();
         $vendor = Vendor::find($id);
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','vendors-admin')->get();
         $author = Auth::user()->where('id',$vendor->author_id)->first();
         $packages = VendorPackage::where('vendor_id', $vendor->id)->where('status','!=','Removed')->get();
         $cpackages = count($packages);
@@ -292,7 +288,6 @@ class VendorController extends Controller
             return view('admin.vendorsadmindetail',[
                 'vendor'=>$vendor,
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
                 'tax'=>$tax,
                 'cpackages'=>$cpackages,
                 'packages'=>$packages,

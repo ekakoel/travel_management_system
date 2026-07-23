@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserLog;
-use App\Models\Attention;
 use Illuminate\Http\Request;
 use App\Models\BusinessProfile;
 use App\Models\TermAndCondition;
 use App\Services\PublicFaqService;
-use App\Http\Requests\StoreTermAndConditionRequest;
-use App\Http\Requests\UpdateTermAndConditionRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class TermAndConditionController extends Controller
 {
@@ -25,20 +24,25 @@ class TermAndConditionController extends Controller
 
     public function index()
     {
-        $attentions = Attention::where('page','term-and-condition')->get();
         $policySections = $this->policySections(self::POLICY_TYPES);
         $business = BusinessProfile::where('id',1)->first();
-        return view('privacy-policy.term-and-condition',[
-            'attentions'=>$attentions,
+        $summary = [
+            'total'=>TermAndCondition::count(),
+            'active'=>TermAndCondition::where('status', 'Active')->count(),
+            'draft'=>TermAndCondition::where('status', 'Draft')->count(),
+            'faq'=>TermAndCondition::where('type', 'FAQ')->count(),
+        ];
+
+        return view('backend.admin.terms.index',[
             'policySections'=>$policySections,
             'policyTypes'=>self::POLICY_TYPES,
             'business'=>$business,
+            'summary'=>$summary,
         ]);
     }
     public function v_privacy_policy()
     {
         $business = BusinessProfile::where('id',1)->first();
-        $attentions = Attention::where('page','term-and-condition')->get();
         $tandcs = TermAndCondition::where('type','User')
         ->where('status','Active')
         ->get();
@@ -53,7 +57,6 @@ class TermAndConditionController extends Controller
         $promotion_term = TermAndCondition::where('type','Promotion')
         ->get();
         return view('privacy-policy.privacy-policy',compact('tandcs'),[
-            'attentions'=>$attentions,
             'system_term'=>$system_term,
             'admin_term'=>$admin_term,
             'price_term'=>$price_term,
@@ -65,98 +68,36 @@ class TermAndConditionController extends Controller
     // FUNCTION EDIT POLICY =============================================================================================================>
     public function func_edit_policy(Request $request,$id)
     {
+        $validated = $this->validatePolicy($request);
         $policy=TermAndCondition::findOrFail($id);
-        $policy->update([
-            "type"=>$request->type,
-            "name_id"=>$request->name_id,
-            "name_en"=>$request->name_en,
-            "name_zh"=>$request->name_zh,
-            "policy_id"=>$request->policy_id,
-            "policy_en"=>$request->policy_en,
-            "policy_zh"=>$request->policy_zh,
-            "status"=>$request->status,
-        ]);
+        $policy->update($validated);
 
-        // USER LOG
-        $action = "Edit Policy";
-        $service = "Term & Condition";
-        $subservice = "Policy";
-        $page = "term-and-condition";
-        $note = "Update Policy: ".$id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        return redirect("/term-and-condition")->with('success','Policy has been Updated!');
+        $this->recordPolicyLog($request, 'Edit Policy', $policy->id, 'Update Policy: '.$policy->id);
+
+        return redirect()->route('view.term-and-condition')->with('success','Policy has been updated.');
     }
 
 
     // FUNCTION ADD POLICY =============================================================================================================>
     public function func_add_policy(Request $request)
-        {
-            $policy =new TermAndCondition([
-                "type"=>$request->type,
-                "name_id"=>$request->name_id,
-                "name_en"=>$request->name_en,
-                "name_zh"=>$request->name_zh,
-                "policy_en"=>$request->policy_en,
-                "policy_id"=>$request->policy_id,
-                "policy_zh"=>$request->policy_zh,
-                "status"=>$request->status,
-            ]);
-            $policy->save();
-            
-            // USER LOG
-            $action = "Add new Policy";
-            $service = "Term & Condition";
-            $subservice = "Policy";
-            $page = "term-and-condition";
-            $note = "Add New Policy: ".$policy->id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$policy->id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/term-and-condition")->with('success','New Policy added successfully!');
-        }
+    {
+        $policy = TermAndCondition::create($this->validatePolicy($request));
+
+        $this->recordPolicyLog($request, 'Add new Policy', $policy->id, 'Add New Policy: '.$policy->id);
+
+        return redirect()->route('view.term-and-condition')->with('success','New policy added successfully.');
+    }
 // FUNCTION REMOVE SERVICE =============================================================================================================>
     public function fdestroy_policy(Request $request,$id)
-        {
-            $policy=TermAndCondition::findOrFail($id);
-            $policy->delete();
-        
-            // USER LOG
-            $action = "Destroy Policy";
-            $service = "Term & Condition";
-            $subservice = "Policy";
-            $page = "term-and-condition";
-            $note = "Destroy Policy: ".$policy->id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$policy->id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/term-and-condition")->with('success','Policy has been Removed!');
-        }
+    {
+        $policy=TermAndCondition::findOrFail($id);
+        $policyId = $policy->id;
+        $policy->delete();
+
+        $this->recordPolicyLog($request, 'Destroy Policy', $policyId, 'Destroy Policy: '.$policyId);
+
+        return redirect()->route('view.term-and-condition')->with('success','Policy has been removed.');
+    }
 
     public function terms_and_conditions()
     {
@@ -227,7 +168,11 @@ class TermAndConditionController extends Controller
             return [
                 'type'=>$type,
                 'title'=>$this->policyTypeLabel($type),
-                'items'=>TermAndCondition::where('type', $type)->latest()->get(),
+                'items'=>TermAndCondition::where('type', $type)
+                    ->orderByRaw("case when status = 'Active' then 0 else 1 end")
+                    ->orderBy('name_en')
+                    ->orderBy('id')
+                    ->get(),
             ];
         });
     }
@@ -240,6 +185,8 @@ class TermAndConditionController extends Controller
                 'title'=>$this->policyTypeLabel($type),
                 'items'=>TermAndCondition::where('type', $type)
                     ->where('status', 'Active')
+                    ->orderBy('name_en')
+                    ->orderBy('id')
                     ->get()
                     ->map(function ($policy) {
                         return [
@@ -275,6 +222,34 @@ class TermAndConditionController extends Controller
             'FAQ' => __('messages.FAQs'),
             default => $type,
         };
+    }
+
+    private function validatePolicy(Request $request): array
+    {
+        return $request->validate([
+            'type'=>['required', 'string', Rule::in(self::POLICY_TYPES)],
+            'name_id'=>['required', 'string', 'max:255'],
+            'name_en'=>['required', 'string', 'max:255'],
+            'name_zh'=>['required', 'string', 'max:255'],
+            'policy_id'=>['required', 'string'],
+            'policy_en'=>['required', 'string'],
+            'policy_zh'=>['required', 'string'],
+            'status'=>['required', 'string', Rule::in(['Active', 'Draft'])],
+        ]);
+    }
+
+    private function recordPolicyLog(Request $request, string $action, int $policyId, string $note): void
+    {
+        UserLog::create([
+            'action'=>$action,
+            'service'=>'Term & Condition',
+            'subservice'=>'Policy',
+            'subservice_id'=>$policyId,
+            'page'=>'term-and-condition',
+            'user_id'=>Auth::id(),
+            'user_ip'=>$request->getClientIp(),
+            'note'=>$note,
+        ]);
     }
 
 }

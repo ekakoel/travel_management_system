@@ -6,7 +6,7 @@
     @if (count($ceremonyVenueDecorations)>0)
         <div class="card-box-content m-b-8">
             @foreach ($ceremonyVenueDecorations as $ceremony_venue_decoration)
-            
+
                 <div class="card">
                     <a href="#" data-toggle="modal" data-target="#detail-wedding-venue-{{ $ceremony_venue_decoration->id }}">
                         <div class="card-image-container">
@@ -151,17 +151,17 @@
                                             @method('PUT')
                                         </form>
                                         @if ($ceremony_venue_decoration->status == "Draft")
-                                            <button type="submit" form="activateDecorationCeremonyVenue-{{ $ceremony_venue_decoration->id }}" class="btn btn-info"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
+                                            <button type="submit" form="activateDecorationCeremonyVenue-{{ $ceremony_venue_decoration->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
                                             <a href="/edit-decoration-ceremony-venue-{{ $ceremony_venue_decoration->id }}">
-                                                <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
-                                                {{-- <button type="button" class="btn btn-update"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
                                             </a>
                                         @elseif ($ceremony_venue_decoration->status == "Active")
-                                            <button type="submit" form="deactivateDecorationCeremonyVenue-{{ $ceremony_venue_decoration->id }}" class="btn btn-dark"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save to Draft</button>
+                                            <button type="submit" form="deactivateDecorationCeremonyVenue-{{ $ceremony_venue_decoration->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save to Draft</button>
                                         @endif
-                                        
+
                                     @endcanany
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -176,7 +176,7 @@
     @endif
     <div class="card-box-footer">
         <a href="add-decoration-ceremony-venue-{{ $hotel->id }}">
-            <button class="btn btn-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
+            <button class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
         </a>
     </div>
 </div>

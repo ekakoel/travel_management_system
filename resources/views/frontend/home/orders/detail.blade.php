@@ -360,20 +360,6 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (count($attentions) > 0 )
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
-                                    <div class="card-box mb-30">
-                                        <div class="banner-right">
-                                            <div class="title">Attention</div>
-                                            <ul class="attention">
-                                                @foreach ($attentions as $attention)
-                                                    <li><p><b>"{{ $attention->name }}"</b> {{ $attention->attention }}</p></li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                     </div>
                 </div>

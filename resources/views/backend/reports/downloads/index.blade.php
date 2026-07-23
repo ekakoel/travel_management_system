@@ -5,13 +5,15 @@
     @if (Auth::User()->status == "Active")
         <div class="main-container">
             <div class="pd-ltr-20">
+<x-backend.page-hero :title="__('messages.Download Area')" />
+
                 <div class="card-box m-b-18">
                     <div class="row align-items-center">
                         <div class="col-md-4 m-b-18 img-panel">
                             <img src="images/property/database.png" alt="Welcome">
                         </div>
                         <div class="col-md-8">
-                        
+
                             <div class="welcome-title p-b-18">
                                 @lang('messages.Download Area')
                             </div>
@@ -42,11 +44,9 @@
                     @endif
                 </div>
                 <div class="row">
-                     {{-- ATTENTIONS --}}
                      <div class="col-md-4 mobile">
                         <div class="row">
                             @include('admin.usd-rate')
-                            @include('layouts.attentions')
                         </div>
                     </div>
                     <div class="col-md-8 m-b-18">
@@ -61,7 +61,7 @@
                                             <th class="width:3%">@lang('messages.No')</th>
                                             <th>@lang('messages.Database')</th>
                                             <th>@lang('messages.Action')</th>
-                                            
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -104,10 +104,8 @@
                         </div>
                         <!-- Export Datatable End -->
                     </div>
-                    {{-- ATTENTIONS --}}
                     <div class="col-md-4 desktop">
                         <div class="row">
-                            @include('layouts.attentions')
                         </div>
                     </div>
                 </div>

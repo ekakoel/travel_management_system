@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreSpksRequest;
 use App\Http\Requests\UpdateSpksRequest;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Schema;
 
 
 class SpksController extends Controller
@@ -64,8 +64,8 @@ class SpksController extends Controller
             ->update(['status' => 'Expired']);
 
         // ✅ Data utama
-        $transports   = Transports::where('status', 'Active')->get();
-        $spks         = Spks::with(['driver', 'transport'])
+        $transports   = Transports::where('status', 'Active')->orderBy('brand')->orderBy('name')->get();
+        $spks         = Spks::with(['operator', 'driver', 'transport'])
             ->whereNotIn('status', ['Completed', 'Canceled'])
             ->where('spk_date','>=', $expired_date)
             ->orderBy('spk_date', 'asc')
@@ -80,7 +80,8 @@ class SpksController extends Controller
         }
 
 
-        $spk_archives = Spks::where('spk_date','<=', $expired_date)
+        $spk_archives = $query
+            ->with(['operator', 'driver', 'transport', 'airport_shuttles', 'guests', 'destinations'])
             ->whereNotIn('status', ['Pending', 'In Progress'])
             ->orderBy('spk_date', 'DESC')
             ->get();
@@ -91,12 +92,20 @@ class SpksController extends Controller
             return view('admin.transportmanagement.partials.spk-archive', compact('spk_archives'))->render();
         }
 
-        $vehicles = Transports::where('status','Active')->get();
-        $drivers  = Drivers::where('status','Active')->get();
+        $vehicles = $transports;
+        $drivers  = Drivers::where('status','Active')->orderBy('name')->get();
         $statusColors = [
             'Pending' => 'bg-secondary',
             'In Progress' => 'bg-dark',
-            'Completed' => 'bg-primary'
+            'Completed' => 'bg-primary',
+            'Expired' => 'bg-warning',
+            'Canceled' => 'bg-danger',
+        ];
+        $statusSummary = [
+            'active' => $spks->count(),
+            'pending' => $spks->where('status', 'Pending')->count(),
+            'in_progress' => $spks->where('status', 'In Progress')->count(),
+            'archived' => $spk_archives->count(),
         ];
         return view('admin.transportmanagement.spks.index', compact(
             'transports',
@@ -105,7 +114,8 @@ class SpksController extends Controller
             'drivers',
             'spk_archives',
             'statusColors',
-            'operator'
+            'operator',
+            'statusSummary'
         ), [
             "now" => now()->format('Y-m-d'),
             "today" => $today
@@ -234,48 +244,59 @@ class SpksController extends Controller
     public function store(Request $request)
     {
         \Log::info('Form submitted:', $request->all());
-        $validator = Validator::make($request->all(), [
-            'order_number'     => 'nullable|string|max:100',
-            'operator_id'      => 'nullable|integer|min:1',
-            'type'             => 'nullable|string|max:50',
-            'driver_id'        => 'nullable|exists:drivers,id',
-            'transport_id'     => 'nullable|exists:transports,id',
-            'plate_number'     => 'nullable|string|max:50',
-            'number_of_guests' => 'nullable|integer|min:1',
-            'spk_date'         => 'nullable|date',
+        $validated = $request->validate([
+            'order_number'     => 'required|string|max:100',
+            'operator_id'      => 'required|exists:users,id',
+            'type'             => 'required|string|max:50',
+            'driver_id'        => 'required|exists:drivers,id',
+            'transport_id'     => 'required|exists:transports,id',
+            'plate_number'     => 'required|string|max:50',
+            'number_of_guests' => 'required|integer|min:1',
+            'spk_date'         => 'required|date',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
         $typeCodes = [
             'Airport Shuttle' => 'AS',
             'Hotel Transfer'  => 'HT',
             'Tour'            => 'TP',
             'Daily Rent'      => 'DR',
         ];
-        $spk_date = $request->spk_date ? Carbon::parse($request->spk_date)->format('Y-m-d') : null;
-        $typeCode = $typeCodes[$request->type] ?? 'OT';
-        $today = now()->toDateString();
-        $prefix = "SPK-".$request->order_number."-".$typeCode.Carbon::parse($spk_date)->format('ymd');
-        $countSpkDate = Spks::where('order_number', $request->order_number)->count() + 1;
+        $spk_date = Carbon::parse($validated['spk_date'])->format('Y-m-d');
+        $typeCode = $typeCodes[$validated['type']] ?? 'OT';
+        $prefix = "SPK-".$validated['order_number']."-".$typeCode.Carbon::parse($spk_date)->format('ymd');
+        $countSpkDate = Spks::where('order_number', $validated['order_number'])->count() + 1;
         $spkNumber = $prefix . "-" . str_pad($countSpkDate, 3, '0', STR_PAD_LEFT);
+
         try {
-            $spk = new Spks ([
-                'order_number'     => $request->order_number,
-                'operator_id'      => $request->operator_id,
-                'type'             => $request->type,
-                'driver_id'        => $request->driver_id,
-                'transport_id'     => $request->transport_id,
-                'plate_number'     => $request->plate_number,
-                'spk_number'       => $spkNumber,
-                'number_of_guests' => $request->number_of_guests,
-                'spk_date'         => $spk_date,
-            ]);
-            $spk->save();
+            DB::transaction(function () use ($validated, $spk_date, $spkNumber) {
+                $operator = User::find($validated['operator_id']);
+                $reservation = Reservation::firstOrCreate([
+                    'rsv_no' => $validated['order_number'],
+                    'service' => 'Transport',
+                ], [
+                    'agn_id' => $validated['operator_id'],
+                    'adm_id' => auth()->id() ?: $validated['operator_id'],
+                    'checkin' => $spk_date,
+                    'checkout' => $spk_date,
+                    'customer_name' => $operator?->name,
+                    'status' => 'Active',
+                ]);
+
+                $spk = new Spks ([
+                    'reservation_id'    => $reservation->id,
+                    'order_number'      => $validated['order_number'],
+                    'operator_id'       => $validated['operator_id'],
+                    'type'              => $validated['type'],
+                    'driver_id'         => $validated['driver_id'],
+                    'transport_id'      => $validated['transport_id'],
+                    'plate_number'      => $validated['plate_number'],
+                    'spk_number'        => $spkNumber,
+                    'number_of_guests'  => $validated['number_of_guests'],
+                    'spk_date'          => $spk_date,
+                ]);
+                $spk->save();
+            });
+
             return redirect()->route('view.transport-management.index')->with('success','SPK berhasil ditambahkan');
         } catch (\Exception $e) {
             \Log::error('SPK save failed: '.$e->getMessage());
@@ -381,28 +402,57 @@ class SpksController extends Controller
     {
         $now = Carbon::now();
         $spk = Spks::with([
+            'operator',
+            'reservation',
             'driver', 
             'airport_shuttles', 
             'transport', 
-            'destinations',
+            'destinations' => fn ($query) => $query->orderBy('date'),
             'guests'
         ])->findOrFail($id);
-        $destinationsJson = $spk->destinations->map(function($d){
+
+        $routeDestinations = SpkDestinations::where('spk_id', $spk->id)
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->orderBy('date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $mapDestinations = $routeDestinations
+            ->values()
+            ->map(function($d, $index){
             return [
+                'order' => $index + 1,
                 'lat' => (float)$d->latitude,
                 'lng' => (float)$d->longitude,
                 'name' => $d->destination_name ?? '',
-                'status' => $d->status ?? 'Pending'
+                'status' => $d->status ?? 'Pending',
+                'address' => $d->destination_address ?? '',
+                'time' => $d->date ? Carbon::parse($d->date)->format('H:i') : '',
             ];
-        })->toJson();
-        $operators = User::where('type','admin')->where('Status','Active')->get();
-        $vehicles = Transports::where('status','Active')->get();
-        $drivers = Drivers::where('status','Active')->get();
+        })->all();
+        $destinationsJson = json_encode(
+            $mapDestinations,
+            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+        );
+        $mapRouteReady = $routeDestinations->isNotEmpty();
+        $operators = User::where('type','admin')->where('Status','Active')->orderBy('name')->get();
+        $vehicles = Transports::where('status','Active')->orderBy('brand')->orderBy('name')->get();
+        $drivers = Drivers::where('status','Active')->orderBy('name')->get();
         $guests = $spk->guests;
         $airport_shuttles = $spk->airport_shuttles;
         $bgStatus = [
             'Pending' => 'bg-secondary',
-            'In Progress' => 'bg-primary'
+            'In Progress' => 'bg-primary',
+            'Completed' => 'bg-success',
+            'Expired' => 'bg-warning',
+            'Canceled' => 'bg-danger',
+        ];
+        $detailSummary = [
+            'guests' => $guests->count(),
+            'airport_shuttles' => $airport_shuttles->count(),
+            'destinations' => $spk->destinations->count(),
+            'visited_destinations' => $spk->destinations->where('status', 'Visited')->count(),
         ];
         return view('admin.transportmanagement.spks.detail-spk', compact(
             'spk',
@@ -412,7 +462,9 @@ class SpksController extends Controller
             'airport_shuttles',
             'bgStatus',
             'destinationsJson',
-            'operators'
+            'mapRouteReady',
+            'operators',
+            'detailSummary'
         ));
     }
 
@@ -477,17 +529,38 @@ class SpksController extends Controller
 
     public static function getLatLngFromShortUrl($shortUrl)
     {
+        if (!filled($shortUrl)) {
+            return null;
+        }
+
         $finalUrl = null;
         $client = new Client([
             'allow_redirects' => true,
+            'http_errors' => false,
+            'timeout' => 8,
             'on_stats' => function (TransferStats $stats) use (&$finalUrl) {
                 $finalUrl = (string) $stats->getEffectiveUri();
             }
         ]);
-        $client->get($shortUrl);
-        if ($finalUrl) {
-            // Cari pola latitude, longitude dari URL final
-            preg_match('/(-?\d+\.\d+),\s*(-?\d+\.\d+)/', $finalUrl, $matches);
+
+        try {
+            $client->get($shortUrl);
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to resolve destination map shortlink: '.$e->getMessage());
+            return null;
+        }
+
+        $candidateUrl = $finalUrl ?: $shortUrl;
+        $patterns = [
+            '/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/',
+            '/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/',
+            '/[?&](?:q|ll)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/',
+            '/(-?\d+\.\d+),\s*(-?\d+\.\d+)/',
+        ];
+
+        foreach ($patterns as $pattern) {
+            preg_match($pattern, $candidateUrl, $matches);
+
             if (count($matches) >= 3) {
                 return [
                     'latitude' => $matches[1],
@@ -495,6 +568,7 @@ class SpksController extends Controller
                 ];
             }
         }
+
         return null;
     }
     public function getDistance($lat1, $lng1, $lat2, $lng2)
@@ -545,14 +619,22 @@ class SpksController extends Controller
             'phone'                 => 'nullable|string|max:20',
         ]);
 
-        $guest = new Guests([
-            'spk_id' => $id,
+        $guestPayload = [
             'name' => $request->name,
             'name_mandarin' => $request->name_mandarin,
             'sex' => $request->sex,
             'age' => $request->age,
             'phone' => $request->phone
-        ]);
+        ];
+
+        if (Schema::hasColumn('guests', 'spk_id')) {
+            $guestPayload['spk_id'] = $id;
+        } else {
+            $spk = Spks::findOrFail($id);
+            $guestPayload['rsv_id'] = $spk->reservation_id;
+        }
+
+        $guest = new Guests($guestPayload);
         $guest->save();
         return redirect()->back()->with('success', 'Daftar tamu berhasil ditambahkan.');
     }

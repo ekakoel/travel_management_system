@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" data-dismiss="modal">
+                    <button class="backend-button backend-button-danger" data-dismiss="modal">
                         <i class="icon-copy dw dw-cancel"></i> Close
                     </button>
                 </div>

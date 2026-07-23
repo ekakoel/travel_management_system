@@ -1,0 +1,81 @@
+.transport-form-admin-page {
+  --transport-form-accent: #2563eb;
+}
+
+.transport-form-panel,
+.transport-gallery-panel {
+  margin-bottom: 24px;
+}
+
+.transport-form-cover.is-wide {
+  grid-column: 1 / -1;
+}
+
+.transport-file-status {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.transport-form-cover {
+  display: grid;
+  gap: 14px;
+}
+
+.transport-cover-preview {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 20px;
+  color: #64748b;
+  display: flex;
+  justify-content: center;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.transport-cover-preview img {
+  height: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.transport-gallery-grid,
+.transport-gallery-preview {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.transport-gallery-card {
+  overflow: hidden;
+}
+
+.transport-gallery-card img,
+.transport-gallery-preview__item img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  width: 100%;
+}
+
+.transport-gallery-preview__item {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.transport-gallery-preview__item figcaption {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
+@media (max-width: 768px) {
+  .transport-gallery-grid,
+  .transport-gallery-preview {
+    grid-template-columns: 1fr;
+  }
+}

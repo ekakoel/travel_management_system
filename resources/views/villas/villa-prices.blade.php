@@ -5,21 +5,11 @@
     <div class="main-container">
         <div class="pd-ltr-20">
             <div class="min-height-200px">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="title"><i class="icon-copy dw dw-hotel-o"></i> {{ $villa->name }}</div>
-                            @include('partials.breadcrumbs', [
-                                'breadcrumbs' => [
-                                    ['url' => route('dashboard.index'), 'label' => __('messages.Dashboard')],
-                                    ['url' => route('view.villas.index'), 'label' => __('messages.Hotels')],
-                                    ['url' => route('view.villas.show',$villa->code), 'label' => $villa->name],
-                                    ['label' => __('messages.Check Price')],
-                                ]
-                            ])
-                        </div>
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="icon-copy dw dw-hotel-o"></i> {{ $villa->name }}
+                    </x-slot>
+                </x-backend.page-hero>
                 @include('partials.alerts')
                 <div class="row">
                     <div class="col-md-4 mobile">

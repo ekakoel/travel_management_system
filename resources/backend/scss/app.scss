@@ -4,3 +4,19 @@
 // can start using a dedicated bundle while migration stays compatible.
 
 @import '../../sass/app';
+@import 'components/backend-theme';
+@import 'components/backend-form';
+@import 'components/backend-hero';
+@import 'components/backend-breadcrumb';
+@import 'components/backend-sidebar';
+@import 'components/backend-kpi';
+@import 'components/backend-panel';
+@import 'components/backend-detail-layout';
+@import 'components/backend-filter';
+@import 'components/backend-actions';
+@import 'components/backend-status';
+@import 'components/backend-alert';
+@import 'components/backend-list';
+@import 'components/backend-empty-state';
+@import 'components/backend-modal';
+@import 'components/backend-richtext';

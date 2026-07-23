@@ -48,9 +48,9 @@
             $transport = $transports->where('id',$transport_id)->first();
             if ($transport) {
                 $transprice = $transport_prices->where('transports_id',$transport->id)->first();
-                
+
                 if ($transprice) {
-                    $cr_trans = ceil($transprice->contract_rate/$usdrates->rate); 
+                    $cr_trans = ceil($transprice->contract_rate/$usdrates->rate);
                     $tr_markup = $cr_trans + $transprice->markup;
                     $tr_tax =  ceil($tr_markup * ($taxes->tax / 100));
                     $tranPrice = ceil($tr_tax + $tr_markup);
@@ -75,9 +75,9 @@
             $rooms = $suite_and_villas->where('id',$roomsid)->first();
             if ($rooms) {
                 $roomandprice = $room_price->where('rooms_id',$rooms->id)->first();
-                
+
                 if ($roomandprice) {
-                    $cr_room = ceil($roomandprice->contract_rate/$usdrates->rate); 
+                    $cr_room = ceil($roomandprice->contract_rate/$usdrates->rate);
                     $cr_markup = $cr_room + $roomandprice->markup;
                     $cr_tax =  ceil($cr_markup * ($taxes->tax / 100));
                     $roomprice = ceil($cr_tax + $cr_markup)*$wedding_duration;
@@ -109,7 +109,7 @@
     }else{
         $ven_price = 0;
     }
-    
+
     if ($fixed_services_id) {
         foreach ($fixed_services_id as $fservice_id) {
             $fixed_s = $fixed_services->where('id',$fservice_id)->first();
@@ -170,7 +170,7 @@
     }else{
         $entertainmentPrice = 0;
     }
-    
+
 
     if ($documentations_id) {
         foreach ($documentations_id as $documentation_id) {
@@ -208,20 +208,13 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title">
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
                             @if ($service != "")
-                                {!! $service->icon !!} {{ $service->name }}
-                            @endif
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="/weddings-admin">{{ $service->name }}</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ $weddings->name }}</li>
-                            </ol>
-                        </nav>
-                    </div>
+                                                            {!! $service->icon !!} {{ $service->name }}
+                                                        @endif
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -258,11 +251,9 @@
                         </form>
                         <div class="product-detail-wrap">
                             <div class="row">
-                                {{-- ATTENTIONS --}}
                                 <div class="col-md-4 mobile">
                                     <div class="row">
                                         @include('admin.usd-rate')
-                                        @include('layouts.attentions')
                                     </div>
                                     <div class="card-box">
                                         <div class="card-box-title">
@@ -391,7 +382,7 @@
                                                     <div class="label-danger"><i class="icon-copy fa fa-window-close" aria-hidden="true"></i></div>
                                                 @endif
                                             </div>
-                                            {{-- STATUS SERVICE OTHER --}} 
+                                            {{-- STATUS SERVICE OTHER --}}
                                             <div class="col-6">
                                                 <p>- Other Service</p>
                                             </div>
@@ -405,25 +396,25 @@
                                                     <div class="label-danger"><i class="icon-copy fa fa-window-close" aria-hidden="true"></i></div>
                                                 @endif
                                             </div>
-                                            
+
                                             @if ($total_service_price > $published_price)
                                                 <div class="col-12">
-                                                    <div class="notification-error blink_me">Attentions!</div>
+                                                    <div class="notification-error blink_me">Attention!</div>
                                                     <div class="notification-error">Please refresh price first to activate this wedding package!</div>
                                                 </div>
                                             @endif
                                         </div>
                                         <div class="card-box-footer">
                                             @if ($weddings->status !== "Active")
-                                                <button type="submit" form="removePackage" class="btn btn-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
+                                                <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
                                                 @if ($weddings->markup > 0)
                                                     @if ($total_service_price < $published_price)
-                                                        <button type="submit" form="activatePackage" class="btn btn-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
+                                                        <button type="submit" form="activatePackage" class="backend-button backend-button-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
                                                     @endif
                                                 @endif
                                             @endif
                                             @if ($weddings->status !== "Draft")
-                                                <button type="submit" form="draftedPackage" class="btn btn-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
+                                                <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
                                             @endif
                                         </div>
                                     </div>
@@ -472,7 +463,7 @@
                                                             <div class="card-title"><i class="icon-copy fa fa-calendar" aria-hidden="true"></i>@lang('messages.Period'):</div>
                                                             <div class="data-web">{{  date("m/d/y",strtotime($weddings->period_start))." - ".date("m/d/y",strtotime($weddings->period_end)) }} </div>
                                                         </div>
-                                                       
+
                                                         <div class="col-12 m-t-8">
                                                             <div class="card-title"><i class="icon-copy fa fa-file-pdf-o" aria-hidden="true"></i> PDF Rate:</div>
                                                             <a href="#" data-target="#wedding-pdf-{{ $weddings->id }}" data-toggle="modal">
@@ -586,7 +577,7 @@
                                         </div>
                                         @if ($weddings->status !== "Active")
                                             <div class="card-box-footer">
-                                                <a href="/{{ $service->nicname }}-edit-{{ $weddings['id'] }}"><button class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
+                                                <a href="/{{ $service->nicname }}-edit-{{ $weddings['id'] }}"><button class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
                                             </div>
                                         @endif
                                     </div>
@@ -594,7 +585,6 @@
                                 <div class="col-md-4 desktop">
                                     <div class="row">
                                         @include('admin.usd-rate')
-                                        @include('layouts.attentions')
                                             <div class="col-md-12">
                                                 <div id="btnActionOn">
                                                     <div class="card-box">
@@ -738,7 +728,7 @@
                                                                     <div class="label-danger"><i class="icon-copy fa fa-window-close" aria-hidden="true"></i> 0 Services</div>
                                                                 @endif
                                                             </div>
-                                                            {{-- STATUS SERVICE OTHER --}} 
+                                                            {{-- STATUS SERVICE OTHER --}}
                                                             <div class="col-6">
                                                                 <p>- Other Service</p>
                                                             </div>
@@ -754,22 +744,22 @@
                                                             </div>
                                                             @if ($total_service_price > $published_price)
                                                                 <div class="col-12">
-                                                                    <div class="notification-error blink_me">Attentions!</div>
+                                                                    <div class="notification-error blink_me">Attention!</div>
                                                                     <div class="notification-error">Please refresh price first to activate this wedding package!</div>
                                                                 </div>
                                                             @endif
                                                         </div>
                                                         <div class="card-box-footer">
                                                             @if ($weddings->status !== "Active")
-                                                                <button type="submit" form="removePackage" class="btn btn-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
+                                                                <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
                                                                 @if ($weddings->markup > 0)
                                                                     @if ($total_service_price < $published_price)
-                                                                        <button type="submit" form="activatePackage" class="btn btn-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
+                                                                        <button type="submit" form="activatePackage" class="backend-button backend-button-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
                                                                     @endif
                                                                 @endif
                                                             @endif
                                                             @if ($weddings->status !== "Draft")
-                                                                <button type="submit" form="draftedPackage" class="btn btn-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
+                                                                <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -904,7 +894,7 @@
                                                                 <div class="label-danger"><i class="icon-copy fa fa-window-close" aria-hidden="true"></i></div>
                                                             @endif
                                                         </div>
-                                                        {{-- STATUS SERVICE OTHER --}} 
+                                                        {{-- STATUS SERVICE OTHER --}}
                                                         <div class="col-6">
                                                             <p>- Other Service</p>
                                                         </div>
@@ -918,25 +908,25 @@
                                                                 <div class="label-danger"><i class="icon-copy fa fa-window-close" aria-hidden="true"></i></div>
                                                             @endif
                                                         </div>
-                                                        {{-- STATUS SERVICE NOTIFICATION --}} 
+                                                        {{-- STATUS SERVICE NOTIFICATION --}}
                                                         @if ($total_service_price > $published_price)
                                                             <div class="col-12">
-                                                                <div class="notification-error blink_me">Attentions!</div>
+                                                                <div class="notification-error blink_me">Attention!</div>
                                                                 <div class="notification-error">Please refresh price first to activate this wedding package!</div>
                                                             </div>
                                                         @endif
                                                     </div>
                                                     <div class="card-box-footer">
                                                         @if ($weddings->status !== "Active")
-                                                            <button type="submit" form="removePackage" class="btn btn-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
+                                                            <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
                                                             @if ($weddings->markup > 0)
                                                                 @if ($total_service_price < $published_price)
-                                                                    <button type="submit" form="activatePackage" class="btn btn-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
+                                                                    <button type="submit" form="activatePackage" class="backend-button backend-button-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
                                                                 @endif
                                                             @endif
                                                         @endif
                                                         @if ($weddings->status !== "Draft")
-                                                            <button type="submit" form="draftedPackage" class="btn btn-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
+                                                            <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
                                                         @endif
                                                     </div>
                                                 </div>

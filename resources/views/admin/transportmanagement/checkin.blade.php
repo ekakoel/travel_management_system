@@ -84,7 +84,7 @@
                 <input type="hidden" name="latitude" id="latitude">
                 <input type="hidden" name="longitude" id="longitude">
 
-                <button type="submit" class="btn btn-primary w-100 btn-checkin">📍 Check-in</button>
+                <button type="submit" class="backend-button backend-button-primary w-100 btn-checkin">📍 Check-in</button>
             </form>
         @endif
 
@@ -93,7 +93,7 @@
         <!-- Google Maps link (optional preview) -->
         @if($spkDestination->checkin_map_link)
         <p class="mt-2">Checked-in location:</p>
-        <a href="{{ $spkDestination->checkin_map_link }}" target="_blank" class="btn btn-outline-success w-100">
+        <a href="{{ $spkDestination->checkin_map_link }}" target="_blank" class="backend-button backend-button-secondary w-100">
             View on Google Maps
         </a>
         @endif

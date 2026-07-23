@@ -11,7 +11,7 @@
 // Font Awesome
 // Use the distributed CSS bundle so Sass does not compile legacy
 // Font Awesome SCSS internals that emit slash-division deprecation warnings.
-@import "~@fortawesome/fontawesome-free/css/all.min.css";
+// @import "~@fortawesome/fontawesome-free/css/all.min.css";
 
 // sweet alert
 @import 'sweetalert2/src/sweetalert2.scss';
@@ -32,8 +32,3 @@
 .green {color: $green;}
 .teal {color: $teal;}
 .cyan {color: $cyan;}
-
-
-// .content-header{
-//   padding: 10px 0.5rem !important;
-// }

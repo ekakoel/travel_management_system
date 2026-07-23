@@ -20,7 +20,7 @@
                                 <div class="h3">
                                     Hotel Prices
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-12">
@@ -43,16 +43,16 @@
                                                     $taxs = ceil(($usd_crate_mark * $tax->tax)/100);
                                                     $usd_prate = $usd_crate_mark + $taxs;
                                                 @endphp
-                                               
-                                                        <tr> 
+
+                                                        <tr>
                                                            <td>{{ ++$no }}</td>
                                                            <td>{{ $tour->name }}</td>
                                                            <td>{{ $tour->type }}</td>
                                                            <td>{{ $tour->duration }}</td>
                                                            <td>{{ "$ ".$usd_prate }}</td>
-                                                           
+
                                                         </tr>
-                                                  @endforeach 
+                                                  @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -95,7 +95,7 @@
                 }
             </script>
             <script>
-                function printFunction() { 
+                function printFunction() {
                     var css = '@page { size: landscape; }',
                     head = document.head || document.getElementsByTagName('head')[0],
                     style = document.createElement('style');

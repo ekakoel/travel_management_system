@@ -1,0 +1,59 @@
+.activity-form-page,
+.activity-gallery-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.activity-form-page *,
+.activity-gallery-page * {
+  box-sizing: border-box;
+}
+
+.activity-form-panel,
+.activity-gallery-panel {
+  margin-bottom: 18px;
+}
+
+.activity-form-cover,
+.activity-gallery-card {
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.activity-form-cover img,
+.activity-gallery-card img {
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.activity-gallery-card .backend-table-actions {
+  border-top: 1px solid var(--backend-line-soft);
+  justify-content: flex-end;
+  padding: 12px;
+}
+
+.activity-form-actions,
+.activity-gallery-actions {
+  margin-top: 18px;
+}
+
+.activity-file-status {
+  color: var(--backend-muted);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 8px;
+}
+
+@media (max-width: 767px) {
+  .activity-form-actions .backend-page-toolbar__actions,
+  .activity-gallery-actions .backend-page-toolbar__actions {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+}

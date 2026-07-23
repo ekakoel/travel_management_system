@@ -16,9 +16,7 @@ use App\Models\Partners;
 use App\Models\UsdRates;
 use App\Models\Weddings;
 use App\Models\ActionLog;
-use App\Models\Attention;
 use App\Models\HotelRoom;
-use App\Models\Itinerary;
 use App\Models\HotelPrice;
 use App\Models\Reservation;
 use App\Models\InvoiceAdmin;
@@ -55,7 +53,6 @@ class ReservationController extends Controller
         $now = date('Y-m-d',strtotime($tgl));
         $business = BusinessProfile::first();
         $crsv = Reservation::all();
-        $attentions = Attention::where('page','reservation-admin')->get();
         $agents = Auth::user()->where('status',"Active")->get();
         $crsv_no = count($crsv);
         
@@ -68,7 +65,6 @@ class ReservationController extends Controller
             'reservations'=>$reservations,
             'reservation_active'=>$reservation_active,
             'agents'=>$agents,
-            'attentions'=>$attentions,
             'crsv'=>$crsv,
             'rsv_no'=>$rsv_no,
             'reservation_onprogress'=>$reservation_onprogress,
@@ -150,8 +146,6 @@ class ReservationController extends Controller
             ['service','Activity'],['status','Active'],['rsv_id', $id],])
         ->orderBy('checkin', 'asc')->get();
 
-        $itinerarys = Itinerary::where('rsv_id', $id)
-        ->orderBy('date', 'asc')->get();
         $transports = Orders::where('rsv_id','=', $id)
         ->where('service','Transport')
         ->where('status','=','Active')
@@ -171,7 +165,6 @@ class ReservationController extends Controller
             'optionalrates' => $optionalrates,
             'activitytours' => $activitytours,
             'dur_res' => $dur_res,
-            'itinerarys' => $itinerarys,
             'hotel_orders' => $hotel_orders,
             'optional_rates' => $optional_rates,
             'opsi_rate_order' => $opsi_rate_order,
@@ -253,8 +246,6 @@ class ReservationController extends Controller
             ['service','Activity'],['status','Active'],['rsv_id', $id],['checkin',">=",$now]])
         ->orderBy('checkin', 'asc')->get();
 
-        $itinerarys = Itinerary::where('rsv_id', $id)
-        ->orderBy('date', 'asc')->get();
         $transports = Orders::where('rsv_id','=', $id)
         ->where('service','Transport')
         ->where('status','=','Active')
@@ -275,7 +266,6 @@ class ReservationController extends Controller
             'optionalrates' => $optionalrates,
             'activitytours' => $activitytours,
             'dur_res' => $dur_res,
-            'itinerarys' => $itinerarys,
             'hotel_orders' => $hotel_orders,
             'optional_rates' => $optional_rates,
             'opsi_rate_order' => $opsi_rate_order,
@@ -304,7 +294,6 @@ class ReservationController extends Controller
     public function view_order_rsv($id)
     {
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','orders-detail')->get();
         $order = Orders::where('id','=', $id)->first();
         $business = BusinessProfile::where('id','=',1)->first();
         $optional_rate_order = OptionalRateOrder::all();
@@ -314,7 +303,6 @@ class ReservationController extends Controller
             'order'=> $order,
             'business'=>$business,
             'optional_rate_order'=>$optional_rate_order,
-            'attentions'=>$attentions,
             'optionalrates'=>$optionalrates,
         ]);
     }
@@ -383,22 +371,6 @@ class ReservationController extends Controller
             'business'=>$business,
         ]);
     }
-    // VIEW ADD ITINERARY ==================================================================================================================================================================================
-    public function view_add_itinerary($id)
-    {
-        $reservation = reservation::find($id);
-        $orders =  Orders::where([['rsv_id', null],['status','=','Active'],['user_id', $reservation->agn_id],['service','Tour Package']])
-        ->orWhere([['rsv_id', null],['status','=','Active'],['user_id', $reservation->agn_id],['service','Activity']])
-        ->get();
-        
-        $business = BusinessProfile::where('id','=',1)->first();
-        return view('backend.operations.reservations.actions.add-itinerary',[
-            'orders'=>$orders,
-            'reservation' =>$reservation,
-            'business'=>$business,
-        ]);
-    }
-
     public function func_remove_rsv_order(Request $request, $id)
     {
         $order = Orders::findOrFail($id);
@@ -566,26 +538,6 @@ class ReservationController extends Controller
         return redirect()->back()->with('success','Remark has been add to the reservation');
         return redirect()->back()->with('error','Remark cannot be added, please check your form!');
     }
-    // ADD ITINERARY ==================================================================================================================================================================================
-    public function func_add_itinerary(Request $request)
-    {
-        $validated = $request->validate([
-            'rsv_id' => 'required',
-            'date' => 'required',
-            'itinerary' => 'required',
-        ]);
-        $date = date('Y-m-d',strtotime($request->date));
-        $itinerary = new Itinerary ([
-            'rsv_id' =>$request->rsv_id,
-            'date'=>$date,
-            'itinerary'=>$request->itinerary,
-        ]);
-        // @dd($guest);
-        $itinerary->save();
-        return redirect()->back()->with('success','Itinerary has been add to the reservation');
-        return redirect()->back()->with('error','Itinerary cannot be added, please check your form!');
-    }
-    
     // UPDATE BANK ACCOUNT ==================================================================================================================================================================================
     public function func_update_invoice_bank(Request $request, $id)
     {
@@ -674,18 +626,6 @@ class ReservationController extends Controller
         // @dd($guest);
         return redirect()->back()->with('success','Remark has been updated to the reservation');
         return redirect()->back()->with('error','Remark cannot be update, please check your form!');
-    }
-    // UPDATE ITINERARY ==================================================================================================================================================================================
-    public function func_update_itinerary(Request $request, $id)
-    {
-        $itinerary=Itinerary::findOrFail($id);
-        $itinerary->update([
-            'date' =>$request->date,
-            'itinerary' =>$request->itinerary,
-        ]);
-        // @dd($guest);
-        return redirect()->back()->with('success','Itinerary has been updated to the reservation');
-        return redirect()->back()->with('error','Itinerary cannot be update, please check your form!');
     }
     // ACTIVATE RESERVATION ==================================================================================================================================================================================
     public function func_activate_reservation(Request $request, $id)
@@ -837,6 +777,7 @@ class ReservationController extends Controller
         $checkout = date('Y-m-d',strtotime($check_out));
         $reservation = new Reservation ([
             'rsv_no' =>$rsv_no,
+            'service' =>$request->service ?: 'Reservation',
             'checkin' =>$checkin,
             'checkout' =>$checkout,
             'agn_id'=>$request->agn_id,
@@ -888,6 +829,10 @@ class ReservationController extends Controller
         $reservation_date = date("Y-m-d", strtotime($request->reservation_date));
         $reservation = new Reservation ([
             'rsv_no' =>$rsv_no,
+            'service' =>'Transport',
+            'agn_id'=>$agent->id,
+            'adm_id'=>$agent->id,
+            'status'=>'Pending',
             'customer_name'=>$request->customer_name,
             'reservation_date'=>$reservation_date,
         ]);
@@ -909,6 +854,9 @@ class ReservationController extends Controller
         $reservation = new Reservation ([
             'rsv_no' =>$rsv_no,
             'service' =>$service,
+            'agn_id'=>Auth::id(),
+            'adm_id'=>Auth::id(),
+            'status'=>'Pending',
             'customer_name'=>$customer_name,
             'reservation_date'=>$reservation_date,
             'checkin'=>$checkin,
@@ -1080,13 +1028,6 @@ class ReservationController extends Controller
          $restaurant=RestaurantRsv::findOrFail($id);
          $restaurant->delete();
          return redirect()->back()->with('success','Meal Location has been removed');
-    }
-    // Function Delete Itinerary =============================================================================================================>
-    public function destroy_itinerary(Request $request, $id)
-    {
-         $itinerary=Itinerary::findOrFail($id);
-         $itinerary->delete();
-         return redirect()->back()->with('success','Itinerary has been removed');
     }
     // Function Delete INCLUDE =============================================================================================================>
     public function destroy_include(Request $request, $id)

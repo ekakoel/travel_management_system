@@ -10,7 +10,6 @@ use App\Models\Tours;
 use App\Models\Orders;
 use App\Models\TourType;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use App\Models\Promotion;
 use App\Models\TourPrices;
 use App\Models\BookingCode;
@@ -177,7 +176,6 @@ class ToursController extends Controller
         }
 
         $ordernotours = Orders::count() + 1;
-        $attentions = Attention::where('page','tour-detail')->get();
         $agents = $canViewTourRates ? User::where('status','Active')->get() : collect();
         $neartours = Tours::where('status',"Active")
         ->where('slug','!=',$slug)
@@ -265,7 +263,6 @@ class ToursController extends Controller
             'tax'=>$tax,
             'usdrates'=>$usdrates,
             'agents'=>$agents,
-            'attentions'=>$attentions,
             'ordernotours' => $ordernotours,
             'tour'=>$tour,
             'neartours'=>$neartours,
@@ -489,7 +486,6 @@ class ToursController extends Controller
         $tour = Tours::where('code',$code)->first();
         $orders = Orders::all();
         $ordernotours = count($orders) + 1;
-        $attentions = Attention::where('page','tour-detail')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $agents = Auth::user()->where('status','Active')->get();
         $neartours = Tours::where('status',"Active")
@@ -581,7 +577,6 @@ class ToursController extends Controller
                 'taxes'=>$taxes,
                 'usdrates'=>$usdrates,
                 'agents'=>$agents,
-                'attentions'=>$attentions,
                 'ordernotours' => $ordernotours,
                 'tour'=>$tour,
                 'neartours'=>$neartours,

@@ -6,21 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <i class="icon-copy dw dw-bus"></i> Transport Management
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Surat Perintah Kerja (SPK)</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy dw dw-bus"></i> Transport Management
+                        </x-slot>
+                    </x-backend.page-hero>
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
@@ -61,7 +51,7 @@
                                                         <p><i>{{ $spk->spk_number }}</i></p>
                                                     </td>
                                                     <td>
-                                                        {{ $spk->transport ? $spk->transport->brand." ".$spk->transport->name : 'N/A' }} - 
+                                                        {{ $spk->transport ? $spk->transport->brand." ".$spk->transport->name : 'N/A' }} -
                                                         {{ $spk->driver ? $spk->driver->name : 'N/A' }}<br>
                                                         {{ $spk->number_of_guests }} Guests
                                                     </td>
@@ -70,7 +60,7 @@
                                                     </td>
                                                     <td class="text-right">
                                                         <a href="{{ route('view.detail-spk',$spk->id) }}">
-                                                            <button class="btn btn-sm btn-light"><i class="icon-copy dw dw-eye"></i> Detail</button>
+                                                            <button class="backend-table-action backend-table-action-view"><i class="icon-copy dw dw-eye"></i> Detail</button>
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -93,16 +83,16 @@
                                         <div class="row g-3">
                                             <div class="col-md-12">
                                                 <div class="alert alert-info" role="alert">
-                                                    Gunakan form ini untuk membuat Surat Perintah Kerja (SPK) baru. 
+                                                    Gunakan form ini untuk membuat Surat Perintah Kerja (SPK) baru.
                                                     Pastikan Order Number, dan Tanggal terisi dengan benar.
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="orderNumber">Order Number <span>*</span></label>
                                                     <div class="btn-icon">
                                                         <span><i class="icon-copy fa fa-qrcode" aria-hidden="true"></i></span>
-                                                        <input type="text" name="order_number" class="form-control input-icon @error('order_number') is-invalid @enderror" placeholder="Insert order number" value="{{ old('order_number') }}" required>
+                                                        <input type="text" name="order_number" class="backend-form-control input-icon @error('order_number') is-invalid @enderror" placeholder="Insert order number" value="{{ old('order_number') }}" required>
                                                     </div>
                                                     @error('order_number')
                                                         <span class="invalid-feedback">
@@ -112,11 +102,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label>Transport Service <span>*</span></label>
                                                     <div class="btn-icon">
                                                         <span><i class="icon-copy fa fa-server" aria-hidden="true"></i></span>
-                                                        <select name="type" class="custom-select input-icon form-select" required>
+                                                        <select name="type" class="backend-form-control input-icon form-select" required>
                                                             <option disabled selected value="">Select Service</option>
                                                             <option value="Airport Shuttle">Airport Shuttle</option>
                                                             <option value="Hotel Transfer">Hotel Transfer</option>
@@ -127,26 +117,26 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label>SPK Date <span>*</span></label>
                                                     <div class="btn-icon">
                                                         <span><i class="icon-copy fa fa-calendar-check-o" aria-hidden="true"></i></span>
                                                         <input readonly
-                                                            class="form-control date-picker checkin input-icon @error('spk_date') is-invalid @enderror"
+                                                            class="backend-form-control date-picker checkin input-icon @error('spk_date') is-invalid @enderror"
                                                             name="spk_date"
                                                             type="text"
                                                             value="{{ old('spk_date') }}"
-                                                            placeholder="@lang('messages.Select date')" 
+                                                            placeholder="@lang('messages.Select date')"
                                                             required>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label for="number_of_guests">Number of Guests <span>*</span></label>
                                                     <div class="btn-icon">
                                                         <span><i class="icon-copy fa fa-users" aria-hidden="true"></i></span>
-                                                        <input  name="number_of_guests" min="1" class="form-control input-icon @error('number_of_guests') is-invalid @enderror" type="number" value="{{ old('number_of_guest') }}" placeholder="@lang('messages.Number of guests')" required>
+                                                        <input  name="number_of_guests" min="1" class="backend-form-control input-icon @error('number_of_guests') is-invalid @enderror" type="number" value="{{ old('number_of_guest') }}" placeholder="@lang('messages.Number of guests')" required>
                                                     </div>
                                                     @error('number_of_guests')
                                                         <span class="invalid-feedback">
@@ -156,11 +146,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label>Vehicle <span>*</span></label>
                                                     <div class="btn-icon">
                                                         <span><i class="icon-copy fa fa-car" aria-hidden="true"></i></span>
-                                                        <select name="transport_id" class="custom-select form-select" required>
+                                                        <select name="transport_id" class="backend-form-control form-select" required>
                                                             <option disabled selected value="">Select Vehicle</option>
                                                             @foreach ($vehicles as $vehicle)
                                                                 <option value="{{ $vehicle->id }}">{{ $vehicle->brand." ".$vehicle->name }} {{ $vehicle->number_plate?" (".$vehicle->number_plate.")":"" }}</option>
@@ -170,11 +160,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="form-group">
+                                                <div class="backend-form-field">
                                                     <label>Driver <span>*</span></label>
                                                     <div class="btn-icon">
                                                         <span><i class="icon-copy fa fa-user-circle-o" aria-hidden="true"></i></span>
-                                                        <select name="driver_id" class="custom-select form-select" required>
+                                                        <select name="driver_id" class="backend-form-control form-select" required>
                                                             <option disabled selected value="">Select Driver</option>
                                                             @foreach ($drivers as $driver)
                                                                 <option value="{{ $driver->id }}">{{ $driver->name }}</option>
@@ -184,7 +174,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12 text-right">
-                                                <button type="submit" form="createReservation" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Create SPK</button>
+                                                <button type="submit" form="createReservation" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Create SPK</button>
                                             </div>
                                         </div>
                                     </form>
@@ -198,7 +188,7 @@
                                     <!-- Filter -->
                                     <div class="row m-b-8">
                                         <div class="col-md-6">
-                                            <input type="text" id="filter_order_no" class="form-control" placeholder="Search by Order No">
+                                            <input type="text" id="filter_order_no" class="backend-form-control" placeholder="Search by Order No">
                                         </div>
                                     </div>
                                     <!-- Table Result -->
@@ -211,7 +201,7 @@
                     </div>
                 </div>
                 {{-- Add Reservation --}}
-                
+
 
                 {{-- Reservations List --}}
             </div>
@@ -257,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
             table.column(2).search(this.value).draw();
         }, 300));
 
-       
+
 
         // Jika ingin re-init dari luar (mis. setelah AJAX partial replace), expose function
         window.spksTable = table;

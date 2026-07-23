@@ -22,6 +22,7 @@
 
 <!-- JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
+<script src="{{ mix('build/backend/js/app.js') }}" defer></script>
 
 <script>
     Dropzone.autoDiscover = false;
@@ -48,19 +49,6 @@
                     });
                 }
             });
-        });
-    });
-</script>
-<script>
-    $(function(){
-        $('.textarea_editor').summernote({
-            height: 150,
-            toolbar: [
-                ['style', ['bold', 'italic', 'underline', 'clear']],
-                ['font', ['fontsize']],
-                ['para', ['ul', 'ol', 'paragraph']]
-            ],
-            fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '28', '32', '36'] 
         });
     });
 </script>

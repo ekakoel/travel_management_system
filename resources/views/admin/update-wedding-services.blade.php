@@ -16,22 +16,11 @@
     @can('isAdmin')
         <div class="main-container">
             <div class="pd-ltr-20">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="title"><i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $wedding->name }} Services</div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="admin-panel">Admin Panel</a></li>
-                                    <li class="breadcrumb-item"><a href="orders-admin">Orders Admin</a></li>
-                                    <li class="breadcrumb-item" aria-current="page"><a href="orders-admin-{{ $order->id }}">{{ $order->orderno }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Wedding Package Service</li>
-                                </ol>
-                            </nav>
-                        </div>
-                        
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $wedding->name }} Services
+                    </x-slot>
+                </x-backend.page-hero>
                 <div class="info-action">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
@@ -66,11 +55,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_venue_id !== "null" and $wedding_order->wedding_venue_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-venue"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-venue">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Venue" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-venue"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-venue">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Venue" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -119,8 +108,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingvenue" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingvenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -149,7 +138,7 @@
                                                                         <p>{{ $wedding_venue->service }}</p>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="price-card-usd m-t-8">
                                                                     {{ currencyFormatUsd($wedding_venue->publish_rate) }}
                                                                 </div>
@@ -181,7 +170,7 @@
                                                                                     <div class="col-sm-4">
                                                                                         <b>Capacity: </b><p>{{ $wedding_venue->capacity." guests" }}</p>
                                                                                     </div>
-                                                                                    
+
                                                                                     @if ($wedding_venue->description)
                                                                                         <div class="col-sm-12">
                                                                                             <b>Description: </b><p>{!! $wedding_venue->description !!}</p>
@@ -191,7 +180,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($wedding_venue->publish_rate) }}
@@ -200,7 +189,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -221,11 +210,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_room_id !== "null" and $wedding_order->wedding_room_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-room"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-room">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Room" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-room"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-room">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Room" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -250,7 +239,7 @@
                                                                                             if ($addrooms) {
                                                                                                 $viewroomandprice = $room_price->where('rooms_id',$addrooms->id)->where('start_date','<',$order->wedding_date)->where('end_date','>',$order->wedding_date)->first();
                                                                                                 if ($viewroomandprice) {
-                                                                                                    $viewcr_room = ceil($viewroomandprice->contract_rate/$usdrates->rate); 
+                                                                                                    $viewcr_room = ceil($viewroomandprice->contract_rate/$usdrates->rate);
                                                                                                     $viewcr_markup = $viewcr_room + $viewroomandprice->markup;
                                                                                                     $viewcr_tax =  ceil($viewcr_markup * ($taxes->tax / 100));
                                                                                                     $viewroomprice = ($viewcr_tax + $viewcr_markup)*$wedding_order->duration;
@@ -288,8 +277,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addRooms" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addRooms" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -305,7 +294,7 @@
                                                     $rooms = $suite_and_villas->where('id',$roomsid)->first();
                                                     if ($rooms) {
                                                         $roomandprice = $room_price->where('rooms_id',$rooms->id)->first();
-                                                        $cr_room = ceil($roomandprice->contract_rate/$usdrates->rate); 
+                                                        $cr_room = ceil($roomandprice->contract_rate/$usdrates->rate);
                                                         $cr_markup = $cr_room + $roomandprice->markup;
                                                         $cr_tax =  ceil($cr_markup * ($taxes->tax / 100));
                                                         $roomprice = ($cr_tax + $cr_markup)*$wedding_order->duration;
@@ -332,7 +321,7 @@
                                                                         {{ currencyFormatUsd($roomprice) }}
                                                                     </div>
                                                                 @endif
-                                                                
+
                                                                 <div class="label-capacity">
                                                                     <i class="icon-copy fa fa-moon-o" aria-hidden="true"></i> {{ $order->duration }}
                                                                 </div>
@@ -362,7 +351,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             @if ($roomandprice)
@@ -393,11 +382,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_makeup_id !== "null" and $wedding_order->wedding_makeup_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-makeup"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-makeup">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Makeup" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-makeup"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-makeup">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Makeup" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -441,8 +430,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingmakeup" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingmakeup" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -471,7 +460,7 @@
                                                                         <p>{{ $wedding_makeup->service }}</p>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="price-card-usd m-t-8">
                                                                     {{ currencyFormatUsd($wedding_makeup->publish_rate) }}
                                                                 </div>
@@ -503,7 +492,7 @@
                                                                                     <div class="col-sm-4">
                                                                                         <b>Capacity: </b><p>{{ $wedding_makeup->capacity." guests" }}</p>
                                                                                     </div>
-                                                                                    
+
                                                                                     @if ($wedding_makeup->description)
                                                                                         <div class="col-sm-12">
                                                                                             <b>Description: </b><p>{!! $wedding_makeup->description !!}</p>
@@ -513,7 +502,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($wedding_makeup->publish_rate) }}
@@ -522,7 +511,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -543,11 +532,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_decoration_id !== "null" and $wedding_order->wedding_decoration_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-decoration"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-decoration">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Decoration" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-decoration"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-decoration">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Decoration" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -579,7 +568,7 @@
                                                                                                     <div class="label-capacity">{{ $wedding_decoration->duration." ".$wedding_decoration->time }}</div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            
+
                                                                                         @endif
                                                                                     @endforeach
                                                                                 </div>
@@ -592,8 +581,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingdecoration" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingdecoration" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -622,7 +611,7 @@
                                                                         <p>{{ $wedding_decoration->service }}</p>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="price-card-usd m-t-8">
                                                                     {{ currencyFormatUsd($wedding_decoration->publish_rate) }}
                                                                 </div>
@@ -654,7 +643,7 @@
                                                                                     <div class="col-sm-4">
                                                                                         <b>Capacity: </b><p>{{ $wedding_decoration->capacity." guests" }}</p>
                                                                                     </div>
-                                                                                    
+
                                                                                     @if ($wedding_decoration->description)
                                                                                         <div class="col-sm-12">
                                                                                             <b>Description: </b><p>{!! $wedding_decoration->description !!}</p>
@@ -664,7 +653,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($wedding_decoration->publish_rate) }}
@@ -673,7 +662,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -694,11 +683,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_dinner_venue_id !== "null" and $wedding_order->wedding_dinner_venue_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-dinner_venue"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-dinner_venue">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Decoration" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-dinner_venue"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-dinner_venue">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Decoration" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -730,7 +719,7 @@
                                                                                                     <div class="label-capacity">{{ $wedding_dinner_venue->duration." ".$wedding_dinner_venue->time }}</div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            
+
                                                                                         @endif
                                                                                     @endforeach
                                                                                 </div>
@@ -743,8 +732,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingdinner_venue" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingdinner_venue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -773,7 +762,7 @@
                                                                         <p>{{ $wedding_dinner_venue->service }}</p>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="price-card-usd m-t-8">
                                                                     {{ currencyFormatUsd($wedding_dinner_venue->publish_rate) }}
                                                                 </div>
@@ -805,7 +794,7 @@
                                                                                     <div class="col-sm-4">
                                                                                         <b>Capacity: </b><p>{{ $wedding_dinner_venue->capacity." guests" }}</p>
                                                                                     </div>
-                                                                                    
+
                                                                                     @if ($wedding_dinner_venue->description)
                                                                                         <div class="col-sm-12">
                                                                                             <b>Description: </b><p>{!! $wedding_dinner_venue->description !!}</p>
@@ -815,7 +804,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($wedding_dinner_venue->publish_rate) }}
@@ -824,7 +813,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -845,11 +834,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_entertainment_id !== "null" and $wedding_order->wedding_entertainment_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-entertainment"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-entertainment">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Entertainment" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-entertainment"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-entertainment">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Entertainment" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -881,7 +870,7 @@
                                                                                                     <div class="label-capacity">{{ $wedding_entertainment->duration." ".$wedding_entertainment->time }}</div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            
+
                                                                                         @endif
                                                                                     @endforeach
                                                                                 </div>
@@ -894,8 +883,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingentertainment" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingentertainment" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -924,7 +913,7 @@
                                                                         <p>{{ $wedding_entertainment->service }}</p>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="price-card-usd m-t-8">
                                                                     {{ currencyFormatUsd($wedding_entertainment->publish_rate) }}
                                                                 </div>
@@ -956,7 +945,7 @@
                                                                                     <div class="col-sm-4">
                                                                                         <b>Capacity: </b><p>{{ $wedding_entertainment->capacity." guests" }}</p>
                                                                                     </div>
-                                                                                    
+
                                                                                     @if ($wedding_entertainment->description)
                                                                                         <div class="col-sm-12">
                                                                                             <b>Description: </b><p>{!! $wedding_entertainment->description !!}</p>
@@ -966,7 +955,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($wedding_entertainment->publish_rate) }}
@@ -975,7 +964,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -996,11 +985,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_documentation_id !== "null" and $wedding_order->wedding_documentation_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-documentation"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-documentation">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Documentation" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-documentation"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-documentation">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Documentation" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -1032,7 +1021,7 @@
                                                                                                     <div class="label-capacity">{{ $wedding_documentation->duration." ".$wedding_documentation->time }}</div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            
+
                                                                                         @endif
                                                                                     @endforeach
                                                                                 </div>
@@ -1045,8 +1034,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingdocumentation" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingdocumentation" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -1075,7 +1064,7 @@
                                                                         <p>{{ $wedding_documentation->service }}</p>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="price-card-usd m-t-8">
                                                                     {{ currencyFormatUsd($wedding_documentation->publish_rate) }}
                                                                 </div>
@@ -1107,7 +1096,7 @@
                                                                                     <div class="col-sm-4">
                                                                                         <b>Capacity: </b><p>{{ $wedding_documentation->capacity." guests" }}</p>
                                                                                     </div>
-                                                                                    
+
                                                                                     @if ($wedding_documentation->description)
                                                                                         <div class="col-sm-12">
                                                                                             <b>Description: </b><p>{!! $wedding_documentation->description !!}</p>
@@ -1117,7 +1106,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($wedding_documentation->publish_rate) }}
@@ -1126,7 +1115,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -1147,11 +1136,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_transport_id !== "null" and $wedding_order->wedding_transport_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-transport"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-transport">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Transport" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-transport"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-transport">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Transport" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -1202,8 +1191,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingtransport" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingtransport" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -1223,7 +1212,7 @@
                                                     @endphp
                                                     @if ($weddingTransport)
                                                         @php
-                                                            
+
                                                             if ($weddingTransport) {
                                                                 $trns_usd_cr = ceil($weddingTransport->contract_rate / $usdrates->rate);
                                                                 $crmr = $trns_usd_cr + $weddingTransport->markup;
@@ -1283,7 +1272,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($weddingTransportPrice) }}
@@ -1292,7 +1281,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -1312,11 +1301,11 @@
                                                 @if ($order->status == "Pending")
                                                     <span>
                                                         @if ($wedding_order->wedding_other_id !== "null" and $wedding_order->wedding_other_id)
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-other"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-other">
                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Entertainment" aria-hidden="true"></i>
                                                             </a>
                                                         @else
-                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-other"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-wedding-other">
                                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Wedding Entertainment" aria-hidden="true"></i>
                                                             </a>
                                                         @endif
@@ -1348,7 +1337,7 @@
                                                                                                     <div class="label-capacity">{{ $wedding_other->duration." ".$wedding_other->time }}</div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            
+
                                                                                         @endif
                                                                                     @endforeach
                                                                                 </div>
@@ -1361,8 +1350,8 @@
                                                                         </div>
                                                                         <div class="card-box-footer">
                                                                             <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                                            <button type="submit" form="addweddingother" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="submit" form="addweddingother" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> Save</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -1391,7 +1380,7 @@
                                                                         <p>{{ $wedding_other->service }}</p>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="price-card-usd m-t-8">
                                                                     {{ currencyFormatUsd($wedding_other->publish_rate) }}
                                                                 </div>
@@ -1423,7 +1412,7 @@
                                                                                     </div>
                                                                                     <div class="col-sm-4">
                                                                                         <b>Duration: </b><p>{!! $wedding_other->duration." ".$wedding_other->time !!}</p>
-                                                                                    </div>                                                                                    
+                                                                                    </div>
                                                                                     @if ($wedding_other->description)
                                                                                         <div class="col-sm-12">
                                                                                             <b>Description: </b><p>{!! $wedding_other->description !!}</p>
@@ -1433,7 +1422,7 @@
                                                                             </div>
                                                                         @endif
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                         <div class="modal-label-price">
                                                                             {{ currencyFormatUsd($wedding_other->publish_rate) }}
@@ -1442,7 +1431,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     @endif
                                                 </div>
                                             @endforeach
@@ -1457,7 +1446,7 @@
                             </div>
                             <div class="card-box-footer">
                                 <a href="/orders-admin-{{ $order->id }}">
-                                    <button class="btn btn-primary"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                    <button class="backend-button backend-button-primary"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button>
                                 </a>
                             </div>
                         </div>

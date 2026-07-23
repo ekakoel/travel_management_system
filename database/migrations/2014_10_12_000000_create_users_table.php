@@ -32,12 +32,12 @@ class CreateUsersTable extends Migration
             $table->string('country')->nullable();
             $table->string('status')->nullable();
             $table->boolean('is_approved')->default(false)->change();
+            $table->boolean('is_subscribed');
+            $table->boolean('subscriber');
             $table->longText('comment')->nullable();
             $table->string('session_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->boolean('is_subscribed');
-            $table->boolean('subscriber');
             $table->longText('unsubscribe_reason')->nullable();
             $table->rememberToken();
             $table->timestamps();

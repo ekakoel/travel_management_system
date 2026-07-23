@@ -10,30 +10,11 @@
     <div class="main-container">
         <div class="pd-ltr-20 xs-pd-20-10">
             <div class="min-height-200px">
-                <div class="page-header d-print-none">
-                    <div class="row">
-                        <div class="col-md-7 col-sm-7">
-                            <div class="title">
-                                <i class="icon-copy fa fa-shopping-cart" aria-hidden="true"></i> Detail - Reservation
-                            </div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/admin-panel">@lang('messages.Admin Panel')</a></li>
-                                    <li class="breadcrumb-item"><a href="/reservation">@lang('messages.Reservation')</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ $reservation->rsv_no }}</li>
-                                </ol>
-                            </nav>
-                        </div>
-                        <div class="col-md-5 col-sm-5 text-right">
-                            Status:
-                            @if ($reservation->status == "On Progress")
-                                <h4 style="color: green">{{ $reservation->status }}</h4>
-                            @else
-                                <h4 style="color: rgb(65, 65, 65)">{{ $reservation->status }}</h4>
-                            @endif
-                        </div>
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="icon-copy fa fa-shopping-cart" aria-hidden="true"></i> Detail - Reservation
+                    </x-slot>
+                </x-backend.page-hero>
                 <div class="row">
                 <div class="info-action">
                     @if (count($errors) > 0)
@@ -77,10 +58,10 @@
                                 <div class="bussines-sub">{{ __('messages.'.$business->caption) }}</div>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="page-subtitle d-print-none">Reservation 
+                                        <div class="page-subtitle d-print-none">Reservation
                                             @if ($reservation->status != "Active")
                                                 <span>
-                                                    <a href="#" data-toggle="modal" data-target="#update-reservation-{{ $reservation->id }}"> 
+                                                    <a href="#" data-toggle="modal" data-target="#update-reservation-{{ $reservation->id }}">
                                                         <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Reservation" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
@@ -100,9 +81,9 @@
                                                                 @method('put')
                                                                 <div class="row">
                                                                     <div class="col-sm-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label>Start - Finish</label>
-                                                                            <input readonly id="checkincout" name="checkincout" class="form-control @error('checkincout') is-invalid @enderror" type="text" placeholder="@lang('messages.Select date')" value="{{ date("m/d/y",strtotime($reservation->checkin))." - ". date("m/d/y",strtotime($reservation->checkout)) }}" required>
+                                                                            <input readonly id="checkincout" name="checkincout" class="backend-form-control @error('checkincout') is-invalid @enderror" type="text" placeholder="@lang('messages.Select date')" value="{{ date("m/d/y",strtotime($reservation->checkin))." - ". date("m/d/y",strtotime($reservation->checkout)) }}" required>
                                                                             @error('checkincout')
                                                                                 <span class="invalid-feedback">
                                                                                     {{ $message }}
@@ -111,9 +92,9 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="pickup_name">Pick up Name</label>
-                                                                            <select name="pickup_name" class="custom-select @error('pickup_name') is-invalid @enderror">
+                                                                            <select name="pickup_name" class="backend-form-control @error('pickup_name') is-invalid @enderror">
                                                                                 @if ($reservation->pickup_name != "")
                                                                                     @php
                                                                                         $gst = $guests->where('id', $reservation->pickup_name)->first();
@@ -138,8 +119,8 @@
                                                                 </div>
                                                             </form>
                                                             <div class="card-box-footer">
-                                                                <button type="submit" form="updateReservation" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                <button type="submit" form="updateReservation" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -186,7 +167,7 @@
                                                             @else
                                                                 <p class="form-notif">: <span> -</span></p>
                                                             @endif
-                                                            
+
                                                         @else
                                                             <p class="form-notif">: <span> -</span></p>
                                                         @endif
@@ -201,15 +182,15 @@
                                             @if ($reservation->status == "Pending")
                                                 <span>
                                                     @if ($reservation->arrival_flight != "" or $reservation->arrival_time != "" or $reservation->departure_flight != "" or $reservation->departure_time != "")
-                                                        <a href="#" data-toggle="modal" data-target="#update-flight-{{ $reservation->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#update-flight-{{ $reservation->id }}">
                                                             <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Flight" aria-hidden="true"></i>
                                                         </a>
                                                     @else
-                                                        <a href="#" data-toggle="modal" data-target="#update-flight-{{ $reservation->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#update-flight-{{ $reservation->id }}">
                                                             <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="Add Flight" aria-hidden="true"></i>
                                                         </a>
                                                     @endif
-                                                    
+
                                                 </span>
                                             @endif
                                         </div>
@@ -231,36 +212,36 @@
                                                                 @method('put')
                                                                 <div class="row">
                                                                     <div class="col-sm-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="arrival_flight">Arrival Flight</label>
-                                                                            <input type="text" name="arrival_flight" class="form-control @error('arrival_flight') is-invalid @enderror" placeholder="Insert arrival flight" value="{{ $order->arrival_flight }}">
+                                                                            <input type="text" name="arrival_flight" class="backend-form-control @error('arrival_flight') is-invalid @enderror" placeholder="Insert arrival flight" value="{{ $order->arrival_flight }}">
                                                                             @error('arrival_flight')
                                                                                 <div class="alert-form">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="arrival_time">Arrival Time </label>
-                                                                            <input readonly type="text" name="arrival_time" class="form-control datetimepicker @error('arrival_time') is-invalid @enderror" placeholder="Select arrival date and time" value="{{ $reservation->arrival_time }}">
+                                                                            <input readonly type="text" name="arrival_time" class="backend-form-control datetimepicker @error('arrival_time') is-invalid @enderror" placeholder="Select arrival date and time" value="{{ $reservation->arrival_time }}">
                                                                             @error('arrival_time')
                                                                                 <div class="alert-form">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="departure_flight">Departure Flight</label>
-                                                                            <input type="text" name="departure_flight" class="form-control @error('departure_flight') is-invalid @enderror" placeholder="Insert arrival flight" value="{{ $reservation->departure_flight }}">
+                                                                            <input type="text" name="departure_flight" class="backend-form-control @error('departure_flight') is-invalid @enderror" placeholder="Insert arrival flight" value="{{ $reservation->departure_flight }}">
                                                                             @error('departure_flight')
                                                                                 <div class="alert-form">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="departure_time">Departure Time </label>
-                                                                            <input readonly type="text" name="departure_time" class="form-control datetimepicker @error('departure_time') is-invalid @enderror" placeholder="Select departure date and time" value="{{ $reservation->departure_time }}">
+                                                                            <input readonly type="text" name="departure_time" class="backend-form-control datetimepicker @error('departure_time') is-invalid @enderror" placeholder="Select departure date and time" value="{{ $reservation->departure_time }}">
                                                                             @error('departure_time')
                                                                                 <div class="alert-form">{{ $message }}</div>
                                                                             @enderror
@@ -270,11 +251,11 @@
                                                             </form>
                                                             <div class="card-box-footer">
                                                                 @if ($reservation->arrival_flight != "" or $reservation->arrival_time != "" or $reservation->departure_flight != "" or $reservation->departure_time != "")
-                                                                    <button form="updateFlight-{{ $reservation->id }}" type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                    <button form="updateFlight-{{ $reservation->id }}" type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
                                                                 @else
-                                                                    <button form="updateFlight-{{ $reservation->id }}" type="submit" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button form="updateFlight-{{ $reservation->id }}" type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                                                 @endif
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -302,7 +283,7 @@
                                     </div>
                                 </div>
                                 {{-- AGENT DETAIL ===================================================================================================================== --}}
-                                
+
                                     <div class="row">
                                         {{-- AGENT --}}
                                         <div class="col-md-6">
@@ -355,7 +336,7 @@
                                             <div class="page-subtitle d-print-none">Guest
                                                 @if ($reservation->status != "Active")
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#add-guests-{{ $reservation->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#add-guests-{{ $reservation->id }}">
                                                             <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Guest" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
@@ -370,16 +351,16 @@
                                                                     <div class="card-box-title">
                                                                         <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Guest</div>
                                                                     </div>
-                                                                    
+
                                                                     <form id="addGuest" action="/fadd-guest" method="post" enctype="multipart/form-data">
                                                                         @csrf
                                                                         @method('put')
                                                                         <div class="row">
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="name" class="col-sm-12 col-md-12 col-form-label">Name <span>*</span></label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name') }}" required>
+                                                                                    <input type="text" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name') }}" required>
                                                                                     </div>
                                                                                     @error('name')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -387,10 +368,10 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="name_mandarin" class="col-sm-12 col-md-12 col-form-label">Mandarin Name </label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input type="text" name="name_mandarin" class="form-control @error('name_mandarin') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name_mandarin') }}">
+                                                                                    <input type="text" name="name_mandarin" class="backend-form-control @error('name_mandarin') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name_mandarin') }}">
                                                                                     </div>
                                                                                     @error('name_mandarin')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -398,10 +379,10 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-2">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="sex" class="col-sm-12 col-md-12 col-form-label">Gender <span>*</span></label>
                                                                                     <div class="col-sm-12">
-                                                                                        <select name="sex" class="custom-select @error('sex') is-invalid @enderror" value="{{ old('sex') }}" required>
+                                                                                        <select name="sex" class="backend-form-control @error('sex') is-invalid @enderror" value="{{ old('sex') }}" required>
                                                                                             <option selected value="">Select</option>
                                                                                             <option value="m">Male</option>
                                                                                             <option value="f">Female</option>
@@ -413,10 +394,10 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-4">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="date_of_birth" class="col-sm-12 col-md-12 col-form-label">Date of Birth</label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input readonly type="text" name="date_of_birth" class="form-control date-picker @error('date_of_birth') is-invalid @enderror" placeholder="Date of birth" value="{{ old('date_of_birth') }}">
+                                                                                    <input readonly type="text" name="date_of_birth" class="backend-form-control date-picker @error('date_of_birth') is-invalid @enderror" placeholder="Date of birth" value="{{ old('date_of_birth') }}">
                                                                                     </div>
                                                                                     @error('date_of_birth')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -424,23 +405,23 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="phone" class="col-sm-12 col-md-12 col-form-label">Phone Number</label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input type="number" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ old('phone') }}">
+                                                                                    <input type="number" name="phone" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ old('phone') }}">
                                                                                     </div>
                                                                                     @error('phone')
                                                                                         <div class="alert-form">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
-                                                                            
+
                                                                                 <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
                                                                         </div>
                                                                     </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="addGuest" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" form="addGuest" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -470,13 +451,13 @@
                                                                     @endif
                                                                    @if ($reservation->status != "Active")
                                                                         <span>
-                                                                            <a href="#" data-toggle="modal" data-target="#edit-guest-{{ $guest->id }}"> 
-                                                                                <button class="btn btn-update" data-toggle="tooltip" data-placement="left" title="Edit {{ $guest->name }}"><i class="icon-copy fa fa-pencil"></i></button>
+                                                                            <a href="#" data-toggle="modal" data-target="#edit-guest-{{ $guest->id }}">
+                                                                                <button class="backend-table-action backend-table-action-edit" data-toggle="tooltip" data-placement="left" title="Edit {{ $guest->name }}"><i class="icon-copy fa fa-pencil"></i></button>
                                                                             </a>
                                                                             <form action="/delete-guest/{{ $guest->id }}" method="post">
                                                                                 @csrf
                                                                                 @method('delete')
-                                                                                <button class="btn btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Delete {{ $guest->name }}"><i class="icon-copy fa fa-trash"></i></button>
+                                                                                <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Delete {{ $guest->name }}"><i class="icon-copy fa fa-trash"></i></button>
                                                                             </form>
                                                                         </span>
                                                                     @endif
@@ -499,10 +480,10 @@
                                                                         @method('put')
                                                                         <div class="row">
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="name" class="col-sm-12 col-md-12 col-form-label">Name <span>*</span></label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert guest name" value="{{ $guest->name }}" required>
+                                                                                    <input type="text" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert guest name" value="{{ $guest->name }}" required>
                                                                                     </div>
                                                                                     @error('name')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -510,10 +491,10 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="name_mandarin" class="col-sm-12 col-md-12 col-form-label">Mandarin Name </label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input type="text" name="name_mandarin" class="form-control @error('name_mandarin') is-invalid @enderror" placeholder="Insert guest name" value="{{ $guest->name_mandarin }}">
+                                                                                    <input type="text" name="name_mandarin" class="backend-form-control @error('name_mandarin') is-invalid @enderror" placeholder="Insert guest name" value="{{ $guest->name_mandarin }}">
                                                                                     </div>
                                                                                     @error('name_mandarin')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -521,10 +502,10 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-2">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="sex" class="col-sm-12 col-md-12 col-form-label">Gender <span>*</span></label>
                                                                                     <div class="col-sm-12">
-                                                                                        <select name="sex" class="custom-select @error('sex') is-invalid @enderror" required>
+                                                                                        <select name="sex" class="backend-form-control @error('sex') is-invalid @enderror" required>
                                                                                             <option selected value="{{ $guest->sex }}">@if ($guest->sex == "m")Male @else Female @endif</option>
                                                                                             @if ($guest->sex == "m")
                                                                                                 <option value="f">Female</option>
@@ -539,10 +520,10 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-4">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="date_of_birth" class="col-sm-12 col-md-12 col-form-label">Date of Birth</label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input readonly type="text" name="date_of_birth" class="form-control date-picker @error('date_of_birth') is-invalid @enderror" placeholder="Date of birth" value="{{ $guest->date_of_birth }}">
+                                                                                    <input readonly type="text" name="date_of_birth" class="backend-form-control date-picker @error('date_of_birth') is-invalid @enderror" placeholder="Date of birth" value="{{ $guest->date_of_birth }}">
                                                                                     </div>
                                                                                     @error('date_of_birth')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -550,10 +531,10 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="phone" class="col-sm-12 col-md-12 col-form-label">Phone Number</label>
                                                                                     <div class="col-sm-12">
-                                                                                    <input type="number" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ $guest->phone }}">
+                                                                                    <input type="number" name="phone" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ $guest->phone }}">
                                                                                     </div>
                                                                                     @error('phone')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -563,8 +544,8 @@
                                                                         </div>
                                                                     </form>
                                                                     <div class="card-box-footer">
-                                                                        <button type="submit" form="updateGuest-{{ $guest->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" form="updateGuest-{{ $guest->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -581,16 +562,16 @@
                                                                 <div class="card-box-title">
                                                                     <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Guest</div>
                                                                 </div>
-                                                                
+
                                                                 <form id="addGuest" action="/fadd-guest" method="post" enctype="multipart/form-data">
                                                                     @csrf
                                                                     @method('put')
                                                                     <div class="row">
                                                                         <div class="col-sm-6">
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label for="name" class="col-sm-12 col-md-12 col-form-label">Name <span>*</span></label>
                                                                                 <div class="col-sm-12">
-                                                                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name') }}" required>
+                                                                                <input type="text" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name') }}" required>
                                                                                 </div>
                                                                                 @error('name')
                                                                                     <div class="alert-form">{{ $message }}</div>
@@ -598,10 +579,10 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-6">
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label for="name_mandarin" class="col-sm-12 col-md-12 col-form-label">Mandarin Name </label>
                                                                                 <div class="col-sm-12">
-                                                                                <input type="text" name="name_mandarin" class="form-control @error('name_mandarin') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name_mandarin') }}">
+                                                                                <input type="text" name="name_mandarin" class="backend-form-control @error('name_mandarin') is-invalid @enderror" placeholder="Insert guest name" value="{{ old('name_mandarin') }}">
                                                                                 </div>
                                                                                 @error('name_mandarin')
                                                                                     <div class="alert-form">{{ $message }}</div>
@@ -609,10 +590,10 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-2">
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label for="sex" class="col-sm-12 col-md-12 col-form-label">Gender <span>*</span></label>
                                                                                 <div class="col-sm-12">
-                                                                                    <select name="sex" class="custom-select @error('sex') is-invalid @enderror" value="{{ old('sex') }}" required>
+                                                                                    <select name="sex" class="backend-form-control @error('sex') is-invalid @enderror" value="{{ old('sex') }}" required>
                                                                                         <option selected value="">Select</option>
                                                                                         <option value="m">Male</option>
                                                                                         <option value="f">Female</option>
@@ -624,10 +605,10 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-4">
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label for="date_of_birth" class="col-sm-12 col-md-12 col-form-label">Date of Birth</label>
                                                                                 <div class="col-sm-12">
-                                                                                <input readonly type="text" name="date_of_birth" class="form-control date-picker @error('date_of_birth') is-invalid @enderror" placeholder="Date of birth" value="{{ old('date_of_birth') }}">
+                                                                                <input readonly type="text" name="date_of_birth" class="backend-form-control date-picker @error('date_of_birth') is-invalid @enderror" placeholder="Date of birth" value="{{ old('date_of_birth') }}">
                                                                                 </div>
                                                                                 @error('date_of_birth')
                                                                                     <div class="alert-form">{{ $message }}</div>
@@ -635,23 +616,23 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-6">
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label for="phone" class="col-sm-12 col-md-12 col-form-label">Phone Number</label>
                                                                                 <div class="col-sm-12">
-                                                                                <input type="number" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ old('phone') }}">
+                                                                                <input type="number" name="phone" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Insert phone number" value="{{ old('phone') }}">
                                                                                 </div>
                                                                                 @error('phone')
                                                                                     <div class="alert-form">{{ $message }}</div>
                                                                                 @enderror
                                                                             </div>
                                                                         </div>
-                                                                        
+
                                                                             <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
                                                                     </div>
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="addGuest" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" form="addGuest" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -666,7 +647,7 @@
                                             <div class="page-subtitle d-print-none">Guide
                                                 @if ($reservation->status != "Active" and $guide == "")
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#add-guide-{{ $reservation->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#add-guide-{{ $reservation->id }}">
                                                             <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Guide" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
@@ -685,13 +666,13 @@
                                                                 <i>({{ $guide->language }})</i>
                                                                 @if ($reservation->status != "Active")
                                                                     <span>
-                                                                        <a href="#" data-toggle="modal" data-target="#edit-guide-{{ $reservation->id }}"> 
-                                                                            <button class="btn btn-update" data-toggle="tooltip" data-placement="left" title="Edit {{ $guide->name }}"><i class="icon-copy fa fa-pencil"></i></button>
+                                                                        <a href="#" data-toggle="modal" data-target="#edit-guide-{{ $reservation->id }}">
+                                                                            <button class="backend-table-action backend-table-action-edit" data-toggle="tooltip" data-placement="left" title="Edit {{ $guide->name }}"><i class="icon-copy fa fa-pencil"></i></button>
                                                                         </a>
                                                                         <form action="/fdelete-guide-order-{{ $reservation->id }}" method="post">
                                                                             @csrf
                                                                             @method('put')
-                                                                            <button class="btn btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Delete {{ $guide->name }}"><i class="icon-copy fa fa-trash"></i></button>
+                                                                            <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Delete {{ $guide->name }}"><i class="icon-copy fa fa-trash"></i></button>
                                                                         </form>
                                                                     </span>
                                                                 @endif
@@ -713,15 +694,15 @@
                                                                         @method('put')
                                                                         <div class="row">
                                                                             <div class="col-sm-12">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="guide_id" class="col-sm-12 col-md-12 col-form-label">Select Guide</label>
                                                                                     <div class="col-sm-12">
-                                                                                        <select name="guide_id" class="custom-select @error('guide_id') is-invalid @enderror" value="{{ old('guide_id') }}">
+                                                                                        <select name="guide_id" class="backend-form-control @error('guide_id') is-invalid @enderror" value="{{ old('guide_id') }}">
                                                                                             <option selected value="{{ $guide->id }}">{{ $guide->name }}</option>
                                                                                             @foreach ($guides as $guide)
                                                                                                 <option value="{{ $guide->id }}">{{ $guide->name }}</option>
                                                                                             @endforeach
-                                                                                            
+
                                                                                         </select>
                                                                                         @error('guide_id')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -733,8 +714,8 @@
                                                                         </div>
                                                                     </form>
                                                                     <div class="card-box-footer">
-                                                                        <button type="submit" form="editGuideOrder" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Change</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" form="editGuideOrder" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Change</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -764,15 +745,15 @@
                                                                     @method('put')
                                                                     <div class="row">
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label for="guide_id" class="col-sm-12 col-md-12 col-form-label">Select Guide</label>
                                                                                 <div class="col-sm-12">
-                                                                                    <select name="guide_id" class="custom-select @error('guide_id') is-invalid @enderror" value="{{ old('guide_id') }}">
+                                                                                    <select name="guide_id" class="backend-form-control @error('guide_id') is-invalid @enderror" value="{{ old('guide_id') }}">
                                                                                         <option selected value="">Select Guide</option>
                                                                                         @foreach ($guides as $guide)
                                                                                             <option value="{{ $guide->id }}">{{ $guide->name }}</option>
                                                                                         @endforeach
-                                                                                        
+
                                                                                     </select>
                                                                                     @error('guide_id')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -784,8 +765,8 @@
                                                                     </div>
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="addGuideOrder" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" form="addGuideOrder" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -798,7 +779,7 @@
                                             <div class="page-subtitle d-print-none">Driver
                                                 @if ($driver == "")
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#add-driver-{{ $reservation->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#add-driver-{{ $reservation->id }}">
                                                             <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Driver" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
@@ -812,13 +793,13 @@
                                                                 Mr. {{ $driver->name." (".$driver->phone.")" }}
                                                                 @if ($reservation->status != "Active")
                                                                     <span>
-                                                                        <a href="#" data-toggle="modal" data-target="#edit-driver-{{ $reservation->id }}"> 
-                                                                            <button class="btn btn-update" data-toggle="tooltip" data-placement="left" title="Change {{ $driver->name }}"><i class="icon-copy fa fa-pencil"></i></button>
+                                                                        <a href="#" data-toggle="modal" data-target="#edit-driver-{{ $reservation->id }}">
+                                                                            <button class="backend-table-action backend-table-action-edit" data-toggle="tooltip" data-placement="left" title="Change {{ $driver->name }}"><i class="icon-copy fa fa-pencil"></i></button>
                                                                         </a>
                                                                         <form action="/fdelete-driver-order-{{ $reservation->id }}" method="post">
                                                                             @csrf
                                                                             @method('put')
-                                                                            <button class="btn btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Delete {{ $driver->name }}"><i class="icon-copy fa fa-trash"></i></button>
+                                                                            <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Delete {{ $driver->name }}"><i class="icon-copy fa fa-trash"></i></button>
                                                                         </form>
                                                                     </span>
                                                                 @endif
@@ -840,15 +821,15 @@
                                                                         @method('put')
                                                                         <div class="row">
                                                                             <div class="col-sm-12">
-                                                                                <div class="form-group row">
+                                                                                <div class="backend-form-field row">
                                                                                     <label for="driver_id" class="col-sm-12 col-md-12 col-form-label">Select Guide</label>
                                                                                     <div class="col-sm-12">
-                                                                                        <select name="driver_id" class="custom-select @error('driver_id') is-invalid @enderror" value="{{ old('driver_id') }}">
+                                                                                        <select name="driver_id" class="backend-form-control @error('driver_id') is-invalid @enderror" value="{{ old('driver_id') }}">
                                                                                             <option selected value="{{ $reservation->guide_id }}">{{ $guide->name }}</option>
                                                                                             @foreach ($drivers as $driver)
                                                                                                 <option value="{{ $driver->id }}">{{ $driver->name }}</option>
                                                                                             @endforeach
-                                                                                            
+
                                                                                         </select>
                                                                                         @error('driver_id')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -860,8 +841,8 @@
                                                                         </div>
                                                                     </form>
                                                                     <div class="card-box-footer">
-                                                                        <button type="submit" form="editGuideOrder" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Change</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" form="editGuideOrder" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Change</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -891,15 +872,15 @@
                                                                     @method('put')
                                                                     <div class="row">
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group row">
+                                                                            <div class="backend-form-field row">
                                                                                 <label for="driver_id" class="col-sm-12 col-md-12 col-form-label">Driver</label>
                                                                                 <div class="col-sm-12">
-                                                                                    <select name="driver_id" class="custom-select @error('driver_id') is-invalid @enderror" value="{{ old('driver_id') }}">
+                                                                                    <select name="driver_id" class="backend-form-control @error('driver_id') is-invalid @enderror" value="{{ old('driver_id') }}">
                                                                                         <option selected value="">Select Driver</option>
                                                                                         @foreach ($drivers as $driver)
                                                                                             <option value="{{ $driver->id }}">{{ $driver->name }}</option>
                                                                                         @endforeach
-                                                                                        
+
                                                                                     </select>
                                                                                     @error('driver_id')
                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -911,8 +892,8 @@
                                                                     </div>
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="addDriverOrder" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" form="addDriverOrder" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -948,14 +929,14 @@
                                                                 $extra_bed = json_decode($order->extra_bed);
                                                                 $c_exb = count($extra_bed);
                                                                 $ebc = 0;
-                                                                for ($i_exb=0; $i_exb < $c_exb; $i_exb++) { 
+                                                                for ($i_exb=0; $i_exb < $c_exb; $i_exb++) {
                                                                     if ($extra_bed[$i_exb] == "Yes") {
                                                                             $ebc++;
                                                                     }
                                                                 }
                                                                 $htl = $hotels->where('name',$order->servicename)->first();
                                                             @endphp
-                                                            
+
                                                             <tr>
                                                                 <td>
                                                                     {{ ++$no_acc }}
@@ -969,14 +950,14 @@
                                                                 @if ($reservation->status != "Active")
                                                                     <td class="text-center">
                                                                         <div class="table-action">
-                                                                            <a href="#" data-toggle="modal" data-target="#detail-order-{{ $order->id }}"> 
+                                                                            <a href="#" data-toggle="modal" data-target="#detail-order-{{ $order->id }}">
                                                                                 <button class="btn-view"><i class="icon-copy fa fa-eye" aria-hidden="true"></i></button>
                                                                             </a>
                                                                             <form action="/fupdate-accommodation/{{ $order->id }}" method="post" enctype="multipart/form-data">
                                                                                 @csrf
                                                                                 @method('put')
                                                                                 <input type="hidden" name="rsv_id" value="">
-                                                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Order"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
+                                                                                <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Order"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
                                                                             </form>
                                                                         </div>
                                                                     </td>
@@ -1047,7 +1028,7 @@
                                                                                         @elseif ($order->service == "Hotel Package")
                                                                                             <div class="page-list-value">: @lang('messages.Hotel Package')</div>
                                                                                         @endif
-                                                                                        
+
                                                                                         <div class="page-list-value">: {{ $order->location }}</div>
                                                                                     </div>
                                                                                     <div class="col-12 col-sm-4 col-xl-3 text-center">
@@ -1195,7 +1176,7 @@
                                                                                                     {!! $order->additional_info !!}
                                                                                                 @endif
                                                                                             @endif
-                                                                                            
+
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1208,19 +1189,19 @@
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                @endif             
+                                                                                @endif
                                                                                 @if ($order->request_quotation == "Yes")
                                                                                     <div class="col-md-12">
                                                                                         <div class="checkbox">
                                                                                             <p style="color:blue;" class="m-t-8 m-b-18">
-                                                                                                <i style="color:blue;" class="icon-copy fa fa-check-square" aria-hidden="true"></i>@lang('messages.You are requesting a quote for bookings of more than 8 rooms in this order. We will contact you as soon as possible to confirm your order. Thank You') 
+                                                                                                <i style="color:blue;" class="icon-copy fa fa-check-square" aria-hidden="true"></i>@lang('messages.You are requesting a quote for bookings of more than 8 rooms in this order. We will contact you as soon as possible to confirm your order. Thank You')
                                                                                             </p>
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-md-12 text-right">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <a href="/orders">
-                                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                                             </a>
                                                                                         </div>
                                                                                     </div>
@@ -1243,19 +1224,19 @@
                                                                                                     <div class="tb-head">
                                                                                                         @lang('messages.Room')
                                                                                                     </div>
-                                                                                            
+
                                                                                                     <div class="tb-head">
                                                                                                         @lang('messages.Number of Guest')
                                                                                                     </div>
-                                                                                            
+
                                                                                                     <div class="tb-head">
                                                                                                         @lang('messages.Guest Name')
                                                                                                     </div>
-                                                                                                
+
                                                                                                     <div class="tb-head">
                                                                                                         @lang('messages.Price')
                                                                                                     </div>
-                                                                                            
+
                                                                                                     <div class="tb-head">
                                                                                                         @lang('messages.Extra Bed')
                                                                                                     </div>
@@ -1293,7 +1274,7 @@
                                                                                                         </div>
                                                                                                         @php
                                                                                                             $r++;
-                                                    
+
                                                                                                         @endphp
                                                                                                     </div>
                                                                                                 @endfor
@@ -1341,15 +1322,15 @@
                                                                                                         <div class="tb-head">
                                                                                                             @lang('messages.Date')
                                                                                                         </div>
-                                                                                                
+
                                                                                                         <div class="tb-head">
                                                                                                             @lang('messages.Number of Guest')
                                                                                                         </div>
-                                                                                                
+
                                                                                                         <div class="tb-head">
                                                                                                             @lang('messages.Service')
                                                                                                         </div>
-                                                                                                    
+
                                                                                                         <div class="tb-head">
                                                                                                             @lang('messages.Price')
                                                                                                         </div>
@@ -1397,10 +1378,10 @@
                                                                                         <div class="page-subtitle">@lang('messages.Flight Detail')</div>
                                                                                         <div class="row">
                                                                                             <div class="col-md-6">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="arrival_flight" class="col-sm-12 col-md-12 col-form-label">@lang('messages.Arrival Flight')</label>
                                                                                                     <div class="col-sm-12 col-md-12">
-                                                                                                        <input type="text" readonly  class="form-control @error('arrival_flight') is-invalid @enderror" placeholder="@lang('messages.Arrival Flight')" value="{{ $order->arrival_flight }}">
+                                                                                                        <input type="text" readonly  class="backend-form-control @error('arrival_flight') is-invalid @enderror" placeholder="@lang('messages.Arrival Flight')" value="{{ $order->arrival_flight }}">
                                                                                                         @error('arrival_flight')
                                                                                                             <div
                                                                                                                 class="alert alert-danger">
@@ -1411,10 +1392,10 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-md-6">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="arrival_time" class="col-sm-12 col-md-12 col-form-label">@lang('messages.Arrival Date and Time')</label>
                                                                                                     <div class="col-sm-12 col-md-12">
-                                                                                                        <input readonly type="text"  class="form-control  @error('arrival_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" value="{{ $order->arrival_time }}">
+                                                                                                        <input readonly type="text"  class="backend-form-control  @error('arrival_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" value="{{ $order->arrival_time }}">
                                                                                                         @error('arrival_time')
                                                                                                             <div class="alert alert-danger">
                                                                                                                 {{ $message }}
@@ -1424,10 +1405,10 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-md-6">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="departure_flight" class="col-sm-12 col-md-12 col-form-label">@lang('messages.Departure Flight')</label>
                                                                                                     <div class="col-sm-12 col-md-12">
-                                                                                                        <input type="text" readonly class="form-control @error('departure_flight') is-invalid @enderror" placeholder="@lang('messages.Departure Flight')" value="{{ $order->departure_flight }}">
+                                                                                                        <input type="text" readonly class="backend-form-control @error('departure_flight') is-invalid @enderror" placeholder="@lang('messages.Departure Flight')" value="{{ $order->departure_flight }}">
                                                                                                         @error('departure_flight')
                                                                                                             <div class="alert alert-danger">
                                                                                                                 {{ $message }}
@@ -1437,10 +1418,10 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-md-6">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="departure_time" class="col-sm-12 col-md-12 col-form-label"> @lang('messages.Departure Date and Time')</label>
                                                                                                     <div class="col-sm-12 col-md-12">
-                                                                                                        <input readonly type="text"  class="form-control  @error('departure_time') is-invalid @enderror" placeholder="@lang('messages.Select Date and Time')" value="{{ $order->departure_time }}">
+                                                                                                        <input readonly type="text"  class="backend-form-control  @error('departure_time') is-invalid @enderror" placeholder="@lang('messages.Select Date and Time')" value="{{ $order->departure_time }}">
                                                                                                         @error('departure_time')
                                                                                                             <div class="alert alert-danger">
                                                                                                                 {{ $message }}
@@ -1451,10 +1432,10 @@
                                                                                             </div>
                                                                                             @if ($order->note != "")
                                                                                                 <div class="col-md-12">
-                                                                                                    <div class="form-group row">
+                                                                                                    <div class="backend-form-field row">
                                                                                                         <label for="note" class="col-sm-12 col-md-12 col-form-label">@lang('messages.Note')</label>
                                                                                                         <div class="col-sm-12 col-md-12">
-                                                                                                            <textarea id="note" readonly placeholder="Optional" class="textarea_editor form-control border-radius-0">{{ $order->note }}</textarea>
+                                                                                                            <textarea data-backend-richtext="true" id="note" readonly placeholder="Optional" class="textarea_editor backend-form-control border-radius-0">{{ $order->note }}</textarea>
                                                                                                             @error('note')
                                                                                                                 <div class="alert alert-danger">
                                                                                                                     {{ $message }}
@@ -1528,7 +1509,7 @@
                                                                                     </div>
                                                                                     <div class="card-box-footer">
                                                                                         <a href="/orders">
-                                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                                         </a>
                                                                                     </div>
                                                                                 @endif
@@ -1543,7 +1524,7 @@
                                             </div>
                                         </div>
                                     @endif
-                                
+
                                     {{-- Tour & Activity ===================================================================================================================== --}}
                                     <div class="page-subtitle d-print-none">Tour and Activity
                                         @if ($reservation->status != "Active")
@@ -1592,14 +1573,14 @@
                                                                     <td>
                                                                         <div class="reservation-guest">
                                                                             <span>
-                                                                                <a href="#" data-toggle="modal" data-target="#detail-activitytour-{{ $activitytour->id }}"> 
+                                                                                <a href="#" data-toggle="modal" data-target="#detail-activitytour-{{ $activitytour->id }}">
                                                                                     <button class="btn-view"><i class="icon-copy fa fa-eye" aria-hidden="true"></i></button>
                                                                                 </a>
                                                                                 <form action="/fupdate-activity-tour/{{ $activitytour->id }}" method="post" enctype="multipart/form-data">
                                                                                     @csrf
                                                                                     @method('put')
                                                                                     <input type="hidden" name="rsv_id" value="">
-                                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Order"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
+                                                                                    <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Order"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
                                                                                 </form>
                                                                             </span>
                                                                         </div>
@@ -1648,7 +1629,7 @@
                                                                                     @elseif ($activitytour->service == "Tour Package")
                                                                                         <div class="page-list-value">: @lang('messages.Tour Package')</div>
                                                                                     @endif
-                                                                                    
+
                                                                                     <div class="page-list-value">: {{ $activitytour->location }}</div>
                                                                                 </div>
                                                                                 <div class="col-12 col-sm-4 col-xl-3 text-center">
@@ -1819,9 +1800,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-12 text-right">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <a href="/orders">
-                                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                                         </a>
                                                                                     </div>
                                                                                 </div>
@@ -1878,14 +1859,14 @@
                                                                     <td>
                                                                         <div class="reservation-guest">
                                                                             <span>
-                                                                                <a href="#" data-toggle="modal" data-target="#detail-transport-{{ $transport->id }}"> 
+                                                                                <a href="#" data-toggle="modal" data-target="#detail-transport-{{ $transport->id }}">
                                                                                     <button class="btn-view"><i class="icon-copy fa fa-eye" aria-hidden="true"></i></button>
                                                                                 </a>
                                                                                 <form action="/fupdate-activity-tour/{{ $transport->id }}" method="post" enctype="multipart/form-data">
                                                                                     @csrf
                                                                                     @method('put')
                                                                                     <input type="hidden" name="rsv_id" value="">
-                                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Order"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
+                                                                                    <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Order"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
                                                                                 </form>
                                                                             </span>
                                                                         </div>
@@ -1934,7 +1915,7 @@
                                                                                     @elseif ($transport->service == "Tour Package")
                                                                                         <div class="page-list-value">: @lang('messages.Tour Package')</div>
                                                                                     @endif
-                                                                                    
+
                                                                                     <div class="page-list-value">: {{ $transport->location }}</div>
                                                                                 </div>
                                                                                 <div class="col-12 col-sm-4 col-xl-3 text-center">
@@ -2105,9 +2086,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-12 text-right">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <a href="/orders">
-                                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                                         </a>
                                                                                     </div>
                                                                                 </div>
@@ -2122,169 +2103,11 @@
                                             </div>
                                         </div>
                                     @endif
-                               
-                                {{-- Itinerary ===================================================================================================================== --}}
-                                @php
-                                    $from = date('Y-m-d',strtotime($reservation->checkin));
-                                    $dur = $dur_res + 1;
-                                    $date_stay = [];
-                                    for ($a=0; $a < $dur ; $a++) { 
-                                        $date_stay[$a] = $from;
-                                        $from = date('Y-m-d',strtotime('+1 days',strtotime($from)));
-                                    }
-                                @endphp
-                                <div id="itinerarys" class="page-subtitle d-print-none">Itinerary
-                                    @if ($reservation->status != "Active")
-                                        <span>
-                                            <a href="#" data-toggle="modal" data-target="#add-itinerary-{{ $reservation->id }}"> 
-                                                <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Itinerary" aria-hidden="true"></i>
-                                            </a>
-                                        </span>
-                                    @endif
-                                </div>
-                                @if (count($itinerarys)>0)
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <table class="data-table table table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th style="width: 20%" scope="col">Date</th>
-                                                            <th style="width: 68%" scope="col">Itinerary</th>
-                                                            @if ($reservation->status != "Active")
-                                                                <th style="width: 12%" scope="col">Action</th>
-                                                            @endif
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($itinerarys as $itinerary)
-                                                            <tr>
-                                                                <td>
-                                                                    <p>{{ date('d M Y D', strtotime($itinerary->date)) }}</p>
-                                                                </td>
-                                                                <td>
-                                                                    <p>{{ $itinerary->itinerary }}</p>
-                                                                </td>
-                                                                @if ($reservation->status != "Active")
-                                                                    <td class="text-right">
-                                                                        <div class="table-action">
-                                                                        
-                                                                            <a href="#" data-toggle="modal" data-target="#edit-itinerary-{{ $itinerary->id }}"> 
-                                                                                <button class="btn-update" data-toggle="tooltip" data-placement="left" title="Edit {{ $itinerary->name }}"><i class="icon-copy fa fa-pencil"></i></button>
-                                                                            </a>
-                                                                            <form action="/delete-itinerary/{{ $itinerary->id }}" method="post">
-                                                                                @csrf
-                                                                                @method('delete')
-                                                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Itinerary {{ $itinerary->name }}"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
-                                                                            </form>
-                                                                        
-                                                                        </div>
-                                                                    </td>
-                                                                @endif
-                                                            </tr>
-                                                            {{-- Modal Edit Guest --------------------------------------------------------------------------------------------------------------- --}}
-                                                            @if ($reservation->status != "Active")
-                                                                <div class="modal fade" id="edit-itinerary-{{ $itinerary->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                                                        <div class="modal-content text-left">
-                                                                            <div class="card-box">
-                                                                                <div class="card-box-title">
-                                                                                    <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Edit Itinerary</div>
-                                                                                </div>
-                                                                                <form id="update-itinerary-{{ $itinerary->id }}" action="/fupdate-itinerary/{{ $itinerary->id }}" method="post" enctype="multipart/form-data">
-                                                                                    @csrf
-                                                                                    @method('put')
-                                                                                    <div class="row">
-                                                                                        <div class="col-sm-4">
-                                                                                            <div class="form-group">
-                                                                                                <label for="date">Date <span>*</span></label>
-                                                                                                <select name="date" class="custom-select @error('date') is-invalid @enderror" placeholder="Select date" required>
-                                                                                                    <option selected value="{{ date('Y-m-d',strtotime($itinerary->date)) }}">{{ date('d M Y D',strtotime($itinerary->date)) }}</option>
-                                                                                                    @foreach ($date_stay as $datestay)
-                                                                                                        <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y D',strtotime($datestay)) }}</option>
-                                                                                                    @endforeach
-                                                                                                </select>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-sm-8">
-                                                                                            <div class="form-group row">
-                                                                                                <label for="itinerary" class="col-sm-12 col-md-12 col-form-label">Itinerary <span>*</span></label>
-                                                                                                <div class="col-sm-12">
-                                                                                                    <input type="text" name="itinerary" class="form-control @error('itinerary') is-invalid @enderror" placeholder="Insert some text" value="{!! $itinerary->itinerary !!}" required>
-                                                                                                </div>
-                                                                                                @error('itinerary')
-                                                                                                    <div class="alert-form">{{ $message }}</div>
-                                                                                                @enderror
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </form>
-                                                                                <div class="card-box-footer">
-                                                                                    <button type="submit" form="update-itinerary-{{ $itinerary->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
-                                                    </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                @endif
-                                {{-- Modal Add Itinerary --------------------------------------------------------------------------------------------------------------- --}}
-                                @if ($reservation->status != "Active")
-                                    <div class="modal fade" id="add-itinerary-{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content text-left">
-                                                <div class="card-box">
-                                                    <div class="card-box-title">
-                                                        <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Itinerary</div>
-                                                    </div>
-                                                    <form id="add-itinerary" action="/fadd-itinerary" method="post" enctype="multipart/form-data">
-                                                        @csrf
-                                                        @method('put')
-                                                        <div class="row">
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group">
-                                                                    <label for="date">Date <span>*</span></label>
-                                                                    <select name="date" class="custom-select @error('date') is-invalid @enderror" placeholder="Select date" required>
-                                                                        <option selected value="">Select Date</option>
-                                                                        @foreach ($date_stay as $datestay)
-                                                                            <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y',strtotime($datestay)) }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-8">
-                                                                <div class="form-group row">
-                                                                    <label for="itinerary" class="col-sm-12 col-md-12 col-form-label">Itinerary <span>*</span></label>
-                                                                    <div class="col-sm-12">
-                                                                        <input type="text" name="itinerary" class="form-control @error('itinerary') is-invalid @enderror" placeholder="Insert some text" required>
-                                                                    </div>
-                                                                    @error('itinerary')
-                                                                        <div class="alert-form">{{ $message }}</div>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                            <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
-                                                        </div>
-                                                    </form>
-                                                    <div class="card-box-footer">
-                                                        <button type="submit" form="add-itinerary" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
                                 {{-- Restaurant --------------------------------------------------------------------------------------------------------------- --}}
                                 <div class="page-subtitle d-print-none">Restaurant
                                     @if ($reservation->status != "Active")
                                         <span>
-                                            <a href="#" data-toggle="modal" data-target="#add-restaurant-{{ $reservation->id }}"> 
+                                            <a href="#" data-toggle="modal" data-target="#add-restaurant-{{ $reservation->id }}">
                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Restaurant" aria-hidden="true"></i>
                                             </a>
                                         </span>
@@ -2296,9 +2119,9 @@
                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content text-left">
                                                 <div class="product-detail-wrap">
-                                                    
+
                                                         <div class="row">
-                                                            
+
                                                                 <div class="col-md-12">
                                                                     <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Restaurant</div>
                                                                 </div>
@@ -2311,9 +2134,9 @@
                                                             @method('put')
                                                             <div class="row">
                                                                 <div class="col-sm-3">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="date">Date <span>*</span></label>
-                                                                        <select name="date" class="custom-select @error('date') is-invalid @enderror" placeholder="Select date" required>
+                                                                        <select name="date" class="backend-form-control @error('date') is-invalid @enderror" placeholder="Select date" required>
                                                                             <option selected value="">Select Date</option>
                                                                             @foreach ($date_stay as $datestay)
                                                                                 <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y',strtotime($datestay)) }}</option>
@@ -2321,12 +2144,12 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="col-sm-3">
-                                                                    <div class="form-group row">
+                                                                    <div class="backend-form-field row">
                                                                         <label for="breakfast" class="col-sm-12 col-md-12 col-form-label">Breakfast <span>*</span></label>
                                                                         <div class="col-sm-12">
-                                                                        <input type="text" name="breakfast" class="form-control @error('breakfast') is-invalid @enderror" placeholder="Insert breakfast location" value="{{ old('breakfast') }}" required>
+                                                                        <input type="text" name="breakfast" class="backend-form-control @error('breakfast') is-invalid @enderror" placeholder="Insert breakfast location" value="{{ old('breakfast') }}" required>
                                                                         </div>
                                                                         @error('breakfast')
                                                                             <div class="alert-form">{{ $message }}</div>
@@ -2334,10 +2157,10 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-sm-3">
-                                                                    <div class="form-group row">
+                                                                    <div class="backend-form-field row">
                                                                         <label for="lunch" class="col-sm-12 col-md-12 col-form-label">Lunch <span>*</span></label>
                                                                         <div class="col-sm-12">
-                                                                        <input type="text" name="lunch" class="form-control @error('lunch') is-invalid @enderror" placeholder="Insert lunch location" value="{{ old('lunch') }}" required>
+                                                                        <input type="text" name="lunch" class="backend-form-control @error('lunch') is-invalid @enderror" placeholder="Insert lunch location" value="{{ old('lunch') }}" required>
                                                                         </div>
                                                                         @error('lunch')
                                                                             <div class="alert-form">{{ $message }}</div>
@@ -2345,10 +2168,10 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-sm-3">
-                                                                    <div class="form-group row">
+                                                                    <div class="backend-form-field row">
                                                                         <label for="dinner" class="col-sm-12 col-md-12 col-form-label">Dinner <span>*</span></label>
                                                                         <div class="col-sm-12">
-                                                                        <input type="text" name="dinner" class="form-control @error('dinner') is-invalid @enderror" placeholder="Insert dinner" value="{{ old('dinner') }}" required>
+                                                                        <input type="text" name="dinner" class="backend-form-control @error('dinner') is-invalid @enderror" placeholder="Insert dinner" value="{{ old('dinner') }}" required>
                                                                         </div>
                                                                         @error('dinner')
                                                                             <div class="alert-form">{{ $message }}</div>
@@ -2357,12 +2180,12 @@
                                                                 </div>
                                                                 <div class="col-sm-12 col-md-12 text-right">
                                                                     <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
-                                                                    <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </form>
-                                                    
+
                                                 </div>
                                             </div>
                                         </div>
@@ -2401,14 +2224,14 @@
                                                                 <td>
                                                                     <div class="reservation-guest">
                                                                         <span>
-                                                                            <a href="#" data-toggle="modal" data-target="#edit-restaurant-{{ $restaurant->id }}"> 
+                                                                            <a href="#" data-toggle="modal" data-target="#edit-restaurant-{{ $restaurant->id }}">
                                                                                 <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
                                                                             </a>
                                                                             <form action="/fdelete-restaurant/{{ $restaurant->id }}" method="post" enctype="multipart/form-data">
                                                                                 @csrf
                                                                                 @method('delete')
                                                                                 <input type="hidden" name="rsv_id" value="">
-                                                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Restaurant"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
+                                                                                <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Restaurant"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
                                                                             </form>
                                                                         </span>
                                                                     </div>
@@ -2421,9 +2244,9 @@
                                                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                                                     <div class="modal-content text-left">
                                                                         <div class="product-detail-wrap">
-                                                                            
+
                                                                                 <div class="row">
-                                                                                    
+
                                                                                         <div class="col-md-12">
                                                                                             <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Meal Location</div>
                                                                                         </div>
@@ -2436,9 +2259,9 @@
                                                                                     @method('put')
                                                                                     <div class="row">
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group">
+                                                                                            <div class="backend-form-field">
                                                                                                 <label for="date">Date <span>*</span></label>
-                                                                                                <select name="date" class="custom-select @error('date') is-invalid @enderror" placeholder="Select date" required>
+                                                                                                <select name="date" class="backend-form-control @error('date') is-invalid @enderror" placeholder="Select date" required>
                                                                                                     <option selected value="{{ $restaurant->date }}">{{ date('d M Y',strtotime($restaurant->date)) }}</option>
                                                                                                     @foreach ($date_stay as $datestay)
                                                                                                         <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y',strtotime($datestay)) }}</option>
@@ -2446,12 +2269,12 @@
                                                                                                 </select>
                                                                                             </div>
                                                                                         </div>
-                                                                                    
+
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="breakfast" class="col-sm-12 col-md-12 col-form-label">Breakfast <span>*</span></label>
                                                                                                 <div class="col-sm-12">
-                                                                                                <input type="text" name="breakfast" class="form-control @error('breakfast') is-invalid @enderror" placeholder="Insert breakfast location" value="{{ $restaurant->breakfast }}" required>
+                                                                                                <input type="text" name="breakfast" class="backend-form-control @error('breakfast') is-invalid @enderror" placeholder="Insert breakfast location" value="{{ $restaurant->breakfast }}" required>
                                                                                                 </div>
                                                                                                 @error('breakfast')
                                                                                                     <div class="alert-form">{{ $message }}</div>
@@ -2459,10 +2282,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="lunch" class="col-sm-12 col-md-12 col-form-label">Lunch <span>*</span></label>
                                                                                                 <div class="col-sm-12">
-                                                                                                <input type="text" name="lunch" class="form-control @error('lunch') is-invalid @enderror" placeholder="Insert lunch location" value="{{ $restaurant->lunch }}" required>
+                                                                                                <input type="text" name="lunch" class="backend-form-control @error('lunch') is-invalid @enderror" placeholder="Insert lunch location" value="{{ $restaurant->lunch }}" required>
                                                                                                 </div>
                                                                                                 @error('lunch')
                                                                                                     <div class="alert-form">{{ $message }}</div>
@@ -2470,10 +2293,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-3">
-                                                                                            <div class="form-group row">
+                                                                                            <div class="backend-form-field row">
                                                                                                 <label for="dinner" class="col-sm-12 col-md-12 col-form-label">Dinner <span>*</span></label>
                                                                                                 <div class="col-sm-12">
-                                                                                                <input type="text" name="dinner" class="form-control @error('dinner') is-invalid @enderror" placeholder="Insert dinner location" value="{{ $restaurant->dinner }}" required>
+                                                                                                <input type="text" name="dinner" class="backend-form-control @error('dinner') is-invalid @enderror" placeholder="Insert dinner location" value="{{ $restaurant->dinner }}" required>
                                                                                                 </div>
                                                                                                 @error('dinner')
                                                                                                     <div class="alert-form">{{ $message }}</div>
@@ -2482,12 +2305,12 @@
                                                                                         </div>
                                                                                         <div class="col-sm-12 col-md-12 text-right">
                                                                                             <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
-                                                                                            <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                            <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                         </div>
                                                                                     </div>
                                                                                 </form>
-                                                                            
+
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -2495,7 +2318,7 @@
                                                         @endif
                                                     @endforeach
                                                 </tbody>
-                                                
+
                                         </table>
                                     </div>
                                 </div>
@@ -2503,7 +2326,7 @@
                                 <div class="page-subtitle d-print-none">Include
                                     @if ($reservation->status != "Active")
                                         <span>
-                                            <a href="#" data-toggle="modal" data-target="#add-include-{{ $reservation->id }}"> 
+                                            <a href="#" data-toggle="modal" data-target="#add-include-{{ $reservation->id }}">
                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Include" aria-hidden="true"></i>
                                             </a>
                                         </span>
@@ -2516,7 +2339,7 @@
                                             <div class="modal-content text-left">
                                                 <div class="product-detail-wrap">
                                                     <div class="row">
-                                                        
+
                                                             <div class="col-md-12">
                                                                 <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Include</div>
                                                             </div>
@@ -2529,10 +2352,10 @@
                                                         @method('put')
                                                         <div class="row">
                                                             <div class="col-sm-12">
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label for="include" class="col-sm-12 col-md-12 col-form-label">Include <span>*</span></label>
                                                                     <div class="col-sm-12">
-                                                                        <input type="text" name="include" class="form-control @error('include') is-invalid @enderror" placeholder="Insert include" value="{{ old('include') }}" required>
+                                                                        <input type="text" name="include" class="backend-form-control @error('include') is-invalid @enderror" placeholder="Insert include" value="{{ old('include') }}" required>
                                                                     </div>
                                                                     @error('include')
                                                                         <div class="alert-form">{{ $message }}</div>
@@ -2541,8 +2364,8 @@
                                                             </div>
                                                             <div class="col-sm-12 col-md-12 text-right">
                                                                 <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
-                                                                <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -2576,14 +2399,14 @@
                                                             <td>
                                                                 <div class="reservation-guest">
                                                                     <span>
-                                                                        <a href="#" data-toggle="modal" data-target="#edit-include-{{ $include->id }}"> 
+                                                                        <a href="#" data-toggle="modal" data-target="#edit-include-{{ $include->id }}">
                                                                             <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
                                                                         </a>
                                                                         <form action="/fdelete-include/{{ $include->id }}" method="post" enctype="multipart/form-data">
                                                                             @csrf
                                                                             @method('delete')
                                                                             <input type="hidden" name="rsv_id" value="">
-                                                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Include"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
+                                                                            <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Include"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
                                                                         </form>
                                                                     </span>
                                                                 </div>
@@ -2609,10 +2432,10 @@
                                                                             @method('put')
                                                                             <div class="row">
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group row">
+                                                                                    <div class="backend-form-field row">
                                                                                         <label for="include" class="col-sm-12 col-md-12 col-form-label">Include <span>*</span></label>
                                                                                         <div class="col-sm-12">
-                                                                                        <input type="text" name="include" class="form-control @error('include') is-invalid @enderror" placeholder="Insert include location" value="{{ $include->include }}" required>
+                                                                                        <input type="text" name="include" class="backend-form-control @error('include') is-invalid @enderror" placeholder="Insert include location" value="{{ $include->include }}" required>
                                                                                         </div>
                                                                                         @error('include')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -2620,8 +2443,8 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12 col-md-12 text-right">
-                                                                                    <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                    <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                 </div>
                                                                             </div>
                                                                         </form>
@@ -2639,7 +2462,7 @@
                                 <div class="page-subtitle d-print-none">Exclude
                                     @if ($reservation->status != "Active")
                                         <span>
-                                            <a href="#" data-toggle="modal" data-target="#add-exclude-{{ $reservation->id }}"> 
+                                            <a href="#" data-toggle="modal" data-target="#add-exclude-{{ $reservation->id }}">
                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Exclude" aria-hidden="true"></i>
                                             </a>
                                         </span>
@@ -2664,10 +2487,10 @@
                                                         @method('put')
                                                         <div class="row">
                                                             <div class="col-sm-12">
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label for="exclude" class="col-sm-12 col-md-12 col-form-label">Exclude <span>*</span></label>
                                                                     <div class="col-sm-12">
-                                                                        <input type="text" name="exclude" class="form-control @error('exclude') is-invalid @enderror" placeholder="Insert exclude" value="{{ old('exclude') }}" required>
+                                                                        <input type="text" name="exclude" class="backend-form-control @error('exclude') is-invalid @enderror" placeholder="Insert exclude" value="{{ old('exclude') }}" required>
                                                                     </div>
                                                                     @error('exclude')
                                                                         <div class="alert-form">{{ $message }}</div>
@@ -2676,8 +2499,8 @@
                                                             </div>
                                                             <div class="col-sm-12 col-md-12 text-right">
                                                                 <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
-                                                                <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -2711,14 +2534,14 @@
                                                             <td>
                                                                 <div class="reservation-guest">
                                                                     <span>
-                                                                        <a href="#" data-toggle="modal" data-target="#edit-exclude-{{ $exclude->id }}"> 
+                                                                        <a href="#" data-toggle="modal" data-target="#edit-exclude-{{ $exclude->id }}">
                                                                             <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
                                                                         </a>
                                                                         <form action="/fdelete-exclude/{{ $exclude->id }}" method="post" enctype="multipart/form-data">
                                                                             @csrf
                                                                             @method('delete')
                                                                             <input type="hidden" name="rsv_id" value="">
-                                                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Exclude"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
+                                                                            <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Exclude"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
                                                                         </form>
                                                                     </span>
                                                                 </div>
@@ -2744,10 +2567,10 @@
                                                                             @method('put')
                                                                             <div class="row">
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group row">
+                                                                                    <div class="backend-form-field row">
                                                                                         <label for="exclude" class="col-sm-12 col-md-12 col-form-label">Include <span>*</span></label>
                                                                                         <div class="col-sm-12">
-                                                                                        <input type="text" name="exclude" class="form-control @error('exclude') is-invalid @enderror" placeholder="Insert exclude location" value="{{ $exclude->exclude }}" required>
+                                                                                        <input type="text" name="exclude" class="backend-form-control @error('exclude') is-invalid @enderror" placeholder="Insert exclude location" value="{{ $exclude->exclude }}" required>
                                                                                         </div>
                                                                                         @error('exclude')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -2755,8 +2578,8 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12 col-md-12 text-right">
-                                                                                    <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                    <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                 </div>
                                                                             </div>
                                                                         </form>
@@ -2774,7 +2597,7 @@
                                 <div class="page-subtitle d-print-none">Remark
                                     @if ($reservation->status != "Active")
                                         <span>
-                                            <a href="#" data-toggle="modal" data-target="#add-remark-{{ $reservation->id }}"> 
+                                            <a href="#" data-toggle="modal" data-target="#add-remark-{{ $reservation->id }}">
                                                 <i class="icon-copy fa fa-plus-circle" data-toggle="tooltip" data-placement="left" title="Add Remark" aria-hidden="true"></i>
                                             </a>
                                         </span>
@@ -2799,10 +2622,10 @@
                                                         @method('put')
                                                         <div class="row">
                                                             <div class="col-sm-12">
-                                                                <div class="form-group row">
+                                                                <div class="backend-form-field row">
                                                                     <label for="remark" class="col-sm-12 col-md-12 col-form-label">Remark <span>*</span></label>
                                                                     <div class="col-sm-12">
-                                                                        <input type="text" name="remark" class="form-control @error('remark') is-invalid @enderror" placeholder="Insert remark" value="{{ old('remark') }}" required>
+                                                                        <input type="text" name="remark" class="backend-form-control @error('remark') is-invalid @enderror" placeholder="Insert remark" value="{{ old('remark') }}" required>
                                                                     </div>
                                                                     @error('remark')
                                                                         <div class="alert-form">{{ $message }}</div>
@@ -2811,8 +2634,8 @@
                                                             </div>
                                                             <div class="col-sm-12 col-md-12 text-right">
                                                                 <input type="hidden" name="rsv_id" value="{{ $reservation->id }}">
-                                                                <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -2846,14 +2669,14 @@
                                                             <td>
                                                                 <div class="reservation-guest">
                                                                     <span>
-                                                                        <a href="#" data-toggle="modal" data-target="#edit-remark-{{ $remark->id }}"> 
+                                                                        <a href="#" data-toggle="modal" data-target="#edit-remark-{{ $remark->id }}">
                                                                             <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
                                                                         </a>
                                                                         <form action="/fdelete-remark/{{ $remark->id }}" method="post" enctype="multipart/form-data">
                                                                             @csrf
                                                                             @method('delete')
                                                                             <input type="hidden" name="rsv_id" value="">
-                                                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Remark"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
+                                                                            <button class="backend-table-action backend-table-action-delete" data-confirm-delete="Are you sure?" type="submit" data-toggle="tooltip" data-placement="left" title="Remove Remark"><i class="icon-copy fa fa-remove" aria-hidden="true"></i></button>
                                                                         </form>
                                                                     </span>
                                                                 </div>
@@ -2879,10 +2702,10 @@
                                                                             @method('put')
                                                                             <div class="row">
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group row">
+                                                                                    <div class="backend-form-field row">
                                                                                         <label for="remark" class="col-sm-12 col-md-12 col-form-label">Remark <span>*</span></label>
                                                                                         <div class="col-sm-12">
-                                                                                        <input type="text" name="remark" class="form-control @error('remark') is-invalid @enderror" placeholder="Insert remark location" value="{{ $remark->remark }}" required>
+                                                                                        <input type="text" name="remark" class="backend-form-control @error('remark') is-invalid @enderror" placeholder="Insert remark location" value="{{ $remark->remark }}" required>
                                                                                         </div>
                                                                                         @error('remark')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -2890,8 +2713,8 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12 col-md-12 text-right">
-                                                                                    <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                    <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                 </div>
                                                                             </div>
                                                                         </form>
@@ -2905,17 +2728,17 @@
                                         </table>
                                     </div>
                                 </div>
-                                
+
                             </div>
                             <div class="row d-print-none">
                                 <div style="display: flex; justify-content: flex-end;" class="col-md-12 text-right p-b-18">
-                                    <a href="/reservation"><button type="button" class="btn btn-dark m-b-8 m-r-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
+                                    <a href="/reservation"><button type="button" class="backend-button backend-button-secondary m-b-8 m-r-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
                                     <a href="/fdownload-rsv/{{ $reservation->id }}">
-                                        <button class="btn btn-primary m-r-8" data-toggle="tooltip" data-placement="top" title="Download Contract"><i class="icon-copy fa fa-eye" aria-hidden="true"></i> Download</button>
+                                        <button class="backend-button backend-button-primary m-r-8" data-toggle="tooltip" data-placement="top" title="Download Contract"><i class="icon-copy fa fa-eye" aria-hidden="true"></i> Download</button>
                                     </a>
                                     @if ($invoice != "")
                                         <a href="/invoice-{{ $invoice->id }}">
-                                            <button class="btn btn-primary m-r-8" data-toggle="tooltip" data-placement="top" title="Detail Invoice"><i class="icon-copy fa fa-eye" aria-hidden="true"></i> Invoice</button>
+                                            <button class="backend-button backend-button-primary m-r-8" data-toggle="tooltip" data-placement="top" title="Detail Invoice"><i class="icon-copy fa fa-eye" aria-hidden="true"></i> Invoice</button>
                                         </a>
                                     @else
                                         <form action="/fadd-invoice" method="post" enctype="multipart/form-data">
@@ -2926,23 +2749,23 @@
                                             <input type="hidden" name="bank_id" value=1>
                                             <input type="hidden" name="inv_date" value="{{ date('Y-m-d',strtotime($now)) }}">
                                             <input type="hidden" name="due_date" value="{{ date('Y-m-d',strtotime('+2 weeks',strtotime($now))) }}">
-                                            <button type="submit" class="btn btn-primary m-b-8 p-l-8 m-r-8"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Create Invoice</button>
+                                            <button type="submit" class="backend-button backend-button-primary m-b-8 p-l-8 m-r-8"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Create Invoice</button>
                                         </form>
                                     @endif
                                     @if ($reservation->status == "Active")
                                         <form action="/deactivate-reservation/{{ $reservation->id }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             @method('put')
-                                            <button type="submit" class="btn btn-danger m-b-8 p-l-8"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Deactivate</button>
+                                            <button type="submit" class="backend-button backend-button-danger m-b-8 p-l-8"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Deactivate</button>
                                         </form>
                                     @else
                                         <form action="/activate-reservation/{{ $reservation->id }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             @method('put')
-                                            <button type="submit" class="btn btn-primary m-b-8 p-l-8 m-r"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
+                                            <button type="submit" class="backend-button backend-button-primary m-b-8 p-l-8 m-r"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
                                         </form>
                                     @endif
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -2973,12 +2796,8 @@
             @include('layouts.footer')
         </div>
     </div>
-    <script type="text/javascript">
-        function htl(){
-            var select_hotels = document.getElementById('select_hotels').value;
-            return select_hotels;
-        }
-        document.write(htl());
-    </script>
     @endcan
 @endsection
+@push('scripts')
+    <script src="{{ mix('build/backend/js/operations/reservations/detail.js') }}"></script>
+@endpush

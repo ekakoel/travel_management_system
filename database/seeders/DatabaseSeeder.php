@@ -43,7 +43,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DriversSeeder::class);
         $this->call(AgentSeeder::class);
         $this->call(AdditionalServiceSeeder::class);
-        $this->call(AttentionSeeder::class);
         $this->call(TermAndConditionSeeder::class);
         $this->call(MarkupSeeder::class);
         $this->call(UsdRatesSeeder::class);

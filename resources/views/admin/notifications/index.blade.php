@@ -6,8 +6,10 @@
     <div class="mobile-menu-overlay"></div>
     <div class="main-container">
         <div class="pd-ltr-20">
+<x-backend.page-hero :title="__('messages.Notifications')" />
+
             <div class="row">
-                
+
                 @if(session('success'))
                     <div class="col-md-12">
                         <div class="alert alert-success">
@@ -27,11 +29,11 @@
                                 <div class="card-body">
                                     <h5 class="card-title mb-2">{{ $notification->data['title'] ?? 'Notification' }}</h5>
                                     <p class="card-text">{{ $notification->data['message'] ?? '' }}</p>
-                                    
+
                                     @if(isset($notification->data['url']))
-                                        <a href="{{ $notification->data['url'] }}" class="btn btn-sm btn-primary">View Details</a>
+                                        <a href="{{ $notification->data['url'] }}" class="backend-button backend-button-primary">View Details</a>
                                     @endif
-                                    
+
                                     <small class="text-muted float-end">{{ $notification->created_at->diffForHumans() }}</small>
                                 </div>
                             </div>
@@ -47,6 +49,6 @@
             </div>
         </div>
 
-        
+
     </div>
 @endsection

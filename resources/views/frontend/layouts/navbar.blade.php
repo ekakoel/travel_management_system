@@ -9,6 +9,7 @@
     $coreOpsPositions = ['developer', 'author', 'reservation'];
     $weddingOpsPositions = ['weddingRsv', 'weddingDvl', 'weddingAuthor', 'weddingSls'];
     $canAccessWorkspace = in_array($currentPosition, array_merge($coreOpsPositions, $weddingOpsPositions), true);
+    $canAccessAdminDashboard = $currentUser && $currentUser->canAccessAdminDashboard();
     $canAccessReservations = in_array($currentPosition, ['developer', 'reservation', 'weddingRsv'], true);
 @endphp
 
@@ -192,11 +193,13 @@
                         <a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fa fa-history me-2" aria-hidden="true"></i>@lang('messages.Order History')</a>
                         <a class="dropdown-item" href="{{ url('/manual-book') }}"><i class="icon-copy fa fa-book me-2" aria-hidden="true"></i>@lang('messages.Manual Book')</a>
 
-                        @if ($canAccessWorkspace)
+                        @if ($canAccessAdminDashboard)
                             <hr class="dropdown-divider">
                             <div class="dropdown-header">@lang('messages.Dashboard')</div>
-                            <a class="dropdown-item" href="{{ route('dashboard.index') }}"><i class="fas fa-tachometer-alt me-2"></i>@lang('messages.Dashboard')</a>
-                            <a class="dropdown-item" href="{{ route('view.admin-panel-main') }}"><i class="fas fa-briefcase me-2"></i>@lang('messages.Admin Panel')</a>
+                            <a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>@lang('messages.Dashboard')</a>
+                            @if ($canAccessWorkspace)
+                                <a class="dropdown-item" href="{{ route('view.admin-panel-main') }}"><i class="fas fa-briefcase me-2"></i>@lang('messages.Admin Panel')</a>
+                            @endif
                             @if ($canAccessReservations)
                                 <a class="dropdown-item" href="{{ url('/reservation') }}"><i class="fa fa-calendar-check me-2" aria-hidden="true"></i>@lang('messages.Reservations')</a>
                             @endif

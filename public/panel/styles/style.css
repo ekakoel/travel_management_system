@@ -1950,7 +1950,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
 
 .brand-logo {
     width: 280px;
-    height: 70px;
+    height: 69px;
     border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 
@@ -2010,7 +2010,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
 }
 
 .left-side-bar .mCS-dark-2.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
-    background: #bdbdbd;
+    background: #0000004f;
 }
 
 .left-side-bar:before {

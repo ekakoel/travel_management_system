@@ -23,7 +23,7 @@ class CreateToursTable extends Migration
             $table->string('area')->nullable();
             $table->string('area_traditional')->nullable();
             $table->string('area_simplified')->nullable();
-            $table->foreignId('type_id')->constrained()->cascadeOnDelete()->nullable();
+            $table->foreignId('type_id')->nullable();
             $table->text('short_description')->nullable();
             $table->text('short_description_traditional')->nullable();
             $table->text('short_description_simplified')->nullable();

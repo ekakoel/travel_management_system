@@ -6,21 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <i class="icon-copy dw dw-building-1" aria-hidden="true"></i> Villas
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Villas</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy dw dw-building-1" aria-hidden="true"></i> Villas
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -99,15 +89,15 @@
                                 <div class="input-container">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                        <input id="searchVillaByName" type="text" onkeyup="searchVillaByName()" class="form-control" name="search-villa-byname" placeholder="Search by name...">
+                                        <input id="searchVillaByName" type="text" onkeyup="searchVillaByName()" class="backend-form-control" name="search-villa-byname" placeholder="Search by name...">
                                     </div>
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                        <input id="searchVillaByLocation" type="text" onkeyup="searchVillaByLocation()" class="form-control" name="search-villa-location" placeholder="Search by location...">
+                                        <input id="searchVillaByLocation" type="text" onkeyup="searchVillaByLocation()" class="backend-form-control" name="search-villa-location" placeholder="Search by location...">
                                     </div>
                                     <div class="input-group">
                                         <a href="/download-data-villa">
-                                            <div class="btn btn-primary">
+                                            <div class="backend-button backend-button-primary">
                                             <i class="icon-copy fa fa-file-pdf-o" aria-hidden="true"></i> Download PDF</i>
                                         </div>
                                         </a>
@@ -182,7 +172,7 @@
                                 @endif
                                 @canany(['posDev','posAuthor'])
                                     <div class="card-box-footer">
-                                        <a href="/add-villa"><button class="btn btn-primary"><i class="ion-plus-round"></i> Add Villa</button></a>
+                                        <a href="/add-villa"><button class="backend-button backend-button-primary"><i class="ion-plus-round"></i> Add Villa</button></a>
                                     </div>
                                 @endcanany
                             </div>
@@ -271,9 +261,9 @@
                                                         {{ $villa->region }}
                                                     </td>
                                                     <td>
-                                                        @if ($villa->rooms->where('status','Active')->count() > 1)  
+                                                        @if ($villa->rooms->where('status','Active')->count() > 1)
                                                             {{ $villa->rooms->where('status','Active')->count() }} Rooms
-                                                        @elseif ($villa->rooms->where('status','Active')->count() == 1)  
+                                                        @elseif ($villa->rooms->where('status','Active')->count() == 1)
                                                             {{ $villa->rooms->where('status','Active')->count() }} Room
                                                         @else
                                                             0
@@ -313,7 +303,7 @@
                     } else {
                         tr[i].style.display = "none";
                     }
-                }       
+                }
             }
         }
     </script>
@@ -333,7 +323,7 @@
                     } else {
                         tr[i].style.display = "none";
                     }
-                }       
+                }
             }
         }
     </script>

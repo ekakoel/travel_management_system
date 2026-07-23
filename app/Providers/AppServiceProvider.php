@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\BusinessProfileService;
 use App\Services\FooterContentService;
+use App\Services\RegistrationAccessService;
 use Illuminate\Support\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
@@ -34,6 +35,14 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $view->with('footerData', app(FooterContentService::class)->data());
+        });
+
+        View::composer('auth.login', function ($view) {
+            if (array_key_exists('registrationEnabled', $view->getData())) {
+                return;
+            }
+
+            $view->with('registrationEnabled', app(RegistrationAccessService::class)->enabled());
         });
     }
 }

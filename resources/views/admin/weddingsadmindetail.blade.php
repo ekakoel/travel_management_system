@@ -6,20 +6,13 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title">
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
                             @if ($service != "")
-                                {!! $service->icon !!} {{ $service->name }}
-                            @endif
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="/weddings-admin">{{ $service->name }}</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ $wedding->name }}</li>
-                            </ol>
-                        </nav>
-                    </div>
+                                                            {!! $service->icon !!} {{ $service->name }}
+                                                        @endif
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -56,11 +49,9 @@
                         </form>
                         <div class="product-detail-wrap">
                             <div class="row">
-                                {{-- ATTENTIONS --}}
                                 <div class="col-md-4 mobile">
                                     <div class="row">
                                         @include('admin.usd-rate')
-                                        @include('layouts.attentions')
                                     </div>
                                 </div>
                                 <div class="col-md-8">
@@ -266,7 +257,7 @@
                                         </div>
                                         @if ($wedding->status !== "Active")
                                             <div class="card-box-footer">
-                                                <a href="/{{ $service->nicname }}-edit-{{ $wedding['id'] }}"><button class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
+                                                <a href="/{{ $service->nicname }}-edit-{{ $wedding['id'] }}"><button class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
                                             </div>
                                         @endif
                                     </div>
@@ -274,7 +265,6 @@
                                 <div class="col-md-4 desktop">
                                     <div class="row">
                                         @include('admin.usd-rate')
-                                        @include('layouts.attentions')
                                     </div>
                                 </div>
                             </div>

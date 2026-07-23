@@ -15,7 +15,7 @@ class CreateHotelPricesTable extends Migration
         Schema::create('hotel_prices', function (Blueprint $table) {
             $table->id();
             $table->foreignId("hotels_id")->constrained("hotels")->onDelete("cascade");
-            $table->foreignId("rooms_id")->constrained("hotelroom")->onDelete("cascade");
+            $table->foreignId("rooms_id");
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('markup')->nullable();

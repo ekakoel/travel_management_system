@@ -13,17 +13,18 @@ class CreateVendorsTable extends Migration
         }
 
         Schema::create('vendors', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->text('cover')->nulable();
-            $table->string('name');
-            $table->string('location');
-            $table->string('type');
-            $table->string('contact_name');
-            $table->string('phone');
-            $table->string('email');
-            $table->text('term')->nulable();
+            $table->string('name')->nulable();
+            $table->string('location')->nulable();
+            $table->string('type')->nulable();
+            $table->string('contact_name')->nulable();
+            $table->string('phone')->nulable();
+            $table->string('email')->nulable();
+            $table->text('term')->nulable()->nulable();
             $table->text('description')->nulable();
-            $table->string('status');
+            $table->string('status')->nulable();
+            $table->integer('author_id')->nulable();
             $table->softDeletes();
             $table->timestamps();
         });

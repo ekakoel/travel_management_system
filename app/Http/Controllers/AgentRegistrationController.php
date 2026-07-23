@@ -15,6 +15,11 @@ use App\Notifications\NewAgentRegistered;
 
 class AgentRegistrationController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('registration.open')->only(['showForm', 'submitForm']);
+    }
+
     public function showForm()
     {
         return view('frontend.home.agents.register');

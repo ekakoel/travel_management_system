@@ -41,13 +41,6 @@
                 @endif
             </div>
             <div class="row">
-                @if (count($attentions)>0)
-                    <div class="col-md-4 mobile">
-                        <div class="row">
-                            @include('layouts.attentions')
-                        </div>
-                    </div>
-                @endif
                 @if ($order->service == "Hotel" or $order->service == "Hotel Promo" or $order->service == "Hotel Package")
                     @include('frontend.home.orders.partials.edit-hotel')
                 @elseif($order->service == "Activity")
@@ -56,13 +49,6 @@
                     @include('frontend.home.orders.partials.edit-transport')
                 @elseif($order->service == "Private Villa")
                     @include('frontend.home.orders.partials.edit-villa')
-                @endif
-                @if (count($attentions)>0)
-                    <div class="col-md-4 desktop">
-                        <div class="row">
-                            @include('layouts.attentions')
-                        </div>
-                    </div>
                 @endif
             </div>
             @include('layouts.footer')

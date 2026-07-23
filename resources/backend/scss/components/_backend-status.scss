@@ -1,0 +1,63 @@
+body.sidebar-light .backend-status-badge {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  min-height: 24px;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+body.sidebar-light .backend-status-badge--success,
+body.sidebar-light .backend-status-badge--active,
+body.sidebar-light .backend-status-badge--approved,
+body.sidebar-light .backend-status-badge--accepted,
+body.sidebar-light .backend-status-badge--confirmed,
+body.sidebar-light .backend-status-badge--completed,
+body.sidebar-light .backend-status-badge--paid,
+body.sidebar-light .backend-status-badge--visited,
+body.sidebar-light .backend-status-badge--connected,
+body.sidebar-light .backend-status-badge.is-success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+body.sidebar-light .backend-status-badge--warning,
+body.sidebar-light .backend-status-badge--pending,
+body.sidebar-light .backend-status-badge--draft,
+body.sidebar-light .backend-status-badge--in-progress,
+body.sidebar-light .backend-status-badge.is-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+body.sidebar-light .backend-status-badge--danger,
+body.sidebar-light .backend-status-badge--blocked,
+body.sidebar-light .backend-status-badge--rejected,
+body.sidebar-light .backend-status-badge--invalid,
+body.sidebar-light .backend-status-badge--expired,
+body.sidebar-light .backend-status-badge--canceled,
+body.sidebar-light .backend-status-badge--not-connected,
+body.sidebar-light .backend-status-badge--error,
+body.sidebar-light .backend-status-badge.is-danger {
+  background: var(--backend-danger-soft);
+  color: var(--backend-danger-strong);
+}
+
+body.sidebar-light .backend-status-badge--info,
+body.sidebar-light .backend-status-badge--process,
+body.sidebar-light .backend-status-badge--confirm,
+body.sidebar-light .backend-status-badge--checking {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+body.sidebar-light .backend-status-badge--muted,
+body.sidebar-light .backend-status-badge--inactive,
+body.sidebar-light .backend-status-badge--unknown,
+body.sidebar-light .backend-status-badge.is-muted {
+  background: #eef2f7;
+  color: var(--backend-muted-link);
+}

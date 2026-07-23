@@ -23,7 +23,6 @@
                 <div class="row">
                     <div class="col-md-4 mobile">
                         <div class="row">
-                            @include('layouts.attentions')
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -67,7 +66,6 @@
                     </div>
                     <div class="col-md-4 desktop">
                         <div class="row">
-                            @include('layouts.attentions')
                         </div>
                     </div>
                     <div class="col-md-8">

@@ -4,6 +4,9 @@ See [docs/project-understanding-rules.md](docs/project-understanding-rules.md) f
 See [docs/project-blueprint-roadmap.md](docs/project-blueprint-roadmap.md) for the product blueprint, frontend/backend separation direction, and staged UI/UX standardization roadmap.
 See [docs/blade-asset-rules.md](docs/blade-asset-rules.md) for the mandatory Blade, CSS, and JavaScript separation rules used in this repository.
 See [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md) for the mandatory frontend UI consistency rules used in this repository.
+See [docs/backend-ui-standards.md](docs/backend-ui-standards.md) for the mandatory backend-only UI consistency rules used in this repository.
+See [docs/multi-language-standard.md](docs/multi-language-standard.md) for the mandatory translation and multi-language rules used in this repository.
+See [docs/testing-database-safety-standard.md](docs/testing-database-safety-standard.md) for the mandatory database and testing safety rules that must be followed before running tests, migrations, seeders, or database commands.
 See [docs/frontend-roadmap.md](docs/frontend-roadmap.md) for the mandatory frontend roadmap and change log that must be updated on every frontend change.
 See [docs/frontend-roadmap-entry-template.md](docs/frontend-roadmap-entry-template.md) for the ready-to-copy roadmap entry template used for frontend work.
 
@@ -117,6 +120,8 @@ Frontend and backend files must follow the project structure standard in [docs/p
 - Internal staff/admin pages live under `resources/views/backend`, with backend assets under `resources/backend/js` and `resources/backend/scss`.
 - Shared frontend-only partials live under `resources/views/frontend/shared`; shared cross-area components should only be introduced when there are at least two real consumers.
 - Do not create new active files in legacy namespaces such as `resources/views/home`, `resources/views/form`, `resources/views/order`, or old page-level frontend folders.
+- User-facing text in frontend and backend must use language files for all supported locales. Do not add hardcoded UI copy in Blade, controllers, services, or JavaScript.
+- Do not run PHPUnit, Laravel tests, migrations, seeders, tinker write operations, or destructive database commands until the target database has been verified as a dedicated testing or disposable database.
 
 When moving files, update controller view paths, Blade `@include`/`@extends`, Mix entries, documentation, and run the relevant route/view tests plus `npm run development`.
 

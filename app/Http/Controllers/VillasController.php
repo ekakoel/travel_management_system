@@ -9,7 +9,6 @@ use App\Models\Villas;
 use App\Models\UserLog;
 use App\Models\Contract;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use App\Models\Promotion;
 use App\Models\VillaPrice;
 use App\Models\VillaRooms;
@@ -74,7 +73,6 @@ class VillasController extends Controller
         $usdrates = Cache::remember('usd_rates', 3600, function () {
             return UsdRates::select('name', 'rate')->where('name', 'USD')->first();
         });
-        $attentions = Attention::where('page','admin-villa-detail')->get();
         $villa = Villas::with([
             'prices' =>fn($q) => $q->where('end_date', '>', $now)->orderBy('start_date', 'asc'),
             'stay_period',
@@ -99,7 +97,6 @@ class VillasController extends Controller
             'taxes'=>$tax,
             'business'=>$business,
             'usdrates'=>$usdrates,
-            'attentions'=>$attentions,
             'author'=>$author,
             'contracts'=>$contracts,
             'additional_services'=>$additional_services,
@@ -112,13 +109,11 @@ class VillasController extends Controller
     {
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $villa=Villas::findOrFail($id);
-            $attentions = Attention::where('page','admin-villa-edit')->get();
             $usdrates = Cache::remember('usd_rates', 3600, function () {
                 return UsdRates::select('name', 'rate')->where('name', 'USD')->first();
             });
             return view('villas.forms.edit-villa',[
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
                 ])->with('villa',$villa);
         }else{
             return redirect("/villas-admin")->with('error','Akses ditolak');
@@ -129,10 +124,8 @@ class VillasController extends Controller
     public function view_add_villa_room($id){
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $villa=Villas::findOrFail($id);
-            $attentions=Attention::where('page','admin-hotel-room-add')->get();
             $usdrates=UsdRates::where('name','USD')->first();
             return view('villas.forms.add-villa-room',[
-                'attentions'=>$attentions,
                 'usdrates'=>$usdrates,
             ])->with('villa',$villa);
         }else{
@@ -408,10 +401,8 @@ class VillasController extends Controller
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $room=VillaRooms::findOrFail($id);
             $villa=Villas::where('id','=', $room->villa_id)->first();
-            $attentions = Attention::where('page','edit-villa-room')->get();
             return view('villas.forms.edit-villa-room',[
                 'villa'=>$villa,
-                'attentions'=>$attentions,
             ])->with('room',$room);
         }else{
             return redirect("/villas-admin")->with('error','Akses ditolak');
@@ -634,10 +625,8 @@ class VillasController extends Controller
     {
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $villa=Villas::with(['rooms'])->findOrFail($id);
-            $attentions = Attention::where('page','edit-villa-room')->get();
             return view('admin.villas.forms.add-villa-prices',[
                 'villa'=>$villa,
-                'attentions'=>$attentions,
             ]);
         }else{
             return redirect("/villas-admin")->with('error','Akses ditolak');

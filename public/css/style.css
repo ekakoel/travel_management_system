@@ -657,9 +657,6 @@ button span {
     font-weight: bolder !important;
 }
 
-figure {
-    margin: 0px !important;
-}
 /* LOADING */
 
 .lds-grid {
@@ -9435,9 +9432,6 @@ figure.table{
         padding-right: 18px;
     }
 
-    figure {
-        margin: 0 !important;
-    }
     .page-status span {
 
         font-weight: 600;

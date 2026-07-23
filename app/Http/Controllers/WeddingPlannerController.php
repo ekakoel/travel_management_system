@@ -10,7 +10,6 @@ use App\Models\Flights;
 use App\Models\UserLog;
 use App\Models\ExtraBed;
 use App\Models\Weddings;
-use App\Models\Attention;
 use App\Models\Countries;
 use App\Models\HotelRoom;
 use App\Models\Transports;
@@ -56,7 +55,6 @@ class WeddingPlannerController extends Controller
             $agent_id = Auth::user()->id;
             if ($wedding_planner->agent_id == $agent_id) {
                 $now = Carbon::now();
-                $attentions = Attention::where('page','edit-wedding-planner')->get();
                 $bride = $wedding_planner->bride;
                 $hotel = Hotels::where('id',$wedding_planner->wedding_venue_id)->first();
                 $rooms = HotelRoom::where('hotels_id',$hotel->id)->where('status','Active')->get();
@@ -124,7 +122,6 @@ class WeddingPlannerController extends Controller
                     'reception_venue'=>$reception_venue,
                     'reception_venues'=>$reception_venues,
                     'extra_beds'=>$extra_beds,
-                    'attentions'=>$attentions,
                     'transports'=>$transports,
                     'testdur'=>$testdur,
                 ]);

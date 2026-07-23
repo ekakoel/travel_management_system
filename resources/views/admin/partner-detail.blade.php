@@ -9,20 +9,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 {{-- NAVBAR PAGE ======================================================================================================================= --}}
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="title"><i class="micon fa fa-handshake-o" aria-hidden="true"></i> Detail {{ $partner->name }}</div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                    <li class="breadcrumb-item"><a href="/partners">Partners</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ $partner->name }}</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="micon fa fa-handshake-o" aria-hidden="true"></i> Detail {{ $partner->name }}
+                    </x-slot>
+                </x-backend.page-hero>
                 <div class="info-action">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
@@ -46,9 +37,7 @@
                     <div class="product-detail-wrap">
                         <div class="row">
                             <div class="col-md-4 mobile">
-                                {{-- ATTENTIONS --}}
                                 <div class="row">
-                                    @include('layouts.attentions')
                                     <div class="col-md-12">
                                         <div class="card-box">
                                             <div class="row">
@@ -111,7 +100,7 @@
                                             </div>
                                         </div>
                                         <div class="card-content">
-                                          
+
                                             <div class="card-text">
                                                 <div class="row ">
                                                     <div class="col-12 col-sm-4">
@@ -132,7 +121,7 @@
                                     </div>
                                     @canany(['posDev','posAuthor'])
                                         <div class="card-box-footer">
-                                            <a href="#" data-toggle="modal" data-target="#edit-partner"><button class="btn btn-primary"><i class="fa fa-pencil"></i> Edit Partner</button></a>
+                                            <a href="#" data-toggle="modal" data-target="#edit-partner"><button class="backend-button backend-button-primary"><i class="fa fa-pencil"></i> Edit Partner</button></a>
                                         </div>
                                         {{-- MODAL EDIT PARTNER --------------------------------------------------------------------------------------------------------------- --}}
                                         <div class="modal fade" id="edit-partner" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -162,18 +151,18 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="name">Profile Picture</label>
-                                                                            <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ $partner->cover }}">
+                                                                            <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ $partner->cover }}">
                                                                             @error('cover')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="status">Status</label>
-                                                                                <select name="status" id="status"  type="text" class="custom-select @error('status') is-invalid @enderror" placeholder="Select status" required>
+                                                                                <select name="status" id="status"  type="text" class="backend-form-control @error('status') is-invalid @enderror" placeholder="Select status" required>
                                                                                     @if ($partner->status == "Draft")
                                                                                         <option selected value="{{ $partner->status }}">{{ $partner->status }}</option>
                                                                                         <option value="Active">Active</option>
@@ -190,18 +179,18 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="name">Partner Name</label>
-                                                                            <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $partner->name }}" required>
+                                                                            <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $partner->name }}" required>
                                                                             @error('name')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="type">Type</label>
-                                                                            <select name="type" id="type"  type="text" class="custom-select @error('type') is-invalid @enderror" placeholder="Select type" required>
+                                                                            <select name="type" id="type"  type="text" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Select type" required>
                                                                                 <option selected value="{{ $partner->type }}">{{ $partner->type }}</option>
                                                                                 <option value="Tourist Attraction">Tourist Attraction</option>
                                                                                 <option value="Travel Agent">Travel Agent</option>
@@ -218,60 +207,60 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-3 col-md-3">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="contact_person">Contact Person</label>
-                                                                            <input type="text" id="contact_person" name="contact_person" class="form-control @error('contact_person') is-invalid @enderror" placeholder="Name" value="{{ $partner->contact_person }}" required>
+                                                                            <input type="text" id="contact_person" name="contact_person" class="backend-form-control @error('contact_person') is-invalid @enderror" placeholder="Name" value="{{ $partner->contact_person }}" required>
                                                                             @error('contact_person')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-3 col-md-3">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="phone">Phone</label>
-                                                                            <input type="number" id="phone" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Name" value="{{ $partner->phone }}" required>
+                                                                            <input type="number" id="phone" name="phone" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Name" value="{{ $partner->phone }}" required>
                                                                             @error('phone')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="address">Address</label>
-                                                                            <input type="text" id="address" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Address" value="{{ $partner->address }}" required>
+                                                                            <input type="text" id="address" name="address" class="backend-form-control @error('address') is-invalid @enderror" placeholder="Address" value="{{ $partner->address }}" required>
                                                                             @error('address')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="location">Location</label>
-                                                                            <input type="text" id="location" name="location" class="form-control @error('location') is-invalid @enderror" placeholder="Location" value="{{ $partner->location }}" required>
+                                                                            <input type="text" id="location" name="location" class="backend-form-control @error('location') is-invalid @enderror" placeholder="Location" value="{{ $partner->location }}" required>
                                                                             @error('location')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-12 col-sm-6 col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="map">Map Link</label>
-                                                                            <input type="text" id="map" name="map" class="form-control @error('map') is-invalid @enderror" placeholder="link" value="{{ $partner->map }}" required>
+                                                                            <input type="text" id="map" name="map" class="backend-form-control @error('map') is-invalid @enderror" placeholder="link" value="{{ $partner->map }}" required>
                                                                             @error('map')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="description">Description</label>
-                                                                            <textarea name="description" id="description" wire:model="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! $partner->description !!}</textarea>
+                                                                            <textarea data-backend-richtext="true" name="description" id="description" wire:model="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Description" type="text">{!! $partner->description !!}</textarea>
                                                                             @error('description')
                                                                                 <span class="invalid-feedback">
                                                                                     <strong>{{ $message }}</strong>
                                                                                 </span>
                                                                             @enderror
-                                                                            
+
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -279,8 +268,8 @@
                                                             <input id="author_id" name="author_id" value="{{ Auth::user()->id }}" type="hidden">
                                                         </form>
                                                         <div class="card-box-footer">
-                                                            <button type="submit" form="update-partner" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                            <button type="submit" form="update-partner" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -290,9 +279,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4 desktop">
-                                {{-- ATTENTIONS --}}
                                 <div class="row">
-                                    @include('layouts.attentions')
                                     <div class="col-md-12">
                                         <div class="card-box">
                                             <div class="card-box-title">
@@ -321,7 +308,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -450,14 +437,14 @@
                                                                         @endif
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <div class="card-box-footer">
                                                                     @canany(['posDev','posAuthor'])
                                                                         <a href="/edit-activity-{{ $activity->id }}">
-                                                                            <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                                            <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                                                         </a>
                                                                     @endcanany
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -471,7 +458,7 @@
                                     @canany(['posDev','posAuthor'])
                                         <div class="card-box-footer">
                                             <a href="/partner-add-activity-{{ $partner->id }}">
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Activity</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Activity</button>
                                             </a>
                                         </div>
                                     @endcanany
@@ -536,7 +523,7 @@
                                                     @endif
                                                     @canany(['posDev','posAuthor'])
                                                         <div class="card-delete-btn">
-                                                            <form action="/remove-tour/{{ $tour->id }}" method="post">
+                                                            <form action="{{ route('admin.tours.destroy', $tour->id) }}" method="post">
                                                                 @csrf
                                                                 @method('delete')
                                                                 <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
@@ -607,14 +594,14 @@
                                                                         @endif
                                                                     </div>
                                                                 </div>
-                                                               
+
                                                                 <div class="card-box-footer">
                                                                     @canany(['posDev','posAuthor'])
-                                                                        <a href="/edit-tour-{{ $tour->id }}">
-                                                                            <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                                        <a href="{{ route('admin.tours.edit', $tour->id) }}">
+                                                                            <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                                                         </a>
                                                                     @endcanany
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -628,7 +615,7 @@
                                     @canany(['posDev','posAuthor'])
                                         <div class="card-box-footer">
                                             <a href="/partner-add-tour-{{ $partner->id }}">
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Tour Package</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Tour Package</button>
                                             </a>
                                         </div>
                                     @endcanany

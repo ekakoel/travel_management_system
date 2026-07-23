@@ -12,6 +12,7 @@ class TransportPrice extends Model
     use HasFactory;
     protected $fillable=[
         'transports_id',
+        'name',
         'type',
         'src',
         'dst',

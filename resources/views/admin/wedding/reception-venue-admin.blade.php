@@ -36,7 +36,7 @@
                             </div>
                             <div class="card-period-full">
                                 {{ date('d M Y',strtotime($reception_venue->periode_start)) }} - {{ date('d M Y',strtotime($reception_venue->periode_end)) }}
-                            </div> 
+                            </div>
                             <div class="name-card">
                                 <p>
                                     <b>{{ $reception_venue->name }}</b><br>
@@ -150,14 +150,14 @@
                                 </form>
                                 <div class="card-box-footer">
                                     @if ($reception_venue->status == "Draft")
-                                        <button type="submit" form="activate-reception-venue-{{ $reception_venue->id }}" class="btn btn-info"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
+                                        <button type="submit" form="activate-reception-venue-{{ $reception_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
                                         <a href="/update-reception-venue-{{ $reception_venue->id }}">
-                                            <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                            <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                         </a>
                                     @else
-                                        <button type="submit" form="deactivate-reception-venue-{{ $reception_venue->id }}" class="btn btn-dark"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Save as Draft</button>
+                                        <button type="submit" form="deactivate-reception-venue-{{ $reception_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Save as Draft</button>
                                     @endif
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                 </div>
                             </div>
                         </div>
@@ -183,7 +183,7 @@
                                 <div class="col-12 col-sm-12 col-md-12">
                                     <div class="row">
                                         <div class="col-12 col-sm-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="cover-preview" class="form-label">Cover Image</label>
                                                 <div class="dropzone">
                                                     <div id="reception-venue-img-preview">
@@ -196,9 +196,9 @@
                                 <div class="col-12 col-sm-12 col-md-12">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            <div class="backend-form-field">
                                                 <label for="cover" class="form-label">Cover Image </label>
-                                                <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" onchange="updateCoverPreview(event)">
+                                                <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" onchange="updateCoverPreview(event)">
                                                 @error('cover')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
@@ -207,18 +207,18 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="backend-form-field">
                                         <label for="name" class="form-label">Name</label>
-                                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
+                                        <input type="text" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
                                         @error('name')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="backend-form-field">
                                         <label for="capacity" class="form-label">Capacity</label>
-                                        <input type="number" min="1" name="capacity" class="form-control @error('capacity') is-invalid @enderror" placeholder="Capacity" value="{{ old('capacity') }}" required>
+                                        <input type="number" min="1" name="capacity" class="backend-form-control @error('capacity') is-invalid @enderror" placeholder="Capacity" value="{{ old('capacity') }}" required>
                                         @error('capacity')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
@@ -230,18 +230,18 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="backend-form-field">
                                         <label for="periode_start" class="form-label">Periode Start</label>
-                                        <input type="text" name="periode_start" class="form-control date-picker @error('periode_start') is-invalid @enderror" placeholder="Periode Start" value="{{ old('periode_start') }}" required>
+                                        <input type="text" name="periode_start" class="backend-form-control date-picker @error('periode_start') is-invalid @enderror" placeholder="Periode Start" value="{{ old('periode_start') }}" required>
                                         @error('periode_start')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="backend-form-field">
                                         <label for="periode_end" class="form-label">Periode End</label>
-                                        <input type="text" name="periode_end" class="form-control date-picker @error('periode_end') is-invalid @enderror" placeholder="Periode End" value="{{ old('periode_end') }}" required>
+                                        <input type="text" name="periode_end" class="backend-form-control date-picker @error('periode_end') is-invalid @enderror" placeholder="Periode End" value="{{ old('periode_end') }}" required>
                                         @error('periode_end')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
@@ -253,11 +253,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="backend-form-field">
                                         <label for="price">Price <span>*</span></label>
                                         <div class="btn-icon">
                                             <span>$</span>
-                                            <input type="text" id="price" name="price"  class="form-control @error('price') is-invalid @enderror" placeholder="Insert price!" value="{{ old('price') }}" required>
+                                            <input type="text" id="price" name="price"  class="backend-form-control @error('price') is-invalid @enderror" placeholder="Insert price!" value="{{ old('price') }}" required>
                                             @error('price')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
@@ -270,18 +270,18 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12">
-                                    <div class="form-group">
+                                    <div class="backend-form-field">
                                         <label for="description" class="form-label">Description</label>
-                                        <textarea name="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ old('description') }}">{{ old('description') }}</textarea>
+                                        <textarea data-backend-richtext="true" name="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ old('description') }}">{{ old('description') }}</textarea>
                                         @error('description')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-12">
-                                    <div class="form-group">
+                                    <div class="backend-form-field">
                                         <label for="terms_and_conditions" class="form-label">Terms and Conditions</label>
-                                        <textarea name="terms_and_conditions" class="textarea_editor form-control @error('terms_and_conditions') is-invalid @enderror" placeholder="Insert terms_and_conditions" value="{{ old('terms_and_conditions') }}">{{ old('terms_and_conditions') }}</textarea>
+                                        <textarea data-backend-richtext="true" name="terms_and_conditions" class="textarea_editor backend-form-control @error('terms_and_conditions') is-invalid @enderror" placeholder="Insert terms_and_conditions" value="{{ old('terms_and_conditions') }}">{{ old('terms_and_conditions') }}</textarea>
                                         @error('terms_and_conditions')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
@@ -290,8 +290,8 @@
                             </div>
                         </form>
                         <div class="card-box-footer">
-                            <button type="submit" form="add-reception-venue" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                            <button type="submit" form="add-reception-venue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                         </div>
                     </div>
                 </div>
@@ -300,7 +300,7 @@
     @endcanany
     <div class="card-box-footer">
         <a href="#" data-toggle="modal" data-target="#add-reception-venue-{{ $hotel->id }}">
-            <button class="btn btn-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
+            <button class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
         </a>
     </div>
 </div>

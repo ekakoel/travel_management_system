@@ -12,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <script src="https://kit.fontawesome.com/ea60220155.js" crossorigin="anonymous"></script>
     <script>
-        function printFunction() { 
+        function printFunction() {
             var css = '@page { size: potrait; }',
             head = document.head || document.getElementsByTagName('head')[0],
             style = document.createElement('style');
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row m-t-8">
                     <div class="col-12">
                         <div class="pb-20">
@@ -115,11 +115,11 @@
     </div>
     <div class="hidden-print row float-container">
         <div class="col-12 text-right">
-            <button class="btn btn-primary" onclick="printFunction()"><i class="icon-copy fa fa-print"
+            <button class="backend-button backend-button-primary" onclick="printFunction()"><i class="icon-copy fa fa-print"
                     aria-hidden="true"></i> Print</button>
-            {{-- <button class="btn btn-primary" id="printButton" onclick="savePDF()"><i class="icon-copy fa fa-download" aria-hidden="true"></i> Download PDF</button> --}}
+            {{-- <button class="backend-button backend-button-primary" id="printButton" onclick="savePDF()"><i class="icon-copy fa fa-download" aria-hidden="true"></i> Download PDF</button> --}}
             <a href="/hotels-admin">
-                <button class="btn btn-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i>
+                <button class="backend-button backend-button-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i>
                     Cancel</button>
             </a>
         </div>
@@ -165,11 +165,11 @@
                       } else {
                         tr[i].style.display = "none";
                       }
-                    }       
+                    }
                   }
                 }
             </script> --}}
-    
+
 
 </body>
 

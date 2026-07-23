@@ -7,8 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
+        body {
+            font-family: Arial, sans-serif;
             font-size: 14px;
             line-height: 1.5;
         }
@@ -21,9 +21,9 @@
             margin: 18px 0 4px 0;
             text-decoration: none;
         }
-        .spk-header { 
-            text-align: center; 
-            margin-bottom: 20px; 
+        .spk-header {
+            text-align: center;
+            margin-bottom: 20px;
         }
         .section-title {
             margin-top: 20px;
@@ -110,7 +110,7 @@
             border-radius: 50px;
             border: 2px solid #000077;
         }
-        
+
         .description{
             width: 100%;
         }
@@ -127,7 +127,7 @@
             width: 28px;         /* ukuran konsisten */
             height: 28px;        /* tinggi sama */
             display: flex;
-            align-items: center; 
+            align-items: center;
             justify-content: center;
             font-size: 18px;     /* ukuran emoji/icon */
             margin-right: 8px;   /* jarak dengan teks */
@@ -371,11 +371,11 @@
             </table>
         </div>
     </div>
-    
 
-    
 
-    
+
+
+
     <div class="page-brake-avoid">
         @if ($spk->type == "Daily Rent" || $spk->type == "Tour")
             <div class="alert alert-info" role="alert">
@@ -396,8 +396,8 @@
                             <div class="description-item">
                                 <div class="icon">📍</div>
                                 <div class="desc">
-                                    Lokasi Checkin: 
-                                    <a href="{{ $destination->checkin_map_link }}" target="_blank" class="btn btn-sm btn-success color-white">
+                                    Lokasi Checkin:
+                                    <a href="{{ $destination->checkin_map_link }}" target="_blank" class="backend-button backend-button-primary color-white">
                                         See on Map
                                     </a>
                                 </div>
@@ -410,10 +410,10 @@
                     </div>
                 </div>
             @empty
-                
+
             @endforelse
             <div class="card shadow p-4">
-                <button data-bs-toggle="modal" data-bs-target="#tambahDestinasi{{ $spk->id }}" class="btn btn-primary btn-checkin">✚ Tambah Destinasi</button>
+                <button data-bs-toggle="modal" data-bs-target="#tambahDestinasi{{ $spk->id }}" class="backend-button backend-button-primary btn-checkin">✚ Tambah Destinasi</button>
                 <div class="modal fade" id="tambahDestinasi{{ $spk->id }}" tabindex="-1" aria-labelledby="confirmSubmitLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -421,7 +421,7 @@
                                 <div class="subtitle">
                                     Tambahkan Destinasi
                                 </div>
-                                <span><button class="btn btn-modal-dismis" data-bs-dismiss="modal">X</button></span>
+                                <span><button class="backend-icon-action btn-modal-dismis" data-bs-dismiss="modal">X</button></span>
                             </div>
                             <div class="modal-body">
                                 <p>
@@ -437,15 +437,15 @@
 
                                     <div class="mb-3">
                                         <label for="destinationName" class="form-label">Nama Lokasi / Nama Tempat / Destinasi <span>*</span></label>
-                                        <input type="text" name="destination_name" id="destinationName" class="form-control" placeholder="ex: Monkey Forest" required>
+                                        <input type="text" name="destination_name" id="destinationName" class="backend-form-control" placeholder="ex: Monkey Forest" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="description" class="form-label">Deskripsi</label>
-                                        <textarea name="description" id="description" class="form-control" rows="3" placeholder="ex: Tamu mengunjungi Monkey Forest ..."></textarea>
+                                        <textarea data-backend-richtext="true" name="description" id="description" class="backend-form-control" rows="3" placeholder="ex: Tamu mengunjungi Monkey Forest ..."></textarea>
                                     </div>
                                     <input type="hidden" name="latitude" id="latitude">
                                     <input type="hidden" name="longitude" id="longitude">
-                                    <button type="submit" class="btn btn-primary w-100" id="checkin-btn">
+                                    <button type="submit" class="backend-button backend-button-primary w-100" id="checkin-btn">
                                         📍 Check-in
                                     </button>
                                 </form>
@@ -492,7 +492,7 @@
                     <div class="caption">
                         @if ($destination->status == "Visited")
                             <p>
-                                ✔ {{ $spk->driver->name }} melakukan Check-in pada tanggal {{ \Carbon\Carbon::parse($destination->visited_at)->locale('id')->translatedFormat('l, d M Y (H:i)') }}, 
+                                ✔ {{ $spk->driver->name }} melakukan Check-in pada tanggal {{ \Carbon\Carbon::parse($destination->visited_at)->locale('id')->translatedFormat('l, d M Y (H:i)') }},
                                 dari lokasi <a target="__blank" href="https://www.google.com/maps?q={{ $destination->checkin_latitude }},{{ $destination->checkin_longitude }}"> Lihat di Map</a>
                             </p>
                         @else
@@ -501,7 +501,7 @@
                                     Klik tombol Check-in atau <br>
                                     scan QR code untuk melakukan checkin!</i>
                             </p>
-                            <button data-bs-toggle="modal" data-bs-target="#checkIn{{ $destination->id }}" class="btn btn-primary btn-checkin">📍 Check-in</button>
+                            <button data-bs-toggle="modal" data-bs-target="#checkIn{{ $destination->id }}" class="backend-button backend-button-primary btn-checkin">📍 Check-in</button>
                             <div class="modal fade" id="checkIn{{ $destination->id }}" tabindex="-1" aria-labelledby="confirmSubmitLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
@@ -526,24 +526,24 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                        <button type="button" class="backend-button backend-button-secondary" data-bs-dismiss="modal">Batal</button>
                                         <form id="checkinForm{{  $destination->id }}" method="POST" action="{{ route('spk.checkin', $destination->id) }}">
                                         @csrf
                                             <input type="hidden" name="latitude" id="latitude">
                                             <input type="hidden" name="longitude" id="longitude">
-                                            <button type="submit" class="btn btn-primary" class="btn btn-success">Check-in</button>
+                                            <button type="submit" class="backend-button backend-button-primary">Check-in</button>
                                         </form>
                                     </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                         @endif
                     </div>
                     {{-- <div class="number">
                         {{ ++$no }}
                     </div> --}}
-                    
+
                 </div>
             @endforeach
         @endif

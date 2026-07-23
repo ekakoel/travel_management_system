@@ -425,9 +425,9 @@ class TransportsController extends Controller
 // Function Transport image delete =============================================================================================================>
     public function delete_image_transport($id){
         $images=TransportsImages::findOrFail($id);
-        if (File::exists("images/transports/".$images->image)) 
+        if (File::exists("storage/transports/transports-gallery/".$images->image))
         {
-           File::delete("images/transports/".$images->image);
+           File::delete("storage/transports/transports-gallery/".$images->image);
         }
 
        TransportsImages::find($id)->delete();

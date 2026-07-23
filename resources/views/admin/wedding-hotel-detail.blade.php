@@ -9,19 +9,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="title"><i class="icon-copy dw dw-hotel"></i> {{ $hotel->name }}</div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/weddings-admin">Wedding Venue</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">{{ $hotel->name }}</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy dw dw-hotel"></i> {{ $hotel->name }}
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors)>0)
                             <div class="alert alert-danger">
@@ -41,11 +33,9 @@
                         @endif
                     </div>
                     <div class="row">
-                        {{-- ATTENTIONS MOBILE --}}
                         <div class="col-md-4 mobile">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                                 <div class="col-md-12">
                                     <div class="card-box">
                                         <div class="card-box-title">
@@ -219,8 +209,8 @@
                                                                             <input type="hidden" name="file_name" value="{{ $contract->file_name }}">
                                                                             <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                                             <input type="hidden" name="hotels_id" value="{{ $hotel->id }}">
-                                                                            <button class="btn btn-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i> Delete</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                            <button class="backend-button backend-button-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i> Delete</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                         </form>
                                                                     </div>
                                                                 </div>
@@ -235,25 +225,25 @@
                                                                     <div class="card-box-title">
                                                                         <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Contract</div>
                                                                     </div>
-                                                                
+
                                                                     <form id="update-wedding-contract-{{ $contract->id }}" action="/fupdate-wedding-contract/{{ $contract->id }}" method="post" enctype="multipart/form-data">
                                                                         @csrf
                                                                         @method('put')
                                                                         <div class="row">
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="file_name"><i class="icon-copy fa fa-file-pdf-o" aria-hidden="true"></i> {{ $contract->file_name }}</label>
-                                                                                    <input type="file" name="file_name" id="file_name" class="custom-file-input @error('file_name') is-invalid @enderror" placeholder="Choose Contract">
+                                                                                    <input type="file" name="file_name" id="file_name" class="backend-form-control @error('file_name') is-invalid @enderror" placeholder="Choose Contract">
                                                                                     @error('file_name')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
-                                                                            
+
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="contract_name">Contract Name</label>
-                                                                                    <input name="contract_name" id="contract_name"  type="text" class="form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ $contract->name }}">
+                                                                                    <input name="contract_name" id="contract_name"  type="text" class="backend-form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ $contract->name }}">
                                                                                     @error('contract_name')
                                                                                         <span class="invalid-feedback">
                                                                                             <strong>{{ $message }}</strong>
@@ -262,9 +252,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="period_start">Period Start</label>
-                                                                                    <input readonly name="period_start" id="period_start"  type="text" class="form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Insert contract name" value="{{ date('d M Y', strtotime($contract->period_start)) }}">
+                                                                                    <input readonly name="period_start" id="period_start"  type="text" class="backend-form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Insert contract name" value="{{ date('d M Y', strtotime($contract->period_start)) }}">
                                                                                     @error('period_start')
                                                                                         <span class="invalid-feedback">
                                                                                             <strong>{{ $message }}</strong>
@@ -273,9 +263,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="period_end">Period End</label>
-                                                                                    <input readonly name="period_end" id="period_end"  type="text" class="form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ date('d M Y', strtotime($contract->period_end)) }}">
+                                                                                    <input readonly name="period_end" id="period_end"  type="text" class="backend-form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ date('d M Y', strtotime($contract->period_end)) }}">
                                                                                     @error('period_end')
                                                                                         <span class="invalid-feedback">
                                                                                             <strong>{{ $message }}</strong>
@@ -288,8 +278,8 @@
                                                                         </div>
                                                                     </form>
                                                                     <div class="card-box-footer">
-                                                                        <button type="submit" form="update-wedding-contract-{{ $contract->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                        <button type="submit" form="update-wedding-contract-{{ $contract->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -305,7 +295,7 @@
                                 @canany(['posDev','posAuthor'])
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#add-wedding-contract-{{ $hotel->id }}" data-toggle="tooltip" data-placement="top" title="Add more contract">
-                                            <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                            <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                         </a>
                                     </div>
                                     {{-- MODAL ADD Contract =====================================================================================================================--}}
@@ -316,23 +306,23 @@
                                                     <div class="card-box-title">
                                                         <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Contract</div>
                                                     </div>
-                                                
+
                                                     <form id="add-wedding-contract" action="/fadd-wedding-contract" method="post" enctype="multipart/form-data">
                                                         {{ csrf_field() }}
                                                         <div class="row">
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="file_name">Contract PDF File</label>
-                                                                    <input type="file" name="file_name" id="file_name" accept="application/pdf" class="custom-file-input @error('file_name') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('file_name') }}" required>
+                                                                    <input type="file" name="file_name" id="file_name" accept="application/pdf" class="backend-form-control @error('file_name') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('file_name') }}" required>
                                                                     @error('file_name')
                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                     @enderror
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="contract_name">Contract Name</label>
-                                                                    <input name="contract_name" id="contract_name"  type="text" class="form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ old('contract_name') }}" required>
+                                                                    <input name="contract_name" id="contract_name"  type="text" class="backend-form-control @error('contract_name') is-invalid @enderror" placeholder="Insert contract name" value="{{ old('contract_name') }}" required>
                                                                     @error('contract_name')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -341,9 +331,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="period_start" >Period Start</label>
-                                                                    <input readonly name="period_start" id="period_start"  type="text" class="form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Select Date" value="{{ old('period_start') }}" required>
+                                                                    <input readonly name="period_start" id="period_start"  type="text" class="backend-form-control date-picker @error('period_start') is-invalid @enderror" placeholder="Select Date" value="{{ old('period_start') }}" required>
                                                                     @error('period_start')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -352,9 +342,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="period_end">Period End</label>
-                                                                    <input name="period_end" id="period_end"  type="text" class="form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ old('period_end') }}" required>
+                                                                    <input name="period_end" id="period_end"  type="text" class="backend-form-control date-picker @error('period_end') is-invalid @enderror" placeholder="Select date" value="{{ old('period_end') }}" required>
                                                                     @error('period_end')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -362,14 +352,14 @@
                                                                     @enderror
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <input name="hotels_id" value="{{ $hotel->id }}" type="hidden">
                                                             <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
                                                         </div>
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="add-wedding-contract" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                        <button type="submit" form="add-wedding-contract" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -391,9 +381,9 @@
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#update-entrance-fee-{{ $hotel->id }}">
                                             @if ($hotel->entrance_fee)
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                             @else
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                             @endif
                                         </a>
                                     </div>
@@ -407,17 +397,17 @@
                                                     <form id="edit-entrance-fee-{{ $hotel->id }}" action="/fupdate-entrance-fee/{{ $hotel->id }}" method="post" enctype="multipart/form-data" >
                                                         @csrf
                                                         @method('PUT')
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="entrance_fee" class="form-label">Entrance Fee</label>
-                                                            <textarea id="entrance_fee" name="entrance_fee" class="textarea_editor form-control @error('entrance_fee') is-invalid @enderror" placeholder="Insert entrance_fee" value="{{ $hotel->entrance_fee }}">{!! $hotel->entrance_fee !!}</textarea>
+                                                            <textarea data-backend-richtext="true" id="entrance_fee" name="entrance_fee" class="textarea_editor backend-form-control @error('entrance_fee') is-invalid @enderror" placeholder="Insert entrance_fee" value="{{ $hotel->entrance_fee }}">{!! $hotel->entrance_fee !!}</textarea>
                                                             @error('entrance_fee')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="edit-entrance-fee-{{ $hotel->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                                        <button type="submit" form="edit-entrance-fee-{{ $hotel->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -439,9 +429,9 @@
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#update-cancellation-policy-{{ $hotel->id }}">
                                             @if ($hotel->wedding_cancellation_policy)
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                             @else
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                             @endif
                                         </a>
                                     </div>
@@ -455,17 +445,17 @@
                                                     <form id="edit-cancellation-policy-{{ $hotel->id }}" action="/fupdate-cancellation-policy/{{ $hotel->id }}" method="post" enctype="multipart/form-data" >
                                                         @csrf
                                                         @method('PUT')
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="wedding_cancellation_policy" class="form-label">Cancellation Policy</label>
-                                                            <textarea name="wedding_cancellation_policy" class="textarea_editor form-control @error('wedding_cancellation_policy') is-invalid @enderror" placeholder="Insert wedding_cancellation_policy" value="{{ $hotel->wedding_cancellation_policy }}">{!! $hotel->wedding_cancellation_policy !!}</textarea>
+                                                            <textarea data-backend-richtext="true" name="wedding_cancellation_policy" class="textarea_editor backend-form-control @error('wedding_cancellation_policy') is-invalid @enderror" placeholder="Insert wedding_cancellation_policy" value="{{ $hotel->wedding_cancellation_policy }}">{!! $hotel->wedding_cancellation_policy !!}</textarea>
                                                             @error('wedding_cancellation_policy')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="edit-cancellation-policy-{{ $hotel->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                                        <button type="submit" form="edit-cancellation-policy-{{ $hotel->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -487,9 +477,9 @@
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#update-other-information-{{ $hotel->id }}">
                                             @if ($hotel->wedding_info)
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
                                             @else
-                                                <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                             @endif
                                         </a>
                                     </div>
@@ -503,17 +493,17 @@
                                                     <form id="edit-other-information-{{ $hotel->id }}" action="/fupdate-wedding-info/{{ $hotel->id }}" method="post" enctype="multipart/form-data" >
                                                         @csrf
                                                         @method('PUT')
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="wedding_info" class="form-label">Other Information</label>
-                                                            <textarea id="wedding_info" name="wedding_info" class="textarea_editor form-control @error('wedding_info') is-invalid @enderror" placeholder="Insert wedding_info" value="{{ $hotel->wedding_info }}">{!! $hotel->wedding_info !!}</textarea>
+                                                            <textarea data-backend-richtext="true" id="wedding_info" name="wedding_info" class="textarea_editor backend-form-control @error('wedding_info') is-invalid @enderror" placeholder="Insert wedding_info" value="{{ $hotel->wedding_info }}">{!! $hotel->wedding_info !!}</textarea>
                                                             @error('wedding_info')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="edit-other-information-{{ $hotel->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                                        <button type="submit" form="edit-other-information-{{ $hotel->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -527,15 +517,13 @@
                             {{-- @include('admin.wedding.dinner-venue-admin')
                             @include('admin.wedding.lunch-venue-admin') --}}
                             {{-- @include('admin.wedding.menus-admin')
-                            @include('admin.wedding.beverages-admin') 
+                            @include('admin.wedding.beverages-admin')
                             @include('admin.wedding.corcage-admin') --}}
                             @include('admin.wedding.wedding-package-admin')
                         </div>
-                        {{-- ATTENTIONS DESKTOP --}}
                         <div class="col-md-4 desktop">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                                 <div class="col-md-12">
                                     <div class="card-box">
                                         <div class="card-box-title">

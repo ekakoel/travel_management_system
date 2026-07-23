@@ -1070,9 +1070,7 @@ Current active backend/admin routes:
 - `GET /add-additional-services-{id}`
 - Controller: `OrdersAdminController::edit_additional_services`
 - View target: `resources/views/backend/operations/orders/actions/add-additional-services.blade.php`
-- `GET /add-order-itinerary-{id}`
-- Controller: `OrdersAdminController::admin_edit_order_itinerary`
-- View target: `resources/views/backend/operations/orders/actions/add-order-itinerary.blade.php`
+- Removed: `GET /add-order-itinerary-{id}` and `OrdersAdminController::admin_edit_order_itinerary` were deleted with the Itinerary feature cleanup.
 - `GET /edit-airport-shuttle-{id}`
 - Controller: `OrdersAdminController::edit_airport_shuttle`
 - View target: `resources/views/backend/operations/orders/actions/edit-airport-shuttle.blade.php`
@@ -1229,7 +1227,7 @@ Grouped views moved:
 - `resources/views/backend/operations/reservations/actions/add-order.blade.php`
 - `resources/views/backend/operations/reservations/actions/add-transport.blade.php`
 - `resources/views/backend/operations/reservations/actions/add-activity-tour.blade.php`
-- `resources/views/backend/operations/reservations/actions/add-itinerary.blade.php`
+- Removed: `resources/views/backend/operations/reservations/actions/add-itinerary.blade.php` was deleted with the Itinerary feature cleanup.
 
 ### Step 62 - Reservation Helper Forms Batch
 

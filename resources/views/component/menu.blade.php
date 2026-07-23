@@ -6,75 +6,67 @@
     use Illuminate\Support\Str;
     use Illuminate\Support\Facades\File;
     use Illuminate\Support\Facades\Input;
+    use Illuminate\Support\Facades\Schema;
     use App\Http\Requests\StoremenuRequest;
     use App\Http\Requests\UpdatemenuRequest;
     // USER =======================================================================================================
     $now = Carbon::now();
-    $menu_order = Orders::where('user_id', Auth::user()->id)->get();
-    $order_active = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Active')
-        ->where('checkin','>=',$now)->get();
-    $order_rejected = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Rejected')
-        ->where('checkin','>=',$now)->get();
-    $order_invalid = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Invalid')
-        ->where('checkin','>=',$now)->get();
-    $order_waiting = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Waiting')
-        ->where('checkin','>=',$now)->get();
-    $order_draft = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Draft')
-        ->where('checkin','>=',$now)->get();
-    $order_confirmed = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Confirmed')
-        ->where('checkin','>=',$now)->get();
-    $order_approved = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Approved')
-        ->where('checkin','>=',$now)->get();
-    $order_wedding_draft = OrderWedding::where('agent_id', Auth::user()->id)
-        ->where('status','Draft')
-        ->where('checkin','>=',$now)->get();
-    $order_wedding_pending = OrderWedding::where('agent_id', Auth::user()->id)
-        ->where('status','Pending')
-        ->where('checkin','>=',$now)->get();
-    $order_wedding_approved = OrderWedding::where('agent_id', Auth::user()->id)
-        ->where('status','Approved')
-        ->where('checkin','>=',$now)->get();
+    $currentUser = Auth::user();
+    $canAccessAdminDashboard = $currentUser && $currentUser->canAccessAdminDashboard();
+    $hasOrdersTable = Schema::hasTable('orders');
+    $hasWeddingOrdersTable = Schema::hasTable('order_weddings');
+    $ordersForUser = function (?string $status = null) use ($hasOrdersTable, $currentUser, $now) {
+        if (! $hasOrdersTable || ! $currentUser) {
+            return collect();
+        }
+
+        $query = Orders::where('user_id', $currentUser->id);
+
+        if ($status) {
+            $query->where('status', $status)->where('checkin', '>=', $now);
+        }
+
+        return $query->get();
+    };
+    $weddingOrdersForUser = function (string $status) use ($hasWeddingOrdersTable, $currentUser, $now) {
+        if (! $hasWeddingOrdersTable || ! $currentUser) {
+            return collect();
+        }
+
+        return OrderWedding::where('agent_id', $currentUser->id)
+            ->where('status', $status)
+            ->where('checkin', '>=', $now)
+            ->get();
+    };
+    $menu_order = $ordersForUser();
+    $order_active = $ordersForUser('Active');
+    $order_rejected = $ordersForUser('Rejected');
+    $order_invalid = $ordersForUser('Invalid');
+    $order_waiting = $ordersForUser('Waiting');
+    $order_draft = $ordersForUser('Draft');
+    $order_confirmed = $ordersForUser('Confirmed');
+    $order_approved = $ordersForUser('Approved');
+    $order_wedding_draft = $weddingOrdersForUser('Draft');
+    $order_wedding_pending = $weddingOrdersForUser('Pending');
+    $order_wedding_approved = $weddingOrdersForUser('Approved');
     // Admin =======================================================================================================
-    $adm_menu_order = Orders::where('user_id', Auth::user()->id)->get();
-    $adm_order_active = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Active')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_rejected = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Rejected')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_invalid = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Invalid')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_waiting = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Waiting')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_draft = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Draft')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_confirmed = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Confirmed')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_approved = Orders::where('user_id', Auth::user()->id)
-        ->where('status','Approved')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_wedding_draft = OrderWedding::where('agent_id', Auth::user()->id)
-        ->where('status','Draft')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_wedding_pending = OrderWedding::where('agent_id', Auth::user()->id)
-        ->where('status','Pending')
-        ->where('checkin','>=',$now)->get();
-    $adm_order_wedding_approved = OrderWedding::where('agent_id', Auth::user()->id)
-        ->where('status','Approved')
-        ->where('checkin','>=',$now)->get();
-    $ord_pend = Orders::where('status','Pending')->where('checkin','>',$now)->get();
-    $ord_wedding_pend = OrderWedding::where('status','Pending')->where('checkin','>=',$now)->get();
+    $adm_menu_order = $ordersForUser();
+    $adm_order_active = $ordersForUser('Active');
+    $adm_order_rejected = $ordersForUser('Rejected');
+    $adm_order_invalid = $ordersForUser('Invalid');
+    $adm_order_waiting = $ordersForUser('Waiting');
+    $adm_order_draft = $ordersForUser('Draft');
+    $adm_order_confirmed = $ordersForUser('Confirmed');
+    $adm_order_approved = $ordersForUser('Approved');
+    $adm_order_wedding_draft = $weddingOrdersForUser('Draft');
+    $adm_order_wedding_pending = $weddingOrdersForUser('Pending');
+    $adm_order_wedding_approved = $weddingOrdersForUser('Approved');
+    $ord_pend = $hasOrdersTable
+        ? Orders::where('status','Pending')->where('checkin','>',$now)->get()
+        : collect();
+    $ord_wedding_pend = $hasWeddingOrdersTable
+        ? OrderWedding::where('status','Pending')->where('checkin','>=',$now)->get()
+        : collect();
     $cord_pend = count($ord_pend)+count($ord_wedding_pend);
     $cord_tour_pend = count($ord_pend);
     $cord_wedding_pend = count($ord_wedding_pend);
@@ -284,11 +276,14 @@
                     </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                    <a class="dropdown-item" href="/profile"><i class="dw dw-user1"></i>{{ Auth::user()->name }}</a>
-                    <a class="dropdown-item" href="/orders"><i class="icon-copy fa fa-tags" aria-hidden="true"></i> @lang('messages.Order')</a>
-                    <a class="dropdown-item" href="/manual-book"><i class="icon-copy fa fa-book" aria-hidden="true"></i> @lang('messages.Manual Book')</a>
-                    <a class="dropdown-item" href="/terms-and-conditions"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Term And Condition')</a>
-                    <a class="dropdown-item" href="/privacy-policy"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Privacy Policy')</a>
+                    <a class="dropdown-item" href="{{ route('profile') }}"><i class="dw dw-user1"></i>{{ Auth::user()->name }}</a>
+                    @if ($canAccessAdminDashboard)
+                        <a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="ion-speedometer"></i> @lang('messages.Dashboard')</a>
+                    @endif
+                    <a class="dropdown-item" href="{{ route('view.orders') }}"><i class="icon-copy fa fa-tags" aria-hidden="true"></i> @lang('messages.Order')</a>
+                    <a class="dropdown-item" href="{{ route('view.manual-book') }}"><i class="icon-copy fa fa-book" aria-hidden="true"></i> @lang('messages.Manual Book')</a>
+                    <a class="dropdown-item" href="{{ route('terms-and-conditions') }}"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Term And Condition')</a>
+                    <a class="dropdown-item" href="{{ route('privacy-policy') }}"><i class="fa fa-info-circle" aria-hidden="true"></i> @lang('messages.Privacy Policy')</a>
                     <a href="#" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="dw dw-logout"></i> @lang('messages.Log Out')</a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf

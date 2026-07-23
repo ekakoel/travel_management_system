@@ -16,7 +16,7 @@
                     <label>Name</label>
                     <input type="text" name="name" placeholder="Enter Product Name">
                     <label>Discription</label>
-                    <textarea class="textarea_editor form-control" name="description" rows="4" >
+                    <textarea data-backend-richtext="true" class="textarea_editor backend-form-control" name="description" rows="4" >
                     </textarea>
                 </div>
                 <div >

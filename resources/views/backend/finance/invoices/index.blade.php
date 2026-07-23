@@ -5,21 +5,11 @@
     @can('isAdmin')
         <div class="main-container">
             <div class="pd-ltr-20 p-b-18">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="title">
-                                <i class="icon-copy fa fa-file-text-o" aria-hidden="true"></i> @lang('messages.Invoices')
-                            </div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/admin-panel">@lang('messages.Admin Panel')</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">@lang('messages.Invoices')</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="icon-copy fa fa-file-text-o" aria-hidden="true"></i> @lang('messages.Invoices')
+                    </x-slot>
+                </x-backend.page-hero>
                 <div class="info-action">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
@@ -40,10 +30,8 @@
                 </div>
                 {{-- ACTIVE INVOICE  ============================================================================================================================= --}}
                 <div class="row">
-                    {{-- ATTENTIONS --}}
                     <div class="col-md-4 mobile">
                         <div class="row">
-                            @include('layouts.attentions')
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -56,16 +44,16 @@
                                         </div>
                                         <div class="col-md-6 p-b-8">
                                             <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                            <input id="searchInvByNo" type="text" onkeyup="searchInvByNo()" class="form-control" name="search-byno" placeholder="Find Invoice by No">
+                                            <input id="searchInvByNo" type="text" onkeyup="searchInvByNo()" class="backend-form-control" name="search-byno" placeholder="Find Invoice by No">
                                         </div>
                                         <div class="col-md-6 p-b-8">
                                             <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                            <input id="searchInvByAgn" type="text" onkeyup="searchInvByAgn()" class="form-control" name="search-byagn" placeholder="Sort Infoice by agent">
+                                            <input id="searchInvByAgn" type="text" onkeyup="searchInvByAgn()" class="backend-form-control" name="search-byagn" placeholder="Sort Infoice by agent">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <table id="tb_inv" class="data-table table">
                                 <thead>
                                     <tr>
@@ -97,9 +85,9 @@
                                                 @else
                                                     <p>$ 0</p>
                                                 @endif
-                                                
+
                                             </td>
-                                            
+
                                             <td>
                                                 <div class="row">
                                                     <div class="col-2">
@@ -111,7 +99,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                    
+
                                     {{-- Modal Detail Invoice --------------------------------------------------------------------------------------------------------------- --}}
                                     <div class="modal fade" id="invoice-{{ $inv->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -141,14 +129,14 @@
                                                         <div class="col-md-9">
                                                             <div class="row">
                                                                 <div class="col-4">
-                                                                    
+
                                                                     <div class="order-list">Invoice No</div>
                                                                     <div class="order-list">Invoice Date</div>
                                                                     <div class="order-list">Due Date</div>
-                                                                    
+
                                                                 </div>
                                                                 <div class="col-8">
-                                                                    
+
                                                                     <div class="order-list-value">
                                                                         {{ $inv->inv_no }}
                                                                     </div>
@@ -156,7 +144,7 @@
                                                                         {{ date('D d M Y', strtotime($inv->created_at)) }}
                                                                     </div>
                                                                     <div class="order-list-value">
-                                                                        <?php 
+                                                                        <?php
                                                                             $datenow = date('ymd', strtotime($now));
                                                                             $inv_date = date("ymd", strtotime($inv->created_at));
                                                                             $Payment deadline = date("ymd", strtotime('+'.$inv->due_date.'days', strtotime($inv->created_at)));
@@ -164,13 +152,13 @@
                                                                         ?>
                                                                         {{ date("ymd", strtotime($Payment deadline)) }}<br>
                                                                         {{-- {{ $inv_date }}<br>
-                                                                        
+
                                                                         {{ $inv->due_date }}
                                                                         {{ $day_left }} --}}
                                                                         {{-- {{ date('D d M Y', strtotime($Payment deadline)) }}<br> --}}
                                                                         {{ date('ymd', strtotime($Payment deadline)).' ('.$day_left.' days left)' }}
                                                                     </div>
-                                                                
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -202,28 +190,28 @@
                                                                         <div class="col-9">
                                                                             <div class="order-list-value">
                                                                                 @if (Auth::user()->name == "")
-                                                                                <i style="color: red;">: Not available</i> 
+                                                                                <i style="color: red;">: Not available</i>
                                                                                 @else
                                                                                     {{ ': ' . Auth::user()->name }}
                                                                                 @endif
                                                                             </div>
                                                                             <div class="order-list-value">
                                                                                 @if (Auth::user()->office == "")
-                                                                                <i style="color: red;">: Not available</i> 
+                                                                                <i style="color: red;">: Not available</i>
                                                                                 @else
                                                                                     {{ ': ' . Auth::user()->office }}
                                                                                 @endif
                                                                             </div>
                                                                             <div class="order-list-value">
                                                                                 @if (Auth::user()->phone == "")
-                                                                                <i style="color: red;">: Not available</i> 
+                                                                                <i style="color: red;">: Not available</i>
                                                                                 @else
                                                                                     {{ ': ' . Auth::user()->phone }}
                                                                                 @endif
                                                                             </div>
                                                                             <div class="order-list-value">
                                                                                 @if (Auth::user()->email == "")
-                                                                                <i style="color: red;">: Not available</i> 
+                                                                                <i style="color: red;">: Not available</i>
                                                                                 @else
                                                                                     {{ ': ' . Auth::user()->email  }}
                                                                                 @endif
@@ -245,14 +233,14 @@
                                                                         <div class="col-6">
                                                                             <div class="order-list-value">
                                                                                 @if ($inv->gst_id == "")
-                                                                                    <i style="color: red;">: Not available</i> 
+                                                                                    <i style="color: red;">: Not available</i>
                                                                                 @else
                                                                                     {{ $inv->gst_id }}
                                                                                 @endif
                                                                             </div>
                                                                             <div class="order-list-value">
                                                                                 @if ($inv->gst_phone == "")
-                                                                                    <i style="color: red;">: Not available</i> 
+                                                                                    <i style="color: red;">: Not available</i>
                                                                                 @else
                                                                                     {{ $$inv->gst_phone }}
                                                                                 @endif
@@ -263,7 +251,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {{-- GUEST DETAIL ===================================================================================================================== --}}
                                                     @if ($inv->service == "Transport")
                                                     @else
@@ -283,7 +271,7 @@
                                                             </div>
                                                         </div>
                                                     @endif
-                                                    
+
                                                     {{-- FLIGHT DETAIL ===================================================================================================================== --}}
                                                     @if ($inv->service == "Transport")
                                                     @elseif ($inv->service == "Activity")
@@ -358,7 +346,7 @@
                                                                         <div class="order-list-value">{{ $inv->package_name }}</div>
                                                                         <div class="order-list-value">{{ $inv->subservice .' Room'}}</div>
                                                                     </div>
-                                                                {{-- TOUR PACKAGE ===================================================================================================================== --}}    
+                                                                {{-- TOUR PACKAGE ===================================================================================================================== --}}
                                                                 @elseif ($inv->service == "Tour Package")
                                                                     <div class="col-6">
                                                                         <div class="order-list">Tour Package</div>
@@ -368,7 +356,7 @@
                                                                         <div class="order-list-value">{{ $inv->servicename }}</div>
                                                                         <div class="order-list-value">{{ ': $ ' . $inv->price_pax . ' /Pax' }}</div>
                                                                     </div>
-                                                                {{-- ACTIVITY ===================================================================================================================== --}} 
+                                                                {{-- ACTIVITY ===================================================================================================================== --}}
                                                                 @elseif ($inv->service == "Activity")
                                                                     <div class="col-6">
                                                                         <div class="order-list">Activity</div>
@@ -378,7 +366,7 @@
                                                                         <div class="order-list-value">{{ $inv->servicename }}</div>
                                                                         <div class="order-list-value">{{ ': $ ' . $inv->price_pax . ' /Pax' }}</div>
                                                                     </div>
-                                                                {{-- TRANSPORT ===================================================================================================================== --}} 
+                                                                {{-- TRANSPORT ===================================================================================================================== --}}
                                                                 @elseif ($inv->service == "Transport")
                                                                     <div class="col-6">
                                                                         <div class="order-list">Transport</div>
@@ -392,7 +380,7 @@
                                                                     </div>
                                                                 @else
                                                                 @endif
-                                                                
+
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -480,7 +468,7 @@
                                                                         <div class="order-list-value">
                                                                             <?php
                                                                                 $activity_duration = $inv->duration;
-                                                                                $activity_end=date('Y-m-d H.i', strtotime('+'.$activity_duration.'hours', strtotime($inv->travel_date))); 
+                                                                                $activity_end=date('Y-m-d H.i', strtotime('+'.$activity_duration.'hours', strtotime($inv->travel_date)));
                                                                             ?>
                                                                             {{ ': ' .date('D, d-M-y (H.i)', strtotime($activity_end)) }}
                                                                         </div>
@@ -500,7 +488,7 @@
                                                                         @endif
                                                                         <div class="order-list-value">{{ date('D, d-M-y (H.i)', strtotime($inv->travel_date)) }}</div>
                                                                         <div class="order-list-value">
-                                                                            <?php 
+                                                                            <?php
                                                                                 $duration = $inv->duration;
                                                                                 $return_date=date('Y-m-d H.i', strtotime( '+'.$duration.'days', strtotime($inv->travel_date)));
                                                                             ?>
@@ -601,10 +589,10 @@
                                                 <div class="modal-foot">
                                                     <div class="row">
                                                         <div class="col-md-6 text-left">
-                                                            <div class="notif-order m-t-0">This order has been expired!</div>   
+                                                            <div class="notif-order m-t-0">This order has been expired!</div>
                                                         </div>
                                                         <div class="col-md-6 text-right">
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Close</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -617,10 +605,8 @@
                             </table>
                         </div>
                     </div>
-                    {{-- ATTENTIONS --}}
                     <div class="col-md-4 desktop">
                         <div class="row">
-                            @include('layouts.attentions')
                         </div>
                     </div>
                 </div>

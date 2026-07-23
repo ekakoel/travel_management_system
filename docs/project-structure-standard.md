@@ -18,6 +18,17 @@ Tujuannya:
 5. Shared component hanya masuk folder `shared` jika benar-benar dipakai lintas area.
 6. Jangan membuat file baru di folder legacy seperti `resources/views/home`, `resources/views/main`, `resources/views/form`, atau `resources/views/order` kecuali sedang migrasi bertahap.
 
+## Table Display Standard
+
+- Setiap halaman yang berisi tabel wajib mendukung mobile, tablet, desktop, dan wide desktop.
+- Backend baru atau halaman backend yang sedang di-refactor wajib memakai class tabel global: `.backend-table-wrap`, `.backend-table`, `.backend-table-actions`, `.backend-table-empty`, `.backend-table-card-list`, `.backend-table-card`, `.backend-table-card__header`, dan `.backend-table-card-grid`.
+- Tabel backend standar tidak boleh mengandalkan class visual Bootstrap/DataTables seperti `.table`, `.stripe`, `.hover`, `.table-bordered`, atau `.no-footer`; class tersebut hanya boleh muncul dari plugin runtime dan tetap harus kalah dari styling `.backend-table`.
+- Backend baru atau halaman backend yang sedang di-redesign harus memakai pendekatan multi-display tanpa horizontal scroll sebagai UX utama: desktop table untuk scanning, lalu card/list/detail stack untuk tablet dan mobile.
+- Tabel frontend atau legacy backend yang belum memiliki alternate view boleh tetap ditempatkan dalam wrapper scroll horizontal seperti `.table-responsive`, `.table-container`, `.frontend-table-shell`, atau class domain yang mengandung `table-wrap` sebagai fallback sementara.
+- Tabel data tidak boleh memotong atau menutup isi cell. Gunakan `table-layout: fixed`, `width: 100%`, `min-width: 0`, `overflow-wrap: anywhere`, dan responsive alternate view jika kolom terlalu padat.
+- Class `.nowrap` hanya boleh dipakai untuk data pendek dan tidak boleh membuat layout keluar dari viewport.
+- Standard global backend berada di `resources/backend/scss/components/_backend-theme.scss`; standard global frontend berada di `resources/frontend/scss/components/frontend-components.scss`.
+
 ## Struktur Target
 
 ```text
@@ -352,6 +363,7 @@ App\Http\Controllers\Backend\Operations\OrderController
 ## Language File Standard
 
 Domain frontend baru wajib memiliki file language domain jika teksnya banyak.
+Domain backend baru juga wajib memiliki file language domain jika teksnya banyak, terutama dashboard, CRUD kompleks, workflow review, report, dan halaman admin dengan banyak status atau empty state.
 
 Contoh:
 
@@ -362,6 +374,7 @@ resources/lang/zh-CN/transports.php
 ```
 
 Gunakan `messages.php` hanya untuk kata/frasa global yang benar-benar dipakai lintas domain.
+Semua aturan multi-language wajib mengikuti `docs/multi-language-standard.md`. Jangan menambahkan hardcoded user-facing text di Blade, controller, service, atau JavaScript.
 
 ## Asset Build Standard
 

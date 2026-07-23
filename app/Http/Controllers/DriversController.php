@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Review;
 use App\Models\Drivers;
-use App\Models\Attention;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -21,11 +20,9 @@ class DriversController extends Controller
         ])
         ->orderByDesc('global_rating')
         ->get();
-        $attentions = Attention::where('page','drivers-admin')->get();
-        return view('drivers.drivers-admin',[
+        return view('backend.operations.drivers.index',[
             'now'=>$now,
             'drivers'=>$drivers,
-            'attentions'=>$attentions,
         ]);
     }
 
@@ -44,6 +41,7 @@ class DriversController extends Controller
             "license"=>$license,
             "address"=>$address,
             "country"=>$country,
+            "status"=>$request->status ?: 'Active',
             
         ]);
         $driver->save();
@@ -60,8 +58,9 @@ class DriversController extends Controller
             "license"=>$request->license,
             "address"=>$request->address,
             "country"=>$request->country,
+            "status"=>$request->status ?: 'Active',
         ]);
-        return redirect("/drivers-admin")->with('success','Drivers has been updated');
+        return redirect()->route('drivers-admin.index')->with('success','Drivers has been updated');
     }
     
     public function destroy(Request $request,$id)
@@ -71,7 +70,7 @@ class DriversController extends Controller
             $driver->delete();
             return back()->with('success','Drivers has been deleted');
         }else{
-            return redirect("/drivers-admin")->with('error','Akses ditolak');
+            return redirect()->route('drivers-admin.index')->with('error','Akses ditolak');
         }
     }
 }

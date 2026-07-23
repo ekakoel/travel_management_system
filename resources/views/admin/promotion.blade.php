@@ -6,21 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <i class="fa fa-shopping-bag" aria-hidden="true"></i> Promotion {{ Auth::user()->position }}
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Promotion</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="fa fa-shopping-bag" aria-hidden="true"></i> Promotion {{ Auth::user()->position }}
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="owl-carousel owl-theme">
                         @foreach ($promotions as $promotion)
                             <div class="carousel-container">
@@ -183,7 +173,7 @@
                                                 <div class="input-group">
                                                     <div class="col-md-4">
                                                         <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                        <input id="searchPromotionByName" type="text" onkeyup="searchPromotionByName()" class="form-control" name="search-promotion-byname" placeholder="Search by name...">
+                                                        <input id="searchPromotionByName" type="text" onkeyup="searchPromotionByName()" class="backend-form-control" name="search-promotion-byname" placeholder="Search by name...">
                                                     </div>
                                                 </div>
                                             </div>
@@ -237,7 +227,7 @@
                                                         @else
                                                         @endif
                                                     </td>
-                                                
+
                                                         @if ($promotion->status == "Expired")
                                                             <td><div class="form-notif">cannot be changed</div></td>
                                                         @else
@@ -268,7 +258,7 @@
                                                                 <div class="card-box-title">
                                                                     <div class="subtitle"><i class="icon-copy fa fa-eye" aria-hidden="true"></i> Detail Promotion</div>
                                                                 </div>
-                                                            
+
                                                                 <div class="row">
                                                                     <div class="col-md-6">
                                                                         <div class="cover-preview-div">
@@ -330,7 +320,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="card-box-footer">
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -348,23 +338,23 @@
                                                                     <form id="update-promotion-{{ $promotion->id }}" action="/fupdate-promotion/{{ $promotion->id }}" method="post" enctype="multipart/form-data">
                                                                         @csrf
                                                                         {{ csrf_field() }}
-                                                                        
+
                                                                         <div class="bannerzone text-center m-b-8">
                                                                             <label for="banner">Promotion Banner</label>
                                                                             <div class="banner-preview-div">
                                                                                 <img src="{{ asset('/storage/promotion/cover/'.$promotion->cover) }}" alt="">
                                                                             </div>
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="cover">Banner Image<span>*</span></label><br>
-                                                                            <input type="file" name="cover" id="banner" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Banner" value="{{ old('cover') }}">
+                                                                            <input type="file" name="cover" id="banner" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Banner" value="{{ old('cover') }}">
                                                                             @error('cover')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="status">Status</label>
-                                                                            <select name="status" id="status"  type="text" class="custom-select @error('status') is-invalid @enderror" placeholder="Select status" required>
+                                                                            <select name="status" id="status"  type="text" class="backend-form-control @error('status') is-invalid @enderror" placeholder="Select status" required>
                                                                                 @if ($promotion->status == "Draft")
                                                                                     <option selected value="{{ $promotion->status }}">{{ $promotion->status }}</option>
                                                                                     <option value="Active">Active</option>
@@ -374,44 +364,44 @@
                                                                                 @endif
                                                                             </select>
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="name">Promotion Name</label>
-                                                                            <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert Name" value="{{ $promotion->name }}" required>
+                                                                            <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert Name" value="{{ $promotion->name }}" required>
                                                                             @error('name')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="discounts">Discounts</label>
                                                                             <div class="btn-icon">
                                                                                 <span>$</span>
-                                                                                <input type="number" min="1" id="discounts" name="discounts" class="input-icon form-control @error('discounts') is-invalid @enderror" placeholder="Minimum: $1" value="{{ $promotion->discounts }}">
+                                                                                <input type="number" min="1" id="discounts" name="discounts" class="input-icon backend-form-control @error('discounts') is-invalid @enderror" placeholder="Minimum: $1" value="{{ $promotion->discounts }}">
                                                                             </div>
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="periode_start">Start Period</label>
-                                                                            <input readonly type="text" id="periode_start" name="periode_start" class="form-control date-picker @error('periode_start') is-invalid @enderror" placeholder="Start Period" value="{{ date('d M y',strtotime($promotion->periode_start)) }}" required>
+                                                                            <input readonly type="text" id="periode_start" name="periode_start" class="backend-form-control date-picker @error('periode_start') is-invalid @enderror" placeholder="Start Period" value="{{ date('d M y',strtotime($promotion->periode_start)) }}" required>
                                                                             @error('periode_start')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="periode_end">End Period</label>
-                                                                            <input readonly type="text" id="periode_end" name="periode_end" class="form-control date-picker @error('periode_end') is-invalid @enderror" placeholder="End Period" value="{{ date('d M y',strtotime($promotion->periode_end)) }}" required>
+                                                                            <input readonly type="text" id="periode_end" name="periode_end" class="backend-form-control date-picker @error('periode_end') is-invalid @enderror" placeholder="End Period" value="{{ date('d M y',strtotime($promotion->periode_end)) }}" required>
                                                                             @error('periode_end')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="term">Term and Condition</label>
-                                                                            <textarea id="term" name="term" class="textarea_editor form-control @error('term') is-invalid @enderror" placeholder="Optional" value="{{ $promotion->term }}">{!! $promotion->term !!}</textarea>
+                                                                            <textarea data-backend-richtext="true" id="term" name="term" class="textarea_editor backend-form-control @error('term') is-invalid @enderror" placeholder="Optional" value="{{ $promotion->term }}">{!! $promotion->term !!}</textarea>
                                                                             @error('term')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="description">Description</label>
-                                                                            <textarea id="description" name="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Optional" value="{{ $promotion->description }}">{!! $promotion->description !!}</textarea>
+                                                                            <textarea data-backend-richtext="true" id="description" name="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Optional" value="{{ $promotion->description }}">{!! $promotion->description !!}</textarea>
                                                                             @error('description')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
@@ -421,8 +411,8 @@
                                                                         <input id="editor_id" name="editor_id" value="{{ Auth::user()->id }}" type="hidden">
                                                                     </form>
                                                                     <div class="card-box-footer">
-                                                                        <button type="submit" form="update-promotion-{{ $promotion->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                                        <button type="submit" form="update-promotion-{{ $promotion->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -441,7 +431,7 @@
                                     <div class="card-box-footer">
                                         <div class="row">
                                             <div class="col-md-12 col-sm-12 text-right">
-                                                <a href="#" data-toggle="modal" data-target="#add-promotion"><button class="btn btn-primary"><i class="ion-plus-round"></i> Create Promotion</button></a>
+                                                <a href="#" data-toggle="modal" data-target="#add-promotion"><button class="backend-button backend-button-primary"><i class="ion-plus-round"></i> Create Promotion</button></a>
                                             </div>
                                         </div>
                                     </div>
@@ -455,58 +445,58 @@
                                                     </div>
                                                     <form id="create-promotion" action="/fadd-promotion" method="post" enctype="multipart/form-data">
                                                         @csrf
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <div class="dropzone text-center pd-20 m-b-18">
                                                                 <label for="cover">Cover Image</label>
                                                                 <div class="cover-preview-div">
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="cover">Cover Image<span>*</span></label><br>
-                                                            <input type="file" name="cover" id="cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
+                                                            <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
                                                             @error('cover')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="name">Promotion Name</label>
-                                                            <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert Name" value="{{ old('name') }}" required>
+                                                            <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert Name" value="{{ old('name') }}" required>
                                                             @error('name')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
-                                                        <div class="form-group ">
+                                                        <div class="backend-form-field">
                                                             <label for="discounts">Discounts</label>
                                                             <div class="btn-icon">
                                                                 <span>$</span>
-                                                                <input type="number" min="1" id="discounts" name="discounts" class="input-icon form-control @error('discounts') is-invalid @enderror" placeholder="Minimum: $1" value="{{ old("discounts") }}">
+                                                                <input type="number" min="1" id="discounts" name="discounts" class="input-icon backend-form-control @error('discounts') is-invalid @enderror" placeholder="Minimum: $1" value="{{ old("discounts") }}">
                                                             </div>
                                                         </div>
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="periode_start">Start Period</label>
-                                                            <input readonly type="text" id="periode_start" name="periode_start" class="form-control date-picker @error('periode_start') is-invalid @enderror" placeholder="Start Period" value="{{ old('periode_start') }}" required>
+                                                            <input readonly type="text" id="periode_start" name="periode_start" class="backend-form-control date-picker @error('periode_start') is-invalid @enderror" placeholder="Start Period" value="{{ old('periode_start') }}" required>
                                                             @error('periode_start')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="periode_end">End Period</label>
-                                                            <input readonly type="text" id="periode_end" name="periode_end" class="form-control date-picker @error('periode_end') is-invalid @enderror" placeholder="End Period" value="{{ old('periode_end') }}" required>
+                                                            <input readonly type="text" id="periode_end" name="periode_end" class="backend-form-control date-picker @error('periode_end') is-invalid @enderror" placeholder="End Period" value="{{ old('periode_end') }}" required>
                                                             @error('periode_end')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="term">Term and Condition</label>
-                                                            <textarea id="term" name="term" class="textarea_editor form-control @error('term') is-invalid @enderror" placeholder="Optional" value="{{ old('term') }}"></textarea>
+                                                            <textarea data-backend-richtext="true" id="term" name="term" class="textarea_editor backend-form-control @error('term') is-invalid @enderror" placeholder="Optional" value="{{ old('term') }}"></textarea>
                                                             @error('term')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
                                                         </div>
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="description" >Description</label>
-                                                            <textarea id="description" name="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Optional" value="{{ old('description') }}"></textarea>
+                                                            <textarea data-backend-richtext="true" id="description" name="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Optional" value="{{ old('description') }}"></textarea>
                                                             @error('description')
                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                             @enderror
@@ -515,8 +505,8 @@
                                                         <input id="author_id" name="author_id" value="{{ Auth::user()->id }}" type="hidden">
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="create-promotion" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Create</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                        <button type="submit" form="create-promotion" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Create</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -659,7 +649,7 @@ function searchPromotionByName() {
             } else {
                 tr[i].style.display = "none";
             }
-        }       
+        }
     }
 }
 </script>
@@ -679,8 +669,7 @@ function searchPartnerByCode() {
             } else {
                 tr[i].style.display = "none";
             }
-        }       
+        }
     }
 }
 </script>
-

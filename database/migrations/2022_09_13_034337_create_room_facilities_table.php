@@ -15,7 +15,7 @@ class CreateRoomFacilitiesTable extends Migration
         Schema::create('room_facilities', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId("rooms_id")->constrained("rooms")->onDelete("cascade");
+            $table->foreignId("rooms_id")->constrained("hotel_rooms")->onDelete("cascade");
             $table->integer('wifi');
             $table->integer('single_bed');
             $table->integer('double_bed');

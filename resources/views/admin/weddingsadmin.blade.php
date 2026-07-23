@@ -6,20 +6,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <i class="icon-copy dw dw-hotel"></i> Weddings
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item active" aria-current="page">Wedding Venues</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy dw dw-hotel"></i> Weddings
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (\Session::has('error'))
                             <div class="alert alert-danger">
@@ -46,7 +37,7 @@
                                                 <div class="d-flex flex-wrap align-items-center">
                                                     <div class="chart-icon">
                                                         <i class="{!! $service->icon !!}"></i>
-                                                        
+
                                                     </div>
                                                     <div class="widget-data">
                                                         <div class="widget-data-title">{{ $activeweddings->count() }} Weddings</div>
@@ -77,7 +68,7 @@
                                                 <div class="d-flex flex-wrap align-items-center">
                                                     <div class="chart-icon">
                                                         <i class="{!! $service->icon !!}"></i>
-                                                        
+
                                                     </div>
                                                     <div class="widget-data">
                                                         <div class="h4 mb-0">{{ $archivedweddings->count() }} Weddings</div>
@@ -90,7 +81,6 @@
                                 </div>
                             @endif
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -104,14 +94,14 @@
                                             <div class="input-group">
                                                 <div class="col-md-4">
                                                     <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                    <input id="searchWeddingByName" type="text" onkeyup="searchWeddingByName()" class="form-control" name="search-wedding-location" placeholder="Search Hotel...">
+                                                    <input id="searchWeddingByName" type="text" onkeyup="searchWeddingByName()" class="backend-form-control" name="search-wedding-location" placeholder="Search Hotel...">
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
-                                
+
                                 <table id="tbWeddings" class="data-table table nowrap" >
                                     <thead>
                                         <tr>
@@ -139,14 +129,14 @@
                                                 <td class="text-center">
                                                     {{ count($ceremony_venue) }}/{{ count($reception_venue) }}/{{ count($wedding_package) }}
                                                 </td>
-                                                
+
                                                 <td>
                                                     @if (count($contractWeddings)>0)
                                                         <div class="property-icon">
                                                             @foreach ($contractWeddings as $contract_wedding)
                                                                 <div class="icon-list">
                                                                     <a href="#" data-target="#contract-wedding-pdf-{{ $contract_wedding->id }}" data-toggle="modal">
-                                                                        <i class="icon-copy fa fa-file-pdf-o" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Detail {{ $contract_wedding->name }}"></i> 
+                                                                        <i class="icon-copy fa fa-file-pdf-o" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Detail {{ $contract_wedding->name }}"></i>
                                                                     </a>
                                                                 </div>
                                                                 {{-- Modal Property PDF ----------------------------------------------------------------------------------------------------------- --}}
@@ -165,7 +155,7 @@
                                                         -
                                                     @endif
                                                 </td>
-                                                
+
                                                 <td class="text-right">
                                                     <div class="table-action">
                                                         <a href="/weddings-hotel-admin-{{ $hotel->id }}">
@@ -173,7 +163,7 @@
                                                         </a>
                                                     </div>
                                                 </td>
-                                                
+
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -231,7 +221,6 @@
                                 </div>
                             @endif
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                     </div>
@@ -257,7 +246,7 @@
                 } else {
                     tr[i].style.display = "none";
                 }
-            }       
+            }
         }
     }
 </script>

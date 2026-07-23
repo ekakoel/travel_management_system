@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\UserLog;
-use App\Models\Attention;
 use App\Models\BookingCode;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreBookingCodeRequest;
@@ -28,7 +27,6 @@ class BookingCodeController extends Controller
         $pending_bookingcodes=BookingCode::where('status','Pending')->get();
         $rejected_bookingcodes=BookingCode::where('status','Rejected')->get();
         $bookingcode_exp = BookingCode::where('expired_date','<',$now)->where('status','Active')->get();
-        $attentions = Attention::where('page','booking-code')->get();
         if (count($bookingcode_exp) > 0) {
             foreach ($bookingcode_exp as $bcode) {
                 $bcode->update([
@@ -45,7 +43,6 @@ class BookingCodeController extends Controller
             "pending_bookingcodes" => $pending_bookingcodes,
             "rejected_bookingcodes" => $rejected_bookingcodes,
             "now" => $now,
-            "attentions" => $attentions,
         ]);
        
     }

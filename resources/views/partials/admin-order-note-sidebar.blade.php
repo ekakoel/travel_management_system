@@ -3,21 +3,21 @@
         <div class="card-box">
             <div class="card-box-title">
                 <div class="title">Order Note</div>
-            </div> 
+            </div>
             @foreach ($order_notes as $order_note)
                 <div class="container-order-note">
                     @php
-                        $operator = Auth::user()->where('id',$order_note->user_id)->first();
+                        $operator = $admins->where('id',$order_note->user_id)->first();
                     @endphp
-                    <p><b>{{ dateTimeFormat($order_note->created_at)." - ".$operator->name }}</b> (<i>{{ $order_note->status }}</i>)</p>
+                    <p><b>{{ dateTimeFormat($order_note->created_at)." - ".($operator?->name ?? 'Admin') }}</b> (<i>{{ $order_note->status }}</i>)</p>
                     <p class="m-l-18">{!! $order_note->note !!}</p>
-                    
+
                     <hr class="form-hr">
                 </div>
             @endforeach
             @if ($order->status !== "Paid")
                 <div class="card-box-footer">
-                    <a href="#" data-toggle="modal" data-target="#add-order-note-{{ $device }}"><button type="button" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> Add Note</button></a>
+                    <a href="#" data-toggle="modal" data-target="#add-order-note-{{ $device }}"><button type="button" class="backend-button backend-button-primary"><i class="fa fa-plus" aria-hidden="true"></i> Add Note</button></a>
                 </div>
             @endif
         </div>
@@ -31,10 +31,10 @@
                         </div>
                         <form id="faddAddNote{{ $device }}" action="/fadd-order-note-{{ $order->id }}" method="post" enctype="multipart/form-data">
                             @csrf
-                            <div class="form-group row">
+                            <div class="backend-form-field row">
                                 <label for="status" class="col-sm-12">Type</label>
                                 <div class="col-sm-12">
-                                    <select name="status" class="custom-select @error('status') is-invalid @enderror" value="{{ old('status') }}">
+                                    <select name="status" class="backend-form-control @error('status') is-invalid @enderror" value="{{ old('status') }}">
                                         <option selected value="Urgent">Urgent</option>
                                         <option value="Waiting">Waiting</option>
                                         <option value="Error">Error</option>
@@ -44,10 +44,10 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="backend-form-field row">
                                 <label for="order_note" class="col-sm-12">Note</label>
                                 <div class="col-sm-12">
-                                    <textarea name="order_note" placeholder="Insert order note" class="textarea_editor form-control border-radius-0" autofocus required></textarea>
+                                    <textarea name="order_note" placeholder="Insert order note" class="textarea_editor backend-form-control border-radius-0" autofocus required></textarea>
                                     @error('order_note')
                                         <div class="alert alert-danger">
                                             {{ $message }}
@@ -59,9 +59,9 @@
                             <input type="hidden" name="order_id" value="{{ $order->id }}">
                         </Form>
                         <div class="card-box-footer">
-                            <div class="form-group">
-                                <button type="submit" form="faddAddNote{{ $device }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Submit</button>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                            <div class="backend-form-field">
+                                <button type="submit" form="faddAddNote{{ $device }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Submit</button>
+                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -75,13 +75,13 @@
             <div class="card-box">
                 <div class="card-box-title">
                     <div class="title">Order Note</div>
-                </div> 
+                </div>
                 @foreach ($order_notes as $order_note)
                     <div class="container-order-note">
                         @php
-                            $operator = Auth::user()->where('id',$order_note->user_id)->first();
+                            $operator = $admins->where('id',$order_note->user_id)->first();
                         @endphp
-                        <p><b>{{ dateTimeFormat($order_note->created_at)." - ".$operator->name }}</b> (<i>{{ $order_note->status }}</i>)</p>
+                        <p><b>{{ dateTimeFormat($order_note->created_at)." - ".($operator?->name ?? 'Admin') }}</b> (<i>{{ $order_note->status }}</i>)</p>
                         <p class="m-l-18">{!! $order_note->note !!}</p>
                         <hr class="form-hr">
                     </div>

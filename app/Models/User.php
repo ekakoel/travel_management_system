@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\Role;
 use App\Models\Spks;
-use App\Models\Itineraries;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -26,7 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const CONTACT_CHANNEL_PLATFORM_OTHER = 'other';
 
     protected $fillable = [
-        'name', 'email', 'password', 'type', 'username', 'code', 'profileimg', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'chat_account', 'contact_channels', 'address', 'city', 'state_region', 'postal_code', 'country', 'office', 'company_legal_name', 'job_title', 'website', 'timezone', 'company_registration_number', 'position', 'status', 'is_approved', 'approved_at', 'comment', 'session_id', 'email_verified_at', 'remember_token', 'subscriber', 'unsubscribe_reason', 'preferred_language'
+        'name', 'email', 'password', 'type', 'username', 'code', 'profileimg', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'chat_account', 'contact_channels', 'address', 'city', 'state_region', 'postal_code', 'country', 'office', 'company_legal_name', 'job_title', 'website', 'timezone', 'company_registration_number', 'position', 'status', 'is_approved', 'approved_at', 'comment', 'session_id', 'email_verified_at', 'remember_token', 'subscriber', 'is_subscribed', 'unsubscribe_reason', 'preferred_language'
     ];
 
     protected $hidden = [
@@ -144,9 +143,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function spks(){
         return $this->hasMany(Spks::class,'operator_id'); //good
     }
-    public function itineraries(){
-        return $this->hasMany(Itineraries::class,'user_id'); //good
-    }
 
     public function getPhotoAttribute()
     {
@@ -200,6 +196,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isDev()
     {
         return $this->roles()->where('name', 'Developer')->exists();
+    }
+
+    public function isAgentUser(): bool
+    {
+        return strtolower((string) $this->position) === 'agent';
+    }
+
+    public function canAccessAdminDashboard(): bool
+    {
+        return ! $this->isAgentUser();
     }
     
     public function messages()

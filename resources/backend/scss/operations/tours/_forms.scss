@@ -1,0 +1,143 @@
+.tour-form-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.tour-form-page * {
+  box-sizing: border-box;
+}
+
+.tour-form-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.tour-form-panel__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.tour-form-panel__body {
+  padding: 18px;
+}
+
+.tour-form-actions {
+  align-items: center;
+  background: var(--backend-sidebar-bg-soft);
+  border-top: 1px solid var(--backend-line-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 18px;
+}
+
+.tour-location-repeater {
+  background: var(--backend-panel-muted);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-md);
+  margin-top: 8px;
+  padding: 16px;
+}
+
+.tour-location-repeater__header,
+.tour-location-item__header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.tour-location-item {
+  background: var(--backend-panel);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.tour-location-suggest {
+  position: relative;
+}
+
+.tour-location-suggest__menu {
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  border-radius: 14px;
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.16);
+  display: none;
+  left: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 40;
+}
+
+.tour-location-suggest__menu.is-open {
+  display: block;
+}
+
+.tour-location-suggest__item {
+  align-items: center;
+  background: #ffffff;
+  border: 0;
+  border-bottom: 1px solid #edf2f7;
+  color: #1f2937;
+  cursor: pointer;
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  text-align: left;
+  width: 100%;
+}
+
+.tour-location-suggest__item:hover,
+.tour-location-suggest__item:focus {
+  background: #f0fdfa;
+  outline: none;
+}
+
+.tour-location-suggest__item img,
+.tour-location-suggest__avatar,
+.tour-location-marker-preview {
+  border-radius: 50%;
+  height: 42px;
+  object-fit: cover;
+  width: 42px;
+}
+
+.tour-location-suggest__avatar {
+  align-items: center;
+  background: #0f766e;
+  color: #ffffff;
+  display: inline-flex;
+  flex: 0 0 42px;
+  font-weight: 800;
+  justify-content: center;
+}
+
+.tour-location-marker-preview {
+  height: 56px;
+  width: 56px;
+}
+
+.tour-location-suggest__item strong,
+.tour-location-suggest__item small {
+  display: block;
+}
+
+.tour-location-suggest__item small,
+.tour-location-suggest__empty {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.tour-location-suggest__empty {
+  padding: 0.85rem;
+}

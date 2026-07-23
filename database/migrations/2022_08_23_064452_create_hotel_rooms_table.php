@@ -22,6 +22,7 @@ class CreateHotelRoomsTable extends Migration
             $table->text("view")->nullable();
             $table->text("beds")->nullable();
             $table->text("size")->nullable();
+            $table->longText("include")->nullable();
             $table->longText("amenities")->nullable();
             $table->longText("amenities_traditional")->nullable();
             $table->longText("amenities_simplified")->nullable();
@@ -31,9 +32,24 @@ class CreateHotelRoomsTable extends Migration
             $table->string("status");
             $table->timestamps();
         });
+
+        if (Schema::hasTable('hotel_prices') && Schema::hasColumn('hotel_prices', 'rooms_id')) {
+            Schema::table('hotel_prices', function (Blueprint $table) {
+                $table->foreign('rooms_id', 'hotel_prices_rooms_id_foreign')
+                    ->references('id')
+                    ->on('hotel_rooms')
+                    ->cascadeOnDelete();
+            });
+        }
     }
     public function down()
     {
+        if (Schema::hasTable('hotel_prices') && Schema::hasColumn('hotel_prices', 'rooms_id')) {
+            Schema::table('hotel_prices', function (Blueprint $table) {
+                $table->dropForeign('hotel_prices_rooms_id_foreign');
+            });
+        }
+
         Schema::dropIfExists('hotel_rooms');
     }
 }

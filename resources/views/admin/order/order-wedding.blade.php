@@ -6,11 +6,11 @@
     <div class="input-container">
         <div class="input-group">
             <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-            <input id="searchWeddingOrdersByAgn" type="text" onkeyup="searchWeddingOrdersByAgn()" class="form-control" name="search-waiting-order-byagn" placeholder="Search by agent...">
+            <input id="searchWeddingOrdersByAgn" type="text" onkeyup="searchWeddingOrdersByAgn()" class="backend-form-control" name="search-waiting-order-byagn" placeholder="Search by agent...">
         </div>
         <div class="input-group">
             <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-            <input id="searchWeddingOrderByBride" type="text" onkeyup="searchWeddingOrderByBride()" class="form-control" name="search-waiting-order-type" placeholder="Search by brides...">
+            <input id="searchWeddingOrderByBride" type="text" onkeyup="searchWeddingOrderByBride()" class="backend-form-control" name="search-waiting-order-type" placeholder="Search by brides...">
         </div>
     </div>
     @if (count($orderWeddings) > 0)
@@ -18,7 +18,7 @@
         $validOrderWeddings = $orderWeddings->where('checkin','>=',$now);
     @endphp
         @if ($validOrderWeddings)
-            
+
             <table id="tbWeddings" class="data-table table table-hover nowrap table-condensed">
                 <thead>
                     <tr>
@@ -67,7 +67,7 @@
                                             <p>{{ $order_wedding->agent->name }}</p>
                                             <p>{{ "@".$order_wedding->agent->office }}</p>
                                         @endif
-                                        
+
                                     </td>
                                     <td>
                                         <b>{{ $order_wedding->orderno }}</b>
@@ -143,7 +143,7 @@
                                         @else
                                             -
                                         @endif
-                                        
+
                                     </td>
                                     <td>
                                         @if ($transportContainsNullPrice or $accommodation_containt_zero or $additionalChargeContainZero)

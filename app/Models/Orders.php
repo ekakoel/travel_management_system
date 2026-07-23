@@ -136,7 +136,7 @@ class Orders extends Model
         return $this->belongsTo(Reservation::class,'rsv_id');
     }
     public function order_notes(){
-        return $this->hasMany(OrderNote::class);
+        return $this->hasMany(OrderNote::class, 'order_id');
     }
     
 
@@ -146,11 +146,15 @@ class Orders extends Model
     }
     public function optional_rate_orders()
     {
-        return $this->hasMany(OptionalRateOrder::class);
+        return $this->hasMany(OptionalRateOrder::class,'order_id');
     }
     public function guests()
     {
         return $this->hasMany(Guests::class, 'order_id');
+    }
+    public function reservation_guests()
+    {
+        return $this->hasMany(Guests::class, 'rsv_id', 'rsv_id');
     }
     public function guide()
     {

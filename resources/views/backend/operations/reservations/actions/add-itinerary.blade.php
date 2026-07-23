@@ -21,7 +21,7 @@
                             </nav>
                         </div>
                         <div class="col-md-5 col-sm-5 text-right">
-                            Status: 
+                            Status:
                             @if ($reservation->status === "Active")
                                 <h4 style="color: green">{{ $reservation->status }}</h4>
                             @elseif ($reservation->status === "Nonactive")
@@ -54,17 +54,17 @@
                                         <div class="input-group row">
                                             <div class="col-md-4 p-b-8">
                                                 <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                <input id="searchOrderNo" type="text" onkeyup="searchOrderNo()" class="form-control" name="search-byno" placeholder="Sort by Reservation No..">
+                                                <input id="searchOrderNo" type="text" onkeyup="searchOrderNo()" class="backend-form-control" name="search-byno" placeholder="Sort by Reservation No..">
                                             </div>
                                             <div class="col-md-4 p-b-8">
                                                 <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                <input id="searchByAgent" type="text" onkeyup="searchByAgent()" class="form-control" name="search-byno" placeholder="Sort by Agent..">
+                                                <input id="searchByAgent" type="text" onkeyup="searchByAgent()" class="backend-form-control" name="search-byno" placeholder="Sort by Agent..">
                                             </div>
                                             <div class="col-md-4 p-b-8">
                                                 <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                <input id="searchByGuest" type="text" onkeyup="searchByGuest()" class="form-control" name="search-byno" placeholder="Sort by Guest..">
+                                                <input id="searchByGuest" type="text" onkeyup="searchByGuest()" class="backend-form-control" name="search-byno" placeholder="Sort by Guest..">
                                             </div>
-                                           
+
                                         </div>
                                         @if (count($orders) > 0)
                                         <table id="tbord" class="data-table table">
@@ -79,7 +79,7 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($orders as $order)
-                                                
+
                                                     <tr>
                                                         <td>
                                                             <b>{{ $order->orderno }}</b><br>
@@ -103,12 +103,12 @@
                                                                 <input type="hidden" name="author" value="{{ Auth::User()->id }}">
                                                                 <input type="hidden" name="order_id" value="{{ $order->id }}">
                                                                 <input type="hidden" name="catatan" value="Add order">
-                                                                
-                                                                <button type="submit" class="btn btn-info"><i class="icon-copy fa fa-plus" aria-hidden="true"></i>Add</button>
-                                                            </form> 
+
+                                                                <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i>Add</button>
+                                                            </form>
                                                         </td>
                                                     </tr>
-                                                
+
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="col-md-12 text-right">
 
-                                        <a href="/reservation-{{ $reservation->id }}"><button type="button" class="btn btn-dark m-b-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
+                                            <a href="/reservation-{{ $reservation->id }}"><button type="button" class="backend-button backend-button-secondary m-b-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
                                     </div>
                                 </div>
                             </div>

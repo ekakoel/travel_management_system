@@ -34,7 +34,12 @@ class BusinessProfileController extends Controller
             ]
         );
 
-        return view('admin.business-profile.edit', compact('businessProfile'));
+        return view('backend.admin.company-profile.edit', [
+            'businessProfile' => $businessProfile,
+            'summary' => $this->profileSummary($businessProfile),
+            'logoUrl' => $this->logoUrl($businessProfile->logo),
+            'logoDarkUrl' => $this->logoUrl($businessProfile->logo_dark),
+        ]);
     }
 
     public function update(UpdateBusinessProfileRequest $request)
@@ -74,5 +79,26 @@ class BusinessProfileController extends Controller
 
         $logo->storeAs('public/logo', $filename);
         $data[$field] = $filename;
+    }
+
+    protected function profileSummary(BusinessProfile $businessProfile): array
+    {
+        return [
+            'brand' => $businessProfile->nickname ?: $businessProfile->name,
+            'type' => $businessProfile->type ?: 'Not configured',
+            'contact' => $businessProfile->email ?: $businessProfile->phone ?: 'Not configured',
+            'public' => $businessProfile->public_tagline ? 'Ready' : 'Needs tagline',
+        ];
+    }
+
+    protected function logoUrl(?string $logo): ?string
+    {
+        if (!$logo) {
+            return null;
+        }
+
+        return Str::startsWith($logo, ['http://', 'https://', '/'])
+            ? $logo
+            : asset('storage/logo/'.ltrim($logo, '/'));
     }
 }

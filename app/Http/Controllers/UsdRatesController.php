@@ -10,6 +10,7 @@ use App\Models\UsdRates;
 use App\Models\BankAccount;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreUsdRatesRequest;
@@ -23,146 +24,47 @@ class UsdRatesController extends Controller
     }
     public function index()
     {
-        $usdrates = UsdRates::where('name','USD')->first();
-        $cnyrates = UsdRates::where('name','CNY')->first();
-        $twdrates = UsdRates::where('name','TWD')->first();
-        $now = Carbon::now();
-        $tax = Tax::where('id',1)->first();
-        $from = 'USD';
-        $to = 'IDR';
-        $amount= 1;
-        $bank_acc = BankAccount::all();
-        $apiKey = config('app.exchange_rate_api_key');
-        $baseUrl = "https://v6.exchangerate-api.com/v6/{$apiKey}/latest/USD";
+        $codes = ['USD', 'CNY', 'TWD'];
+        $rates = UsdRates::whereIn('name', $codes)->get()->keyBy('name');
+        $externalRates = $this->externalRates();
 
-        $response = Http::get($baseUrl);
-        $rates = $response->json();
+        $currencyRates = collect($codes)->map(function ($code) use ($rates, $externalRates) {
+            $rate = $rates->get($code);
 
-        if ($response->successful()) {
-            $idrRate = $rates['conversion_rates']['IDR'];
-            $usdRate = $rates['conversion_rates']['USD'];
-            $twdRate = $rates['conversion_rates']['TWD'];
-            $cnyRate = $rates['conversion_rates']['CNY'];
+            return [
+                'code' => $code,
+                'model' => $rate,
+                'id' => optional($rate)->id,
+                'rate' => optional($rate)->rate,
+                'sell' => optional($rate)->sell,
+                'buy' => optional($rate)->buy,
+                'difference' => optional($rate)->difference,
+                'updated_at' => optional($rate)->updated_at,
+                'external_rate' => $externalRates['rates'][$code] ?? null,
+            ];
+        })->values();
 
-            $usdIdr = $usdRate*$idrRate;
-            $twdIdr = $idrRate/$twdRate;
-            $cnyIdr = $idrRate/$cnyRate;
-            return view('backend.developer.currency',[
-                "usdrates" => $usdrates, 
-                "cnyrates" => $cnyrates, 
-                "twdrates" => $twdrates, 
-                "now"=>$now,
-                'tax'=>$tax,
-                'bank_acc'=>$bank_acc,
-                'usd_rate' => $usdIdr,
-                'twd_rate' => $twdIdr,
-                'cny_rate' => $cnyIdr,
-            ]);
-        }else{
-            return view('admin.currency')->withErrors('Unable to retrieve exchange rates.');
-        }
+        return view('backend.developer.currency', [
+            'currencyRates' => $currencyRates,
+            'externalRates' => $externalRates,
+            'tax' => Tax::query()->first(),
+            'bank_acc' => BankAccount::query()->orderBy('currency')->orderBy('bank')->get(),
+        ]);
     }
 
     public function func_update_usdrates(Request $request,$id)
     {
-        if (Gate::any(['posDev', 'posAuthor'])) {
-            $rate_usd=UsdRates::findOrFail($id);
-            $sell = $request->sell;
-            $buy = $sell - $request->difference;
-            $rate_usd->update([
-                "rate"=>$sell,
-                "sell"=>$sell,
-                "buy"=>$buy,
-            ]);
-            // USER LOG
-            $action = "Update UsdRates";
-            $service = "UsdRates";
-            $subservice = "Usd";
-            $page = "usdrates";
-            $note = "Update UsdRates: ".$id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/currency")->with('success','The UsdRates has been successfully updated!');
-        }else{
-            return redirect("/currency")->with('error','Tidak dapat merubah data!');
-        }
+        return $this->updateRate($request, $id, 'USD', 'Update USD Rate');
     }
 
     public function func_update_cnyrates(Request $request,$id)
     {
-        if (Gate::any(['posDev', 'posAuthor'])) {
-            $rate_cny=UsdRates::findOrFail($id);
-            $sell = $request->sell;
-            $buy = $sell - $request->difference;
-            $rate_cny->update([
-                "rate"=>$sell,
-                "sell"=>$sell,
-                "buy"=>$buy,
-            ]);
-            // USER LOG
-            $action = "Update CNY Rate";
-            $service = "CNY Rate";
-            $subservice = "CNY";
-            $page = "Chinese Yuan";
-            $note = "Update CNY: ".$id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/currency")->with('success','The Yuan Rate has been successfully updated!');
-        }else{
-            return redirect("/currency")->with('error','Anda tidak dapat merubah data!');
-        }
+        return $this->updateRate($request, $id, 'CNY', 'Update CNY Rate');
     }
 
     public function func_update_twdrates(Request $request,$id)
     {
-        if (Gate::any(['posDev', 'posAuthor'])) {
-            $rate_twd=UsdRates::findOrFail($id);
-            $sell = $request->sell;
-            $buy = $sell - $request->difference;
-            $rate_twd->update([
-                "rate"=>$sell,
-                "sell"=>$sell,
-                "buy"=>$buy,
-            ]);
-            // USER LOG
-            $action = "Update TWD Rate";
-            $service = "TWD Rate";
-            $subservice = "TWD";
-            $page = "Taiwan Dolars";
-            $note = "Update TWD: ".$id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/currency")->with('success','The Taiwan Dolar has been successfully updated!');
-        }else{
-            return redirect("/currency")->with('error','Anda tidak dapat merubah data!');
-        }
+        return $this->updateRate($request, $id, 'TWD', 'Update TWD Rate');
     }
 
     public function func_update_tax(Request $request,$id)
@@ -217,5 +119,92 @@ class UsdRatesController extends Controller
         } else {
             return view('currency-rates')->withErrors('Unable to retrieve exchange rates.');
         }
+    }
+
+    private function updateRate(Request $request, int $id, string $code, string $action)
+    {
+        if (! Gate::any(['posDev', 'posAuthor'])) {
+            return redirect()->route('currency')->with('error', 'Anda tidak dapat merubah data!');
+        }
+
+        $validated = $request->validate([
+            'sell' => ['required', 'numeric', 'min:0'],
+            'difference' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $sell = (float) $validated['sell'];
+        $difference = (float) $validated['difference'];
+        $buy = max($sell - $difference, 0);
+        $rate = UsdRates::findOrFail($id);
+
+        $rate->update([
+            'rate' => $sell,
+            'sell' => $sell,
+            'buy' => $buy,
+            'difference' => $difference,
+        ]);
+
+        UserLog::create([
+            'action' => $action,
+            'service' => 'Currency',
+            'subservice' => $code,
+            'subservice_id' => $id,
+            'page' => 'currency',
+            'user_id' => $request->user()->id,
+            'user_ip' => $request->getClientIp(),
+            'note' => "{$action}: {$id}",
+        ]);
+
+        return redirect()->route('currency')->with('success', "{$code} rate has been updated.");
+    }
+
+    private function externalRates(): array
+    {
+        return Cache::remember('backend.currency.external_rates', now()->addMinutes(30), function () {
+            $apiKey = config('app.exchange_rate_api_key');
+
+            if (! $apiKey) {
+                return [
+                    'rates' => [],
+                    'retrieved_at' => null,
+                    'status' => 'missing_api_key',
+                ];
+            }
+
+            try {
+                $response = Http::timeout(4)->get("https://v6.exchangerate-api.com/v6/{$apiKey}/latest/USD");
+
+                if (! $response->successful()) {
+                    return [
+                        'rates' => [],
+                        'retrieved_at' => null,
+                        'status' => 'unavailable',
+                    ];
+                }
+
+                $conversionRates = $response->json('conversion_rates', []);
+                $idrRate = (float) ($conversionRates['IDR'] ?? 0);
+
+                return [
+                    'rates' => [
+                        'USD' => $idrRate ?: null,
+                        'CNY' => isset($conversionRates['CNY']) && (float) $conversionRates['CNY'] > 0
+                            ? $idrRate / (float) $conversionRates['CNY']
+                            : null,
+                        'TWD' => isset($conversionRates['TWD']) && (float) $conversionRates['TWD'] > 0
+                            ? $idrRate / (float) $conversionRates['TWD']
+                            : null,
+                    ],
+                    'retrieved_at' => now(),
+                    'status' => 'available',
+                ];
+            } catch (\Throwable $exception) {
+                return [
+                    'rates' => [],
+                    'retrieved_at' => null,
+                    'status' => 'unavailable',
+                ];
+            }
+        });
     }
 }

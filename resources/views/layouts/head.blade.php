@@ -15,6 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ asset('panel/datatables/css/responsive.bootstrap4.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('panel/styles/style.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ mix('build/backend/css/app.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('panel/fullcalendar/fullcalendar.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('panel/slick/slick.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('panel/bootstrap-touchspin/jquery.bootstrap-touchspin.css') }}">

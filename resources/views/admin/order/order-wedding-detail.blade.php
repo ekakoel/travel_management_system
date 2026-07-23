@@ -19,31 +19,20 @@
                     </div>
                 @endif
             </div>
-            <div class="page-header hide-print">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="title">
-                            <i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i>@lang('messages.Wedding Order') @lang('messages.Validation')
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="orders-admin">@lang('messages.Orders Admin')</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ $orderWedding->orderno }}</a></li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+            <x-backend.page-hero>
+                <x-slot name="heading">
+                    <i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i>@lang('messages.Wedding Order') @lang('messages.Validation')
+                </x-slot>
+            </x-backend.page-hero>
             <div class="row">
                 {{-- SIDEBAR MOBILE --}}
                 <div class="col-md-4 mobile">
                     <div class="row">
-                        @include('layouts.attentions')
                         <div class="col-md-12">
                             <div class="card-box">
                                 <div class="card-box-title">
                                     <div class="title">@lang('messages.Status')</div>
-                                </div> 
+                                </div>
                                 <div class="order-status-container">
                                     @if ($orderWedding->status == "Active")
                                         <div class="status-active-color">@lang('messages.Confirmed')</div>
@@ -107,7 +96,7 @@
                             <div class="card-box">
                                 <div class="card-box-title">
                                     <div class="title">@lang('messages.Order Note')</div>
-                                </div> 
+                                </div>
                                 @foreach ($order_notes as $order_note)
                                     <div class="container-order-note">
                                         @php
@@ -115,13 +104,13 @@
                                         @endphp
                                         <p><b>{{ date('d M Y (H:i)',strtotime($order_note->created_at))." - ".$operator->name }}</b> (<i>{{ $order_note->status }}</i>)</p>
                                         <p class="m-l-18">{!! $order_note->note !!}</p>
-                                        
+
                                         <hr class="form-hr">
                                     </div>
                                 @endforeach
                                 @if ($orderWedding->status !== "Paid")
                                     <div class="card-box-footer">
-                                        <a href="#" data-toggle="modal" data-target="#add-order-note-desktop"><button type="button" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> @lang('messages.Add Note')</button></a>
+                                        <a href="#" data-toggle="modal" data-target="#add-order-note-desktop"><button type="button" class="backend-button backend-button-primary"><i class="fa fa-plus" aria-hidden="true"></i> @lang('messages.Add Note')</button></a>
                                     </div>
                                 @endif
                             </div>
@@ -135,10 +124,10 @@
                                             </div>
                                             <form id="faddAddNote" action="/fadd-order-wedding-note-{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                 @csrf
-                                                <div class="form-group row">
+                                                <div class="backend-form-field row">
                                                     <label for="status" class="col-sm-12">@lang('messages.Type')</label>
                                                     <div class="col-sm-12">
-                                                        <select name="status" class="custom-select @error('status') is-invalid @enderror" value="{{ old('status') }}">
+                                                        <select name="status" class="backend-form-control @error('status') is-invalid @enderror" value="{{ old('status') }}">
                                                             <option selected value="Urgent">@lang('messages.Urgent')</option>
                                                             <option value="Waiting">@lang('messages.Waiting')</option>
                                                             <option value="Error">@lang('messages.Error')</option>
@@ -148,10 +137,10 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
+                                                <div class="backend-form-field row">
                                                     <label for="order_note" class="col-sm-12">@lang('messages.Note')</label>
                                                     <div class="col-sm-12">
-                                                        <textarea id="order_note" name="order_note" placeholder="Insert order note" class="textarea_editor form-control border-radius-0" autofocus required></textarea>
+                                                        <textarea data-backend-richtext="true" id="order_note" name="order_note" placeholder="Insert order note" class="textarea_editor backend-form-control border-radius-0" autofocus required></textarea>
                                                         @error('order_note')
                                                             <div class="alert alert-danger">
                                                                 {{ $message }}
@@ -163,9 +152,9 @@
                                                 <input type="hidden" name="order_id" value="{{ $orderWedding->id }}">
                                             </Form>
                                             <div class="card-box-footer">
-                                                <div class="form-group">
-                                                    <button type="submit" form="faddAddNote" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Submit')</button>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                <div class="backend-form-field">
+                                                    <button type="submit" form="faddAddNote" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Submit')</button>
+                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -189,8 +178,8 @@
                                         <div class="card-box-title">
                                             <div class="title">@lang('messages.Kurs on order')</div>
                                             <span>{{ date('d F Y',strtotime($invoice->inv_date)) }}</span>
-                                        </div> 
-                                        
+                                        </div>
+
                                         <div class="row">
                                             <div class="col-4 col-md-4">
                                                 <p><b>@lang('messages.Currency')</b></p>
@@ -320,7 +309,7 @@
                                                                                         <div class="col-7"><p><b>: {{ $invoice->inv_no }}</b></p></div>
                                                                                         <div class="col-5"><p>@lang('messages.Due Date')</p></div>
                                                                                         <div class="col-7"><p>: {{ date('d F Y',strtotime($invoice->due_date)) }}</p></div>
-                                                                                        
+
                                                                                         @if ($receipt->status == 'Valid')
                                                                                             <div class="col-12">
                                                                                                 <hr class="form-hr">
@@ -348,9 +337,9 @@
                                                                                         @if ($orderWedding->handled_by == $admin->id)
                                                                                             @if ($invoice->balance > 0)
                                                                                                 <div class="col-md-12">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="status" class="form-label">@lang('messages.Receipt Status') <span>*</span></label>
-                                                                                                        <select name="status" class="custom-select @error('status') is-invalid @enderror" required>
+                                                                                                        <select name="status" class="backend-form-control @error('status') is-invalid @enderror" required>
                                                                                                             <option selected value="{{ $receipt->status }}">{{ $receipt->status }}</option>
                                                                                                             <option value="Valid">@lang('messages.Valid')</option>
                                                                                                             <option value="Invalid">@lang('messages.Invalid')</option>
@@ -359,9 +348,9 @@
                                                                                                 </div>
                                                                                                 @if ($receipt->status == "Pending" or $receipt->status == "Invalid")
                                                                                                     <div class="col-md-12">
-                                                                                                        <div class="form-group">
+                                                                                                        <div class="backend-form-field">
                                                                                                             <label for="kurs" class="form-label">@lang('messages.Currency')<span>*</span></label>
-                                                                                                            <select name="kurs" class="custom-select @error('kurs') is-invalid @enderror" required>
+                                                                                                            <select name="kurs" class="backend-form-control @error('kurs') is-invalid @enderror" required>
                                                                                                                 <option selected value="{{ $receipt->kurs_name ? $receipt->kurs_name : '' }}">{{ $receipt->kurs_name ? $receipt->kurs_name : 'Select Currency' }}</option>
                                                                                                                 <option value="USD">USD</option>
                                                                                                                 <option value="CNY">CNY</option>
@@ -371,9 +360,9 @@
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div class="col-md-12">
-                                                                                                        <div class="form-group">
+                                                                                                        <div class="backend-form-field">
                                                                                                             <label for="amoun" class="form-label col-form-label">@lang('messages.Amount')</label>
-                                                                                                            <input type="text" name="amount" class="input-icon form-control @error('amount') is-invalid @enderror" placeholder="Insert Amount" value="{{ $receipt->amount }}" required>
+                                                                                                            <input type="text" name="amount" class="input-icon backend-form-control @error('amount') is-invalid @enderror" placeholder="Insert Amount" value="{{ $receipt->amount }}" required>
                                                                                                             @error('amount')
                                                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                                                             @enderror
@@ -384,18 +373,18 @@
                                                                                                     <input hidden type="text" name="amount" value="{{ $receipt->amount }}">
                                                                                                 @endif
                                                                                                 <div class="col-md-12">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="payment_date" class="form-label col-form-label">@lang('messages.Payment Date')</label>
-                                                                                                        <input readonly type="text" id="payment_date" name="payment_date" class="form-control date-picker @error('payment_date') is-invalid @enderror" placeholder="Payment Date" value="{{ date('d F Y',strtotime($receipt->payment_date)) }}" required>
+                                                                                                        <input readonly type="text" id="payment_date" name="payment_date" class="backend-form-control date-picker @error('payment_date') is-invalid @enderror" placeholder="Payment Date" value="{{ date('d F Y',strtotime($receipt->payment_date)) }}" required>
                                                                                                         @error('payment_date')
                                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                                         @enderror
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-12">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="note">@lang('messages.Description') </label>
-                                                                                                        <textarea name="note" class="textarea_editor form-control @error('note') is-invalid @enderror" placeholder="Description">{{ $receipt->note }}</textarea>
+                                                                                                        <textarea data-backend-richtext="true" name="note" class="textarea_editor backend-form-control @error('note') is-invalid @enderror" placeholder="Description">{{ $receipt->note }}</textarea>
                                                                                                         @error('note')
                                                                                                             <span class="invalid-feedback">
                                                                                                                 <strong>{{ $message }}</strong>
@@ -420,15 +409,15 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    
+
                                                                 </form>
                                                             <div class="card-box-footer">
                                                                 @if ($orderWedding->handled_by == $admin->id)
                                                                     @if ($invoice->balance > 0)
-                                                                        <button type="submit" form="confirmation-payment-mobile-{{ $receipt->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $receipt->status == 'Pending'?"Validate":"Update" }}</button>
+                                                                        <button type="submit" form="confirmation-payment-mobile-{{ $receipt->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $receipt->status == 'Pending'?"Validate":"Update" }}</button>
                                                                     @endif
                                                                 @endif
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -560,9 +549,9 @@
                                                     <div class="ptext-value"><b>{{ currencyFormatIdr($invoice->total_idr) }}</b></div>
                                                 @endif
                                             </div>
-                                            
+
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             @endif
@@ -604,9 +593,9 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-12 m-t-8">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="mobile_receipt_name" class="form-label">@lang('messages.Select Receipt') </label><br>
-                                                                            <input type="file" name="desktop_receipt_name" id="mobile_receipt_name" class="custom-file-input @error('desktop_receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('desktop_receipt_name') }}" required>
+                                                                            <input type="file" name="desktop_receipt_name" id="mobile_receipt_name" class="backend-form-control @error('desktop_receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('desktop_receipt_name') }}" required>
                                                                             @error('desktop_receipt_name')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
@@ -620,8 +609,8 @@
                                                 </div>
                                             </form>
                                             <div class="card-box-footer">
-                                                <button type="submit" form="mobile-payment-confirm-wedding-{{ $orderWedding->id }}" class="btn btn-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.lang')</button>
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                <button type="submit" form="mobile-payment-confirm-wedding-{{ $orderWedding->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.lang')</button>
+                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                             </div>
                                         </div>
                                     </div>
@@ -674,14 +663,14 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            
+
                                             <td class="htd-1">
                                                 @lang('messages.Service')
                                             </td>
                                             <td class="htd-2">
                                                 @lang('messages.'.$orderWedding->service)
                                             </td>
-                                            
+
                                         </tr>
                                         <tr>
                                             @if ($orderWedding->service == "Wedding Package")
@@ -726,10 +715,10 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="form-container-confirmation">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <div class="btn-icon">
                                                                     <span><i class="icon-copy fi-key"></i></span>
-                                                                    <input name="confirmation_number" type="text" value="{{ $orderWedding->confirmation_number }}" class="form-control input-icon @error('confirmation_number') is-invalid @enderror" placeholder="Confirmation Numbber" required>
+                                                                    <input name="confirmation_number" type="text" value="{{ $orderWedding->confirmation_number }}" class="backend-form-control input-icon @error('confirmation_number') is-invalid @enderror" placeholder="Confirmation Numbber" required>
                                                                 </div>
                                                                 @error('confirmation_number')
                                                                     <span class="invalid-feedback">
@@ -739,9 +728,9 @@
                                                             </div>
                                                             <div class="form-btn">
                                                                 @if ($orderWedding->confirmation_number)
-                                                                    <button type="submit" form="updateConfirmationNumber" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang("messages.Update")</button>
+                                                                    <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang("messages.Update")</button>
                                                                 @else
-                                                                    <button type="submit" form="updateConfirmationNumber" class="btn btn-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang("messages.Add")</button>
+                                                                    <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang("messages.Add")</button>
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -774,10 +763,10 @@
                                                             @csrf
                                                             @method('PUT')
                                                             <div class="form-container-confirmation">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fi-key"></i></span>
-                                                                        <input name="confirmation_number" type="text" value="{{ $orderWedding->confirmation_number }}" class="form-control input-icon @error('confirmation_number') is-invalid @enderror" placeholder="Confirmation Numbber" required>
+                                                                        <input name="confirmation_number" type="text" value="{{ $orderWedding->confirmation_number }}" class="backend-form-control input-icon @error('confirmation_number') is-invalid @enderror" placeholder="Confirmation Numbber" required>
                                                                     </div>
                                                                     @error('confirmation_number')
                                                                         <span class="invalid-feedback">
@@ -788,9 +777,9 @@
                                                                 @if ($orderWedding->handled_by == Auth::user()->id)
                                                                     <div class="form-btn">
                                                                         @if ($orderWedding->confirmation_number)
-                                                                            <button type="submit" form="updateConfirmationNumber" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang("messages.Update")</button>
+                                                                            <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang("messages.Update")</button>
                                                                         @else
-                                                                            <button type="submit" form="updateConfirmationNumber" class="btn btn-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang("messages.Add")</button>
+                                                                            <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang("messages.Add")</button>
                                                                         @endif
                                                                     </div>
                                                                 @endif
@@ -857,14 +846,14 @@
                                             @if ($orderWedding->handled_by)
                                                 @if ($orderWedding->handled_by == Auth::user()->id)
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#edit-wedding-bride-{{ $bride->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#edit-wedding-bride-{{ $bride->id }}">
                                                             <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
                                                 @endif
                                             @else
                                                 <span>
-                                                    <a href="#" data-toggle="modal" data-target="#edit-wedding-bride-{{ $bride->id }}"> 
+                                                    <a href="#" data-toggle="modal" data-target="#edit-wedding-bride-{{ $bride->id }}">
                                                         <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
@@ -930,11 +919,11 @@
                                                         @method('PUT')
                                                         <div class="row">
                                                             <div class="col-md-4">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="groom">@lang("messages.Groom") <span> *</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fi-torso"></i></span>
-                                                                        <input name="groom" type="text" value="{{ $bride->groom }}" class="form-control input-icon @error('groom') is-invalid @enderror" placeholder="@lang('messages.Groom Name')" required>
+                                                                        <input name="groom" type="text" value="{{ $bride->groom }}" class="backend-form-control input-icon @error('groom') is-invalid @enderror" placeholder="@lang('messages.Groom Name')" required>
                                                                     </div>
                                                                     @error('groom')
                                                                         <span class="invalid-feedback">
@@ -944,9 +933,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="groom_chinese">@lang("messages.Chinese Name")</label>
-                                                                    <input name="groom_chinese" type="text" value="{{ $bride->groom_chinese }}" class="form-control @error('groom_chinese') is-invalid @enderror" placeholder="@lang('messages.Groom Chinese Name')">
+                                                                    <input name="groom_chinese" type="text" value="{{ $bride->groom_chinese }}" class="backend-form-control @error('groom_chinese') is-invalid @enderror" placeholder="@lang('messages.Groom Chinese Name')">
                                                                     @error('groom_chinese')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -955,11 +944,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="groom_pasport_id">@lang("messages.Passport") / @lang('messages.ID') <span> *</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-id-card-o" aria-hidden="true"></i></span>
-                                                                        <input name="groom_pasport_id" type="text" value="{{ $bride->groom_pasport_id }}" class="form-control input-icon @error('groom_pasport_id') is-invalid @enderror" placeholder="@lang('messages.Passport') / @lang('messages.ID')" required>
+                                                                        <input name="groom_pasport_id" type="text" value="{{ $bride->groom_pasport_id }}" class="backend-form-control input-icon @error('groom_pasport_id') is-invalid @enderror" placeholder="@lang('messages.Passport') / @lang('messages.ID')" required>
                                                                     </div>
                                                                     @error('groom_pasport_id')
                                                                         <span class="invalid-feedback">
@@ -969,11 +958,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="bride">@lang("messages.Bride's") <span> *</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fi-torso-female"></i></span>
-                                                                        <input name="bride" type="text" value="{{ $bride->bride }}" class="form-control input-icon @error('bride') is-invalid @enderror" placeholder="@lang("messages.Bride's Name")" required>
+                                                                        <input name="bride" type="text" value="{{ $bride->bride }}" class="backend-form-control input-icon @error('bride') is-invalid @enderror" placeholder="@lang("messages.Bride's Name")" required>
                                                                     </div>
                                                                     @error('bride')
                                                                         <span class="invalid-feedback">
@@ -983,9 +972,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="bride_chinese">@lang("messages.Chinese Name")</label>
-                                                                    <input name="bride_chinese" type="text" value="{{ $bride->bride_chinese }}" class="form-control @error('bride_chinese') is-invalid @enderror" placeholder="@lang("messages.Bride's Chinese Name")">
+                                                                    <input name="bride_chinese" type="text" value="{{ $bride->bride_chinese }}" class="backend-form-control @error('bride_chinese') is-invalid @enderror" placeholder="@lang("messages.Bride's Chinese Name")">
                                                                     @error('bride_chinese')
                                                                         <span class="invalid-feedback">
                                                                             <strong>{{ $message }}</strong>
@@ -994,11 +983,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="bride_pasport_id">@lang("messages.Passport") / @lang('messages.ID') <span> *</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-id-card-o" aria-hidden="true"></i></span>
-                                                                        <input name="bride_pasport_id" type="text" value="{{ $bride->bride_pasport_id }}" class="form-control input-icon @error('bride_pasport_id') is-invalid @enderror" placeholder="@lang('messages.Passport') / @lang('messages.ID')" required>
+                                                                        <input name="bride_pasport_id" type="text" value="{{ $bride->bride_pasport_id }}" class="backend-form-control input-icon @error('bride_pasport_id') is-invalid @enderror" placeholder="@lang('messages.Passport') / @lang('messages.ID')" required>
                                                                     </div>
                                                                     @error('bride_pasport_id')
                                                                         <span class="invalid-feedback">
@@ -1016,8 +1005,8 @@
                                                         <p>Klik simpan untuk menyimpan perubahan yang telah dilakukan! </p>
                                                     </div>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="updateWeddingOrderBride" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                        <button type="submit" form="updateWeddingOrderBride" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1062,14 +1051,14 @@
                                                     @if ($orderWedding->handled_by)
                                                         @if ($orderWedding->handled_by == Auth::user()->id)
                                                             <span>
-                                                                <a href="#" data-toggle="modal" data-target="#add-flight-order-wedding-{{ $orderWedding->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#add-flight-order-wedding-{{ $orderWedding->id }}">
                                                                     <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                                 </a>
                                                             </span>
                                                         @endif
                                                     @else
                                                         <span>
-                                                            <a href="#" data-toggle="modal" data-target="#add-flight-order-wedding-{{ $orderWedding->id }}"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-flight-order-wedding-{{ $orderWedding->id }}">
                                                                 <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                             </a>
                                                         </span>
@@ -1104,7 +1093,7 @@
                                                                     @if ($orderWedding->handled_by)
                                                                         @if ($orderWedding->handled_by == Auth::user()->id)
                                                                             <div class="table-action">
-                                                                                <a href="#" data-toggle="modal" data-target="#update-wedding-flight-{{ $flight->id }}"> 
+                                                                                <a href="#" data-toggle="modal" data-target="#update-wedding-flight-{{ $flight->id }}">
                                                                                     <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <form id="deleteFlightOrder{{ $flight->id }}" action="/func-delete-order-wedding-flight-admin/{{ $flight->id }}" method="post" enctype="multipart/form-data">
@@ -1116,7 +1105,7 @@
                                                                         @endif
                                                                     @else
                                                                         <div class="table-action">
-                                                                            <a href="#" data-toggle="modal" data-target="#update-wedding-flight-{{ $flight->id }}"> 
+                                                                            <a href="#" data-toggle="modal" data-target="#update-wedding-flight-{{ $flight->id }}">
                                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                             </a>
                                                                             <form id="deleteFlightOrder{{ $flight->id }}" action="/func-delete-order-wedding-flight-admin/{{ $flight->id }}" method="post" enctype="multipart/form-data">
@@ -1148,9 +1137,9 @@
                                                                                         <div class="modal-form-container">
                                                                                             <div class="row">
                                                                                                 <div class="col-sm-12">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="flight">@lang('messages.Flight Number')</label>
-                                                                                                        <input type="text" name="flight" class="form-control uppercase @error('flight') is-invalid @enderror"  placeholder="@lang('messages.Insert flight number')" value="{{ $flight->flight }}" required>
+                                                                                                        <input type="text" name="flight" class="backend-form-control uppercase @error('flight') is-invalid @enderror"  placeholder="@lang('messages.Insert flight number')" value="{{ $flight->flight }}" required>
                                                                                                         @error('flight')
                                                                                                             <span class="invalid-feedback">
                                                                                                                 {{ $message }}
@@ -1159,9 +1148,9 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-sm-6">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="group">@lang('messages.Group') <span>*</span></label>
-                                                                                                        <select name="group" class="custom-select @error('group') is-invalid @enderror" required>
+                                                                                                        <select name="group" class="backend-form-control @error('group') is-invalid @enderror" required>
                                                                                                             @if ($flight->group == "Brides")
                                                                                                                 <option selected value="{{ $flight->group }}">{{ $flight->group }}</option>
                                                                                                                 <option value="Invitations">@lang('messages.Invitations')</option>
@@ -1170,7 +1159,7 @@
                                                                                                                 <option value="Brides">@lang("messages.Bride's")</option>
                                                                                                             @else
                                                                                                                 <option selected value="">@lang('messages.Select one')</option>
-                                                                                                                <option value="Invitations">@lang('messages.Invitations')</option>  
+                                                                                                                <option value="Invitations">@lang('messages.Invitations')</option>
                                                                                                                 <option value="Brides">@lang("messages.Bride's")</option>
                                                                                                             @endif
                                                                                                         </select>
@@ -1180,9 +1169,9 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-sm-6">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="type">@lang('messages.Type') <span>*</span></label>
-                                                                                                        <select name="type" class="custom-select @error('type') is-invalid @enderror" required>
+                                                                                                        <select name="type" class="backend-form-control @error('type') is-invalid @enderror" required>
                                                                                                             @if ($flight->type == "Arrival")
                                                                                                                 <option selected value="{{ $flight->type }}">{{ $flight->type }}</option>
                                                                                                                 <option value="Departure">@lang('messages.Departure')</option>
@@ -1191,7 +1180,7 @@
                                                                                                                 <option value="Arrival">@lang("messages.Arrival")</option>
                                                                                                             @else
                                                                                                                 <option selected value="">@lang('messages.Select one')</option>
-                                                                                                                <option value="Departure">@lang('messages.Departure')</option>  
+                                                                                                                <option value="Departure">@lang('messages.Departure')</option>
                                                                                                                 <option value="Arrival">@lang("messages.Arrival")</option>
                                                                                                             @endif
                                                                                                         </select>
@@ -1201,9 +1190,9 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-sm-6">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="number_of_guests">@lang('messages.Number of Guests')</label>
-                                                                                                        <input type="number" min="1"  name="number_of_guests" class="form-control @error('number_of_guests') is-invalid @enderror"   value="{{ $flight->number_of_guests }}" required>
+                                                                                                        <input type="number" min="1"  name="number_of_guests" class="backend-form-control @error('number_of_guests') is-invalid @enderror"   value="{{ $flight->number_of_guests }}" required>
                                                                                                         @error('number_of_guests')
                                                                                                             <span class="invalid-feedback">
                                                                                                                 {{ $message }}
@@ -1212,9 +1201,9 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-sm-6">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="time">@lang('messages.Date and Time')</label>
-                                                                                                        <input type="text" readonly name="time" class="form-control datetimepicker @error('time') is-invalid @enderror"  placeholder="@lang('messages.Select date and time')" value="{{ date('d F Y  H:i',strtotime($flight->time)) }}" required>
+                                                                                                        <input type="text" readonly name="time" class="backend-form-control datetimepicker @error('time') is-invalid @enderror"  placeholder="@lang('messages.Select date and time')" value="{{ date('d F Y  H:i',strtotime($flight->time)) }}" required>
                                                                                                         @error('time')
                                                                                                             <span class="invalid-feedback">
                                                                                                                 {{ $message }}
@@ -1223,9 +1212,9 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-sm-6">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="guest_name">@lang('messages.Name')</label>
-                                                                                                        <input type="text" name="guest_name" class="form-control @error('guest_name') is-invalid @enderror"  placeholder="@lang('messages.Responsible Person')" value="{{ $flight->guests }}" required>
+                                                                                                        <input type="text" name="guest_name" class="backend-form-control @error('guest_name') is-invalid @enderror"  placeholder="@lang('messages.Responsible Person')" value="{{ $flight->guests }}" required>
                                                                                                         @error('guest_name')
                                                                                                             <span class="invalid-feedback">
                                                                                                                 {{ $message }}
@@ -1234,9 +1223,9 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-sm-6">
-                                                                                                    <div class="form-group">
+                                                                                                    <div class="backend-form-field">
                                                                                                         <label for="guests_contact">@lang('messages.Contact')</label>
-                                                                                                        <input type="text" name="guests_contact" class="form-control @error('guests_contact') is-invalid @enderror"  placeholder="@lang('messages.Telephone')" value="{{ $flight->guests_contact }}" required>
+                                                                                                        <input type="text" name="guests_contact" class="backend-form-control @error('guests_contact') is-invalid @enderror"  placeholder="@lang('messages.Telephone')" value="{{ $flight->guests_contact }}" required>
                                                                                                         @error('guests_contact')
                                                                                                             <span class="invalid-feedback">
                                                                                                                 {{ $message }}
@@ -1250,8 +1239,8 @@
                                                                                 </div>
                                                                             </form>
                                                                             <div class="card-box-footer">
-                                                                                <button type="submit" form="updateWeddingOrderFlight{{ $flight->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
-                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                                <button type="submit" form="updateWeddingOrderFlight{{ $flight->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1279,11 +1268,11 @@
                                                                         <div class="col-sm-12">
                                                                             <div class="modal-form-container">
                                                                                 <div class="row">
-                                        
+
                                                                                     <div class="col-sm-12">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="flight[]">@lang('messages.Flight Number')</label>
-                                                                                            <input type="text" name="flight[]" class="form-control uppercase @error('flight[]') is-invalid @enderror"  placeholder="@lang('messages.Insert flight number')" value="{{ old('flight[]') }}" required>
+                                                                                            <input type="text" name="flight[]" class="backend-form-control uppercase @error('flight[]') is-invalid @enderror"  placeholder="@lang('messages.Insert flight number')" value="{{ old('flight[]') }}" required>
                                                                                             @error('flight[]')
                                                                                                 <span class="invalid-feedback">
                                                                                                     {{ $message }}
@@ -1292,9 +1281,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-6">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="flight_group[]">@lang('messages.Group') <span>*</span></label>
-                                                                                            <select name="flight_group[]" class="custom-select @error('flight_group[]') is-invalid @enderror" required>
+                                                                                            <select name="flight_group[]" class="backend-form-control @error('flight_group[]') is-invalid @enderror" required>
                                                                                                 <option selected value="">@lang('messages.Select one')</option>
                                                                                                 <option value="Brides">@lang("messages.Bride's")</option>
                                                                                                 <option value="Invitations">@lang('messages.Invitations')</option>
@@ -1305,9 +1294,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-6">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="type[]">@lang('messages.Type') <span>*</span></label>
-                                                                                            <select name="type[]" class="custom-select @error('type[]') is-invalid @enderror" required>
+                                                                                            <select name="type[]" class="backend-form-control @error('type[]') is-invalid @enderror" required>
                                                                                                 <option selected value="">Select</option>
                                                                                                 <option value="Arrival">Arrival</option>
                                                                                                 <option value="Departure">Departure</option>
@@ -1318,9 +1307,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-6">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="number_of_guests[]">@lang('messages.Number of Guests')</label>
-                                                                                            <input type="number" min="1"  name="number_of_guests[]" class="form-control @error('number_of_guests[]') is-invalid @enderror"   value="{{ old('number_of_guests[]') }}" required>
+                                                                                            <input type="number" min="1"  name="number_of_guests[]" class="backend-form-control @error('number_of_guests[]') is-invalid @enderror"   value="{{ old('number_of_guests[]') }}" required>
                                                                                             @error('number_of_guests')
                                                                                                 <span class="invalid-feedback">
                                                                                                     {{ $message }}
@@ -1329,9 +1318,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-6">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="time[]">@lang('messages.Date and Time')</label>
-                                                                                            <input type="datetime-local" name="time[]" class="form-control @error('time[]') is-invalid @enderror"  placeholder="@lang('messages.Select date and time')" value="{{ old('time[]') }}" required>
+                                                                                            <input type="datetime-local" name="time[]" class="backend-form-control @error('time[]') is-invalid @enderror"  placeholder="@lang('messages.Select date and time')" value="{{ old('time[]') }}" required>
                                                                                             @error('time[]')
                                                                                                 <span class="invalid-feedback">
                                                                                                     {{ $message }}
@@ -1340,9 +1329,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-6">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="guests[]">@lang('messages.Name')</label>
-                                                                                            <input type="text" name="guests[]" class="form-control @error('guests[]') is-invalid @enderror"  placeholder="@lang('messages.Responsible Person')" value="{{ old('guests[]') }}" required>
+                                                                                            <input type="text" name="guests[]" class="backend-form-control @error('guests[]') is-invalid @enderror"  placeholder="@lang('messages.Responsible Person')" value="{{ old('guests[]') }}" required>
                                                                                             @error('guests[]')
                                                                                                 <span class="invalid-feedback">
                                                                                                     {{ $message }}
@@ -1351,9 +1340,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-6">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="guests_contact[]">@lang('messages.Contact')</label>
-                                                                                            <input type="text" name="guests_contact[]" class="form-control @error('guests_contact[]') is-invalid @enderror"  placeholder="@lang('messages.Telephone')" value="{{ old('guests_contact[]') }}" required>
+                                                                                            <input type="text" name="guests_contact[]" class="backend-form-control @error('guests_contact[]') is-invalid @enderror"  placeholder="@lang('messages.Telephone')" value="{{ old('guests_contact[]') }}" required>
                                                                                             @error('guests_contact[]')
                                                                                                 <span class="invalid-feedback">
                                                                                                     {{ $message }}
@@ -1366,13 +1355,13 @@
                                                                         </div>
                                                                         <div class="after-add-more"></div>
                                                                         <div class="col-12 col-sm-12 col-md-12 text-right">
-                                                                            <button type="button" class="btn btn-primary add-more"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Add More')</button>
+                                                                            <button type="button" class="backend-button backend-button-primary add-more"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Add More')</button>
                                                                         </div>
                                                                     </div>
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="addWeddingOrderFlight{{ $orderWedding->id }}" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                    <button type="submit" form="addWeddingOrderFlight{{ $orderWedding->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1386,9 +1375,9 @@
                                                                     <div class="col-md-12">
                                                                         <div class="row">
                                                                             <div class="col-sm-12">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="flight[]">@lang('messages.Flight Number')</label>
-                                                                                    <input type="text" name="flight[]" class="form-control uppercase @error('flight[]') is-invalid @enderror"  placeholder="@lang('messages.Insert flight number')" value="{{ old('flight[]') }}" required>
+                                                                                    <input type="text" name="flight[]" class="backend-form-control uppercase @error('flight[]') is-invalid @enderror"  placeholder="@lang('messages.Insert flight number')" value="{{ old('flight[]') }}" required>
                                                                                     @error('flight[]')
                                                                                         <span class="invalid-feedback">
                                                                                             {{ $message }}
@@ -1397,9 +1386,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="flight_group[]">@lang('messages.Group') <span>*</span></label>
-                                                                                    <select name="flight_group[]" class="custom-select @error('flight_group[]') is-invalid @enderror" required>
+                                                                                    <select name="flight_group[]" class="backend-form-control @error('flight_group[]') is-invalid @enderror" required>
                                                                                         <option selected value="">@lang('messages.Select one')</option>
                                                                                         <option value="Brides">@lang("messages.Bride's")</option>
                                                                                         <option value="Invitations">@lang('messages.Invitations')</option>
@@ -1410,9 +1399,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="type[]">@lang('messages.Type') <span>*</span></label>
-                                                                                    <select name="type[]" class="custom-select @error('type[]') is-invalid @enderror" required>
+                                                                                    <select name="type[]" class="backend-form-control @error('type[]') is-invalid @enderror" required>
                                                                                         <option selected value="">Select</option>
                                                                                         <option value="Arrival">Arrival</option>
                                                                                         <option value="Departure">Departure</option>
@@ -1423,9 +1412,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="number_of_guests[]">@lang('messages.Number of Guests')</label>
-                                                                                    <input type="number" min="1"  name="number_of_guests[]" class="form-control @error('number_of_guests[]') is-invalid @enderror"   value="{{ old('number_of_guests[]') }}" required>
+                                                                                    <input type="number" min="1"  name="number_of_guests[]" class="backend-form-control @error('number_of_guests[]') is-invalid @enderror"   value="{{ old('number_of_guests[]') }}" required>
                                                                                     @error('number_of_guests')
                                                                                         <span class="invalid-feedback">
                                                                                             {{ $message }}
@@ -1434,9 +1423,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="time[]">@lang('messages.Date and Time')</label>
-                                                                                    <input type="datetime-local" name="time[]" class="form-control @error('time[]') is-invalid @enderror"  placeholder="@lang('messages.Select date and time')" value="{{ old('time[]') }}" required>
+                                                                                    <input type="datetime-local" name="time[]" class="backend-form-control @error('time[]') is-invalid @enderror"  placeholder="@lang('messages.Select date and time')" value="{{ old('time[]') }}" required>
                                                                                     @error('time[]')
                                                                                         <span class="invalid-feedback">
                                                                                             {{ $message }}
@@ -1445,9 +1434,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="guests[]">@lang('messages.Name')</label>
-                                                                                    <input type="text" name="guests[]" class="form-control @error('guests[]') is-invalid @enderror"  placeholder="@lang('messages.Responsible Person')" value="{{ old('guests[]') }}" required>
+                                                                                    <input type="text" name="guests[]" class="backend-form-control @error('guests[]') is-invalid @enderror"  placeholder="@lang('messages.Responsible Person')" value="{{ old('guests[]') }}" required>
                                                                                     @error('guests[]')
                                                                                         <span class="invalid-feedback">
                                                                                             {{ $message }}
@@ -1456,9 +1445,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-sm-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="guests_contact[]">@lang('messages.Contact')</label>
-                                                                                    <input type="text" name="guests_contact[]" class="form-control @error('guests_contact[]') is-invalid @enderror"  placeholder="@lang('messages.Telephone')" value="{{ old('guests_contact[]') }}" required>
+                                                                                    <input type="text" name="guests_contact[]" class="backend-form-control @error('guests_contact[]') is-invalid @enderror"  placeholder="@lang('messages.Telephone')" value="{{ old('guests_contact[]') }}" required>
                                                                                     @error('guests_contact[]')
                                                                                         <span class="invalid-feedback">
                                                                                             {{ $message }}
@@ -1515,7 +1504,7 @@
                                                                         <div class="card-box-title">
                                                                             <div class="subtitle"><i class="icon-copy fa fa-eye" aria-hidden="true"></i>Invitations</div>
                                                                         </div>
-                                                                    
+
                                                                         <div class="card-banner">
                                                                             <img class="img-fluid rounded" src="{{ url('storage/guests/id_passport/default.jpg') }}" alt="{{ $guest->name }}">
                                                                         </div>
@@ -1532,7 +1521,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1552,14 +1541,14 @@
                                                     @if ($orderWedding->handled_by)
                                                         @if ($orderWedding->handled_by == Auth::user()->id)
                                                             <span>
-                                                                <a href="#" data-toggle="modal" data-target="#add-invitation-order-wedding-{{ $orderWedding->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#add-invitation-order-wedding-{{ $orderWedding->id }}">
                                                                     <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                                 </a>
                                                             </span>
                                                         @endif
                                                     @else
                                                         <span>
-                                                            <a href="#" data-toggle="modal" data-target="#add-invitation-order-wedding-{{ $orderWedding->id }}"> 
+                                                            <a href="#" data-toggle="modal" data-target="#add-invitation-order-wedding-{{ $orderWedding->id }}">
                                                                 <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                             </a>
                                                         </span>
@@ -1591,9 +1580,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12 m-t-8">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="passport-cover" class="form-label">Identity Card / Passport <span> *</span></label>
-                                                                                        <input type="file" name="cover" id="passport-cover" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
+                                                                                        <input type="file" name="cover" id="passport-cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
                                                                                         @error('cover')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
@@ -1604,9 +1593,9 @@
                                                                         <div class="col-md-6">
                                                                             <div class="row">
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="name">Name</label>
-                                                                                        <input name="name" type="text" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
+                                                                                        <input name="name" type="text" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ old('name') }}" required>
                                                                                         @error('name')
                                                                                             <span class="invalid-feedback">
                                                                                                 <strong>{{ $message }}</strong>
@@ -1615,9 +1604,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="name_mandarin">Mandarin Name</label>
-                                                                                        <input name="name_mandarin" type="text" class="form-control @error('name_mandarin') is-invalid @enderror" placeholder="Name" value="{{ old('name_mandarin') }}">
+                                                                                        <input name="name_mandarin" type="text" class="backend-form-control @error('name_mandarin') is-invalid @enderror" placeholder="Name" value="{{ old('name_mandarin') }}">
                                                                                         @error('name_mandarin')
                                                                                             <span class="invalid-feedback">
                                                                                                 <strong>{{ $message }}</strong>
@@ -1626,9 +1615,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="identification_no">ID/Passport Number</label>
-                                                                                        <input name="identification_no" type="text" class="form-control @error('identification_no') is-invalid @enderror" placeholder="ID/Passpoer number" value="{{ old('identification_no') }}" required>
+                                                                                        <input name="identification_no" type="text" class="backend-form-control @error('identification_no') is-invalid @enderror" placeholder="ID/Passpoer number" value="{{ old('identification_no') }}" required>
                                                                                         @error('identification_no')
                                                                                             <span class="invalid-feedback">
                                                                                                 <strong>{{ $message }}</strong>
@@ -1637,9 +1626,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="phone">Phone</label>
-                                                                                        <input name="phone" type="text" class="form-control @error('phone') is-invalid @enderror" placeholder="Contact" value="{{ old('phone') }}" required>
+                                                                                        <input name="phone" type="text" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Contact" value="{{ old('phone') }}" required>
                                                                                         @error('phone')
                                                                                             <span class="invalid-feedback">
                                                                                                 <strong>{{ $message }}</strong>
@@ -1648,9 +1637,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="country">Country <span> *</span></label>
-                                                                                        <select name="country" class="custom-select @error('country') is-invalid @enderror" required>
+                                                                                        <select name="country" class="backend-form-control @error('country') is-invalid @enderror" required>
                                                                                             <option selected value="">Select one</option>
                                                                                             @foreach ($countries as $country)
                                                                                                 <option value="{{ $country->id }}">{{ $country->code2 }} - {{ $country->country_name }}</option>
@@ -1666,8 +1655,8 @@
                                                                     </div>
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="addInvitationOrderWedding-{{ $orderWedding->id }}" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                    <button type="submit" form="addInvitationOrderWedding-{{ $orderWedding->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1709,10 +1698,10 @@
                                                                     @if ($orderWedding->status != "Paid")
                                                                         @if ($orderWedding->handled_by)
                                                                             @if ($orderWedding->handled_by == Auth::user()->id)
-                                                                                <a href="#" data-toggle="modal" data-target="#detail-invitation-{{ $guest->id }}"> 
+                                                                                <a href="#" data-toggle="modal" data-target="#detail-invitation-{{ $guest->id }}">
                                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                                 </a>
-                                                                                <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $guest->id }}"> 
+                                                                                <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $guest->id }}">
                                                                                     <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <form id="deleteInvitationOrder{{ $guest->id }}" action="/func-delete-order-wedding-invitation-admin/{{ $guest->id }}" method="post" enctype="multipart/form-data">
@@ -1723,10 +1712,10 @@
                                                                             @endif
                                                                         @else
                                                                             <div class="table-action">
-                                                                                <a href="#" data-toggle="modal" data-target="#detail-invitation-{{ $guest->id }}"> 
+                                                                                <a href="#" data-toggle="modal" data-target="#detail-invitation-{{ $guest->id }}">
                                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                                 </a>
-                                                                                <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $guest->id }}"> 
+                                                                                <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $guest->id }}">
                                                                                     <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <form id="deleteInvitationOrder{{ $guest->id }}" action="/func-delete-order-wedding-invitation-admin/{{ $guest->id }}" method="post" enctype="multipart/form-data">
@@ -1739,7 +1728,7 @@
                                                                     @endif
                                                                 @endif
                                                             </div>
-                                                            
+
                                                         </td>
                                                     </tr>
                                                     {{-- MODAL DETAIL INVITATION  --}}
@@ -1750,7 +1739,7 @@
                                                                     <div class="card-box-title">
                                                                         <div class="subtitle"><i class="icon-copy fa fa-eye" aria-hidden="true"></i>Invitations</div>
                                                                     </div>
-                                                                    
+
                                                                     <div class="card-banner">
                                                                         @if (file_exists($passportPath))
                                                                             <img class="img-fluid rounded" src="{{ asset('storage/weddings/invitations/'.$guest->passport_img) }}" alt="{{ $guest->name }}">
@@ -1771,7 +1760,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="card-box-footer">
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1806,9 +1795,9 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-12 m-t-8">
-                                                                                                <div class="form-group">
+                                                                                                <div class="backend-form-field">
                                                                                                     <label for="cover-{{ $index }}" class="form-label">ID / Passport</label>
-                                                                                                    <input type="file" name="cover" id="cover-{{ $index }}" class="custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
+                                                                                                    <input type="file" name="cover" id="cover-{{ $index }}" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
                                                                                                     @error('cover')
                                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                                     @enderror
@@ -1816,13 +1805,13 @@
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                    
+
                                                                                     <div class="col-md-6">
                                                                                         <div class="row">
                                                                                             <div class="col-sm-12">
-                                                                                                <div class="form-group">
+                                                                                                <div class="backend-form-field">
                                                                                                     <label for="name">Name</label>
-                                                                                                    <input name="name" type="text" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $guest->name }}" required>
+                                                                                                    <input name="name" type="text" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $guest->name }}" required>
                                                                                                     @error('name')
                                                                                                         <span class="invalid-feedback">
                                                                                                             <strong>{{ $message }}</strong>
@@ -1831,9 +1820,9 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-12">
-                                                                                                <div class="form-group">
+                                                                                                <div class="backend-form-field">
                                                                                                     <label for="name_mandarin">Mandarin Name</label>
-                                                                                                    <input name="name_mandarin" type="text" class="form-control @error('name_mandarin') is-invalid @enderror" placeholder="Name" value="{{ $guest->chinese_name }}">
+                                                                                                    <input name="name_mandarin" type="text" class="backend-form-control @error('name_mandarin') is-invalid @enderror" placeholder="Name" value="{{ $guest->chinese_name }}">
                                                                                                     @error('name_mandarin')
                                                                                                         <span class="invalid-feedback">
                                                                                                             <strong>{{ $message }}</strong>
@@ -1842,9 +1831,9 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-12">
-                                                                                                <div class="form-group">
+                                                                                                <div class="backend-form-field">
                                                                                                     <label for="identification_no">ID/Passport Number</label>
-                                                                                                    <input name="identification_no" type="text" class="form-control @error('identification_no') is-invalid @enderror" placeholder="ID/Passpoer number" value="{{ $guest->passport_no }}" required>
+                                                                                                    <input name="identification_no" type="text" class="backend-form-control @error('identification_no') is-invalid @enderror" placeholder="ID/Passpoer number" value="{{ $guest->passport_no }}" required>
                                                                                                     @error('identification_no')
                                                                                                         <span class="invalid-feedback">
                                                                                                             <strong>{{ $message }}</strong>
@@ -1853,9 +1842,9 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-12">
-                                                                                                <div class="form-group">
+                                                                                                <div class="backend-form-field">
                                                                                                     <label for="phone">Phone</label>
-                                                                                                    <input name="phone" type="text" class="form-control @error('phone') is-invalid @enderror" placeholder="Contact" value="{{ $guest->phone }}" required>
+                                                                                                    <input name="phone" type="text" class="backend-form-control @error('phone') is-invalid @enderror" placeholder="Contact" value="{{ $guest->phone }}" required>
                                                                                                     @error('phone')
                                                                                                         <span class="invalid-feedback">
                                                                                                             <strong>{{ $message }}</strong>
@@ -1864,9 +1853,9 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-12">
-                                                                                                <div class="form-group">
+                                                                                                <div class="backend-form-field">
                                                                                                     <label for="country">Country <span> *</span></label>
-                                                                                                    <select name="country" class="custom-select @error('country') is-invalid @enderror" required>
+                                                                                                    <select name="country" class="backend-form-control @error('country') is-invalid @enderror" required>
                                                                                                         <option value="">Select one</option>
                                                                                                         @foreach ($countries as $edit_country)
                                                                                                             <option {{ $guest->country == $edit_country->id?"selected":""; }} value="{{ $edit_country->id }}">{{ $edit_country->code2 }} - {{ $edit_country->country_name }}</option>
@@ -1882,8 +1871,8 @@
                                                                                 </div>
                                                                             </form>
                                                                             <div class="card-box-footer">
-                                                                                <button type="submit" form="editInvitationOrderWedding-{{ $guest->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
-                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                                <button type="submit" form="editInvitationOrderWedding-{{ $guest->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1987,11 +1976,11 @@
                                                             <div class="row">
                                                                 @if ($orderWedding->service == "Ceremony Venue")
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="wedding_date">@lang("messages.Wedding Date") <span> *</span></label>
                                                                             <div class="btn-icon">
                                                                                 <span><i class="icon-copy fi-calendar"></i></span>
-                                                                                <input readonly name="wedding_date" type="text" id="wedding_date" class="form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" type="text" value="{{ date('d F Y',strtotime($orderWedding->wedding_date)) }}" required>
+                                                                                <input readonly name="wedding_date" type="text" id="wedding_date" class="backend-form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" type="text" value="{{ date('d F Y',strtotime($orderWedding->wedding_date)) }}" required>
                                                                             </div>
                                                                             @error('wedding_date')
                                                                                 <span class="invalid-feedback">
@@ -2002,11 +1991,11 @@
                                                                     </div>
                                                                 @elseif ($orderWedding->service == "Reception Venue")
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="reception_date_start">@lang("messages.Reception Date") <span> *</span></label>
                                                                             <div class="btn-icon">
                                                                                 <span><i class="icon-copy fi-calendar"></i></span>
-                                                                                <input readonly name="reception_date_start" type="text" id="reception_date_start" class="form-control input-icon date-picker @error('reception_date_start') is-invalid @enderror" type="text" value="{{ date('d F Y',strtotime($orderWedding->reception_date_start)) }}" required>
+                                                                                <input readonly name="reception_date_start" type="text" id="reception_date_start" class="backend-form-control input-icon date-picker @error('reception_date_start') is-invalid @enderror" type="text" value="{{ date('d F Y',strtotime($orderWedding->reception_date_start)) }}" required>
                                                                             </div>
                                                                             @error('reception_date_start')
                                                                                 <span class="invalid-feedback">
@@ -2017,11 +2006,11 @@
                                                                     </div>
                                                                 @elseif ($orderWedding->service == "Wedding Package")
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="wedding_date">@lang("messages.Wedding Date") <span> *</span></label>
                                                                             <div class="btn-icon">
                                                                                 <span><i class="icon-copy fi-calendar"></i></span>
-                                                                                <input readonly name="wedding_date" type="text" id="wedding_date" class="form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" value="{{ date('d F Y',strtotime($orderWedding->wedding_date)) }}" required>
+                                                                                <input readonly name="wedding_date" type="text" id="wedding_date" class="backend-form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" value="{{ date('d F Y',strtotime($orderWedding->wedding_date)) }}" required>
                                                                             </div>
                                                                             @error('wedding_date')
                                                                                 <span class="invalid-feedback">
@@ -2031,11 +2020,11 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="slot">@lang("messages.Slot") <span> *</span></label>
                                                                             <div class="btn-icon">
                                                                                 <span><i class="icon-copy dw dw-wall-clock2"></i></span>
-                                                                                <input readonly name="slot" type="text" class="form-control input-icon time-picker-default @error('slot') is-invalid @enderror" value="{{ date('H:i',strtotime($orderWedding->slot)) }}" required>
+                                                                                <input readonly name="slot" type="text" class="backend-form-control input-icon time-picker-default @error('slot') is-invalid @enderror" value="{{ date('H:i',strtotime($orderWedding->slot)) }}" required>
                                                                             </div>
                                                                             @error('slot')
                                                                                 <span class="invalid-feedback">
@@ -2045,11 +2034,11 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="reception_date_start">@lang("messages.Reception Date") <span> *</span></label>
                                                                             <div class="btn-icon">
                                                                                 <span><i class="icon-copy fi-calendar"></i></span>
-                                                                                <input readonly name="reception_date_start" type="text" id="reception_date_start" class="form-control input-icon datetimepicker @error('reception_date_start') is-invalid @enderror" value="{{ date('d F Y H:i',strtotime($orderWedding->reception_date_start)) }}" required>
+                                                                                <input readonly name="reception_date_start" type="text" id="reception_date_start" class="backend-form-control input-icon datetimepicker @error('reception_date_start') is-invalid @enderror" value="{{ date('d F Y H:i',strtotime($orderWedding->reception_date_start)) }}" required>
                                                                             </div>
                                                                             @error('reception_date_start')
                                                                                 <span class="invalid-feedback">
@@ -2060,18 +2049,18 @@
                                                                     </div>
                                                                 @endif
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="number_of_invitation">@lang('messages.Number of Invitations') <span> *</span></label>
                                                                         <div class="btn-icon">
                                                                             <span><i class="icon-copy fi-torsos-all"></i></span>
                                                                             @if ($ceremonyVenue)
                                                                                 @if ($ceremonyVenue->capacity < $orderWedding->number_of_invitation)
-                                                                                    <input name="number_of_invitation" type="number" min="1" max="{{ $ceremonyVenue->capacity }}" class="form-control input-icon @error('number_of_invitation') is-invalid @enderror" placeholder="Maximum invitations {{ $orderWedding->capacity }}" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
+                                                                                    <input name="number_of_invitation" type="number" min="1" max="{{ $ceremonyVenue->capacity }}" class="backend-form-control input-icon @error('number_of_invitation') is-invalid @enderror" placeholder="Maximum invitations {{ $orderWedding->capacity }}" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
                                                                                 @else
-                                                                                    <input name="number_of_invitation" type="number" min="1" max="{{ $maxCapacity->capacity }}" class="form-control input-icon @error('number_of_invitation') is-invalid @enderror" placeholder="Maximum invitations {{ $orderWedding->capacity }}" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
+                                                                                    <input name="number_of_invitation" type="number" min="1" max="{{ $maxCapacity->capacity }}" class="backend-form-control input-icon @error('number_of_invitation') is-invalid @enderror" placeholder="Maximum invitations {{ $orderWedding->capacity }}" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
                                                                                 @endif
                                                                             @else
-                                                                                <input name="number_of_invitation" type="number" min="1" max="{{ $maxCapacity->capacity }}" class="form-control input-icon @error('number_of_invitation') is-invalid @enderror" placeholder="Maximum invitations {{ $orderWedding->capacity }}" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
+                                                                                <input name="number_of_invitation" type="number" min="1" max="{{ $maxCapacity->capacity }}" class="backend-form-control input-icon @error('number_of_invitation') is-invalid @enderror" placeholder="Maximum invitations {{ $orderWedding->capacity }}" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
                                                                             @endif
                                                                         </div>
                                                                         @error('number_of_invitation')
@@ -2084,8 +2073,8 @@
                                                             </div>
                                                         </form>
                                                         <div class="card-box-footer">
-                                                            <button type="submit" form="updateWeddingOrderWedding" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                            <button type="submit" form="updateWeddingOrderWedding" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
+                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2098,7 +2087,7 @@
                                     <div class="page-subtitle">
                                         @lang('messages.Wedding Venue')
                                         <span>
-                                            <a href="#" data-toggle="modal" data-target="#detail-wedding-venue-{{ $hotel->id }}"> 
+                                            <a href="#" data-toggle="modal" data-target="#detail-wedding-venue-{{ $hotel->id }}">
                                                 <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                             </a>
                                         </span>
@@ -2126,7 +2115,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="card-box-footer">
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2213,7 +2202,7 @@
                                                         @endif
                                                     @endif
                                                 @endif
-                                                
+
                                             </div>
                                         </div>
                                         @if ($ceremonyVenue)
@@ -2240,7 +2229,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="card-box-footer">
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2299,12 +2288,12 @@
                                                                     @method('put')
                                                                     <div class="row">
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label>@lang("messages.Select Ceremony Venue") <span>*</span></label>
                                                                                 <div class="card-box-content">
                                                                                     @foreach ($ceremonyVenues as $cv_id=>$c_venue)
                                                                                         @if ($orderWedding->number_of_invitation > $c_venue->capacity)
-                                                                                            <input disabled type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}" data-basic-prices="{{ $c_venue->basic_price }}" data-arrangement-prices="{{ $c_venue->arrangement_price }}">
+                                                                                            <input disabled type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="backend-form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}" data-basic-prices="{{ $c_venue->basic_price }}" data-arrangement-prices="{{ $c_venue->arrangement_price }}">
                                                                                             <label for="{{ "cv".$cv_id }}" class="label-radio">
                                                                                                 <div class="card h-100">
                                                                                                     <img class="card-img" src="{{ asset ('storage/hotels/hotels-wedding-venue/' . $c_venue->cover) }}" alt="{{ $c_venue->service }}">
@@ -2325,7 +2314,7 @@
                                                                                         @else
                                                                                             @if ($orderWedding->service_id)
                                                                                                 @if ($orderWedding->service_id == $c_venue->id)
-                                                                                                    <input checked type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}" data-basic-prices="{{ $c_venue->basic_price }}" data-arrangement-prices="{{ $c_venue->arrangement_price }}">
+                                                                                                    <input checked type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="backend-form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}" data-basic-prices="{{ $c_venue->basic_price }}" data-arrangement-prices="{{ $c_venue->arrangement_price }}">
                                                                                                     <label for="{{ "cv".$cv_id }}" class="label-radio">
                                                                                                         <div class="card h-100">
                                                                                                             <img class="card-img" src="{{ asset ('storage/hotels/hotels-wedding-venue/' . $c_venue->cover) }}" alt="{{ $c_venue->service }}">
@@ -2341,7 +2330,7 @@
                                                                                                         </span>
                                                                                                     @enderror
                                                                                                 @else
-                                                                                                    <input type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}" data-basic-prices="{{ $c_venue->basic_price }}" data-arrangement-prices="{{ $c_venue->arrangement_price }}">
+                                                                                                    <input type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="backend-form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}" data-basic-prices="{{ $c_venue->basic_price }}" data-arrangement-prices="{{ $c_venue->arrangement_price }}">
                                                                                                     <label for="{{ "cv".$cv_id }}" class="label-radio">
                                                                                                         <div class="card h-100">
                                                                                                             <img class="card-img" src="{{ asset ('storage/hotels/hotels-wedding-venue/' . $c_venue->cover) }}" alt="{{ $c_venue->service }}">
@@ -2358,7 +2347,7 @@
                                                                                                     @enderror
                                                                                                 @endif
                                                                                             @else
-                                                                                                <input type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}">
+                                                                                                <input type="radio" id="{{ "cv".$cv_id }}" name="ceremonial_venue_id" class="backend-form-control @error('ceremonial_venue_id') is-invalid @enderror" value="{{ $c_venue->id }}" data-slots="{{ $c_venue->slot }}">
                                                                                                 <label for="{{ "cv".$cv_id }}" class="label-radio">
                                                                                                     <div class="card h-100">
                                                                                                         <img class="card-img" src="{{ asset ('storage/hotels/hotels-wedding-venue/' . $c_venue->cover) }}" alt="{{ $c_venue->service }}" data-basic-prices="{{ $c_venue->basic_price }}" data-arrangement-prices="{{ $c_venue->arrangement_price }}">
@@ -2381,14 +2370,14 @@
                                                                             <hr class="form-hr">
                                                                         </div>
                                                                         <div class="col-md-4">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="wedding_date">@lang("messages.Wedding Date") <span> *</span></label>
                                                                                 <div class="btn-icon">
                                                                                     <span><i class="icon-copy fi-calendar"></i></span>
                                                                                     @if ($orderWedding->wedding_date)
-                                                                                        <input readonly name="wedding_date" type="text" class="form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ date("d M Y",strtotime($orderWedding->wedding_date)) }}" required>
+                                                                                        <input readonly name="wedding_date" type="text" class="backend-form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ date("d M Y",strtotime($orderWedding->wedding_date)) }}" required>
                                                                                     @else
-                                                                                        <input readonly name="wedding_date" type="text" class="form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ old("wedding_date") }}" required>
+                                                                                        <input readonly name="wedding_date" type="text" class="backend-form-control input-icon date-picker @error('wedding_date') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ old("wedding_date") }}" required>
                                                                                     @endif
                                                                                 </div>
                                                                                 @error('wedding_date')
@@ -2399,9 +2388,9 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-4">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="slot">Slot <span> *</span></label>
-                                                                                <select name="slot" id="slot" class="custom-select @error('slot') is-invalid @enderror" required>
+                                                                                <select name="slot" id="slot" class="backend-form-control @error('slot') is-invalid @enderror" required>
                                                                                     @if ($orderWedding->slot)
                                                                                         <option selected value="{{ $orderWedding->slot }}" data-basic-price="{{ $orderWedding->ceremony_venue_price }}" data-arrangement-price="{{ $orderWedding->ceremony_venue_price }}">{{ $orderWedding->slot }}</option>
                                                                                     @else
@@ -2427,11 +2416,11 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-4">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label for="ceremony_venue_invitations">@lang("messages.Number of Invitations") <span> *</span></label>
                                                                                 <div class="btn-icon">
                                                                                     <span><i class="icon-copy fi-torsos-all"></i></span>
-                                                                                    <input name="ceremony_venue_invitations" type="number" min="1" class="form-control input-icon @error('ceremony_venue_invitations') is-invalid @enderror" placeholder="Number of invitations" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
+                                                                                    <input name="ceremony_venue_invitations" type="number" min="1" class="backend-form-control input-icon @error('ceremony_venue_invitations') is-invalid @enderror" placeholder="Number of invitations" type="text" value="{{ $orderWedding->number_of_invitation }}" required>
                                                                                 </div>
                                                                                 @error('ceremony_venue_invitations')
                                                                                     <span class="invalid-feedback">
@@ -2445,8 +2434,8 @@
                                                                     <input type="hidden" name="arrangement_price" id="arrangement_price">
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="updateWeddingOrderCeremonyVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                    <button type="submit" form="updateWeddingOrderCeremonyVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2489,7 +2478,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="card-box-footer">
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2622,7 +2611,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="card-box-footer">
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2670,7 +2659,7 @@
                                                                     @method('put')
                                                                     <div class="row">
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label>@lang("messages.Select one") <span>*</span></label>
                                                                                 <div class="card-box-content">
                                                                                     @foreach ($cv_decorations as $dcv_id=>$decoration_c_venue)
@@ -2716,8 +2705,8 @@
                                                                     <input type="hidden" name="arrangement_price" id="arrangement_price">
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="updateDecorationCeremonyVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Change')</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                    <button type="submit" form="updateDecorationCeremonyVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Change')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2736,7 +2725,7 @@
                                                 @lang('messages.Decoration')
                                                 @if ($orderWedding->ceremony_venue_decoration_id)
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#detail-decoration-ceremony-venue-{{ $ceremonyVenueDecoration->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#detail-decoration-ceremony-venue-{{ $ceremonyVenueDecoration->id }}">
                                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
@@ -2767,7 +2756,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="card-box-footer">
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2811,7 +2800,7 @@
                                             <div class="page-subtitle" {{ $receptionVenue?"":"empty-value" }}>
                                                 @lang('messages.Reception Venue')
                                                 <span>
-                                                    <a href="#" data-toggle="modal" data-target="#detail-reception-venue-{{ $receptionVenue->id }}"> 
+                                                    <a href="#" data-toggle="modal" data-target="#detail-reception-venue-{{ $receptionVenue->id }}">
                                                         <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
@@ -2844,7 +2833,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="card-box-footer">
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2902,7 +2891,7 @@
                                                                     </span>
                                                                 @endif
                                                                 <span>
-                                                                    <a href="#" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}"> 
+                                                                    <a href="#" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}">
                                                                         <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     </a>
                                                                 </span>
@@ -2918,7 +2907,7 @@
                                                                 </span>
                                                             @endif
                                                             <span>
-                                                                <a href="#" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}">
                                                                     <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 </a>
                                                             </span>
@@ -2927,7 +2916,7 @@
                                                 @endif
                                                 @if ($receptionVenue)
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#detail-reception-venue-{{ $receptionVenue->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#detail-reception-venue-{{ $receptionVenue->id }}">
                                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
@@ -2961,7 +2950,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="card-box-footer">
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -3015,7 +3004,7 @@
                                                                         @method('put')
                                                                         <div class="row">
                                                                             <div class="col-sm-12">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label>@lang("messages.Select Reception Venue") <span>*</span></label>
                                                                                     <div class="card-box-content">
                                                                                         @foreach ($receptionVenues as $rec_v_id=>$reception_venue)
@@ -3076,14 +3065,14 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-4">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="reception_date_start">@lang("messages.Date") <span> *</span></label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fi-calendar"></i></span>
                                                                                         @if ($orderWedding->reception_date_start)
-                                                                                            <input readonly name="reception_date_start" type="text" class="form-control input-icon date-picker @error('reception_date_start') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ date("d M Y",strtotime($orderWedding->reception_date_start)) }}" required>
+                                                                                            <input readonly name="reception_date_start" type="text" class="backend-form-control input-icon date-picker @error('reception_date_start') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ date("d M Y",strtotime($orderWedding->reception_date_start)) }}" required>
                                                                                         @else
-                                                                                            <input readonly name="reception_date_start" type="text" class="wedding-date form-control input-icon date-picker @error('reception_date_start') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ old('reception_date_start') }}" required>
+                                                                                            <input readonly name="reception_date_start" type="text" class="wedding-date backend-form-control input-icon date-picker @error('reception_date_start') is-invalid @enderror" placeholder="Select Date" type="text" value="{{ old('reception_date_start') }}" required>
                                                                                         @endif
                                                                                     </div>
                                                                                     @error('reception_date_start')
@@ -3094,11 +3083,11 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-4">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="reception_time_start">@lang("messages.Time") <span> *</span></label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fi-clock"></i></span>
-                                                                                        <input name="reception_time_start" type="text" class="form-control time-picker-default @error('reception_time_start') is-invalid @enderror" placeholder="Select Time"  value="{{ date('H:i',strtotime($orderWedding->reception_date_start)) }}" required>
+                                                                                        <input name="reception_time_start" type="text" class="backend-form-control time-picker-default @error('reception_time_start') is-invalid @enderror" placeholder="Select Time"  value="{{ date('H:i',strtotime($orderWedding->reception_date_start)) }}" required>
                                                                                     </div>
                                                                                     @error('reception_time_start')
                                                                                         <span class="invalid-feedback">
@@ -3108,11 +3097,11 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-4">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="reception_venue_invitations">@lang("messages.Number of Invitations") <span> *</span></label>
                                                                                     <div class="btn-icon">
                                                                                         <span><i class="icon-copy fi-torsos-all"></i></span>
-                                                                                        <input name="reception_venue_invitations" type="number" min="1" class="form-control input-icon @error('reception_venue_invitations') is-invalid @enderror" placeholder="Number of invitations" type="text" value="{{ $orderWedding->reception_venue_invitations }}" required>
+                                                                                        <input name="reception_venue_invitations" type="number" min="1" class="backend-form-control input-icon @error('reception_venue_invitations') is-invalid @enderror" placeholder="Number of invitations" type="text" value="{{ $orderWedding->reception_venue_invitations }}" required>
                                                                                     </div>
                                                                                     @error('reception_venue_invitations')
                                                                                         <span class="invalid-feedback">
@@ -3125,11 +3114,11 @@
                                                                     </form>
                                                                     <div class="card-box-footer">
                                                                         @if ($receptionVenue)
-                                                                            <button type="submit" form="updateReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                            <button type="submit" form="updateReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
                                                                         @else
-                                                                            <button type="submit" form="updateReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                            <button type="submit" form="updateReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                                                         @endif
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -3148,7 +3137,7 @@
                                                 @lang('messages.Decoration')
                                                 @if ($orderWedding->reception_venue_decoration_id)
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#detail-decoration-reception-venue-{{ $decorationReceptionVenue->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#detail-decoration-reception-venue-{{ $decorationReceptionVenue->id }}">
                                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
@@ -3181,7 +3170,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="card-box-footer">
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -3237,7 +3226,7 @@
                                                                         </form>
                                                                     </span>
                                                                     <span>
-                                                                        <a href="#" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}"> 
+                                                                        <a href="#" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}">
                                                                             <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                         </a>
                                                                     </span>
@@ -3246,7 +3235,7 @@
                                                         @endif
                                                     @endif
                                                     <span>
-                                                        <a href="#" data-toggle="modal" data-target="#detail-decoration-reception-venue-{{ $decorationReceptionVenue->id }}"> 
+                                                        <a href="#" data-toggle="modal" data-target="#detail-decoration-reception-venue-{{ $decorationReceptionVenue->id }}">
                                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
@@ -3257,7 +3246,7 @@
                                                                 @if ($orderWedding->handled_by == Auth::user()->id)
                                                                     @if ($orderWedding->service != "Wedding Package")
                                                                         <span>
-                                                                            <a href="#" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}"> 
+                                                                            <a href="#" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}">
                                                                                 <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                             </a>
                                                                         </span>
@@ -3296,7 +3285,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="card-box-footer">
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -3350,7 +3339,7 @@
                                                                                     @method('put')
                                                                                     <div class="row">
                                                                                         <div class="col-sm-12">
-                                                                                            <div class="form-group">
+                                                                                            <div class="backend-form-field">
                                                                                                 <label>@lang("messages.Select one") <span>*</span></label>
                                                                                                 <div class="card-box-content">
                                                                                                     @foreach ($reception_v_decorations as $dcv_id=>$decoration_c_venue)
@@ -3397,11 +3386,11 @@
                                                                                 </form>
                                                                                 <div class="card-box-footer">
                                                                                     @if ($decorationReceptionVenue)
-                                                                                        <button type="submit" form="updateDecorationReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                                        <button type="submit" form="updateDecorationReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
                                                                                     @else
-                                                                                        <button type="submit" form="updateDecorationReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-plus-circle"></i> @lang('messages.Add')</button>
+                                                                                        <button type="submit" form="updateDecorationReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle"></i> @lang('messages.Add')</button>
                                                                                     @endif
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -3443,7 +3432,7 @@
                                                                     <td class="pd-2-8">Airport Shuttle (Arrival), {{ $bride_transport->brand }} - {{ $bride_transport->name }}</td>
                                                                     <td class="pd-2-8"><i>Include</i></td>
                                                                     <td class="pd-2-8 text-right">
-                                                                        <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}"> 
+                                                                        <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}">
                                                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                         </a>
                                                                     </td>
@@ -3453,7 +3442,7 @@
                                                                     <td class="pd-2-8">Airport Shuttle (Departure), {{ $bride_transport->brand }} - {{ $bride_transport->name }}</td>
                                                                     <td class="pd-2-8"><i>Include</i></td>
                                                                     <td class="pd-2-8 text-right">
-                                                                        <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}"> 
+                                                                        <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}">
                                                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                         </a>
                                                                     </td>
@@ -3485,7 +3474,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="card-box-footer">
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -3524,7 +3513,7 @@
                                                                             @endif
                                                                         @endif
                                                                     @endif
-                                                                    <a href="#" data-toggle="modal" data-target="#detail-transport_invitation-service-{{ $transport_invitation->id }}"> 
+                                                                    <a href="#" data-toggle="modal" data-target="#detail-transport_invitation-service-{{ $transport_invitation->id }}">
                                                                         <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                     </a>
                                                                 </td>
@@ -3549,7 +3538,7 @@
                                                                                                 Airport Shuttle
                                                                                             </p>
                                                                                             <p>
-                                                                                                {{ date("d M Y",strtotime($orderWedding->wedding_date)) }} ({{ date('H:i',strtotime($orderWedding->slot)) }}) | 
+                                                                                                {{ date("d M Y",strtotime($orderWedding->wedding_date)) }} ({{ date('H:i',strtotime($orderWedding->slot)) }}) |
                                                                                                 {{ '$ ' . number_format(($transport_invitation->price), 0, ',', '.') }}
                                                                                             </p>
                                                                                         </div>
@@ -3557,7 +3546,7 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="card-box-footer">
-                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -3567,7 +3556,7 @@
                                                     @endif
                                                 </tbody>
                                             </table>
-                                            
+
                                             @if ($transport_price > 0)
                                                 <div class="box-price-kicked">
                                                     <div class="row">
@@ -3646,7 +3635,7 @@
                                                             <td class="pd-2-8">Airport Shuttle ({{ $transport_bride_type =="In"?"Arrival":"Departure" }}), {{ $bride_transport->brand }} - {{ $bride_transport->name }}</td>
                                                             <td class="pd-2-8"><i>Include</i></td>
                                                             <td class="pd-2-8 text-right">
-                                                                <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}">
                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                 </a>
                                                             </td>
@@ -3656,7 +3645,7 @@
                                                             <td class="pd-2-8">Airport Shuttle ({{ $transport_bride_type =="In"?"Arrival":"Departure" }}), {{ $bride_transport->brand }} - {{ $bride_transport->name }}</td>
                                                             <td class="pd-2-8"><i>Include</i></td>
                                                             <td class="pd-2-8 text-right">
-                                                                <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#detail-transport_bride-service-{{ $bride_transport->id }}">
                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                 </a>
                                                             </td>
@@ -3688,7 +3677,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -3727,7 +3716,7 @@
                                                                         @endif
                                                                     @endif
                                                                 @endif
-                                                                <a href="#" data-toggle="modal" data-target="#detail-transport_invitation-service-{{ $transport_invitation->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#detail-transport_invitation-service-{{ $transport_invitation->id }}">
                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                 </a>
                                                             </td>
@@ -3747,11 +3736,11 @@
                                                                                     @method('PUT')
                                                                                     <div class="row">
                                                                                         <div class="col-md-12">
-                                                                                            <div class="form-group">
+                                                                                            <div class="backend-form-field">
                                                                                                 <label for="price">Price <span> *</span></label>
                                                                                                 <div class="btn-icon">
                                                                                                     <span>$</span>
-                                                                                                    <input name="price" type="number" class="form-control input-icon @error('price') is-invalid @enderror" placeholder="Insert Price" type="text" value="{{ $transport_invitation->price }}" required>
+                                                                                                    <input name="price" type="number" class="backend-form-control input-icon @error('price') is-invalid @enderror" placeholder="Insert Price" type="text" value="{{ $transport_invitation->price }}" required>
                                                                                                 </div>
                                                                                                 @error('price')
                                                                                                     <span class="invalid-feedback">
@@ -3763,8 +3752,8 @@
                                                                                     </div>
                                                                                 </form>
                                                                                 <div class="card-box-footer">
-                                                                                    <button type="submit" form="updateTransportInvitation{{ $transport_invitation->id }}" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                                    <button type="submit" form="updateTransportInvitation{{ $transport_invitation->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -3792,7 +3781,7 @@
                                                                                             Airport Shuttle
                                                                                         </p>
                                                                                         <p>
-                                                                                            {{ date("d M Y",strtotime($orderWedding->wedding_date)) }} ({{ date('H:i',strtotime($orderWedding->slot)) }}) | 
+                                                                                            {{ date("d M Y",strtotime($orderWedding->wedding_date)) }} ({{ date('H:i',strtotime($orderWedding->slot)) }}) |
                                                                                             {{ '$ ' . number_format(($transport_invitation->price), 0, ',', '.') }}
                                                                                         </p>
                                                                                     </div>
@@ -3800,7 +3789,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -3823,7 +3812,7 @@
                                                             @method('PUT')
                                                             <div class="row">
                                                                 <div class="col-md-12">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label>@lang('messages.Select Transport') <span>*</span></label>
                                                                         <div class="card-box-content">
                                                                             @foreach ($transports as $transport)
@@ -3843,12 +3832,12 @@
                                                                 </div>
                                                                 @if ($orderWedding->service == "Wedding Package")
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group ">
+                                                                        <div class="backend-form-field ">
                                                                             <label for="date">@lang('messages.Date')<span> *</span></label>
-                                                                            <select name="date" class="custom-select @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
+                                                                            <select name="date" class="backend-form-control @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
                                                                                 <option selected value="">@lang('messages.Select one')</option>
                                                                                 @for ($wd = 0; $wd <= $orderWedding->duration; $wd++)
-                                                                                    <option value="{{ date('Y-m-d',strtotime('+'.$wd .' days',strtotime($orderWedding->checkin))) }}">{{ date('Y-m-d',strtotime('+'.$wd .' days',strtotime($orderWedding->checkin))) }} 
+                                                                                    <option value="{{ date('Y-m-d',strtotime('+'.$wd .' days',strtotime($orderWedding->checkin))) }}">{{ date('Y-m-d',strtotime('+'.$wd .' days',strtotime($orderWedding->checkin))) }}
                                                                                         {{ date('Y-m-d',strtotime($orderWedding->checkin)) == date('Y-m-d',strtotime('+'.$wd .' days',strtotime($orderWedding->checkin))) ? "Check-in" : "" }}
                                                                                         {{ date('Y-m-d',strtotime($orderWedding->wedding_date)) == date('Y-m-d',strtotime('+'.$wd .' days',strtotime($orderWedding->checkin))) ? "Wedding Ceremony" : "" }}
                                                                                         {{ date('Y-m-d',strtotime($orderWedding->checkout)) == date('Y-m-d',strtotime('+'.$wd .' days',strtotime($orderWedding->checkin))) ? "Check-out" : "" }}
@@ -3862,9 +3851,9 @@
                                                                     </div>
                                                                 @else
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="date" class="form-label">@lang('messages.Date')</label>
-                                                                            <input readonly type="text" name="date" class="form-control date-picker td-input @error('date') is-invalid @enderror" placeholder="@lang('messages.Select date')" value="{{ old('date') }}" required>
+                                                                            <input readonly type="text" name="date" class="backend-form-control date-picker td-input @error('date') is-invalid @enderror" placeholder="@lang('messages.Select date')" value="{{ old('date') }}" required>
                                                                             @error('date')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
@@ -3872,18 +3861,18 @@
                                                                     </div>
                                                                 @endif
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="time" class="form-label">@lang('messages.Time')</label>
-                                                                        <input type="text" name="time" class="form-control time-picker @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ old('time') }}" required>
+                                                                        <input type="text" name="time" class="backend-form-control time-picker @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ old('time') }}" required>
                                                                         @error('time')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group ">
+                                                                    <div class="backend-form-field ">
                                                                         <label for="type">@lang('messages.Type')<span> *</span></label>
-                                                                        <select name="type" class="custom-select @error('type') is-invalid @enderror" required>
+                                                                        <select name="type" class="backend-form-control @error('type') is-invalid @enderror" required>
                                                                             <option selected value="">@lang('messages.Select one')</option>
                                                                             <option value="Airport Shuttle In">@lang('messages.Airport Shuttle') (@lang('messages.Arrival'))</option>
                                                                             <option value="Airport Shuttle Out">@lang('messages.Airport Shuttle') (@lang('messages.Departure'))</option>
@@ -3897,9 +3886,9 @@
                                                                     <input type="hidden" name="passenger" value="Invitations">
                                                                 @else
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group ">
+                                                                        <div class="backend-form-field ">
                                                                             <label for="passenger">@lang('messages.Passenger')<span> *</span></label>
-                                                                            <select name="passenger" class="custom-select @error('passenger') is-invalid @enderror" value="{{ old('passenger') }}" required>
+                                                                            <select name="passenger" class="backend-form-control @error('passenger') is-invalid @enderror" value="{{ old('passenger') }}" required>
                                                                                 <option selected value="">@lang('messages.Select one')</option>
                                                                                 <option value="Bride">@lang('messages.Bride')</option>
                                                                                 <option value="Invitations">@lang('messages.Invitations')</option>
@@ -3911,9 +3900,9 @@
                                                                     </div>
                                                                 @endif
                                                                 <div class="col-md-12">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="remark" class="form-label">@lang('messages.Remark')</label>
-                                                                        <textarea name="remark" class="textarea_editor form-control @error('remark') is-invalid @enderror" placeholder="Insert remark">{!! old('remark') !!}</textarea>
+                                                                        <textarea data-backend-richtext="true" name="remark" class="textarea_editor backend-form-control @error('remark') is-invalid @enderror" placeholder="Insert remark">{!! old('remark') !!}</textarea>
                                                                         @error('remark')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
@@ -3922,8 +3911,8 @@
                                                             </div>
                                                         </form>
                                                         <div class="card-box-footer">
-                                                            <button type="submit" form="addWeddingPlannerTransport-{{ $orderWedding->id }}" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Add')</button>
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                            <button type="submit" form="addWeddingPlannerTransport-{{ $orderWedding->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Add')</button>
+                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -3984,7 +3973,7 @@
                                                             <td class="pd-2-8">-</td>
                                                             <td class="pd-2-8"><i>Include</i></td>
                                                             <td class="pd-2-8 text-right">
-                                                                <a href="#" data-toggle="modal" data-target="#detail-accommodation-bride-service-{{ $orderWedding->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#detail-accommodation-bride-service-{{ $orderWedding->id }}">
                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                 </a>
                                                             </td>
@@ -4006,7 +3995,7 @@
                                                                                     <div class="col-sm-12 text-center">
                                                                                         <div class="card-subtitle p-t-0">{{ $orderWedding->hotel->name }} - {{ $orderWedding->suite_villa->rooms }}</div>
                                                                                         <p>
-                                                                                            {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} | 
+                                                                                            {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} |
                                                                                             <i>Include</i>
                                                                                         </p>
                                                                                     </div>
@@ -4014,7 +4003,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -4052,7 +4041,7 @@
                                                                             @endif
                                                                         @endif
                                                                     @endif
-                                                                    <a href="#" data-toggle="modal" data-target="#detail-accommodation_invitation-service-{{ $accommodation_invitation->id }}"> 
+                                                                    <a href="#" data-toggle="modal" data-target="#detail-accommodation_invitation-service-{{ $accommodation_invitation->id }}">
                                                                         <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                     </a>
                                                                 </td>
@@ -4074,7 +4063,7 @@
                                                                                         <div class="col-sm-12 text-center">
                                                                                             <div class="card-subtitle p-t-0">{{ $accommodation_invitation->hotel->name }} - {{ $accommodation_invitation->room->rooms }}</div>
                                                                                             <p>
-                                                                                                {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} | 
+                                                                                                {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} |
                                                                                                 {{ '$ ' . number_format(($accommodation_invitation->public_rate), 0, ',', '.') }}
                                                                                             </p>
                                                                                         </div>
@@ -4082,14 +4071,14 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="card-box-footer">
-                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         @endforeach
-                                                        
+
                                                     @endif
                                                 </tbody>
                                             </table>
@@ -4159,7 +4148,7 @@
                                                     @if ($orderWedding->status != "Approved")
                                                         @if ($orderWedding->status != "Paid")
                                                             <span>
-                                                                <a href="/admin-validate-order-wedding-accommodation-{{ $orderWedding->id }}"> 
+                                                                <a href="/admin-validate-order-wedding-accommodation-{{ $orderWedding->id }}">
                                                                     @if ($weddingAccommodations)
                                                                         <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     @else
@@ -4174,7 +4163,7 @@
                                                 @if ($orderWedding->status != "Approved")
                                                     @if ($orderWedding->status != "Paid")
                                                         <span>
-                                                            <a href="/admin-validate-order-wedding-accommodation-{{ $orderWedding->id }}"> 
+                                                            <a href="/admin-validate-order-wedding-accommodation-{{ $orderWedding->id }}">
                                                                 @if ($weddingAccommodations)
                                                                     <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 @else
@@ -4205,7 +4194,7 @@
                                                         <td class="pd-2-8">-</td>
                                                         <td class="pd-2-8"><i>Include</i></td>
                                                         <td class="pd-2-8 text-right">
-                                                            <a href="#" data-toggle="modal" data-target="#detail-accommodation-bride-service-{{ $orderWedding->id }}"> 
+                                                            <a href="#" data-toggle="modal" data-target="#detail-accommodation-bride-service-{{ $orderWedding->id }}">
                                                                 <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                             </a>
                                                         </td>
@@ -4227,7 +4216,7 @@
                                                                                 <div class="col-sm-12 text-center">
                                                                                     <div class="card-subtitle p-t-0">{{ $orderWedding->hotel->name }} - {{ $orderWedding->suite_villa->rooms }}</div>
                                                                                     <p>
-                                                                                        {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} | 
+                                                                                        {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} |
                                                                                         <i>Include</i>
                                                                                     </p>
                                                                                 </div>
@@ -4235,7 +4224,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="card-box-footer">
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -4273,7 +4262,7 @@
                                                                         @endif
                                                                     @endif
                                                                 @endif
-                                                                <a href="#" data-toggle="modal" data-target="#detail-accommodation_invitation-service-{{ $accommodation_invitation->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#detail-accommodation_invitation-service-{{ $accommodation_invitation->id }}">
                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                 </a>
                                                             </td>
@@ -4292,11 +4281,11 @@
                                                                             <div class="row">
                                                                                 @if ($accommodation_invitation->extra_bed_order)
                                                                                     <div class="col-md-6">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="extra_bed_price">Extra Bed Price <span> * <i>(Price / Night)</i></span></label>
                                                                                             <div class="btn-icon">
                                                                                                 <span>$</span>
-                                                                                                <input name="extra_bed_price" type="number" class="form-control input-icon @error('extra_bed_price') is-invalid @enderror" placeholder="Insert Price" type="text" value="{{ $accommodation_invitation->extra_bed_order->price_pax }}" required>
+                                                                                                <input name="extra_bed_price" type="number" class="backend-form-control input-icon @error('extra_bed_price') is-invalid @enderror" placeholder="Insert Price" type="text" value="{{ $accommodation_invitation->extra_bed_order->price_pax }}" required>
                                                                                             </div>
                                                                                             @error('extra_bed_price')
                                                                                                 <span class="invalid-feedback">
@@ -4307,11 +4296,11 @@
                                                                                     </div>
                                                                                 @endif
                                                                                 <div class="col-md-6">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="public_rate">Suite / Villa Price <span> * <i>(Price / Night)</i></span></label>
                                                                                         <div class="btn-icon">
                                                                                             <span>$</span>
-                                                                                            <input name="public_rate" type="number" class="form-control input-icon @error('public_rate') is-invalid @enderror" placeholder="Insert Price" type="text" value="{{ $accommodation_invitation->public_rate/$accommodation_invitation->duration }}" required>
+                                                                                            <input name="public_rate" type="number" class="backend-form-control input-icon @error('public_rate') is-invalid @enderror" placeholder="Insert Price" type="text" value="{{ $accommodation_invitation->public_rate/$accommodation_invitation->duration }}" required>
                                                                                         </div>
                                                                                         @error('public_rate')
                                                                                             <span class="invalid-feedback">
@@ -4323,8 +4312,8 @@
                                                                             </div>
                                                                         </form>
                                                                         <div class="card-box-footer">
-                                                                            <button type="submit" form="updateTransportInvitation{{ $accommodation_invitation->id }}" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                            <button type="submit" form="updateTransportInvitation{{ $accommodation_invitation->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Save")</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -4347,7 +4336,7 @@
                                                                                     <div class="col-sm-12 text-center">
                                                                                         <div class="card-subtitle p-t-0">{{ $accommodation_invitation->hotel->name }} - {{ $accommodation_invitation->room->rooms }}</div>
                                                                                         <p>
-                                                                                            {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} | 
+                                                                                            {{ date("d M Y",strtotime($orderWedding->checkin)) }} - {{ date("d M Y",strtotime($orderWedding->checkout)) }} |
                                                                                             {{ '$ ' . number_format(($accommodation_invitation->public_rate), 0, ',', '.') }}
                                                                                         </p>
                                                                                     </div>
@@ -4355,14 +4344,14 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     @endforeach
-                                                    
+
                                                 @endif
                                             </tbody>
                                         </table>
@@ -4421,7 +4410,7 @@
                                         </div>
                                     </div>
                                 @endif
-                                
+
                                 {{-- ADDITIONAL SERVICE --}}
                                 @if ($orderWedding->service == "Wedding Package")
                                     <div id="weddingPackageServices" class="col-md-12">
@@ -4465,7 +4454,7 @@
                                                                 <i>Include</i>
                                                             </td>
                                                             <td class="pd-2-8 text-right">
-                                                                <a href="#" data-toggle="modal" data-target="#detail-additional-service-{{ $additionalService->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#detail-additional-service-{{ $additionalService->id }}">
                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                 </a>
                                                             </td>
@@ -4507,7 +4496,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="card-box-footer">
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -4541,9 +4530,9 @@
                                                             @method('put')
                                                             <div class="row">
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group ">
+                                                                    <div class="backend-form-field ">
                                                                         <label for="date">@lang('messages.Date')<span> *</span></label>
-                                                                        <select name="date" class="custom-select @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
+                                                                        <select name="date" class="backend-form-control @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
                                                                             <option selected value="">@lang('messages.Select date')</option>
                                                                             @for ($dt = 0; $dt < $orderWedding->duration+1; $dt++)
                                                                                 <option value="{{ date('Y-m-d',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin))) }}">{{ date('d M Y',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin))) }}</option>
@@ -4555,18 +4544,18 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="time" class="form-label">@lang('messages.Time')</label>
-                                                                        <input readonly type="text" name="time" class="form-control time-picker-default td-input @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ old('time') }}" required>
+                                                                        <input readonly type="text" name="time" class="backend-form-control time-picker-default td-input @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ old('time') }}" required>
                                                                         @error('time')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group ">
+                                                                    <div class="backend-form-field ">
                                                                         <label for="type">@lang('messages.Type')<span> *</span></label>
-                                                                        <select name="type" class="custom-select @error('type') is-invalid @enderror" value="{{ old('type') }}" required>
+                                                                        <select name="type" class="backend-form-control @error('type') is-invalid @enderror" value="{{ old('type') }}" required>
                                                                             <option selected value="">@lang('messages.Select one')</option>
                                                                             <option value="Other">@lang('messages.Other')</option>
                                                                             <option value="Accessories">@lang('messages.Accessories')</option>
@@ -4579,36 +4568,36 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="service" class="form-label">@lang('messages.Service')</label>
-                                                                        <input type="text" name="service" class="form-control @error('service') is-invalid @enderror" placeholder="@lang('messages.Service name')" value="{{ old('service') }}" required>
+                                                                        <input type="text" name="service" class="backend-form-control @error('service') is-invalid @enderror" placeholder="@lang('messages.Service name')" value="{{ old('service') }}" required>
                                                                         @error('service')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="quantity" class="form-label">@lang('messages.Quantity')</label>
-                                                                        <input type="number" min="1" name="quantity" class="form-control @error('quantity') is-invalid @enderror" placeholder="@lang('messages.Quantity')" value="{{ old('quantity') }}" required>
+                                                                        <input type="number" min="1" name="quantity" class="backend-form-control @error('quantity') is-invalid @enderror" placeholder="@lang('messages.Quantity')" value="{{ old('quantity') }}" required>
                                                                         @error('quantity')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="price" class="form-label">@lang('messages.Price')</label>
-                                                                        <input type="number" min="1" name="price" class="form-control @error('price') is-invalid @enderror" placeholder="@lang('messages.Price')" value="{{ old('price') }}" required>
+                                                                        <input type="number" min="1" name="price" class="backend-form-control @error('price') is-invalid @enderror" placeholder="@lang('messages.Price')" value="{{ old('price') }}" required>
                                                                         @error('price')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-12">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="note" class="form-label">@lang('messages.Note')</label>
-                                                                        <textarea name="note" class="textarea_editor form-control @error('note') is-invalid @enderror" placeholder="Insert note">{!! old('note') !!}</textarea>
+                                                                        <textarea data-backend-richtext="true" name="note" class="textarea_editor backend-form-control @error('note') is-invalid @enderror" placeholder="Insert note">{!! old('note') !!}</textarea>
                                                                         @error('note')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
@@ -4617,8 +4606,8 @@
                                                             </div>
                                                         </form>
                                                         <div class="card-box-footer">
-                                                            <button type="submit" form="addRequestService" class="btn btn-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
+                                                            <button type="submit" form="addRequestService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
+                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -4681,9 +4670,9 @@
                                                                             @method('PUT')
                                                                             <div class="row">
                                                                                 <div class="col-md-12">
-                                                                                    <div class="form-group ">
+                                                                                    <div class="backend-form-field ">
                                                                                         <label for="status_{{ $no_rexser }}">@lang('messages.Status')<span> *</span></label>
-                                                                                        <select id="status_{{ $no_rexser }}" name="status" class="custom-select @error('status') is-invalid @enderror" value="{{ old('status') }}" required>
+                                                                                        <select id="status_{{ $no_rexser }}" name="status" class="backend-form-control @error('status') is-invalid @enderror" value="{{ old('status') }}" required>
                                                                                             <option {{ $request_service->status == "Request"?"selected":""; }} value="Request">@lang('messages.Request')</option>
                                                                                             <option {{ $request_service->status == "Approved"?"selected":""; }} value="Approved">@lang('messages.Approved')</option>
                                                                                             <option {{ $request_service->status == "Rejected"?"selected":""; }} value="Rejected">@lang('messages.Rejected')</option>
@@ -4694,9 +4683,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="form-group ">
+                                                                                    <div class="backend-form-field ">
                                                                                         <label for="date">@lang('messages.Date')<span> *</span></label>
-                                                                                        <select name="date" class="custom-select @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
+                                                                                        <select name="date" class="backend-form-control @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
                                                                                             <option value="">@lang('messages.Select date')</option>
                                                                                             @for ($dt = 0; $dt < $orderWedding->duration+1; $dt++)
                                                                                                 <option {{ date('Y-m-d',strtotime($request_service->date)) == date('Y-m-d',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin)))?"selected":""; }} value="{{ date('Y-m-d',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin))) }}">{{ date('d M Y',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin))) }}</option>
@@ -4708,18 +4697,18 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="time" class="form-label">@lang('messages.Time')</label>
-                                                                                        <input readonly type="text" name="time" class="form-control time-picker td-input @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ date('H:i',strtotime($request_service->date)) }}" required>
+                                                                                        <input readonly type="text" name="time" class="backend-form-control time-picker td-input @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ date('H:i',strtotime($request_service->date)) }}" required>
                                                                                         @error('time')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="form-group ">
+                                                                                    <div class="backend-form-field ">
                                                                                         <label for="type">@lang('messages.Type')<span> *</span></label>
-                                                                                        <select name="type" class="custom-select @error('type') is-invalid @enderror" value="{{ old('type') }}" required>
+                                                                                        <select name="type" class="backend-form-control @error('type') is-invalid @enderror" value="{{ old('type') }}" required>
                                                                                             <option value="">@lang('messages.Select one')</option>
                                                                                             <option {{ $request_service->type == "Other"?"selected":""; }} value="Other">@lang('messages.Other')</option>
                                                                                             <option {{ $request_service->type == "Accessories"?"selected":""; }} value="Accessories">@lang('messages.Accessories')</option>
@@ -4732,45 +4721,45 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="service" class="form-label">@lang('messages.Service')</label>
-                                                                                        <input type="text" name="service" class="form-control @error('service') is-invalid @enderror" placeholder="@lang('messages.Service name')" value="{{ $request_service->service }}" required>
+                                                                                        <input type="text" name="service" class="backend-form-control @error('service') is-invalid @enderror" placeholder="@lang('messages.Service name')" value="{{ $request_service->service }}" required>
                                                                                         @error('service')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="quantity" class="form-label">@lang('messages.Quantity')</label>
-                                                                                        <input type="number" min="1" name="quantity" class="form-control @error('quantity') is-invalid @enderror" placeholder="@lang('messages.Quantity')" value="{{ $request_service->quantity }}" required>
+                                                                                        <input type="number" min="1" name="quantity" class="backend-form-control @error('quantity') is-invalid @enderror" placeholder="@lang('messages.Quantity')" value="{{ $request_service->quantity }}" required>
                                                                                         @error('quantity')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="price" class="form-label">@lang('messages.Price')</label>
-                                                                                        <input type="number" min="1" name="price" class="form-control @error('price') is-invalid @enderror" placeholder="@lang('messages.Price')" value="{{ $request_service->price }}" required>
+                                                                                        <input type="number" min="1" name="price" class="backend-form-control @error('price') is-invalid @enderror" placeholder="@lang('messages.Price')" value="{{ $request_service->price }}" required>
                                                                                         @error('price')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="note" class="form-label">@lang('messages.Note')</label>
-                                                                                        <textarea name="note" class="textarea_editor form-control @error('note') is-invalid @enderror" placeholder="Insert note">{!! $request_service->note !!}</textarea>
+                                                                                        <textarea data-backend-richtext="true" name="note" class="textarea_editor backend-form-control @error('note') is-invalid @enderror" placeholder="Insert note">{!! $request_service->note !!}</textarea>
                                                                                         @error('note')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-12 {{ $request_service->status == "Rejected" ? "" : "display-none" }}" id="remark-div_{{ $no_rexser }}">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="remark_{{ $no_rexser }}" class="form-label">Reason</label>
-                                                                                        <input type="text" id="remark_{{ $no_rexser }}" name="remark" class="form-control @error('remark') is-invalid @enderror" placeholder="Please provide your reason for why the service was denied!" value="{{ $request_service->remark }}" required>
+                                                                                        <input type="text" id="remark_{{ $no_rexser }}" name="remark" class="backend-form-control @error('remark') is-invalid @enderror" placeholder="Please provide your reason for why the service was denied!" value="{{ $request_service->remark }}" required>
                                                                                         @error('remark')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
@@ -4779,8 +4768,8 @@
                                                                             </div>
                                                                         </form>
                                                                         <div class="card-box-footer">
-                                                                            <button type="submit" form="updateRequestServices{{ $request_service->id }}" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Update")</button>
-                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                            <button type="submit" form="updateRequestServices{{ $request_service->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Update")</button>
+                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -4826,9 +4815,9 @@
                                                                         @method('PUT')
                                                                         <div class="row">
                                                                             <div class="col-md-12">
-                                                                                <div class="form-group ">
+                                                                                <div class="backend-form-field ">
                                                                                     <label for="status">@lang('messages.Status')<span> *</span></label>
-                                                                                    <select id="status" name="status" class="custom-select @error('status') is-invalid @enderror" value="{{ old('status') }}" required>
+                                                                                    <select id="status" name="status" class="backend-form-control @error('status') is-invalid @enderror" value="{{ old('status') }}" required>
                                                                                         <option {{ $rejected_service->status == "Request"?"selected":""; }} value="Request">@lang('messages.Request')</option>
                                                                                         <option {{ $rejected_service->status == "Approved"?"selected":""; }} value="Approved">@lang('messages.Approved')</option>
                                                                                         <option {{ $rejected_service->status == "Rejected"?"selected":""; }} value="Rejected">@lang('messages.Rejected')</option>
@@ -4839,9 +4828,9 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group ">
+                                                                                <div class="backend-form-field ">
                                                                                     <label for="date">@lang('messages.Date')<span> *</span></label>
-                                                                                    <select name="date" class="custom-select @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
+                                                                                    <select name="date" class="backend-form-control @error('date') is-invalid @enderror" value="{{ old('date') }}" required>
                                                                                         <option value="">@lang('messages.Select date')</option>
                                                                                         @for ($dt = 0; $dt < $orderWedding->duration+1; $dt++)
                                                                                             <option {{ date('Y-m-d',strtotime($rejected_service->date)) == date('Y-m-d',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin)))?"selected":""; }} value="{{ date('Y-m-d',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin))) }}">{{ date('d M Y',strtotime('+'.$dt.' days',strtotime($orderWedding->checkin))) }}</option>
@@ -4853,18 +4842,18 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="time" class="form-label">@lang('messages.Time')</label>
-                                                                                    <input readonly type="text" name="time" class="form-control time-picker td-input @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ date('H:i',strtotime($rejected_service->date)) }}" required>
+                                                                                    <input readonly type="text" name="time" class="backend-form-control time-picker td-input @error('time') is-invalid @enderror" placeholder="@lang('messages.Select time')" value="{{ date('H:i',strtotime($rejected_service->date)) }}" required>
                                                                                     @error('time')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group ">
+                                                                                <div class="backend-form-field ">
                                                                                     <label for="type">@lang('messages.Type')<span> *</span></label>
-                                                                                    <select name="type" class="custom-select @error('type') is-invalid @enderror" value="{{ old('type') }}" required>
+                                                                                    <select name="type" class="backend-form-control @error('type') is-invalid @enderror" value="{{ old('type') }}" required>
                                                                                         <option value="">@lang('messages.Select one')</option>
                                                                                         <option {{ $rejected_service->type == "Other"?"selected":""; }} value="Other">@lang('messages.Other')</option>
                                                                                         <option {{ $rejected_service->type == "Accessories"?"selected":""; }} value="Accessories">@lang('messages.Accessories')</option>
@@ -4877,45 +4866,45 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="service" class="form-label">@lang('messages.Service')</label>
-                                                                                    <input type="text" name="service" class="form-control @error('service') is-invalid @enderror" placeholder="@lang('messages.Service name')" value="{{ $rejected_service->service }}" required>
+                                                                                    <input type="text" name="service" class="backend-form-control @error('service') is-invalid @enderror" placeholder="@lang('messages.Service name')" value="{{ $rejected_service->service }}" required>
                                                                                     @error('service')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="quantity" class="form-label">@lang('messages.Quantity')</label>
-                                                                                    <input type="number" min="1" name="quantity" class="form-control @error('quantity') is-invalid @enderror" placeholder="@lang('messages.Quantity')" value="{{ $rejected_service->quantity }}" required>
+                                                                                    <input type="number" min="1" name="quantity" class="backend-form-control @error('quantity') is-invalid @enderror" placeholder="@lang('messages.Quantity')" value="{{ $rejected_service->quantity }}" required>
                                                                                     @error('quantity')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-6">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="price" class="form-label">@lang('messages.Price')</label>
-                                                                                    <input type="number" min="1" name="price" class="form-control @error('price') is-invalid @enderror" placeholder="@lang('messages.Price')" value="{{ $rejected_service->price }}" required>
+                                                                                    <input type="number" min="1" name="price" class="backend-form-control @error('price') is-invalid @enderror" placeholder="@lang('messages.Price')" value="{{ $rejected_service->price }}" required>
                                                                                     @error('price')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-12">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="note" class="form-label">@lang('messages.Note')</label>
-                                                                                    <textarea name="note" class="textarea_editor form-control @error('note') is-invalid @enderror" placeholder="Insert note">{!! $rejected_service->note !!}</textarea>
+                                                                                    <textarea data-backend-richtext="true" name="note" class="textarea_editor backend-form-control @error('note') is-invalid @enderror" placeholder="Insert note">{!! $rejected_service->note !!}</textarea>
                                                                                     @error('note')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-12">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="remark" class="form-label">Reason</label>
-                                                                                    <input type="text" name="remark" class="form-control @error('remark') is-invalid @enderror" placeholder="Please provide your reason for why the service was denied!" value="{{ $rejected_service->remark }}">
+                                                                                    <input type="text" name="remark" class="backend-form-control @error('remark') is-invalid @enderror" placeholder="Please provide your reason for why the service was denied!" value="{{ $rejected_service->remark }}">
                                                                                     @error('remark')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
@@ -4924,8 +4913,8 @@
                                                                         </div>
                                                                     </form>
                                                                     <div class="card-box-footer">
-                                                                        <button type="submit" form="updateRejectedServices{{ $rejected_service->id }}" class="btn btn-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Update")</button>
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                                        <button type="submit" form="updateRejectedServices{{ $rejected_service->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-save" aria-hidden="true"></i> @lang("messages.Update")</button>
+                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -4975,7 +4964,7 @@
                                                                     @method('put')
                                                                     <div class="row">
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <label>@lang("messages.Select one") <span>*</span></label>
                                                                                 <div class="card-box-content">
                                                                                     @foreach ($additional_services as $addser)
@@ -5008,11 +4997,11 @@
                                                                 </form>
                                                                 <div class="card-box-footer">
                                                                     @if ($addser_ids)
-                                                                        <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
                                                                     @else
-                                                                        <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
+                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
                                                                     @endif
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -5062,7 +5051,7 @@
                                                                             {{ '$ ' . number_format($additionalService->publish_rate, 0, ',', '.') }}
                                                                         </td>
                                                                         <td class="pd-2-8 text-right">
-                                                                            <a href="#" data-toggle="modal" data-target="#detail-additional-service-{{ $additionalService->id }}"> 
+                                                                            <a href="#" data-toggle="modal" data-target="#detail-additional-service-{{ $additionalService->id }}">
                                                                                 <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                             </a>
                                                                         </td>
@@ -5104,7 +5093,7 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="card-box-footer">
-                                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -5153,7 +5142,7 @@
                                                         @if ($orderWedding->status != "Approved")
                                                             @if ($orderWedding->status != "Paid")
                                                                 <span>
-                                                                    <a href="#" data-toggle="modal" data-target="#add-additional-service-{{ $orderWedding->id }}"> 
+                                                                    <a href="#" data-toggle="modal" data-target="#add-additional-service-{{ $orderWedding->id }}">
                                                                         @if ($addser_ids)
                                                                             <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                         @else
@@ -5168,7 +5157,7 @@
                                                     @if ($orderWedding->status != "Approved")
                                                         @if ($orderWedding->status != "Paid")
                                                             <span>
-                                                                <a href="#" data-toggle="modal" data-target="#add-additional-service-{{ $orderWedding->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#add-additional-service-{{ $orderWedding->id }}">
                                                                     @if ($addser_ids)
                                                                         <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     @else
@@ -5210,7 +5199,7 @@
                                                                         {{ '$ ' . number_format($additionalService->publish_rate, 0, ',', '.') }}
                                                                     </td>
                                                                     <td class="pd-2-8 text-right">
-                                                                        <a href="#" data-toggle="modal" data-target="#detail-additional-service-{{ $additionalService->id }}"> 
+                                                                        <a href="#" data-toggle="modal" data-target="#detail-additional-service-{{ $additionalService->id }}">
                                                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                         </a>
                                                                     </td>
@@ -5252,7 +5241,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="card-box-footer">
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -5300,7 +5289,7 @@
                                                                     @method('put')
                                                                     <div class="row">
                                                                         <div class="col-sm-12">
-                                                                            <div class="form-group">
+                                                                            <div class="backend-form-field">
                                                                                 <div class="subtitle">Entertainment</div>
                                                                                 <div class="card-box-content">
                                                                                     @foreach ($adser_entertainments as $addser_entertainment)
@@ -5411,11 +5400,11 @@
                                                                 </form>
                                                                 <div class="card-box-footer">
                                                                     @if ($addser_ids)
-                                                                        <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
                                                                     @else
-                                                                        <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
+                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
                                                                     @endif
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -5446,7 +5435,7 @@
                                                 </span>
                                             @else
                                                 <span>
-                                                    <a href="#" data-toggle="modal" data-target="#add-order-wedding-remark-{{ $orderWedding->id }}"> 
+                                                    <a href="#" data-toggle="modal" data-target="#add-order-wedding-remark-{{ $orderWedding->id }}">
                                                         <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
@@ -5474,8 +5463,8 @@
                                                             @method('put')
                                                             <div class="row">
                                                                 <div class="col-sm-12">
-                                                                    <div class="form-group">
-                                                                        <textarea name="remark" placeholder="@lang('messages.Insert guest name')" class="textarea_editor form-control border-radius-0 @error('remark') is-invalid @enderror">{!! $orderWedding->remark !!}</textarea>
+                                                                    <div class="backend-form-field">
+                                                                        <textarea data-backend-richtext="true" name="remark" placeholder="@lang('messages.Insert guest name')" class="textarea_editor backend-form-control border-radius-0 @error('remark') is-invalid @enderror">{!! $orderWedding->remark !!}</textarea>
                                                                         @error('remark')
                                                                             <span class="invalid-feedback">
                                                                                 <strong>{{ $message }}</strong>
@@ -5487,11 +5476,11 @@
                                                         </form>
                                                         <div class="card-box-footer">
                                                             @if ($addser_ids)
-                                                                <button type="submit" form="addOrderWeddingRemark" class="btn btn-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                <button type="submit" form="addOrderWeddingRemark" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
                                                             @else
-                                                                <button type="submit" form="addOrderWeddingRemark" class="btn btn-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Create')</button>
+                                                                <button type="submit" form="addOrderWeddingRemark" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Create')</button>
                                                             @endif
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
+                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -5698,13 +5687,13 @@
                                                                 @method('put')
                                                                 <div class="row">
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="bank">BANK</label>
-                                                                            <select name="bank" class="custom-select">
+                                                                            <select name="bank" class="backend-form-control">
                                                                                 @foreach ($banks as $bank)
                                                                                     <option {{ $bank->currency == "USD"?"selected":""; }} value="{{ $bank->id }}">{{ $bank->bank }}</option>
                                                                                 @endforeach
-                                                                            
+
                                                                             </select>
                                                                             @error('note')
                                                                                 <div class="alert alert-danger">
@@ -5714,9 +5703,9 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="currency">@lang('messages.Currency')</label>
-                                                                            <select name="currency" class="custom-select">
+                                                                            <select name="currency" class="backend-form-control">
                                                                                 @foreach ($rates as $rate)
                                                                                     <option {{ $rate->name == "USD"?"selected":""; }} value="{{ $rate->id }}">{{ $rate->name }}</option>
                                                                                 @endforeach
@@ -5773,13 +5762,13 @@
                                                             @method('put')
                                                             <div class="row">
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="bank">BANK</label>
-                                                                        <select name="bank" class="custom-select">
+                                                                        <select name="bank" class="backend-form-control">
                                                                             @foreach ($banks as $bank)
                                                                                 <option {{ $bank->currency == "USD"?"selected":""; }} value="{{ $bank->id }}">{{ $bank->bank }}</option>
                                                                             @endforeach
-                                                                        
+
                                                                         </select>
                                                                         @error('note')
                                                                             <div class="alert alert-danger">
@@ -5789,9 +5778,9 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="currency">@lang('messages.Currency')</label>
-                                                                        <select name="currency" class="custom-select">
+                                                                        <select name="currency" class="backend-form-control">
                                                                             @foreach ($rates as $rate)
                                                                                 <option {{ $rate->name == "USD"?"selected":""; }} value="{{ $rate->id }}">{{ $rate->name }}</option>
                                                                             @endforeach
@@ -5855,28 +5844,28 @@
                                                                 </div>
                                                                 <form id="uploadInvoicePdf" action="{{ route('upload.pdf.store',['id'=>$orderWedding->id]) }}" method="POST" enctype="multipart/form-data">
                                                                     @csrf
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="emailContent">@lang('messages.Email Content') <span>*</span></label>
-                                                                        <textarea name="email_content" class="textarea_editor form-control" placeholder="Insert email content" required></textarea>
+                                                                        <textarea data-backend-richtext="true" name="email_content" class="textarea_editor backend-form-control" placeholder="Insert email content" required></textarea>
                                                                     </div>
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="pdf_file">@lang('messages.Select Invoice')</label>
-                                                                        <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" class="custom-file-input @error('pdf_file') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('pdf_file') }}" required>
+                                                                        <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" class="backend-form-control @error('pdf_file') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('pdf_file') }}" required>
                                                                         @error('pdf_file')
                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="uploadInvoicePdf" class="btn btn-primary"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send')</button>
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
+                                                                    <button type="submit" form="uploadInvoicePdf" class="backend-button backend-button-primary"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <a href="#" data-toggle="modal" data-target="#upload-invoice-pdf-{{ $orderWedding->id }}"> 
-                                                    <button type="button" class="btn btn-primary desktop"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send Invoice by Email')</button>
+                                                <a href="#" data-toggle="modal" data-target="#upload-invoice-pdf-{{ $orderWedding->id }}">
+                                                    <button type="button" class="backend-button backend-button-primary desktop"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send Invoice by Email')</button>
                                                 </a>
                                             @endif
                                         @else
@@ -5890,37 +5879,37 @@
                                                             </div>
                                                             <form id="uploadInvoicePdf" action="{{ route('upload.pdf.store',['id'=>$orderWedding->id]) }}" method="POST" enctype="multipart/form-data">
                                                                 @csrf
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="emailContent">@lang('messages.Email Content') <span>*</span></label>
-                                                                    <textarea name="email_content" class="textarea_editor form-control" placeholder="Insert email content" required></textarea>
+                                                                    <textarea data-backend-richtext="true" name="email_content" class="textarea_editor backend-form-control" placeholder="Insert email content" required></textarea>
                                                                 </div>
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="pdf_file">@lang('messages.Select Invoice')</label>
-                                                                    <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" class="custom-file-input @error('pdf_file') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('pdf_file') }}" required>
+                                                                    <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" class="backend-form-control @error('pdf_file') is-invalid @enderror" placeholder="Choose Contract" value="{{ old('pdf_file') }}" required>
                                                                     @error('pdf_file')
                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                     @enderror
                                                                 </div>
                                                             </form>
                                                             <div class="card-box-footer">
-                                                                <button type="submit" form="uploadInvoicePdf" class="btn btn-primary"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send')</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
+                                                                <button type="submit" form="uploadInvoicePdf" class="backend-button backend-button-primary"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send')</button>
+                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close"></i> @lang('messages.Cancel')</button>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <a href="#" data-toggle="modal" data-target="#upload-invoice-pdf-{{ $orderWedding->id }}"> 
-                                                <button type="button" class="btn btn-primary desktop"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send Invoice by Email')</button>
+                                            <a href="#" data-toggle="modal" data-target="#upload-invoice-pdf-{{ $orderWedding->id }}">
+                                                <button type="button" class="backend-button backend-button-primary desktop"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> @lang('messages.Send Invoice by Email')</button>
                                             </a>
                                         @endif
                                     @endif
-                                    
+
                                     <a href="en-print-contract-wedding-{{ $orderWedding->id }}" target="__blank" >
-                                        <button type="button" class="btn btn-primary desktop"><i class="icon-copy fa fa-print" aria-hidden="true"></i> @lang('messages.Print Invoice') (EN)</button>
+                                        <button type="button" class="backend-button backend-button-primary desktop"><i class="icon-copy fa fa-print" aria-hidden="true"></i> @lang('messages.Print Invoice') (EN)</button>
                                     </a>
                                     <a href="zh-print-contract-wedding-{{ $orderWedding->id }}" target="__blank" >
-                                        <button type="button" class="btn btn-primary desktop"><i class="icon-copy fa fa-print" aria-hidden="true"></i> @lang('messages.Print Invoice') (ZH)</button>
+                                        <button type="button" class="backend-button backend-button-primary desktop"><i class="icon-copy fa fa-print" aria-hidden="true"></i> @lang('messages.Print Invoice') (ZH)</button>
                                     </a>
                                 @endif
                                 @if ($orderWedding->status == "Pending")
@@ -5928,20 +5917,20 @@
                                         @if ($orderWedding->final_price > 0 and $orderWedding->confirmation_number)
                                             @if ($bride->groom_pasport_id and $bride->bride_pasport_id)
                                                 @if ($accommodationPriceContainZero or $transportPriceContainZero or $serviceRequestPriceContainZero)
-                                                    <button disabled type="submit" form="validateOrderWedding" class="btn btn-success"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
+                                                    <button disabled type="submit" form="validateOrderWedding" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
                                                 @else
-                                                    <button {{ $is_valid == 0?"disabled":""; }} {{ $transportPriceContainZero?"disabled":""; }} type="submit" form="validateOrderWedding" class="btn btn-success"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
+                                                    <button {{ $is_valid == 0?"disabled":""; }} {{ $transportPriceContainZero?"disabled":""; }} type="submit" form="validateOrderWedding" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
                                                 @endif
                                             @else
-                                                <button disabled type="submit" form="validateOrderWedding" class="btn btn-success"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
+                                                <button disabled type="submit" form="validateOrderWedding" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
                                             @endif
                                         @else
-                                            <button disabled type="submit" form="validateOrderWedding" class="btn btn-success"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
+                                            <button disabled type="submit" form="validateOrderWedding" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Confirm')</button>
                                         @endif
                                     @endif
                                 @endif
                                 <a href="/orders-admin#weddingOrders">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                 </a>
                             </div>
                         </div>
@@ -5950,12 +5939,11 @@
                 {{-- SIDEBAR DESKTOP --}}
                 <div class="col-md-4 desktop">
                     <div class="row">
-                        @include('layouts.attentions')
                         <div class="col-md-12">
                             <div class="card-box">
                                 <div class="card-box-title">
                                     <div class="title">@lang('messages.Status')</div>
-                                </div> 
+                                </div>
                                 <div class="order-status-container">
                                     @if ($orderWedding->status == "Active")
                                         <div class="status-active-color">@lang('messages.Confirmed')</div>
@@ -6019,7 +6007,7 @@
                             <div class="card-box">
                                 <div class="card-box-title">
                                     <div class="title">@lang('messages.Order Note')</div>
-                                </div> 
+                                </div>
                                 @foreach ($order_notes as $order_note)
                                     <div class="container-order-note">
                                         @php
@@ -6027,13 +6015,13 @@
                                         @endphp
                                         <p><b>{{ date('d M Y (H:i)',strtotime($order_note->created_at))." - ".$operator->name }}</b> (<i>{{ $order_note->status }}</i>)</p>
                                         <p class="m-l-18">{!! $order_note->note !!}</p>
-                                        
+
                                         <hr class="form-hr">
                                     </div>
                                 @endforeach
                                 @if ($orderWedding->status !== "Paid")
                                     <div class="card-box-footer">
-                                        <a href="#" data-toggle="modal" data-target="#add-order-note"><button type="button" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> @lang('messages.Add Note')</button></a>
+                                        <a href="#" data-toggle="modal" data-target="#add-order-note"><button type="button" class="backend-button backend-button-primary"><i class="fa fa-plus" aria-hidden="true"></i> @lang('messages.Add Note')</button></a>
                                     </div>
                                 @endif
                             </div>
@@ -6047,10 +6035,10 @@
                                             </div>
                                             <form id="faddAddNoteDesktop" action="/fadd-order-wedding-note-{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                 @csrf
-                                                <div class="form-group row">
+                                                <div class="backend-form-field row">
                                                     <label for="status" class="col-sm-12">Type</label>
                                                     <div class="col-sm-12">
-                                                        <select name="status" class="custom-select @error('status') is-invalid @enderror" value="{{ old('status') }}">
+                                                        <select name="status" class="backend-form-control @error('status') is-invalid @enderror" value="{{ old('status') }}">
                                                             <option selected value="Urgent">@lang('messages.Urgent')</option>
                                                             <option value="Waiting">@lang('messages.Waiting')</option>
                                                             <option value="Error">@lang('messages.Error')</option>
@@ -6060,10 +6048,10 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
+                                                <div class="backend-form-field row">
                                                     <label for="order_note" class="col-sm-12">@lang('messages.Note')</label>
                                                     <div class="col-sm-12">
-                                                        <textarea id="order_note" name="order_note" placeholder="Insert order note" class="textarea_editor form-control border-radius-0" autofocus required></textarea>
+                                                        <textarea data-backend-richtext="true" id="order_note" name="order_note" placeholder="Insert order note" class="textarea_editor backend-form-control border-radius-0" autofocus required></textarea>
                                                         @error('order_note')
                                                             <div class="alert alert-danger">
                                                                 {{ $message }}
@@ -6075,9 +6063,9 @@
                                                 <input type="hidden" name="order_id" value="{{ $orderWedding->id }}">
                                             </Form>
                                             <div class="card-box-footer">
-                                                <div class="form-group">
-                                                    <button type="submit" form="faddAddNoteDesktop" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Submit')</button>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                                <div class="backend-form-field">
+                                                    <button type="submit" form="faddAddNoteDesktop" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> @lang('messages.Submit')</button>
+                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -6101,8 +6089,8 @@
                                         <div class="card-box-title">
                                             <div class="title">@lang('messages.Kurs on order')</div>
                                             <span>{{ date('d F Y',strtotime($invoice->inv_date)) }}</span>
-                                        </div> 
-                                        
+                                        </div>
+
                                         <div class="row">
                                             <div class="col-4 col-md-4">
                                                 <p><b>@lang('messages.Currency')</b></p>
@@ -6261,7 +6249,7 @@
                                                                                             <div class="col-7"><p><b>: {{ $invoice->inv_no }}</b></p></div>
                                                                                             <div class="col-5"><p>@lang('messages.Due Date')</p></div>
                                                                                             <div class="col-7"><p>: {{ date('d F Y',strtotime($invoice->due_date)) }}</p></div>
-                                                                                            
+
                                                                                             @if ($receipt->status == 'Valid')
                                                                                                 <div class="col-12">
                                                                                                     <hr class="form-hr">
@@ -6289,9 +6277,9 @@
                                                                                             @if ($orderWedding->handled_by == $admin->id)
                                                                                                 @if ($invoice->balance > 0)
                                                                                                     <div class="col-md-12">
-                                                                                                        <div class="form-group">
+                                                                                                        <div class="backend-form-field">
                                                                                                             <label for="status" class="form-label">@lang('messages.Receipt Status') <span>*</span></label>
-                                                                                                            <select name="status" class="custom-select @error('status') is-invalid @enderror" required>
+                                                                                                            <select name="status" class="backend-form-control @error('status') is-invalid @enderror" required>
                                                                                                                 <option selected value="{{ $receipt->status }}">{{ $receipt->status }}</option>
                                                                                                                 <option value="Valid">@lang('messages.Valid')</option>
                                                                                                                 <option value="Invalid">@lang('messages.Invalid')</option>
@@ -6300,9 +6288,9 @@
                                                                                                     </div>
                                                                                                     @if ($receipt->status == "Pending" or $receipt->status == "Invalid")
                                                                                                         <div class="col-md-12">
-                                                                                                            <div class="form-group">
+                                                                                                            <div class="backend-form-field">
                                                                                                                 <label for="kurs" class="form-label">@lang('messages.Currency')<span>*</span></label>
-                                                                                                                <select name="kurs" class="custom-select @error('kurs') is-invalid @enderror" required>
+                                                                                                                <select name="kurs" class="backend-form-control @error('kurs') is-invalid @enderror" required>
                                                                                                                     <option selected value="{{ $receipt->kurs_name ? $receipt->kurs_name : '' }}">{{ $receipt->kurs_name ? $receipt->kurs_name : 'Select Currency' }}</option>
                                                                                                                     <option value="USD">USD</option>
                                                                                                                     <option value="CNY">CNY</option>
@@ -6312,9 +6300,9 @@
                                                                                                             </div>
                                                                                                         </div>
                                                                                                         <div class="col-md-12">
-                                                                                                            <div class="form-group">
+                                                                                                            <div class="backend-form-field">
                                                                                                                 <label for="amoun" class="form-label col-form-label">@lang('messages.Amount')</label>
-                                                                                                                <input type="text" name="amount" class="input-icon form-control @error('amount') is-invalid @enderror" placeholder="Insert Amount" value="{{ $receipt->amount }}" required>
+                                                                                                                <input type="text" name="amount" class="input-icon backend-form-control @error('amount') is-invalid @enderror" placeholder="Insert Amount" value="{{ $receipt->amount }}" required>
                                                                                                                 @error('amount')
                                                                                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                                                                                 @enderror
@@ -6325,18 +6313,18 @@
                                                                                                         <input hidden type="text" name="amount" value="{{ $receipt->amount }}">
                                                                                                     @endif
                                                                                                     <div class="col-md-12">
-                                                                                                        <div class="form-group">
+                                                                                                        <div class="backend-form-field">
                                                                                                             <label for="payment_date" class="form-label col-form-label">@lang('messages.Payment Date')</label>
-                                                                                                            <input readonly type="text" id="payment_date" name="payment_date" class="form-control date-picker @error('payment_date') is-invalid @enderror" placeholder="Payment Date" value="{{ date('d F Y',strtotime($receipt->payment_date)) }}" required>
+                                                                                                            <input readonly type="text" id="payment_date" name="payment_date" class="backend-form-control date-picker @error('payment_date') is-invalid @enderror" placeholder="Payment Date" value="{{ date('d F Y',strtotime($receipt->payment_date)) }}" required>
                                                                                                             @error('payment_date')
                                                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                                                             @enderror
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div class="col-md-12">
-                                                                                                        <div class="form-group">
+                                                                                                        <div class="backend-form-field">
                                                                                                             <label for="note">@lang('messages.Description') </label>
-                                                                                                            <textarea name="note" class="textarea_editor form-control @error('note') is-invalid @enderror" placeholder="Description">{{ $receipt->note }}</textarea>
+                                                                                                            <textarea data-backend-richtext="true" name="note" class="textarea_editor backend-form-control @error('note') is-invalid @enderror" placeholder="Description">{{ $receipt->note }}</textarea>
                                                                                                             @error('note')
                                                                                                                 <span class="invalid-feedback">
                                                                                                                     <strong>{{ $message }}</strong>
@@ -6361,15 +6349,15 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        
+
                                                                     </form>
                                                                 <div class="card-box-footer">
                                                                     @if ($orderWedding->handled_by == $admin->id)
                                                                         @if ($invoice->balance > 0)
-                                                                            <button type="submit" form="confirmation-payment-desktop-{{ $receipt->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $receipt->status == 'Pending'?"Validate":"Update" }}</button>
+                                                                            <button type="submit" form="confirmation-payment-desktop-{{ $receipt->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $receipt->status == 'Pending'?"Validate":"Update" }}</button>
                                                                         @endif
                                                                     @endif
-                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -6477,9 +6465,9 @@
                                                     <div class="ptext-value"><b>{{ currencyFormatIdr($invoice->total_idr) }}</b></div>
                                                 @endif
                                             </div>
-                                            
+
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             @endif
@@ -6521,9 +6509,9 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-12 m-t-8">
-                                                                        <div class="form-group">
+                                                                        <div class="backend-form-field">
                                                                             <label for="desktop_receipt_name" class="form-label">@lang('messages.Select Receipt') </label><br>
-                                                                            <input type="file" name="desktop_receipt_name" id="desktop_receipt_name" class="custom-file-input @error('desktop_receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('desktop_receipt_name') }}" required>
+                                                                            <input type="file" name="desktop_receipt_name" id="desktop_receipt_name" class="backend-form-control @error('desktop_receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('desktop_receipt_name') }}" required>
                                                                             @error('desktop_receipt_name')
                                                                                 <div class="alert alert-danger">{{ $message }}</div>
                                                                             @enderror
@@ -6537,8 +6525,8 @@
                                                 </div>
                                             </form>
                                             <div class="card-box-footer">
-                                                <button type="submit" form="desktop-payment-confirm-wedding-{{ $orderWedding->id }}" class="btn btn-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                <button type="submit" form="desktop-payment-confirm-wedding-{{ $orderWedding->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
+                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                             </div>
                                         </div>
                                     </div>
@@ -6558,7 +6546,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById("validateOrderWedding");
             const loading = document.getElementById("loading");
-    
+
             form.addEventListener("submit", function(event) {
                 loading.style.display = "block";
                 loading.style.opacity = "1";
@@ -6609,7 +6597,7 @@
             var ro = 1;
             var limit = 5;
             var t = 1
-            $(".add-more").click(function(){ 
+            $(".add-more").click(function(){
                 if (t < limit) {
                     t++;
                     ro++;
@@ -6617,7 +6605,7 @@
                     $(".after-add-more").before(html);
                 }
             });
-            $("body").on("click",".remove",function(){ 
+            $("body").on("click",".remove",function(){
                 $(this).parents(".control-group").remove();
                 t--;
             });
@@ -6625,7 +6613,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             var venueRadios = document.querySelectorAll('input[name="ceremonial_venue_id"]');
             var slotSelect = document.getElementById('slot');
-    
+
             venueRadios.forEach(function(radio) {
                 radio.addEventListener('change', function() {
                     var selectedVenue = JSON.parse(this.getAttribute('data-slots'));
@@ -6634,7 +6622,7 @@
                     populateSlots(selectedVenue, basicPrices, arrangementPrices);
                 });
             });
-    
+
             function populateSlots(slots, basicPrices, arrangementPrices) {
                 slotSelect.innerHTML = '';
                 slots.forEach(function(slot, index) {
@@ -6651,12 +6639,12 @@
             var slotSelect = document.getElementById('slot');
             var basicPriceInput = document.getElementById('basic_price');
             var arrangementPriceInput = document.getElementById('arrangement_price');
-    
+
             slotSelect.addEventListener('change', function () {
                 var selectedOption = slotSelect.options[slotSelect.selectedIndex];
                 var basicPrice = selectedOption.getAttribute('data-basic-price');
                 var arrangementPrice = selectedOption.getAttribute('data-arrangement-price');
-    
+
                 basicPriceInput.value = basicPrice ? basicPrice : '';
                 arrangementPriceInput.value = arrangementPrice ? arrangementPrice : '';
             });
@@ -6701,7 +6689,7 @@
                     }
                 }
             };
-    
+
             @foreach($guests as $index => $guest)
                 $('#cover-{{ $index }}').on('change', function() {
                     previewCoverPackage(this, '#cover-package-preview-div-{{ $index }}');
@@ -6714,9 +6702,9 @@
         var guestsName = document.getElementById('guestsNameForm');
         var numberOfGuests = document.getElementById('numberOfGuestsForm');
         var extraBed = document.getElementById('extraBedIdForm');
-         
-        
-        
+
+
+
         if (roomFor.value == 'Couple') {
             roomFor.addEventListener('change', function() {
                 if (this.value === 'Couple') {
@@ -6742,7 +6730,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             var venueRadios = document.querySelectorAll('input[name="ceremonial_venue_id"]');
             var slotSelect = document.getElementById('slot');
-    
+
             venueRadios.forEach(function(radio) {
                 radio.addEventListener('change', function() {
                     var selectedVenue = JSON.parse(this.getAttribute('data-slots'));
@@ -6751,7 +6739,7 @@
                     populateSlots(selectedVenue, basicPrices, arrangementPrices);
                 });
             });
-    
+
             function populateSlots(slots, basicPrices, arrangementPrices) {
                 slotSelect.innerHTML = '';
                 slots.forEach(function(slot, index) {
@@ -6768,12 +6756,12 @@
             var slotSelect = document.getElementById('slot');
             var basicPriceInput = document.getElementById('basic_price');
             var arrangementPriceInput = document.getElementById('arrangement_price');
-    
+
             slotSelect.addEventListener('change', function () {
                 var selectedOption = slotSelect.options[slotSelect.selectedIndex];
                 var basicPrice = selectedOption.getAttribute('data-basic-price');
                 var arrangementPrice = selectedOption.getAttribute('data-arrangement-price');
-    
+
                 basicPriceInput.value = basicPrice ? basicPrice : '';
                 arrangementPriceInput.value = arrangementPrice ? arrangementPrice : '';
             });
@@ -6806,7 +6794,7 @@
             var ro = 1;
             var limit = 5;
             var t = 1
-            $(".add-more").click(function(){ 
+            $(".add-more").click(function(){
                 if (t < limit) {
                     t++;
                     ro++;
@@ -6814,7 +6802,7 @@
                     $(".after-add-more").before(html);
                 }
             });
-            $("body").on("click",".remove",function(){ 
+            $("body").on("click",".remove",function(){
                 $(this).parents(".control-group").remove();
                 t--;
             });
@@ -6841,7 +6829,7 @@
             });
         });
     </script>
-    
+
     <script>
         $(document).ready(function() {
             function toggleElements(no_rexser) {
@@ -6849,19 +6837,19 @@
                 if (status === 'Rejected') {
                     $('#remark-div_' + no_rexser).removeClass('display-none');
                     $('#remark_' + no_rexser).attr('required', 'required');
-                    
+
                 } else {
                     $('#remark-div_' + no_rexser).addClass('display-none');
                     $('#remark_' + no_rexser).removeAttr('required');
-                    
+
                 }
             }
-    
+
             $('select[name="status"]').change(function() {
                 var no_rexser = $(this).attr('id').split('_')[1];
                 toggleElements(no_rexser);
             });
-    
+
             // Initial call to set the correct state on page load
             @foreach($serviceRequests as $no_rexser => $request_service)
                 toggleElements({{ $no_rexser }});
@@ -6872,7 +6860,7 @@
         document.getElementById('passport-cover').addEventListener('change', function(event) {
             const imgPreview = document.getElementById('passport-img-preview');
             const file = event.target.files[0];
-    
+
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -6890,7 +6878,7 @@
         document.getElementById('desktop_receipt_name').addEventListener('change', function(event) {
             const imgPreview = document.getElementById('desktop-img-preview');
             const file = event.target.files[0];
-    
+
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -6908,7 +6896,7 @@
         document.getElementById('mobile_receipt_name').addEventListener('change', function(event) {
             const imgPreview = document.getElementById('mobile-img-preview');
             const file = event.target.files[0];
-    
+
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {

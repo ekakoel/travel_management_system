@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Guide;
 use App\Models\Review;
-use App\Models\Attention;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\StoreGuideRequest;
@@ -28,11 +27,9 @@ class GuideController extends Controller
         ])
         ->orderByDesc('global_rating')
         ->get();
-        $attentions = Attention::where('page','guides-admin')->get();
-        return view('guides.guides-admin',[
+        return view('backend.operations.guides.index',[
             'now'=>$now,
             'guides'=>$guides,
-            'attentions'=>$attentions,
         ]);
     }
 
@@ -71,7 +68,7 @@ class GuideController extends Controller
             "address"=>$request->address,
             "country"=>$request->country,
         ]);
-        return redirect("/guides-admin")->with('success','Guide has been updated');
+        return redirect()->route('guides-admin.index')->with('success','Guide has been updated');
     }
     
     public function destroy(Request $request,$id)
@@ -81,7 +78,7 @@ class GuideController extends Controller
             $guide->delete();
             return back()->with('success','Guide has been deleted');
         }else{
-            return redirect("/guides-admin")->with('error','Akses ditolak');
+            return redirect()->route('guides-admin.index')->with('error','Akses ditolak');
         }
     }
 }

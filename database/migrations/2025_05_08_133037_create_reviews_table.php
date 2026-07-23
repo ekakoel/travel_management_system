@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('arrival_date')->nullable();
             $table->date('departure_date')->nullable();
         
-            $table->foreign('guide_id')->references('id')->on('guides')->onDelete('set null');
+            $table->foreignId('guide_id')->nullable()->constrained('guides')->nullOnDelete();
             $table->string('guide_name')->nullable();
             $table->tinyInteger('attitude')->nullable();
             $table->tinyInteger('explanation')->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->tinyInteger('time_control')->nullable();
             $table->tinyInteger('guide_neatness')->nullable();
 
-            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
+            $table->foreignId('driver_id')->nullable()->constrained('drivers')->nullOnDelete();
             $table->string('driver_name')->nullable();
             $table->tinyInteger('driver_punctuality')->nullable();
             $table->tinyInteger('driver_driving_skills')->nullable();

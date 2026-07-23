@@ -9,7 +9,6 @@ use App\Models\Partners;
 use App\Models\TourType;
 use App\Models\UsdRates;
 use App\Models\ActionLog;
-use App\Models\Attention;
 use App\Models\TourPrices;
 use App\Models\ToursImages;
 use App\Models\TourLocationReference;
@@ -40,18 +39,18 @@ class ToursAdminController extends Controller
             $usdrates = Cache::remember('usd_rates', 3600, function () {
                 return UsdRates::select('name', 'rate')->where('name', 'USD')->first();
             });
-            $activetours = Tours::with(['images', 'prices'])
+            $activetours = Tours::with(['images', 'prices', 'type'])
                 ->where('status', 'Active')
                 ->get();
-            $totalTours = $activetours->count();
-            $archivetours = Tours::where('status', 'Archived')->get();
-            $drafttours = Tours::where('status', 'Draft')->get();
+            $archivetours = Tours::with(['prices', 'type'])->where('status', 'Archived')->get();
+            $drafttours = Tours::with(['prices', 'type'])->where('status', 'Draft')->get();
+            $totalTours = $activetours->count() + $archivetours->count() + $drafttours->count();
             $activetours->each(function ($tour) use ($usdrates, $tax) {
                 $tour->prices->each(function ($price) use ($usdrates, $tax) {
                     $price->calculated_price = $price->calculatePrice($usdrates, $tax);
                 });
             });
-            return view('admin.toursadmin', compact('activetours','archivetours','drafttours','totalTours','tax', 'usdrates'));
+            return view('backend.operations.tours.index', compact('activetours','archivetours','drafttours','totalTours','tax', 'usdrates'));
         }
     }
 // View Admin Detail Tour =========================================================================================>
@@ -76,14 +75,12 @@ class ToursAdminController extends Controller
             $price->calculated_price = $price->calculatePrice($usdrates, $tax);
             return $price;
         });
-        $attentions = Attention::where('page','admin-tour-detail')->get();
         
         $action_log = ActionLog::where('service',"Tour Package")
         ->where('service_id',$id)->get();
-        return view('admin.toursadmindetail',[
+        return view('backend.operations.tours.detail',[
             'usdrates'=>$usdrates,
             'tour'=>$tour, 
-            'attentions'=>$attentions,
             'action_log'=>$action_log,
             'user'=>$user,
             'tax'=>$tax,
@@ -93,32 +90,28 @@ class ToursAdminController extends Controller
     public function view_edit_tour($id)
     {
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $attentions = Attention::where('page','admin-tour-edit')->get();
             $tour=Tours::with(['locations' => fn ($query) => $query->ordered()])->findOrFail($id);
             $usdrates = UsdRates::where('name','USD')->first();
             $types = TourType::all();
-            return view('backend.tours.update-tour', compact("types"),[
+            return view('backend.operations.tours.forms.edit', compact("types"),[
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
             ])->with('tour',$tour);
         }else{
-            return redirect("/tours-admin")->with('error','Akses ditolak');
+            return redirect()->route('tours-admin.index')->with('error','Akses ditolak');
         }
     }
 // View Add Tours =========================================================================================>
     public function view_add_tour()
     {
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $attentions = Attention::where('page','admin-tour-add')->get();
             $tours = Tours::all();
             $partners = Partners::all();
             $types = TourType::all();
-            return view('backend.tours.create-tour',compact("types"),[
-                'attentions'=>$attentions,
+            return view('backend.operations.tours.forms.create',compact("types"),[
                 'partners'=>$partners,
             ])->with('tours',$tours);
         }else{
-            return redirect("/tours-admin")->with('error','Akses ditolak');
+            return redirect()->route('tours-admin.index')->with('error','Akses ditolak');
         }
     }
 
@@ -150,7 +143,7 @@ class ToursAdminController extends Controller
         });
 
         // 🔹 Redirect dengan pesan sukses
-        return redirect("/detail-tour-$tour->id")->with('success','New Tour Package has been successfully created!');
+        return redirect()->route('admin.tours.show', $tour->id)->with('success','New Tour Package has been successfully created!');
         // return redirect()->back()->with('success', 'Tour package has been successfully created!');
     }
 
@@ -189,9 +182,9 @@ class ToursAdminController extends Controller
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-tour-$id#prices")->with('success','New Tour Package Price has been successfully created!');
+            return redirect()->route('admin.tours.show', $id)->withFragment('prices')->with('success','New Tour Package Price has been successfully created!');
         }else{
-            return redirect("/tours-admin")->with('error','Akses ditolak');
+            return redirect()->route('tours-admin.index')->with('error','Akses ditolak');
         }
     }
 
@@ -228,9 +221,9 @@ class ToursAdminController extends Controller
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-tour-$tour_price->tour_id#prices")->with('success','The Tour Price has been successfully updated!');
+            return redirect()->route('admin.tours.show', $tour_price->tour_id)->withFragment('prices')->with('success','The Tour Price has been successfully updated!');
         }else{
-            return redirect("/tours-admin")->with('error','Akses ditolak');
+            return redirect()->route('tours-admin.index')->with('error','Akses ditolak');
         }
     }
 // FUNCTION DELETE TOUR PRICE
@@ -257,9 +250,9 @@ class ToursAdminController extends Controller
                 "note" =>$note, 
             ]);
             $user_log->save();
-            return redirect("/detail-tour-$tour_price->tour_id#prices")->with('success','The Tour Price has been successfully deleted!');
+            return redirect()->route('admin.tours.show', $tour_price->tour_id)->withFragment('prices')->with('success','The Tour Price has been successfully deleted!');
         }else{
-            return redirect("/tours-admin")->with('error','Akses ditolak');
+            return redirect()->route('tours-admin.index')->with('error','Akses ditolak');
         }
     }
 // function Update Tour =============================================================================================================>
@@ -289,7 +282,7 @@ class ToursAdminController extends Controller
 
             $this->syncTourLocations($tour, $locations);
         });
-        return redirect("/detail-tour-$tour->id")->with('success','The Tour Package has been successfully updated!');
+        return redirect()->route('admin.tours.show', $tour->id)->with('success','The Tour Package has been successfully updated!');
     }
 // function Tour Remove =============================================================================================================>
     public function remove_tour(Request $request,$id)
@@ -320,7 +313,7 @@ class ToursAdminController extends Controller
             $user_log->save();
             return back()->with('success','The Tour Package has been successfully deleted!');
         }else{
-            return redirect("/tours-admin")->with('error','Akses ditolak');
+            return redirect()->route('tours-admin.index')->with('error','Akses ditolak');
         }
     }
 

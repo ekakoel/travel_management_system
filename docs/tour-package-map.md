@@ -11,7 +11,6 @@ Locations are stored in `tour_package_locations` and linked to `tours.id`.
 Key fields:
 
 - `tour_id`: owner tour package.
-- `itinerary_id`: optional future link to structured itinerary rows.
 - `day_number`: itinerary day shown to the user.
 - `visit_order`: stop order within the day.
 - `visit_time`: optional planned visit time shown on the marker legend and popup.
@@ -64,9 +63,9 @@ The polyline is an itinerary sequence guide, not a live road navigation route.
 - `app/Models/Tours.php`
 - `app/Http/Controllers/ToursAdminController.php`
 - `app/Http/Controllers/ToursController.php`
-- `resources/views/backend/tours/partials/tour-location-repeater.blade.php`
-- `resources/views/backend/tours/create-tour.blade.php`
-- `resources/views/backend/tours/update-tour.blade.php`
+- `resources/views/backend/operations/tours/partials/tour-location-repeater.blade.php`
+- `resources/views/backend/operations/tours/forms/create.blade.php`
+- `resources/views/backend/operations/tours/forms/edit.blade.php`
 - `resources/views/frontend/tours/detail.blade.php`
 - `resources/lang/en/tour-map.php`
 - `resources/lang/zh/tour-map.php`
@@ -74,6 +73,6 @@ The polyline is an itinerary sequence guide, not a live road navigation route.
 
 ## Future Improvements
 
-- Connect locations to structured itinerary rows when the itinerary module is standardized.
+- Keep locations independent from removed itinerary tables; use `tour_id`, `day_number`, and `visit_order` as the stable ordering model.
 - Add optional route calculation through a routing service such as OSRM if real road distance is required.
 - Move inline map assets into a dedicated frontend bundle when the tour detail page is migrated away from the legacy panel layout.

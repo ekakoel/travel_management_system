@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use App\Models\Hotels;
 use App\Models\HotelRoom;
+use App\Services\Hotels\HotelPricingService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,23 +41,16 @@ class HotelPrice extends Model
 
     public function taxRate($usdrates, $tax)
     {
-        $r_c_rate = $this->contract_rate;
-        $r_usd = (ceil($r_c_rate / $usdrates->rate)) + $this->markup;
-        $r_tax = ceil($r_usd * ($tax->tax / 100));
-        return $r_tax;
+        return app(HotelPricingService::class)->taxAmount($this->contract_rate, $this->markup, $usdrates, $tax);
     }
 
     public function contractRate($usdrates)
     {
-        $crate = $this->contract_rate;
-        $contract_rate = (ceil($crate / $usdrates->rate));
-        return $contract_rate;
+        return app(HotelPricingService::class)->contractRateUsd($this->contract_rate, $usdrates);
     }
+
     public function calculatePrice($usdrates, $tax)
     {
-        $room_c_rate = $this->contract_rate;
-        $room_usd = (ceil($room_c_rate / $usdrates->rate)) + $this->markup;
-        $room_tax = ceil($room_usd * ($tax->tax / 100));
-        return $room_usd + $room_tax;
+        return app(HotelPricingService::class)->publishedRate($this->contract_rate, $this->markup, $usdrates, $tax);
     }
 }

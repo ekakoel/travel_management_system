@@ -1,265 +1,323 @@
+@extends('layouts.head')
+
 @section('title', __('messages.Activity'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/operations/activities/forms.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/operations/activities/forms.js') }}" defer></script>
+@endpush
+
 @section('content')
-    @extends('layouts.head')
-    <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
-        <div class="main-container">
+        @php
+            $statusTone = strtolower($activities->status) === 'active' ? 'active' : (strtolower($activities->status) === 'archived' ? 'muted' : 'draft');
+        @endphp
+
+        <div class="mobile-menu-overlay"></div>
+        <main class="main-container activity-form-page activity-form-page--edit">
             <div class="pd-ltr-20">
-                <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Activity</h4>
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                @if (isset($activities->partners_id))
-                                    <li class="breadcrumb-item"><a href="/detail-partner-{{ $activities->partners_id }}">{{ $partner->name }}</a></li>
-                                @else
-                                    <li class="breadcrumb-item">?</li>
-                                @endif
-                                <li class="breadcrumb-item"><a href="/activities-admin">Activities</a></li>
-                                <li class="breadcrumb-item"><a href="/detail-activity-{{ $activities->id }}">Activity Detail</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ "Edit Activity ". $activities->name }}</li>
-                            </ol>
-                        </nav>
+                <x-backend.page-hero
+                    eyebrow="Operations Inventory"
+                    title="Edit Activity"
+                    description="Update profile, pricing, capacity, status, and customer-facing content for {{ $activities->name }}."
+                >
+                    <x-slot name="action">
+                        <a href="{{ route('admin.activities.show', $activities->id) }}" class="backend-page-primary-action">
+                            <i class="fa fa-arrow-left"></i>
+                            Back to Detail
+                        </a>
+                    </x-slot>
+                </x-backend.page-hero>
+
+                <section class="backend-page-toolbar activity-form-toolbar">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('activities-admin.index') }}">Activities</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.show', $activities->id) }}">{{ $activities->name }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                    <div class="backend-page-toolbar__actions">
+                        <span class="backend-status-badge backend-status-badge--{{ $statusTone }}">{{ $activities->status }}</span>
+                        <span class="backend-status-badge backend-status-badge--info">USD Rate: {{ currencyFormatIdr($usdrates->rate) }}</span>
                     </div>
-                    <div class="row">
-                        {{-- ATTENTIONS --}}
-                        <div class="col-md-4 mobile">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card-box p-b-18 m-b-18">
-                                        <div class="subtitle"><i class="icon-copy fa fa-money"></i>USD Rate : {{ currencyFormatIdr($usdrates->rate) }}</div>
-                                    </div>
-                                </div>
-                                @include('layouts.attentions')
+                </section>
+
+                @if ($errors->any() || session()->has('success') || session()->has('error'))
+                    <section class="backend-feedback activity-form-feedback">
+                        @if ($errors->any())
+                            <div class="backend-alert backend-alert--danger">
+                                <strong>Action needs attention.</strong>
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        @if (session()->has('success'))
+                            <div class="backend-alert backend-alert--success">
+                                <strong>{{ session('success') }}</strong>
+                            </div>
+                        @endif
+
+                        @if (session()->has('error'))
+                            <div class="backend-alert backend-alert--danger">
+                                <strong>{{ session('error') }}</strong>
+                            </div>
+                        @endif
+                    </section>
+                @endif
+
+                <form id="activityEditForm" action="{{ route('admin.activities.update', $activities->id) }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    @method('put')
+
+                    <section class="backend-panel activity-form-panel">
+                        <div class="backend-section-header">
+                            <div>
+                                <span class="backend-section-header__label">Profile</span>
+                                <h2>Activity Information</h2>
                             </div>
                         </div>
-                        <div class="col-md-8 m-b-18">
-                            <div class="card-box">
-                                <div class="card-box-title">
-                                    <div class="subtitle"><i class="icon-copy fa fa-pencil"></i>{{ "Edit ". $activities->name }}</div>
+
+                        <figure class="backend-table-card activity-form-cover">
+                            <img class="img-fluid" src="{{ asset('storage/activities/activities-cover/' . $activities->cover) }}" alt="{{ $activities->name }}" loading="lazy">
+                        </figure>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="cover" class="backend-form-label">Cover Image</label>
+                                    <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" data-activity-file-input data-activity-file-input-target="#activityCoverFileStatus">
+                                    <span id="activityCoverFileStatus" class="activity-file-status" data-activity-file-input-default="Keep existing cover">Keep existing cover</span>
+                                    @error('cover')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                <form id="edit-activities" action="/fupdate-activity/{{ $activities->id }}" method="post" enctype="multipart/form-data">
-                                    @csrf
-                                    @method('put')
-                                    <div class="row">
-                                        <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="dropzone">
-                                                        <div class="cover-preview-div">
-                                                            <img src="{{ asset('storage/activities/activities-cover/' . $activities->cover)  }}" alt="{{ $activities->name }}">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="cover">Cover Image </label>
-                                                <input type="file" name="cover" id="cover" class="form-control custom-file-input @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}">
-                                                @error('cover')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="cover">Status </label>
-                                                <select id="status" name="status" class="custom-select col-12 @error('status') is-invalid @enderror" required>
-                                                    <option selected="{{ $activities->status }}">{{ $activities->status }}</option>
-                                                    <option value="Active">Active</option>
-                                                    <option value="Draft">Draft</option>
-                                                    <option value="Archived">Archived</option>
-                                                </select>
-                                                @error('status')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="name">Name </label>
-                                                <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert name..." value="{{ $activities->name }}" required>
-                                                @error('name')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="partners_id">Partner <span> *</span></label>
-                                                <select id="partners_id" name="partners_id" value="{{ old('partners_id') }}" class="custom-select col-12 @error('partners_id') is-invalid @enderror" required>
-                                                    @if (isset($partner))
-                                                        <option selected value="{{ $partner->id }}">{{ $partner->name }}</option>
-                                                    @else
-                                                        <option selected value="">Select Partner</option>
-                                                    @endif
-                                                    @foreach ($partners as $partner)
-                                                        <option value="{{ $partner->id }}">{{ $partner->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('partners_id')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="map">Map </label>
-                                                <input type="text" id="map" name="map" class="form-control @error('map') is-invalid @enderror" placeholder="Insert Google Map..." value="{{ $activities->map }}" required>
-                                                @error('map')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="location">Location </label>
-                                                <input type="text" id="location" name="location" class="form-control @error('location') is-invalid @enderror" placeholder="Insert location..." value="{{ $activities->location }}" required>
-                                                @error('location')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="type">Type <span> *</span></label>
-                                                <select id="type" name="type" class="custom-select @error('type') is-invalid @enderror" required>
-                                                    <option selected value="{{ $activities->type }}">{{ $activities->type }}</option>
-                                                    @foreach ($type as $type)
-                                                        <option value="{{ $type->type }}">{{ $type->type }}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('type')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="duration">Duration <span> *</span></label>
-                                                <select id="duration" name="duration" value="{{ old('duration') }}" class="custom-select col-12 @error('duration') is-invalid @enderror" required>
-                                                    <option selected value="{{ $activities->duration }}">{{ $activities->duration }}</option>
-                                                    <option value="15 Minutes">15 Minutes</option>
-                                                    <option value="30 Minutes">30 Minutes</option>
-                                                    <option value="1 Hour">1 Hours</option>
-                                                    <option value="2 Hours">2 Hours</option>
-                                                    <option value="3 Hours">3 Hours</option>
-                                                    <option value="4 Hours">4 Hours</option>
-                                                    <option value="5 Hours">5 Hours</option>
-                                                    <option value="6 Hours">6 Hours</option>
-                                                    <option value="7 Hours">7 Hours</option>
-                                                    <option value="8 Hours">8 Hours</option>
-                                                    <option value="9 Hours">9 Hours</option>
-                                                    <option value="10 Hours">Full Day (10 hours)</option>
-                                                </select>
-                                                @error('duration')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="min_pax">Minimum Order </label>
-                                                <input type="number" id="min_pax" name="min_pax" value="{{ $activities->min_pax }}" class="form-control @error('min_pax') is-invalid @enderror" placeholder="Minimum order" required>
-                                                @error('min_pax')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="qty">Capacity </label>
-                                                <input type="number" id="qty" name="qty" value="{{ $activities->qty }}" class="form-control @error('qty') is-invalid @enderror" placeholder="Capacity" required>
-                                                @error('qty')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="contract_rate">Contract Rate <span> *</span></label>
-                                                <div class="btn-icon">
-                                                    <span>Rp</span>
-                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ $activities->contract_rate }}" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="markup">Markup <span> *</span></label>
-                                                <div class="btn-icon">
-                                                    <span>$</span>
-                                                    <input type="number" id="markup" name="markup" class="input-icon form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ $activities->markup }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label for="validity">Valid Until </label>
-                                                <input type="text" id="validity" name="validity" value="{{ date('d M Y',strtotime($activities->validity)) }}" class="form-control date-picker @error('validity') is-invalid @enderror" placeholder="Select date" required>
-                                                @error('validity')
-                                                    <div class="alert alert-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
-                                                <label for="description">Description </label>
-                                                <textarea id="description" name="description" class="textarea_editor form-control border-radius-0" required>{!! $activities->description !!}</textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
-                                                <label for="itinerary">Itinerary </label>
-                                                <textarea id="itinerary" name="itinerary" class="textarea_editor form-control border-radius-0" required>{!! $activities->itinerary !!}</textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
-                                                <label for="include">Include </label>
-                                                <textarea id="include" name="include" class="textarea_editor form-control border-radius-0" required>{!! $activities->include !!}</textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
-                                                <label for="cancellation_policy">Cancellation Policy</label>
-                                                <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor form-control border-radius-0">{!! $activities->cancellation_policy !!}</textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="form-group">
-                                                <label for="additional_info">Additional Information</label>
-                                                <textarea id="additional_info" name="additional_info" class="textarea_editor form-control border-radius-0">{!! $activities->additional_info !!}</textarea>
-                                            </div>
-                                        </div>
-                                        <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
-                                        <input id="page" name="page" value="admin-tour-edit" type="hidden">
-                                        <input id="initial_state" name="initial_state" value="{{ $activities->status }}" type="hidden">
-                                    </div>
-                                </form>
-                                <div class="card-box-footer">
-                                    <button type="submit" form="edit-activities" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save</button>
-                                    <a href="detail-activity-{{ $activities['id'] }}">
-                                        <button type="button"class="btn btn-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
-                                    </a>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="status" class="backend-form-label">Status <span>*</span></label>
+                                    <select id="status" name="status" class="backend-form-control @error('status') is-invalid @enderror" required>
+                                        @foreach (['Active', 'Draft', 'Archived'] as $status)
+                                            <option value="{{ $status }}" @selected(old('status', $activities->status) === $status)>{{ $status }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('status')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="name" class="backend-form-label">Name <span>*</span></label>
+                                    <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert activity name" value="{{ old('name', $activities->name) }}" required>
+                                    @error('name')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="partners_id" class="backend-form-label">Partner <span>*</span></label>
+                                    <select id="partners_id" name="partners_id" class="backend-form-control @error('partners_id') is-invalid @enderror" required>
+                                        <option value="">Select Partner</option>
+                                        @foreach ($partners as $partnerOption)
+                                            <option value="{{ $partnerOption->id }}" @selected((string) old('partners_id', $activities->partners_id) === (string) $partnerOption->id)>{{ $partnerOption->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('partners_id')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="type" class="backend-form-label">Type <span>*</span></label>
+                                    <select id="type" name="type" class="backend-form-control @error('type') is-invalid @enderror" required>
+                                        @foreach ($type as $activityType)
+                                            <option value="{{ $activityType->type }}" @selected(old('type', $activities->type) === $activityType->type)>{{ $activityType->type }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('type')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="location" class="backend-form-label">Location <span>*</span></label>
+                                    <input type="text" id="location" name="location" class="backend-form-control @error('location') is-invalid @enderror" placeholder="Activity location" value="{{ old('location', $activities->location) }}" required>
+                                    @error('location')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="backend-form-field">
+                                    <label for="map" class="backend-form-label">Map</label>
+                                    <input type="text" id="map" name="map" class="backend-form-control @error('map') is-invalid @enderror" placeholder="Google Maps link" value="{{ old('map', $activities->map) }}">
+                                    @error('map')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
-                        {{-- ATTENTIONS --}}
-                        <div class="col-md-4 desktop">
-                            <div class="row">
-                                @include('admin.usd-rate')
-                                @include('layouts.attentions')
+                    </section>
+
+                    <section class="backend-panel activity-form-panel">
+                        <div class="backend-section-header">
+                            <div>
+                                <span class="backend-section-header__label">Operations</span>
+                                <h2>Capacity and Pricing</h2>
                             </div>
                         </div>
-                    </div>
-                       
-                    @include('layouts.footer')
-                </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="duration" class="backend-form-label">Duration <span>*</span></label>
+                                    <select id="duration" name="duration" class="backend-form-control @error('duration') is-invalid @enderror" required>
+                                        @foreach (['15 Minutes', '30 Minutes', '1 Hour', '2 Hours', '3 Hours', '4 Hours', '5 Hours', '6 Hours', '7 Hours', '8 Hours', '9 Hours', '10 Hours'] as $duration)
+                                            <option value="{{ $duration }}" @selected(old('duration', $activities->duration) === $duration)>{{ $duration === '10 Hours' ? 'Full Day (10 hours)' : $duration }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('duration')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="validity" class="backend-form-label">Validity <span>*</span></label>
+                                    <input class="backend-form-control" type="text" id="validity" name="validity" value="{{ old('validity', $activities->validity ? date('d M Y', strtotime($activities->validity)) : '') }}" class="backend-form-control date-picker @error('validity') is-invalid @enderror" placeholder="Select date" required>
+                                    @error('validity')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="min_pax" class="backend-form-label">Minimum Order <span>*</span></label>
+                                    <input class="backend-form-control" type="number" id="min_pax" name="min_pax" value="{{ old('min_pax', $activities->min_pax) }}" class="backend-form-control @error('min_pax') is-invalid @enderror" placeholder="Minimum pax" required>
+                                    @error('min_pax')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="qty" class="backend-form-label">Capacity <span>*</span></label>
+                                    <input class="backend-form-control" type="number" id="qty" name="qty" value="{{ old('qty', $activities->qty) }}" class="backend-form-control @error('qty') is-invalid @enderror" placeholder="Maximum pax" required>
+                                    @error('qty')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="contract_rate" class="backend-form-label">Contract Rate IDR <span>*</span></label>
+                                    <input type="number" id="contract_rate" name="contract_rate" class="backend-form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ old('contract_rate', $activities->contract_rate) }}" required>
+                                    @error('contract_rate')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="backend-form-field">
+                                    <label for="markup" class="backend-form-label">Markup USD</label>
+                                    <input type="number" id="markup" name="markup" class="backend-form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ old('markup', $activities->markup) }}">
+                                    @error('markup')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="backend-panel activity-form-panel">
+                        <div class="backend-section-header">
+                            <div>
+                                <span class="backend-section-header__label">Content</span>
+                                <h2>Customer-Facing Copy</h2>
+                            </div>
+                        </div>
+
+                        <div class="backend-form-field">
+                            <label for="description" class="backend-form-label">Description <span>*</span></label>
+                            <textarea id="description" name="description" class="textarea_editor backend-form-control border-radius-0 @error('description') is-invalid @enderror" data-backend-richtext="true" required>{!! old('description', $activities->description) !!}</textarea>
+                            @error('description')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="backend-form-field">
+                            <label for="itinerary" class="backend-form-label">Itinerary</label>
+                            <textarea id="itinerary" name="itinerary" class="textarea_editor backend-form-control border-radius-0 @error('itinerary') is-invalid @enderror" data-backend-richtext="true">{!! old('itinerary', $activities->itinerary) !!}</textarea>
+                            @error('itinerary')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="backend-form-field">
+                            <label for="include" class="backend-form-label">Include</label>
+                            <textarea id="include" name="include" class="textarea_editor backend-form-control border-radius-0 @error('include') is-invalid @enderror" data-backend-richtext="true">{!! old('include', $activities->include) !!}</textarea>
+                            @error('include')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="backend-form-field">
+                            <label for="cancellation_policy" class="backend-form-label">Cancellation Policy</label>
+                            <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor backend-form-control border-radius-0 @error('cancellation_policy') is-invalid @enderror" data-backend-richtext="true">{!! old('cancellation_policy', $activities->cancellation_policy) !!}</textarea>
+                            @error('cancellation_policy')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="backend-form-field">
+                            <label for="additional_info" class="backend-form-label">Additional Information</label>
+                            <textarea id="additional_info" name="additional_info" class="textarea_editor backend-form-control border-radius-0 @error('additional_info') is-invalid @enderror" data-backend-richtext="true">{!! old('additional_info', $activities->additional_info) !!}</textarea>
+                            @error('additional_info')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <input class="backend-form-control" id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
+                        <input id="page" name="page" value="edit-activity" type="hidden">
+                        <input class="backend-form-control" id="initial_state" name="initial_state" value="{{ $activities->status }}" type="hidden">
+
+                        <div class="backend-page-toolbar backend-form-actions">
+                            <div class="backend-page-toolbar__actions">
+                                <a href="{{ route('admin.activities.show', $activities->id) }}" class="backend-button backend-button-secondary">Cancel</a>
+                                <button type="submit" class="backend-button backend-button-primary">
+                                    <i class="fa fa-check"></i>
+                                    Save Activity
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+
+                @include('layouts.footer')
             </div>
-        </div>
+        </main>
     @endcan
 @endsection

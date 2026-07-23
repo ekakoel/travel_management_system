@@ -21,7 +21,7 @@
                 <p class="text-muted">
                     Maaf, SPK yang Anda cari tidak tersedia, gunakan link yang dibagikan untuk membuka SPK anda!
                 </p>
-                {{-- <a href="{{ url('/') }}" class="btn btn-primary mt-3">
+                {{-- <a href="{{ url('/') }}" class="backend-button backend-button-primary mt-3">
                     <i class="bi bi-house-door"></i> Kembali ke Beranda
                 </a> --}}
             </div>

@@ -1,0 +1,65 @@
+body.sidebar-light .backend-richtext-control {
+  min-height: 180px;
+}
+
+body.sidebar-light .note-editor.note-frame {
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-sm);
+  box-shadow: none;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+body.sidebar-light .note-editor .note-toolbar {
+  background: var(--backend-sidebar-bg-soft);
+  border-bottom: 1px solid var(--backend-line-soft);
+  padding: 8px;
+  overflow: visible;
+  position: relative;
+  z-index: 5;
+}
+
+body.sidebar-light .note-editor .note-btn-group,
+body.sidebar-light .note-editor .note-btn-group .note-btn {
+  position: relative;
+}
+
+body.sidebar-light .note-editor .note-dropdown-menu,
+body.sidebar-light .note-editor .dropdown-menu {
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16);
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 1085;
+}
+
+body.sidebar-light .note-popover,
+body.sidebar-light .note-tooltip {
+  z-index: 1090;
+}
+
+body.sidebar-light .note-editor .note-editing-area .note-editable {
+  color: var(--backend-ink);
+  font-family: "Inter", Arial, sans-serif;
+  line-height: 1.65;
+  min-height: 180px;
+  padding: 14px;
+}
+
+body.sidebar-light .note-editor .note-statusbar {
+  background: #ffffff;
+  border-top: 1px solid var(--backend-line-soft);
+}
+
+body.sidebar-light .note-editor .note-btn {
+  border-color: var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+}
+
+body.sidebar-light .note-editor .note-btn:focus,
+body.sidebar-light .note-editor .note-btn:focus-visible {
+  box-shadow: var(--backend-button-focus-ring);
+  outline: 0;
+}

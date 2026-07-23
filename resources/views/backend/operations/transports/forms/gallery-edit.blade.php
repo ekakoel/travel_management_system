@@ -1,101 +1,130 @@
+@extends('layouts.head')
+
 @section('title', __('messages.Transports'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/operations/transports/forms.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/operations/transports/forms.js') }}" defer></script>
+@endpush
+
 @section('content')
-    @extends('layouts.head')
-    <div class="mobile-menu-overlay"></div>
-    <div class="main-container">
-        <div class="pd-ltr-20">
-            <div class="page-header">
+    @can('isAdmin')
+        <div class="mobile-menu-overlay"></div>
+        <main class="main-container transport-gallery-page">
+            <div class="pd-ltr-20">
+                <x-backend.page-hero
+                    eyebrow="Operations Inventory"
+                    title="Edit Transport Gallery"
+                    description="Manage gallery assets for {{ $transports->name }} using the shared backend workspace pattern."
+                >
+                    <x-slot name="action">
+                        <a href="{{ route('admin.transports.show', $transports->id) }}" class="backend-page-primary-action">
+                            <i class="fa fa-arrow-left"></i>
+                            Back to Detail
+                        </a>
+                    </x-slot>
+                </x-backend.page-hero>
+
+                <section class="backend-page-toolbar transport-gallery-toolbar">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('transports-admin.index') }}">Transportation</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.transports.show', $transports->id) }}">{{ $transports->name }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Gallery</li>
+                        </ol>
+                    </nav>
+                    <div class="backend-page-toolbar__actions">
+                        <span class="backend-status-badge backend-status-badge--info">{{ $transports->images->count() }} Images</span>
+                    </div>
+                </section>
+
+                @include('backend.operations.transports.partials.form-feedback')
+
                 <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="title">
-                            <h4>Edit Transport - {{ $transports['name'] }}</h4>
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a href="admin-transports">Admin Transport</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Detail</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 col-md-6">
-                    <div class="card-box mb-30 pd-20 row">
-                        @if (count($transports->images) > 0)
-                            @foreach ($transports->images as $img)
-                                <div class="col-sm-6 col-md-6">
-                                    <form action="/fdelete-transport-img/{{ $img->id }}" method="post">
-                                        <button class="btn text-right"
-                                            style="color: white; position: absolute; right: 30; z-index:99;">X</button>
-                                        @csrf
-                                        @method('delete')
-                                    </form>
-                                    <img src="/images/transports/{{ $img->image }}" class="img-responsive"
-                                        style="max-width: 100%; padding:0 8px 8px 8px;">
+                    <div class="col-12 col-lg-7">
+                        <section class="backend-panel transport-gallery-panel">
+                            <div class="backend-section-header">
+                                <div>
+                                    <span class="backend-section-header__label">Gallery</span>
+                                    <h2>Current Images</h2>
                                 </div>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
+                                <p>Review and remove images that should no longer appear in this transport gallery.</p>
+                            </div>
 
-
-                <div class="col-md-6 col-md-6">
-                    <form action="/fupdate-transport/{{ $transports->id }}" method="post" enctype="multipart/form-data">
-                        @csrf
-                        @method('put')
-                        {{ csrf_field() }}
-                        <div class="card-box mb-30 pd-20">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="hidden" name="name" value="{{ $transports->name }}">
-                                        <input type="hidden" name="type" value="{{ $transports->type }}">
-                                        <input type="hidden" name="duration" value="{{ $transports->duration }}">
-                                        <input type="hidden" name="description" value="{{ $transports->description }}">
-                                        <input type="hidden" name="include" value="{{ $transports->include }}">
-                                        <input type="hidden" name="note" value="{{ $transports->note }}">
-                                        <input type="hidden" name="price" value="{{ $transports->price }}">
-                                        <input type="hidden" name="capacity" value="{{ $transports->capacity }}">
-                                        <input type="hidden" name="status" value="{{ $transports->status }}">
-                                        <input type="hidden" name="author" value="{{ Auth::user()->id }}" >
-                                        <input type="hidden" name="cover" value="{{ $transports->cover }}">
-                                        <input type="hidden" name="code" value="{{ $transports->code }}">
-
-                                        <div class="col-md-12 mb-30">
-                                            <div class="dropzone mt-1 text-center pd-20">
-                                                <div class="images-preview-div">
-                                                </div>
+                            @if ($transports->images->count() > 0)
+                                <div class="transport-gallery-grid">
+                                    @foreach ($transports->images as $img)
+                                        <article class="backend-table-card transport-gallery-card">
+                                            <img class="img-fluid" src="{{ asset('storage/transports/transports-gallery/' . $img->image) }}" alt="{{ $transports->name }}" loading="lazy">
+                                            <div class="backend-table-actions">
+                                                <form action="{{ route('admin.transports.images.destroy', $img->id) }}" method="post">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="backend-icon-action is-danger" data-transport-gallery-delete="{{ $transports->name }}" aria-label="Delete gallery image for {{ $transports->name }}">
+                                                        <i class="fa fa-trash-o"></i>
+                                                    </button>
+                                                </form>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="file" name="images[]" id="images"
-                                                class="@error('images[]') is-invalid @enderror" placeholder="Choose images"
-                                                value="{{ $transports->images }}" multiple>
-                                            @error('images[]')
-                                                <div class="alert alert-danger">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="text-right">
-                                            <a href="/detail-transport-{{ $transports['id'] }}"><button
-                                                    type="button"class="btn btn-danger">Cancel</button></a>
-                                            <button type="submit" class="btn btn-info">Update Galery</button>
-                                        </div>
+                                        </article>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="backend-empty-state">
+                                    <i class="fa fa-picture-o"></i>
+                                    <strong>No gallery images.</strong>
+                                    <span>Upload images to enrich this transport detail page.</span>
+                                </div>
+                            @endif
+                        </section>
+                    </div>
+
+                    <div class="col-12 col-lg-5">
+                        <form data-transport-form action="{{ route('admin.transports.update', $transports->id) }}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            @method('put')
+
+                            <section class="backend-panel transport-gallery-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Upload</span>
+                                        <h2>Add Gallery Images</h2>
+                                    </div>
+                                    <p>Profile fields are carried as hidden values so gallery updates do not overwrite existing transport data.</p>
+                                </div>
+
+                                @include('backend.operations.transports.partials.profile-hidden-fields', ['transport' => $transports])
+
+                                <label class="backend-form-field is-wide">
+                                    <span>Gallery Images</span>
+                                    <input type="file" name="images[]" id="images" class="backend-form-control @error('images[]') is-invalid @enderror" data-transport-gallery-input data-transport-file-input-target="#transportGalleryFileStatus" multiple>
+                                    <small id="transportGalleryFileStatus" class="transport-file-status" data-transport-file-input-default="No gallery images selected">No gallery images selected</small>
+                                    @error('images[]')
+                                        <small class="backend-form-error">{{ $message }}</small>
+                                    @enderror
+                                </label>
+
+                                <div class="transport-gallery-preview" data-transport-gallery-preview aria-live="polite"></div>
+
+                                <div class="backend-page-toolbar backend-form-actions">
+                                    <div class="backend-page-toolbar__actions">
+                                        <a href="{{ route('admin.transports.show', $transports->id) }}" class="backend-button backend-button-secondary">Cancel</a>
+                                        <button type="submit" class="backend-button backend-button-primary">
+                                            <i class="fa fa-check"></i>
+                                            Update Gallery
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </form>
+                            </section>
+                        </form>
+                    </div>
                 </div>
 
-
+                @include('layouts.footer')
             </div>
-
-        </div>
-    </div>
-
-    @include('layouts.footer')
-    </div>
-    </div>
+        </main>
+    @endcan
+@endsection

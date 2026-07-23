@@ -47,7 +47,7 @@
                             </div>
                             <div class="card-period-full">
                                 {{ date('d M Y',strtotime($ceremony_venue->periode_start)) }} - {{ date('d M Y',strtotime($ceremony_venue->periode_end)) }}
-                            </div> 
+                            </div>
                             <div class="name-card">
                                 <p>
                                     <b>{{ $ceremony_venue->name }}</b><br>
@@ -60,7 +60,7 @@
                             @if ($ceremony_venue->status == "Draft")
                                 <a href="/edit-wedding-venue-{{ $ceremony_venue->id }}">
                                     <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button><br>
-                                    {{-- <button type="button" class="btn btn-update"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                    {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
                                 </a>
                             @endif
                             <form action="/fdelete-wedding-venue/{{ $ceremony_venue->id }}" method="post">
@@ -115,13 +115,13 @@
                                                     </div>
                                                     <div class="col-6 col-sm-4">
                                                         <div class="card-subtitle">Period</div>
-                                                        <p>{{ date('d M Y',strtotime($ceremony_venue->periode_start)) }} - 
+                                                        <p>{{ date('d M Y',strtotime($ceremony_venue->periode_start)) }} -
                                                         {{ date('d M Y',strtotime($ceremony_venue->periode_end)) }}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         @if ($ceremony_venue->description != "")
                                             <div class="card-text">
                                                 <div class="row ">
@@ -201,17 +201,17 @@
                                             @method('PUT')
                                         </form>
                                         @if ($ceremony_venue->status == "Draft")
-                                            <button type="submit" form="activateCeremonyVenue-{{ $ceremony_venue->id }}" class="btn btn-info"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
+                                            <button type="submit" form="activateCeremonyVenue-{{ $ceremony_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
                                             <a href="/edit-wedding-venue-{{ $ceremony_venue->id }}">
-                                                <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
-                                                {{-- <button type="button" class="btn btn-update"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
                                             </a>
                                         @elseif ($ceremony_venue->status == "Active")
-                                            <button type="submit" form="deactivateCeremonyVenue-{{ $ceremony_venue->id }}" class="btn btn-dark"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save to Draft</button>
+                                            <button type="submit" form="deactivateCeremonyVenue-{{ $ceremony_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save to Draft</button>
                                         @endif
-                                        
+
                                     @endcanany
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -226,7 +226,7 @@
     @endif
     <div class="card-box-footer">
         <a href="add-ceremony-venue-{{ $hotel->id }}">
-            <button class="btn btn-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
+            <button class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> Add</button>
         </a>
     </div>
 </div>

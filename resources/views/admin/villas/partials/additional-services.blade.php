@@ -65,9 +65,9 @@
                                                     {{ csrf_field() }}
                                                     <div class="row">
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="type">Type </label>
-                                                                <input name="type" id="type" wire:model="type" class="form-control @error('type') is-invalid @enderror" placeholder="Select Date and Time" type="text" value="{{ $additional_service->type }}" required>
+                                                                <input name="type" id="type" wire:model="type" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Select Date and Time" type="text" value="{{ $additional_service->type }}" required>
                                                                 @error('type')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -76,9 +76,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="name">Name </label>
-                                                                <input name="name" id="name" wire:model="name" class="form-control @error('name') is-invalid @enderror" placeholder="Select Date and Time" type="text" value="{{ $additional_service->name }}" required>
+                                                                <input name="name" id="name" wire:model="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Select Date and Time" type="text" value="{{ $additional_service->name }}" required>
                                                                 @error('name')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -87,20 +87,20 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="contract_rate" class="form-label">Contract Rate <span> *</span></label>
                                                                 <div class="btn-icon">
                                                                     <span>Rp</span>
-                                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert Markup" value="{{ $additional_service->contract_rate }}" required>
+                                                                    <input type="number" id="contract_rate" name="contract_rate" class="input-icon backend-form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert Markup" value="{{ $additional_service->contract_rate }}" required>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="markup" class="form-label">Markup <span> *</span></label>
                                                                 <div class="btn-icon">
                                                                     <span>$</span>
-                                                                    <input type="number" id="markup" name="markup" class="input-icon form-control @error('markup') is-invalid @enderror" placeholder="Insert Markup" value="{{ $additional_service->markup }}" required>
+                                                                    <input type="number" id="markup" name="markup" class="input-icon backend-form-control @error('markup') is-invalid @enderror" placeholder="Insert Markup" value="{{ $additional_service->markup }}" required>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -110,9 +110,9 @@
                                                                     <div class="tab-inner-title">Description</div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="description" class="form-label">English</label>
-                                                                        <textarea name="description" id="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Insert some text" type="text">{!! $additional_service->description !!}</textarea>
+                                                                        <textarea data-backend-richtext="true" name="description" id="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Insert some text" type="text">{!! $additional_service->description !!}</textarea>
                                                                         @error('description')
                                                                             <span class="invalid-feedback">
                                                                                 <strong>{{ $message }}</strong>
@@ -121,9 +121,9 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="description_traditional" class="form-label">Traditional</label>
-                                                                        <textarea name="description_traditional" id="description_traditional" class="textarea_editor form-control @error('description_traditional') is-invalid @enderror" placeholder="Insert some text" type="text">{!! $additional_service->description_traditional !!}</textarea>
+                                                                        <textarea data-backend-richtext="true" name="description_traditional" id="description_traditional" class="textarea_editor backend-form-control @error('description_traditional') is-invalid @enderror" placeholder="Insert some text" type="text">{!! $additional_service->description_traditional !!}</textarea>
                                                                         @error('description_traditional')
                                                                             <span class="invalid-feedback">
                                                                                 <strong>{{ $message }}</strong>
@@ -132,9 +132,9 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="description_simplified" class="form-label">Simplified</label>
-                                                                        <textarea name="description_simplified" id="description_simplified" class="textarea_editor form-control @error('description_simplified') is-invalid @enderror" placeholder="Insert some text" type="text">{!! $additional_service->description_simplified !!}</textarea>
+                                                                        <textarea data-backend-richtext="true" name="description_simplified" id="description_simplified" class="textarea_editor backend-form-control @error('description_simplified') is-invalid @enderror" placeholder="Insert some text" type="text">{!! $additional_service->description_simplified !!}</textarea>
                                                                         @error('description_simplified')
                                                                             <span class="invalid-feedback">
                                                                                 <strong>{{ $message }}</strong>
@@ -147,8 +147,8 @@
                                                     </div>
                                                 </form>
                                                 <div class="card-box-footer">
-                                                    <button type="submit" form="edit-additional-service-{{ $additional_service->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                                    <button type="submit" form="edit-additional-service-{{ $additional_service->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -164,7 +164,7 @@
             @canany(['posDev','posAuthor'])
                 <div class="card-box-footer">
                     <a href="#" data-toggle="modal" data-target="#addAdditionalService-{{ $villa->id }}" data-toggle="tooltip" data-placement="top" title="Detail">
-                        <button type="button" class="btn btn-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Additional Service</button>
+                        <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Additional Service</button>
                     </a>
                 </div>
                 {{-- MODAL ADD ADDITIONAL SERVICE --}}
@@ -182,9 +182,9 @@
                                         <div class="col-md-12">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="type">Type </label>
-                                                        <input name="type" id="type"  type="text" wire:model="type" class="form-control @error('type') is-invalid @enderror" placeholder="Insert type" value="{{ old('type') }}" required>
+                                                        <input name="type" id="type"  type="text" wire:model="type" class="backend-form-control @error('type') is-invalid @enderror" placeholder="Insert type" value="{{ old('type') }}" required>
                                                         @error('type')
                                                             <span class="invalid-feedback">
                                                                 <strong>{{ $message }}</strong>
@@ -193,9 +193,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="name">Name </label>
-                                                        <input name="name" id="name"  type="text" wire:model="name" class="form-control @error('name') is-invalid @enderror" placeholder="Insert name" value="{{ old('name') }}" required>
+                                                        <input name="name" id="name"  type="text" wire:model="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert name" value="{{ old('name') }}" required>
                                                         @error('name')
                                                             <span class="invalid-feedback">
                                                                 <strong>{{ $message }}</strong>
@@ -204,20 +204,20 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="contract_rate">Contract Rate<span> *</span></label>
                                                         <div class="btn-icon">
                                                             <span>Rp</span>
-                                                            <input type="number" id="contract_rate" name="contract_rate" class="input-icon form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ old('contract_rate') }}" required>
+                                                            <input type="number" id="contract_rate" name="contract_rate" class="input-icon backend-form-control @error('contract_rate') is-invalid @enderror" placeholder="Insert contract rate" value="{{ old('contract_rate') }}" required>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="markup">Markup<span> *</span></label>
                                                         <div class="btn-icon">
                                                             <span>$</span>
-                                                            <input type="number" id="markup" name="markup" class="input-icon form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ old('markup') }}">
+                                                            <input type="number" id="markup" name="markup" class="input-icon backend-form-control @error('markup') is-invalid @enderror" placeholder="Insert markup" value="{{ old('markup') }}">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -227,9 +227,9 @@
                                                             <div class="tab-inner-title">Description</div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="description" class="form-label">English</label>
-                                                                <textarea name="description" id="description" class="textarea_editor form-control @error('description') is-invalid @enderror" placeholder="Insert some text" type="text">{{ old('description') }}</textarea>
+                                                                <textarea data-backend-richtext="true" name="description" id="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" placeholder="Insert some text" type="text">{{ old('description') }}</textarea>
                                                                 @error('description')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -238,9 +238,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="description_traditional" class="form-label">Traditional</label>
-                                                                <textarea name="description_traditional" id="description_traditional" class="textarea_editor form-control @error('description_traditional') is-invalid @enderror" placeholder="Insert some text" type="text">{{ old('description_traditional') }}</textarea>
+                                                                <textarea data-backend-richtext="true" name="description_traditional" id="description_traditional" class="textarea_editor backend-form-control @error('description_traditional') is-invalid @enderror" placeholder="Insert some text" type="text">{{ old('description_traditional') }}</textarea>
                                                                 @error('description_traditional')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -249,9 +249,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="form-group">
+                                                            <div class="backend-form-field">
                                                                 <label for="description_simplified" class="form-label">Simplified</label>
-                                                                <textarea name="description_simplified" id="description_simplified" class="textarea_editor form-control @error('description_simplified') is-invalid @enderror" placeholder="Insert some text" type="text">{{ old('description_simplified') }}</textarea>
+                                                                <textarea data-backend-richtext="true" name="description_simplified" id="description_simplified" class="textarea_editor backend-form-control @error('description_simplified') is-invalid @enderror" placeholder="Insert some text" type="text">{{ old('description_simplified') }}</textarea>
                                                                 @error('description_simplified')
                                                                     <span class="invalid-feedback">
                                                                         <strong>{{ $message }}</strong>
@@ -269,8 +269,8 @@
                                     </div>
                                 </form>
                                 <div class="card-box-footer">
-                                    <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add Price</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                                    <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Add Price</button>
+                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                 </div>
                             </div>
                         </div>

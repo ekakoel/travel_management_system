@@ -5,21 +5,11 @@
     @can('isAdmin')
         <div class="main-container">
             <div class="pd-ltr-20">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="title">
-                                <i class="icon-copy fa fa-shopping-cart" aria-hidden="true"></i> Reservation
-                            </div>
-                            <nav aria-label="breadcrumb" role="navigation">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Reservation</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
+                <x-backend.page-hero>
+                    <x-slot name="heading">
+                        <i class="icon-copy fa fa-shopping-cart" aria-hidden="true"></i> Reservation
+                    </x-slot>
+                </x-backend.page-hero>
                 <div class="info-action">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
@@ -126,7 +116,7 @@
                             </table>
                             <div class="card-box-footer">
                                 <a href="#" data-toggle="modal" data-target="#add-reservation">
-                                    <button class="btn btn-primary"><i class="ion-plus-round"></i> Create Reservation</button>
+                                    <button class="backend-button backend-button-primary"><i class="ion-plus-round"></i> Create Reservation</button>
                                 </a>
                                 {{-- Modal Add Reservation --------------------------------------------------------------------------------------------------------------- --}}
                                 <div class="modal fade" id="add-reservation" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
@@ -143,9 +133,9 @@
                                                         @method('put')
                                                         <div class="row">
                                                             <div class="col-sm-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="agn_id">Agent <span>*</span></label><br>
-                                                                    <select id="agn_id" name="agn_id" style="width: 100%" class="custom-select @error('agn_id') is-invalid @enderror" required>
+                                                                    <select id="agn_id" name="agn_id" style="width: 100%" class="backend-form-control @error('agn_id') is-invalid @enderror" required>
                                                                         <option selected value="">Select Agent</option>
                                                                         @foreach ($agents as $agent)
                                                                             <option value="{{ $agent->id }}">{{ $agent->name ." @". $agent->office }}</option>
@@ -157,9 +147,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-sm-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="checkincout">@lang('messages.Check In') - @lang('messages.Check Out')</label>
-                                                                    <input readonly id="checkincout" name="checkincout" class="form-control @error('checkincout') is-invalid @enderror"
+                                                                    <input readonly id="checkincout" name="checkincout" class="backend-form-control @error('checkincout') is-invalid @enderror"
                                                                         type="text" value="{{ old('checkincout') }}" placeholder="@lang('messages.Select date')" required>
                                                                     @error('checkincout')
                                                                         <span class="invalid-feedback">
@@ -176,9 +166,9 @@
                                                     </form>
                                                 </div>
                                                 <div class="card-box-footer">
-                                                    <button type="submit" form="create-reservation" class="btn btn-primary"><i class="icon-copy fa fa-check"
+                                                    <button type="submit" form="create-reservation" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check"
                                                             aria-hidden="true"></i> Create</button>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -190,7 +180,6 @@
                     <div class="row">
                         <div class="col-md-4 desktop">
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                     </div>

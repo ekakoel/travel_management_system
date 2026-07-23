@@ -10,12 +10,21 @@
     use Illuminate\Support\Facades\Input;
     use App\Http\Requests\StoremenuRequest;
     use App\Http\Requests\UpdatemenuRequest;
+    use Illuminate\Support\Facades\Schema;
     // Services =======================================================================================================
-    $services_menu = Services::where('status','Active')->orderBy('name', 'asc')->get();
-    $services_admin = Services::orderBy('name', 'asc')->get();
+    $services_menu = Schema::hasTable('services')
+        ? Services::where('status','Active')->orderBy('name', 'asc')->get()
+        : collect();
+    $services_admin = Schema::hasTable('services')
+        ? Services::orderBy('name', 'asc')->get()
+        : collect();
     $now = Carbon::now();
-    $left_orders_pending = Orders::where('status','Pending')->where('checkin','>=',$now)->get();
-    $left_orders_wedding_pending = OrderWedding::where('status','Pending')->where('wedding_date','>=',$now)->get();
+    $left_orders_pending = Schema::hasTable('orders')
+        ? Orders::where('status','Pending')->where('checkin','>=',$now)->get()
+        : collect();
+    $left_orders_wedding_pending = Schema::hasTable('order_weddings')
+        ? OrderWedding::where('status','Pending')->where('wedding_date','>=',$now)->get()
+        : collect();
     $c_left_orders_pending = count($left_orders_pending);
     $c_left_orders_wedding_pending = count($left_orders_wedding_pending);
     $c_o_pending = $c_left_orders_pending+$c_left_orders_wedding_pending;
@@ -25,16 +34,19 @@
     //USER
     $user = Auth::user();
     // PROMOTION
-    $promotions = Promotion::where('periode_start','<', $now)
-        ->where('periode_end','>',$now)
-        ->where('status','Active')->get();
+    $promotions = Schema::hasTable('promotions')
+        ? Promotion::where('periode_start','<', $now)
+            ->where('periode_end','>',$now)
+            ->where('status','Active')->get()
+        : collect();
+    $isApprovedUser = ! Schema::hasColumn('users', 'is_approved') || (bool) $user->is_approved;
     $logoColor = config('app.logo_img_color');
     $logoWhite = config('app.logo_img_white');
     $logoBlack = config('app.logo_img_black');
 ?>
-<div class="left-side-bar d-print-none">
-    <div class="brand-logo">
-        <a href="{{ route('dashboard.index') }}">
+<div class="left-side-bar backend-sidebar d-print-none">
+    <div class="brand-logo backend-sidebar__brand">
+        <a href="{{ $user->canAccessAdminDashboard() ? route('admin.dashboard') : route('dashboard.index') }}">
             <img src="{{ asset('storage/logo/'.$logoColor) }}" alt="Logo Bali Kami Tour" class="dark-logo">
             <img src="{{ asset('storage/logo/'.$logoWhite) }}" alt="Logo Bali Kami Tour" class="light-logo">
         </a>
@@ -44,12 +56,18 @@
     </div>
     <div class="menu-block customscroll">
         <div class="sidebar-menu m-b-38">
-            <div class="user-profile">
-                <b><i class="icon-copy fa fa-user" aria-hidden="true"></i> {{ $user->name }}</b><br>
-                <i><i class="icon-copy fi-key"></i> {{ $user->position }}</i>
+            <div class="user-profile backend-sidebar__profile">
+                <div class="backend-sidebar__avatar" aria-hidden="true">
+                    {{ Str::of($user->name)->substr(0, 1)->upper() }}
+                </div>
+                <div class="backend-sidebar__profile-copy">
+                    <b>{{ $user->name }}</b>
+                    <span><i class="icon-copy fi-key"></i> {{ $user->position }}</span>
+                </div>
+                <span class="backend-sidebar__status">{{ $user->status }}</span>
             </div>
             @if (count($promotions) > 0)
-                <div class="promotion-box">
+                <div class="promotion-box backend-sidebar__promo">
                     <p>@lang('messages.Active Promotion')</p>
                     @foreach ($promotions as $promotion)
                         <div class="promotion-item">
@@ -65,70 +83,46 @@
                 </div>
             @endif
             @if (Auth::user()->status == "Active")
-                @if (auth()->user()->is_approved == 1)
-                    <ul id="accordion-menu">
+                @if ($isApprovedUser)
+                    <ul id="accordion-menu" class="backend-sidebar__nav">
                         <li>
-                            <a href="{{ route('home') }}" class="dropdown-toggle no-arrow">
+                            <a href="{{ route('home') }}" class="nav-toggle no-arrow">
                                 <span class="micon dw dw-home" aria-hidden="true"></span>@lang('messages.Home')
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('dashboard.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
-                                <span class="micon ion-speedometer" aria-hidden="true"></span>@lang('messages.Dashboard')
+                            <a href="{{ route('view.accommodation-service') }}" class="nav-toggle no-arrow {{ request()->routeIs('view.accommodation-service') || request()->routeIs('view.accommodation-detail') || request()->routeIs('view.hotel-detail') || request()->routeIs('view.hotel-detail-flyer') || request()->routeIs('view.accommodation-check-price') || request()->routeIs('view.hotel-check-price') ? 'active' : '' }}">
+                                <span class="micon dw dw-building1" aria-hidden="true"></span> @lang("messages.Accommodations")
                             </a>
                         </li>
                         <li>
-                            <a href="javascript:;" class="dropdown-toggle">
-                                <span class="micon dw dw-building1"> </span> @lang("messages.Accommodations")
+                            <a href="{{ route('view.tour-package-services') }}" class="nav-toggle no-arrow {{ request()->routeIs('view.tour-package-services') || request()->routeIs('view.tour-detail') ? 'active' : '' }}">
+                                <span class="micon dw dw-map-6" aria-hidden="true"></span> @lang("messages.Tours")
                             </a>
-                            <ul class="submenu">
-                                <li>
-                                    <a href="{{ route('view.accommodation-service') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.accommodation-service') || request()->routeIs('view.accommodation-detail') || request()->routeIs('view.hotel-prices.page') ? 'active' : '' }}">
-                                        <i class="icon-copy dw dw-hotel"></i> @lang("messages.Hotels")
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('index.flyers') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('index.flyers') ? 'active' : '' }}">
-                                        <i class="icon-copy dw dw-hotel"></i> @lang('messages.Hotel Promotions')
-                                    </a>
-                                </li>
-                                <!--<li>-->
-                                <!--    <a href="{{ route('view.villas.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.villas.index') ? 'active' : '' }}">-->
-                                <!--        <i class="icon-copy dw dw-building-1"></i> @lang("messages.Private Villa")-->
-                                <!--    </a>-->
-                                <!--</li>-->
-                            </ul>
                         </li>
-                        @foreach ($services_menu as $menuitem)
-                            @if ($menuitem->name !== "Hotels" && $menuitem->name !== "Villas")
-                                <li>
-                                    <a href="{{ route('view.'.$menuitem->nicname) }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.'.$menuitem->nicname) ? 'active' : '' }}">
-                                        <span class="micon fa {!! $menuitem->icon !!}" aria-hidden="true"></span> @lang("messages.".$menuitem->name)
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
-                        
-
-                        
-                        {{-- <li class="dropdown">
-                            <a href="javascript:;" class="dropdown-toggle">
-                                <span class="micon fi-wrench"></span><span class="mtext">@lang("messages.Tools")</span>
+                        <li>
+                            <a href="{{ route('view.activity-services') }}" class="nav-toggle no-arrow {{ request()->routeIs('view.activity-services') || request()->routeIs('view.activity-public-detail') ? 'active' : '' }}">
+                                <span class="micon dw dw-pin-1" aria-hidden="true"></span> @lang("messages.Activities")
                             </a>
-                            <ul class="submenu">
-                                <li>
-                                    <a href="trip-planner" class="dropdown-toggle no-arrow">
-                                        <span class="icon-copy fi-map" aria-hidden="true"></span> @lang('messages.Trip Planner')
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="wedding-planner" class="dropdown-toggle no-arrow">
-                                        <span class="icon-copy fi-clipboard-notes" aria-hidden="true"></span> @lang('messages.Wedding Planner')
-                                    </a>
-                                </li>
-                            </ul>
-                        </li> --}}
+                        </li>
+                        <li>
+                            <a href="{{ route('view.transport-service') }}" class="nav-toggle no-arrow {{ request()->routeIs('view.transport-service') ? 'active' : '' }}">
+                                <span class="micon dw dw-bus" aria-hidden="true"></span> @lang("messages.Transports")
+                            </a>
+                        </li>
                         @canany(['posDev','posAuthor','posRsv','weddingRsv','weddingSls','weddingAuthor','weddingDvl'])
+                            <li class="backend-sidebar__section-item">
+                                <div class="backend-sidebar__section-label">@lang('messages.Backend')</div>
+                            </li>
+                            @if ($user->canAccessAdminDashboard())
+                                <ul id="accordion-dashboard-menu" class="backend-sidebar__nav">
+                                    <li>
+                                        <a href="{{ route('admin.dashboard') }}" class="nav-toggle no-arrow {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                                            <span class="micon ion-speedometer" aria-hidden="true"></span>@lang('messages.Dashboard')
+                                        </a>
+                                    </li>
+                                </ul>
+                            @endif
                             <li class="dropdown">
                                 <a href="javascript:;" class="dropdown-toggle">
                                     <span class="micon dw dw-panel"></span><span class="mtext">@lang("messages.Admin")</span>
@@ -144,7 +138,7 @@
                                     @canany(['posDev','posAuthor','posRsv','weddingRsv','weddingAuthor','weddingSls','weddingDvl'])
                                         <li>
                                             <a href="{{ route('currency') }}" class="{{ request()->routeIs('currency') ? 'active' : '' }}">
-                                                <span class="icon-copy dw dw-money-2" aria-hidden="true"></span> @lang("messages.Currency")
+                                                <span class="icon-copy dw dw-money-1" aria-hidden="true"></span> @lang("messages.Currency")
                                             </a>
                                         </li>
                                     @endcanany
@@ -156,7 +150,7 @@
                                         </li>
                                         <li>
                                             <a href="{{ route('view.term-and-condition') }}" class="{{ request()->routeIs('view.term-and-condition') ? 'active' : '' }}">
-                                                <span class="icon-copy dw dw-certificate" aria-hidden="true"></span> @lang("messages.Term And Condition")
+                                                <span class="icon-copy dw dw-file-125" aria-hidden="true"></span> @lang("messages.Term And Condition")
                                             </a>
                                         </li>
                                         <li>
@@ -167,11 +161,6 @@
                                         <li>
                                             <a href="{{ route('admin.footer-manager.index') }}" class="{{ request()->routeIs('admin.footer-manager.*') ? 'active' : '' }}">
                                                 <span class="icon-copy dw dw-browser2" aria-hidden="true"></span> @lang("messages.Footer Manager")
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('attentions') }}" class="{{ request()->routeIs('attentions') ? 'active' : '' }}">
-                                                <span class="icon-copy dw dw-warning" aria-hidden="true"></span> @lang("messages.Attentions")
                                             </a>
                                         </li>
                                     @endcan
@@ -208,11 +197,6 @@
                                 </li>
                             @endcan
                             @canany(['posDev','posAuthor','posRsv','weddingDvl','weddingSls','weddingAuthor','weddingRsv'])
-                                <li>
-                                    <a href="{{ route('itineraries.index') }}" class="dropdown-toggle no-arrow">
-                                        <span class="micon dw dw-map-6" aria-hidden="true"></span> @lang('messages.Itinerary')
-                                    </a>
-                                </li>
                                 {{-- <li class="dropdown">
                                     <a href="javascript:;" class="dropdown-toggle">
                                         <span class="micon icon-copy fa fa-percent"></span><span class="mtext">@lang("messages.Promo")</span>
@@ -247,10 +231,8 @@
                                     <li class="order-count">
                                         <a href="{{ route('orders-admin') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('orders-admin') ? 'active' : '' }}">
                                             <i class="micon icon-copy dw dw-shopping-cart1" aria-hidden="true"></i> @lang("messages.Orders")
-                                            <div class="order-pending-text" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
-                                                <p>
-                                                    <i class="icon-copy ti-alarm-clock"></i> <span>{{ $c_o_pending }}</span>
-                                                </p>
+                                            <div class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
+                                                <i class="icon-copy ti-alarm-clock"></i> <span>{{ $c_o_pending }}</span>
                                             </div>
                                         </a>
                                     </li>
@@ -259,7 +241,7 @@
                                     <li class="order-count">
                                         <a href="{{ route('orders-admin') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('orders-admin') ? 'active' : '' }}">
                                             <i class="micon icon-copy dw dw-shopping-cart1" aria-hidden="true"></i> @lang("messages.Orders")
-                                            <div class="order-pending-text" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
+                                            <div class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
                                                 @if ($o_tour_pending > 0)
                                                     <p>
                                                         <i class="icon-copy ti-alarm-clock"></i> <span>{{ $o_tour_pending }}</span>
@@ -273,7 +255,7 @@
                                     <li class="order-count">
                                         <a href="{{ route('orders-admin') }}" class="dropdown-toggle no-arrow">
                                             <i class="micon icon-copy dw dw-shopping-cart1" aria-hidden="true"></i> @lang("messages.Orders")
-                                            <div class="order-pending-text" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
+                                            <div class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
                                                 @if ($o_wedding_pending > 0)
                                                     <p>
                                                         <i class="icon-copy ti-alarm-clock"></i> <span>{{ $o_wedding_pending }}</span>

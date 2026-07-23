@@ -383,10 +383,87 @@
     border: 1px solid #dbe4ee;
     border-radius: var(--frontend-shell-radius-md);
     background: rgba(255, 255, 255, 0.92);
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    touch-action: pan-x;
+}
+
+.frontend-table-shell::-webkit-scrollbar,
+.frontend-page-shell .table-responsive::-webkit-scrollbar,
+.frontend-page-shell [class*="table-wrap"]::-webkit-scrollbar,
+.frontend-page-shell [class*="table-container"]::-webkit-scrollbar {
+    height: 8px;
+}
+
+.frontend-table-shell::-webkit-scrollbar-track,
+.frontend-page-shell .table-responsive::-webkit-scrollbar-track,
+.frontend-page-shell [class*="table-wrap"]::-webkit-scrollbar-track,
+.frontend-page-shell [class*="table-container"]::-webkit-scrollbar-track {
+    background: #eef2f7;
+    border-radius: 999px;
+}
+
+.frontend-table-shell::-webkit-scrollbar-thumb,
+.frontend-page-shell .table-responsive::-webkit-scrollbar-thumb,
+.frontend-page-shell [class*="table-wrap"]::-webkit-scrollbar-thumb,
+.frontend-page-shell [class*="table-container"]::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
 }
 
 .frontend-table-shell table {
     margin-bottom: 0;
+}
+
+.frontend-page-shell .table-responsive,
+.frontend-page-shell [class*="table-wrap"],
+.frontend-page-shell [class*="table-container"] {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+    touch-action: pan-x;
+}
+
+.frontend-page-shell table,
+.frontend-home-shell table {
+    max-width: 100%;
+}
+
+.frontend-page-shell .table,
+.frontend-page-shell .data-table,
+.frontend-page-shell table[class*="table"],
+.frontend-home-shell .table,
+.frontend-home-shell .data-table,
+.frontend-home-shell table[class*="table"] {
+    margin-bottom: 0;
+    min-width: 720px;
+    width: 100%;
+}
+
+.frontend-page-shell table th,
+.frontend-page-shell table td,
+.frontend-home-shell table th,
+.frontend-home-shell table td {
+    max-width: 320px;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+    vertical-align: top;
+}
+
+.frontend-page-shell table.nowrap th,
+.frontend-page-shell table.nowrap td,
+.frontend-page-shell table .nowrap,
+.frontend-home-shell table.nowrap th,
+.frontend-home-shell table.nowrap td,
+.frontend-home-shell table .nowrap {
+    white-space: nowrap;
 }
 
 @media (max-width: 991.98px) {

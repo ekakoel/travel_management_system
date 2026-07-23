@@ -41,10 +41,8 @@
                         </nav>
                     </div>
                 </div>
-                {{-- ATTENTIONS MOBILE --}}
                 <div class="col-md-4 mobile">
                     <div class="row">
-                        @include('layouts.attentions')
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -58,13 +56,7 @@
                     </div>
                 </div>
 
-                {{-- ATTENTIONS DESKTOP --}}
                 <div class="col-md-4 desktop">
-                    @if (count($attentions)>0)
-                        <div class="row m-b-18">
-                            @include('layouts.attentions')
-                        </div>
-                    @endif
                     {{-- @if (count($wedding_planners)>0)
                         <div class="row m-b-18">
                             <div class="col-md-12">

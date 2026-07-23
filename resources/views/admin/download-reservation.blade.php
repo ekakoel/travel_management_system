@@ -16,9 +16,9 @@
         <link rel="stylesheet" type="text/css" href="/css/print-style.css">
         {{-- <link rel="stylesheet" type="text/css" href="/css/style.css"> --}}
         <script src="https://kit.fontawesome.com/ea60220155.js" crossorigin="anonymous"></script>
-    
+
     <script>
-        function printFunction() { 
+        function printFunction() {
             var css = '@page { size: potrait; }',
             head = document.head || document.getElementsByTagName('head')[0],
             style = document.createElement('style');
@@ -34,7 +34,7 @@
         }
     </script>
     </head>
-    
+
     <body>
         <div class="print-container d-print-flex">
             <div class="row">
@@ -55,19 +55,19 @@
             <hr class="form-hr">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="page-subtitle d-print-none">Reservation 
+                                        <div class="page-subtitle d-print-none">Reservation
                                             @if ($reservation->status != "Active")
                                                 <span>
-                                                    <a href="#" data-toggle="modal" data-target="#update-reservation-{{ $reservation->id }}"> 
+                                                    <a href="#" data-toggle="modal" data-target="#update-reservation-{{ $reservation->id }}">
                                                         <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Reservation" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
                                             @endif
                                         </div>
         </div>
-        {{-- <button class="btn btn-primary" onclick="printFunction()"><i class="icon-copy fa fa-print" aria-hidden="true"></i> Print</button> --}}
-        <button class="btn btn-primary" id="printButton" onclick="savePDF()"><i class="icon-copy fa fa-download" aria-hidden="true"></i> Download PDF</button>
-        <button class="btn btn-primary" onclick="printFunction()"><i class="icon-copy fa fa-print" aria-hidden="true"></i> Print</button>
+        {{-- <button class="backend-button backend-button-primary" onclick="printFunction()"><i class="icon-copy fa fa-print" aria-hidden="true"></i> Print</button> --}}
+        <button class="backend-button backend-button-primary" id="printButton" onclick="savePDF()"><i class="icon-copy fa fa-download" aria-hidden="true"></i> Download PDF</button>
+        <button class="backend-button backend-button-primary" onclick="printFunction()"><i class="icon-copy fa fa-print" aria-hidden="true"></i> Print</button>
         <script>
             window.jsPDF = window.jspdf.jsPDF;
                 var docPDF = new jsPDF({

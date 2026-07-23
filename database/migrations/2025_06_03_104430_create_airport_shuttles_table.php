@@ -17,6 +17,7 @@ class CreateAirportShuttlesTable extends Migration
             $table->string('flight_number', 125)->nullable();
             $table->integer('number_of_guests')->nullable();
             $table->foreignId("order_id")->nullable()->constrained('orders')->onDelete('cascade');
+            $table->foreignId("spk_id")->nullable();
             $table->foreignId("transport_id")->nullable()->constrained("transports")->onDelete("cascade");
             $table->foreignId("price_id")->nullable()->constrained("transport_prices")->onDelete("cascade");
             $table->foreignId("order_wedding_id")->nullable()->constrained('order_weddings')->onDelete('cascade');

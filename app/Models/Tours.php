@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Partners;
 use App\Models\TourType;
-use App\Models\Itineraries;
 use App\Models\TourPackageLocation;
 use App\Models\TourPrices;
 use App\Models\ToursImages;
@@ -64,9 +63,6 @@ class Tours extends Model
     }
     public function prices(){
         return $this->hasMany(TourPrices::class,'tour_id');
-    }
-    public function itineraries(){
-        return $this->hasMany(Itineraries::class,'tour_id');
     }
     public function locations(){
         return $this->hasMany(TourPackageLocation::class,'tour_id');

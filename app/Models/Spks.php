@@ -10,6 +10,7 @@ use App\Models\AirportShuttle;
 use App\Models\SpkDestinations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Schema;
 
 class Spks extends Model
 {
@@ -51,6 +52,10 @@ class Spks extends Model
     }
     public function guests()
     {
+        if (!Schema::hasColumn('guests', 'spk_id')) {
+            return $this->hasMany(Guests::class, 'rsv_id', 'reservation_id');
+        }
+
         return $this->hasMany(Guests::class, 'spk_id');
     }
     public function airport_shuttles()
@@ -65,7 +70,12 @@ class Spks extends Model
     
     public function getTotalDistanceAttribute()
     {
-        $destinations = $this->destinations()->orderBy('date', 'asc')->get();
+        $destinations = $this->destinations()
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->orderBy('date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
 
         $total = 0;
 
@@ -95,4 +105,3 @@ class Spks extends Model
         return $earthRadius * $c;
     }
 }
-

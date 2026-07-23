@@ -1,0 +1,87 @@
+<section id="package" class="backend-panel hotel-detail-panel">
+    <div class="backend-section-header hotel-detail-panel__heading">
+        <div>
+            <span class="backend-section-header__label">Bundled Offer</span>
+            <h2>Package Price</h2>
+        </div>
+        @canany(['posDev','posAuthor'])
+            <div class="hotel-detail-section-actions">
+                <a href="{{ route('admin.hotels.packages.create', $hotel->id) }}" class="backend-toolbar-action">
+                    <i class="fa fa-plus"></i>
+                    Add Package
+                </a>
+            </div>
+        @endcanany
+    </div>
+    <div class="hotel-detail-panel__body">
+        <section class="backend-filter-panel hotel-detail-filter backend-filter-panel--flush">
+            <label class="backend-filter-field">
+                <span class="backend-filter-label">Filter package by name</span>
+                <span class="backend-filter-search">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <input class="backend-filter-control" type="search" placeholder="Search package" data-hotel-detail-filter="package">
+                </span>
+            </label>
+        </section>
+    </div>
+    <div class="backend-table-wrap hotel-detail-table-wrap">
+        <table class="backend-table hotel-detail-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Room</th>
+                    <th>Duration</th>
+                    <th>Stay Period</th>
+                    <th>Published Rate</th>
+                    <th>Status</th>
+                    @canany(['posDev','posAuthor'])
+                        <th>Action</th>
+                    @endcanany
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($hotelDetail->packageRows() as $row)
+                    @php
+                        $package = $row['model'];
+                    @endphp
+                    <tr data-hotel-detail-row="package" data-hotel-detail-search="{{ $row['search'] }}">
+                        <td data-label="Name"><strong>{{ $package->name }}</strong><span>{{ $package->booking_code ?: '-' }}</span></td>
+                        <td data-label="Room">{{ $row['room_name'] }}</td>
+                        <td data-label="Duration">{{ $package->duration }} Night</td>
+                        <td data-label="Stay Period">{{ $row['stay_period'] }}</td>
+                        <td data-label="Published Rate"><span class="hotel-detail-rate">{!! currencyFormatUsd($row['published_rate']) !!}</span></td>
+                        <td data-label="Status"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $package->status }}</span></td>
+                        @canany(['posDev','posAuthor'])
+                            <td data-label="Action">
+                                <div class="hotel-detail-actions">
+                                    <a href="{{ route('admin.hotels.packages.edit', $package->id) }}" class="backend-icon-action" aria-label="Edit {{ $package->name }}">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+                                    <form action="{{ route('admin.hotels.packages.destroy', $package->id) }}" method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <input type="hidden" name="author" value="{{ Auth::user()->id }}">
+                                        <input type="hidden" name="hotels_id" value="{{ $hotel->id }}">
+                                        <button type="submit" class="backend-icon-action is-danger" data-hotel-detail-delete="{{ $package->name }}" aria-label="Delete {{ $package->name }}">
+                                            <i class="fa fa-trash-o"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        @endcanany
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7">
+                            <div class="backend-table-empty">
+                                <i class="fa fa-cubes"></i>
+                                <strong>No active packages.</strong>
+                                <span>Package prices are not configured for this hotel yet.</span>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</section>

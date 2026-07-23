@@ -15,7 +15,6 @@ class Activities extends Model
     use HasFactory;
     protected $fillable = [
         'partners_id',
-        'partner',
         'name',
         'code',
         'type', 

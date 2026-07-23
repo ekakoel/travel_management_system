@@ -9,7 +9,6 @@ use App\Models\Tours;
 use App\Models\Hotels;
 use App\Models\UserLog;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use App\Models\HotelRoom;
 use App\Models\HotelPrice;
 use App\Models\HotelPromo;
@@ -32,7 +31,6 @@ class DownloadDataHotelController extends Controller
         $now = Carbon::now();
         $data_hotels=Hotels::where('status','Active')->get();
         $data_hotel_rooms = HotelRoom::where('status', "Active")->get();
-        $attentions = Attention::where('page','download-data')->get();
         $hotel_prices = HotelPrice::where('end_date',">=",$now)->get();
         $hotel_promo = HotelPromo::where('status',"Active")
         ->where('book_periode_end',">=", $now)->get();
@@ -42,7 +40,6 @@ class DownloadDataHotelController extends Controller
             "now" => $now,
             "data_hotels" => $data_hotels,
             "data_hotel_rooms" => $data_hotel_rooms,
-            "attentions" => $attentions,
             "hotel_prices" => $hotel_prices,
             "hotel_promo" => $hotel_promo,
             "hotel_package" => $hotel_package,
@@ -60,7 +57,6 @@ class DownloadDataHotelController extends Controller
         $now = Carbon::now();
         $data_hotels=Hotels::where('status','Active')->get();
         $data_hotel_rooms = HotelRoom::where('status', "Active")->get();
-        $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
@@ -71,7 +67,6 @@ class DownloadDataHotelController extends Controller
             "usdrates" =>$usdrates,
             "data_hotels" => $data_hotels,
             "data_hotel_rooms" => $data_hotel_rooms,
-            "attentions" => $attentions,
             // "data_hotel_normal" => $data_hotel_normal,
             // "data_hotel_promo" => $data_hotel_promo,
             // "data_hotel_package" => $data_hotel_package,
@@ -84,7 +79,6 @@ class DownloadDataHotelController extends Controller
         $now = Carbon::now();
         $data_hotels=Hotels::where('status','Active')->get();
         $data_hotel_rooms = HotelRoom::where('status', "Active")->get();
-        $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
@@ -95,7 +89,6 @@ class DownloadDataHotelController extends Controller
             "usdrates" =>$usdrates,
             "data_hotels" => $data_hotels,
             "data_hotel_rooms" => $data_hotel_rooms,
-            "attentions" => $attentions,
         ]);
     }
     public function down_data_hotel_package()
@@ -107,7 +100,6 @@ class DownloadDataHotelController extends Controller
         ->get();
         $hotels = Hotels::where('status', "Active")->get();
         $rooms = HotelRoom::where('status', "Active")->get();
-        $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
@@ -119,7 +111,6 @@ class DownloadDataHotelController extends Controller
             "usdrates" =>$usdrates,
             "packages" => $packages,
             "hotels" => $hotels,
-            "attentions" => $attentions,
         ]);
     }
     public function down_data_hotel_promo()
@@ -131,7 +122,6 @@ class DownloadDataHotelController extends Controller
         ->get();
         $hotels = Hotels::where('status', "Active")->get();
         $rooms = HotelRoom::where('status', "Active")->get();
-        $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
@@ -143,14 +133,12 @@ class DownloadDataHotelController extends Controller
             "usdrates" =>$usdrates,
             "promos" => $promos,
             "hotels" => $hotels,
-            "attentions" => $attentions,
         ]);
     }
     public function down_data_tour()
     {
         $now = Carbon::now();
         $data_tours=Tours::where('status','Active')->get();
-        $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         return view('backend.reports.downloads.tour', compact('data_tours'),[
@@ -158,7 +146,6 @@ class DownloadDataHotelController extends Controller
             "tax" => $tax,
             "usdrates" =>$usdrates,
             "data_tours" => $data_tours,
-            "attentions" => $attentions,
             // "data_hotel_normal" => $data_hotel_normal,
             // "data_hotel_promo" => $data_hotel_promo,
             // "data_hotel_package" => $data_hotel_package,
@@ -172,7 +159,6 @@ class DownloadDataHotelController extends Controller
         $now = Carbon::now();
         $data_hotels=Hotels::where('status','Active')->get();
         $data_hotel_rooms = HotelRoom::where('status', "Active")->get();
-        $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
@@ -184,7 +170,6 @@ class DownloadDataHotelController extends Controller
             "usdrates" =>$usdrates,
             "data_hotels" => $data_hotels,
             "data_hotel_rooms" => $data_hotel_rooms,
-            "attentions" => $attentions,
             // "data_hotel_normal" => $data_hotel_normal,
             // "data_hotel_promo" => $data_hotel_promo,
             // "data_hotel_package" => $data_hotel_package,
@@ -197,7 +182,6 @@ class DownloadDataHotelController extends Controller
         $now = Carbon::now();
         $data_hotels=Hotels::where('status','Active')->get();
         $data_hotel_rooms = HotelRoom::where('status', "Active")->get();
-        $attentions = Attention::where('page','download-data')->get();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $hr_prices = HotelPrice::all();
@@ -208,7 +192,6 @@ class DownloadDataHotelController extends Controller
             "usdrates" =>$usdrates,
             "data_hotels" => $data_hotels,
             "data_hotel_rooms" => $data_hotel_rooms,
-            "attentions" => $attentions,
         ]; 
             
         $pdf = PDF::loadView('backend.reports.downloads.hotel', $data)->setPaper('a4', 'landscape');

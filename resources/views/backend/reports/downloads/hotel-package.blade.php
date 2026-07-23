@@ -20,7 +20,7 @@
                             <div class="h3">
                                 Hotel Package Pricelist
                             </div>
-                        </div> 
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -44,7 +44,7 @@
                                                     $usd_crate_mark = $usd_crate + $package->markup;
                                                     $taxs = ceil(($usd_crate_mark * $tax->tax)/100);
                                                     $usd_prate = $usd_crate_mark + $taxs;
-                                                    
+
                                                     $jh = count($hotels);
                                                 @endphp
                                                 <tr>
@@ -68,7 +68,7 @@
                                                     </td>
                                                     <td>
                                                         {{ "$ ".  number_format($usd_prate) ." /night" }}
-                                                    </td>      
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         @endforeach
@@ -79,14 +79,14 @@
                     </div>
                 </div>
             </div>
-            
+
         </div>
         <div class="hidden-print row float-container">
             <div class="col-12 text-right m-r-18">
-                <button class="btn btn-primary" onclick="printFunction()"><i class="icon-copy fa fa-print" aria-hidden="true"></i> Print</button>
-                {{-- <button class="btn btn-primary" id="printButton" onclick="savePDF()"><i class="icon-copy fa fa-download" aria-hidden="true"></i> Download PDF</button> --}}
+                <button class="backend-button backend-button-primary" onclick="printFunction()"><i class="icon-copy fa fa-print" aria-hidden="true"></i> Print</button>
+                {{-- <button class="backend-button backend-button-primary" id="printButton" onclick="savePDF()"><i class="icon-copy fa fa-download" aria-hidden="true"></i> Download PDF</button> --}}
                 <a href="/download">
-                    <button class="btn btn-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                    <button class="backend-button backend-button-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                 </a>
             </div>
         </div>
@@ -115,7 +115,7 @@
             }
         </script> --}}
         <script>
-            function printFunction() { 
+            function printFunction() {
                 var css = '@page { size: potrait; }',
                 head = document.head || document.getElementsByTagName('head')[0],
                 style = document.createElement('style');

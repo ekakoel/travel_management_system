@@ -118,7 +118,7 @@
                     </div>
                 </div>
                 <div class="card-box-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                 </div>
             </div>
         </div>

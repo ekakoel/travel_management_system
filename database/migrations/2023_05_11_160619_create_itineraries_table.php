@@ -38,7 +38,6 @@ class CreateItinerariesTable extends Migration
                 ->on('tours')
                 ->onUpdate('cascade')   // kalau id tour diubah (jarang terjadi)
                 ->nullOnDelete(); 
-            $table->timestamps();
         });
     }
 

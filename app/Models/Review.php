@@ -75,4 +75,14 @@ class Review extends Model
             AVG(driver_neatness) as driver_neatness
         ')->first();
     }
+
+    public function guide()
+    {
+        return $this->belongsTo(Guide::class, 'guide_id');
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Drivers::class, 'driver_id');
+    }
 }

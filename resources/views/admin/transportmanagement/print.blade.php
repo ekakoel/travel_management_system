@@ -3,8 +3,8 @@
 <head>
     <title>Print SPK {{ $spk->spk_number }}</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
+        body {
+            font-family: Arial, sans-serif;
             font-size: 14px;
             line-height: 1.5;
         }
@@ -17,14 +17,13 @@
             margin: 18px 0 4px 0;
             text-decoration: none;
         }
-        .spk-header { 
-            text-align: center; 
-            margin-bottom: 20px; 
+        .spk-header {
+            text-align: center;
+            margin-bottom: 20px;
         }
         .section-title {
             margin-top: 20px;
             font-weight: bold;
-            /* text-decoration: underline; */
         }
         .destination-container{
             border: 1px solid grey;
@@ -45,7 +44,7 @@
             display: flex;
             align-items: flex-start;
         }
-        
+
         .qrcode {
             position: relative;
             width: fit-content;
@@ -186,7 +185,7 @@
             <th>Nomor Pesanan</th>
             <td>{{ $spk->order_number??"-" }}</td>
         </tr>
-        
+
         <tr>
             <th>Tanggal</th>
             <td>{{ \Carbon\Carbon::parse($spk->spk_date)->locale('id')->translatedFormat('l, d M Y')  }}</td>
@@ -264,7 +263,7 @@
         </tr>
     </table>
 
-   
+
     <!-- Data Destinasi -->
     <div class="page-brake-avoid">
         <h4 class="section-title">Destinasi</h4>
@@ -294,7 +293,7 @@
                 <div class="caption">
                     @if ($destination->status == "Visited")
                         <p>
-                            ✔ {{ $spk->driver->name }} melakukan Check-in pada tanggal {{ \Carbon\Carbon::parse($destination->visited_at)->locale('id')->translatedFormat('l, d M Y') }}, 
+                            ✔ {{ $spk->driver->name }} melakukan Check-in pada tanggal {{ \Carbon\Carbon::parse($destination->visited_at)->locale('id')->translatedFormat('l, d M Y') }},
                             dari lokasi <a target="__blank" href="https://www.google.com/maps?q={{ $destination->checkin_latitude }},{{ $destination->checkin_longitude }}"> Lihat di Map</a>
                         </p>
                     @else
@@ -304,7 +303,7 @@
                 <div class="number">
                     {{ ++$no }}
                 </div>
-                
+
             </div>
         @endforeach
     </div>

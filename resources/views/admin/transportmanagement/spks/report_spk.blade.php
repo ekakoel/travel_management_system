@@ -6,8 +6,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
+        body {
+            font-family: Arial, sans-serif;
             font-size: 14px;
             line-height: 1.5;
         }
@@ -20,14 +20,13 @@
             margin: 18px 0 4px 0;
             text-decoration: none;
         }
-        .spk-header { 
-            text-align: center; 
-            margin-bottom: 20px; 
+        .spk-header {
+            text-align: center;
+            margin-bottom: 20px;
         }
         .section-title {
             margin-top: 20px;
             font-weight: bold;
-            /* text-decoration: underline; */
         }
         .destination-container{
             border: 1px solid grey;
@@ -48,7 +47,7 @@
             display: flex;
             align-items: flex-start;
         }
-        
+
         .qrcode {
             position: relative;
             width: fit-content;
@@ -140,7 +139,7 @@
         .body-padding{
             padding: 27px 18%;
         }
-        
+
         .destination-status{
             position: absolute;
             top: 0px;
@@ -225,7 +224,7 @@
             <th>Order Number</th>
             <td>{{ $spk->order_number??"-" }}</td>
         </tr>
-        
+
         <tr>
             <th>Service Date</th>
             <td>{{ \Carbon\Carbon::parse($spk->spk_date)->locale('en')->translatedFormat('l, d M Y')  }}</td>
@@ -329,7 +328,7 @@
                 <div class="caption">
                     @if ($destination->status == "Visited")
                         <p>
-                            ✔ {{ $spk->driver->name }} checkin on {{ \Carbon\Carbon::parse($destination->visited_at)->locale('en')->translatedFormat('l, d M Y (H:i)') }}, 
+                            ✔ {{ $spk->driver->name }} checkin on {{ \Carbon\Carbon::parse($destination->visited_at)->locale('en')->translatedFormat('l, d M Y (H:i)') }},
                             from location <a target="__blank" href="https://www.google.com/maps?q={{ $destination->checkin_latitude }},{{ $destination->checkin_longitude }}"> Check on Map</a>
                         </p>
                     @endif

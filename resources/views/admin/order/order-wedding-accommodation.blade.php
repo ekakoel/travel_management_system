@@ -18,29 +18,18 @@
                     </div>
                 @endif
             </div>
-            <div class="page-header hide-print">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="title">
-                            <i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i>Order Wedding Accommodation
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="orders-admin">Orders Admin</a></li>
-                                <li class="breadcrumb-item"><a href="validate-orders-wedding-{{ $orderWedding->id }}">{{ $orderWedding->orderno }}</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Order Accommodations</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+            <x-backend.page-hero>
+                <x-slot name="heading">
+                    <i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i>Order Wedding Accommodation
+                </x-slot>
+            </x-backend.page-hero>
             <div class="row">
                 <div class="col-md-8">
                     <div class="card-box">
                         <div class="card-box-title">
                             <div class="title">Order {{ $orderWedding->orderno }}</div>
                             <span>
-                                <a href="#" data-toggle="modal" data-target="#add-accommodation-to-order-wedding-{{ $orderWedding->id }}"> 
+                                <a href="#" data-toggle="modal" data-target="#add-accommodation-to-order-wedding-{{ $orderWedding->id }}">
                                     <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                 </a>
                             </span>
@@ -62,7 +51,7 @@
                                             @method('PUT')
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="rooms_id">@lang('messages.Select Room') <span>*</span></label>
                                                         <div class="card-box-content">
                                                             @foreach ($rooms as $room)
@@ -85,9 +74,9 @@
                                                 </div>
                                                 @if ($orderWedding->service != "Wedding Package")
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="checkin">@lang('messages.Check-in')</label>
-                                                            <input readonly type="text" name="checkin" class="form-control date-picker @error('checkin') is-invalid @enderror" placeholder="@lang('messages.Check-in')" value="{{ old('checkin') }}" required>
+                                                            <input readonly type="text" name="checkin" class="backend-form-control date-picker @error('checkin') is-invalid @enderror" placeholder="@lang('messages.Check-in')" value="{{ old('checkin') }}" required>
                                                             @error('checkin')
                                                                 <span class="invalid-feedback">
                                                                     {{ $message }}
@@ -96,9 +85,9 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="form-group">
+                                                        <div class="backend-form-field">
                                                             <label for="checkout">@lang('messages.Check-out')</label>
-                                                            <input readonly type="text" name="checkout" class="form-control date-picker @error('checkout') is-invalid @enderror" placeholder="@lang('messages.Check-out')" value="{{ old('checkout') }}" required>
+                                                            <input readonly type="text" name="checkout" class="backend-form-control date-picker @error('checkout') is-invalid @enderror" placeholder="@lang('messages.Check-out')" value="{{ old('checkout') }}" required>
                                                             @error('checkout')
                                                                 <span class="invalid-feedback">
                                                                     {{ $message }}
@@ -108,11 +97,11 @@
                                                     </div>
                                                 @endif
                                                 <div id="numberOfGuestsForm" hidden class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="number_of_guests">@lang('messages.Number of Guests')</label>
                                                         <input id="number_of_guests_room" type="number" name="number_of_guests"
                                                             min="1" max="{{ $room->capacity }}"
-                                                            class="form-control @error('number_of_guests') is-invalid @enderror"
+                                                            class="backend-form-control @error('number_of_guests') is-invalid @enderror"
                                                             placeholder="@lang('messages.Number of guests')" value="{{ old('number_of_guests') }}"
                                                             required>
                                                         @error('number_of_guests')
@@ -123,10 +112,10 @@
                                                     </div>
                                                 </div>
                                                 <div id="guestsNameForm" hidden class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="guest_detail">@lang('messages.Guests Name')</label>
                                                         <input type="text" name="guest_detail"
-                                                            class="form-control @error('guest_detail') is-invalid @enderror"
+                                                            class="backend-form-control @error('guest_detail') is-invalid @enderror"
                                                             placeholder="@lang('messages.Guests Name')" value="{{ old('guest_detail') }}"
                                                             required>
                                                         @error('guest_detail')
@@ -137,10 +126,10 @@
                                                     </div>
                                                 </div>
                                                 <div id="extraBedIdForm" hidden class="col-sm-6">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="extra_bed_id">@lang('messages.Extra Bed') <span>*</span></label>
                                                         <select name="extra_bed_id"
-                                                            class="custom-select col-12 @error('extra_bed_id') is-invalid @enderror">
+                                                            class="backend-form-control col-12 @error('extra_bed_id') is-invalid @enderror">
                                                             <option selected value="">@lang('messages.None')</option>
                                                             @foreach ($extraBeds as $extra_bed)
                                                                 <option value="{{ $extra_bed->id }}">{{ $extra_bed->type }}</option>
@@ -152,9 +141,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <div class="form-group">
+                                                    <div class="backend-form-field">
                                                         <label for="remark" class="form-label">@lang('messages.Remark')</label>
-                                                        <textarea name="remark" class="textarea_editor form-control @error('remark') is-invalid @enderror"
+                                                        <textarea data-backend-richtext="true" name="remark" class="textarea_editor backend-form-control @error('remark') is-invalid @enderror"
                                                             placeholder="Insert remark" value="@lang('messages.Remark')">{!! old('remark') !!}</textarea>
                                                         @error('remark')
                                                             <div class="alert alert-danger">{{ $message }}</div>
@@ -166,9 +155,9 @@
                                         </form>
                                         <div class="card-box-footer">
                                             <button type="submit" form="addWeddingPlannerAccommodations-{{ $orderWedding->id }}"
-                                                class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i>
+                                                class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i>
                                                 @lang('messages.Add')</button>
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i
+                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i
                                                     class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                         </div>
                                     </div>
@@ -239,7 +228,7 @@
                                             {{ $accommodation_inv->guest_detail }}
                                         </td>
                                         <td class="pd-2-8">{{ $accommodation_inv->number_of_guests }}</td>
-                                        
+
                                         <td class="pd-2-8">
                                             @if ($accommodation_inv->extra_bed_order)
                                                 {{ currencyFormatUsd($accommodation_inv->extra_bed_order->total_price) }}
@@ -261,7 +250,7 @@
                                                     <a href="#" data-toggle="modal" data-target="#updatePriceAccommodation-{{ $accommodation_inv->id }}">
                                                         <i class="icon-copy fa fa-dollar" data-toggle="tooltip" title="Change Status and Price" aria-hidden="true"></i>
                                                     </a>
-                                                    
+
                                                 </span>
                                                 <span>
                                                     <a href="#" data-toggle="modal" data-target="#edit-wedding-order-accommodation-invitation-{{ $accommodation_inv->id }}">
@@ -293,9 +282,9 @@
                                                         @method('put')
                                                         <div class="row">
                                                             <div class="col-sm-12">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="status">Status <span>*</span> </label>
-                                                                    <select name="status" class="custom-select @error('status') is-invalid @enderror">
+                                                                    <select name="status" class="backend-form-control @error('status') is-invalid @enderror">
                                                                         <option {{ $accommodation_inv->status == 'Active'?"selected":""; }} value="Active">Active</option>
                                                                         <option {{ $accommodation_inv->status == 'Requested'?"selected":""; }} value="Requested">Requested</option>
                                                                     </select>
@@ -305,18 +294,18 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     @if ($extra_bed_order)
                                                                         <label for="extra_bed_price">Extra Bed Price<span> * (Price / night)</span></label>
                                                                         <div class="btn-icon">
                                                                             <span><i class="icon-copy fa fa-dollar" aria-hidden="true"></i></span>
-                                                                            <input name="extra_bed_price" type="number" value="{{ $extra_bed_order?$extra_bed_order->price_pax:0; }}" class="form-control input-icon @error('extra_bed_price') is-invalid @enderror" placeholder="Price" required>
+                                                                            <input name="extra_bed_price" type="number" value="{{ $extra_bed_order?$extra_bed_order->price_pax:0; }}" class="backend-form-control input-icon @error('extra_bed_price') is-invalid @enderror" placeholder="Price" required>
                                                                         </div>
                                                                     @else
                                                                         <label for="extra_bed_price">Without Extra Bed</label>
                                                                         <div class="btn-icon">
                                                                             <span><i class="icon-copy fa fa-dollar" aria-hidden="true"></i></span>
-                                                                            <input disabled name="extra_bed_price" type="number" value="" class="form-control input-icon @error('extra_bed_price') is-invalid @enderror" placeholder="Without extra bed">
+                                                                            <input disabled name="extra_bed_price" type="number" value="" class="backend-form-control input-icon @error('extra_bed_price') is-invalid @enderror" placeholder="Without extra bed">
                                                                         </div>
                                                                     @endif
                                                                     @error('extra_bed_price')
@@ -327,11 +316,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="suite_and_villa_price">Suite / Villa Price<span> * (Price / night)</span></label>
                                                                     <div class="btn-icon">
                                                                         <span><i class="icon-copy fa fa-dollar" aria-hidden="true"></i></span>
-                                                                        <input name="suite_and_villa_price" type="number" value="{{ $accommodation_inv->public_rate / $accommodation_inv->duration }}" class="form-control input-icon @error('suite_and_villa_price') is-invalid @enderror" placeholder="Price" required>
+                                                                        <input name="suite_and_villa_price" type="number" value="{{ $accommodation_inv->public_rate / $accommodation_inv->duration }}" class="backend-form-control input-icon @error('suite_and_villa_price') is-invalid @enderror" placeholder="Price" required>
                                                                     </div>
                                                                     @error('suite_and_villa_price')
                                                                         <span class="invalid-feedback">
@@ -345,9 +334,9 @@
                                                     <div class="card-box-footer">
                                                         <button type="submit"
                                                             form="update_price_accommodation-{{ $accommodation_inv->id }}"
-                                                            class="btn btn-primary"><i class="icon-copy fa fa-pencil"
+                                                            class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"
                                                                 aria-hidden="true"></i> @lang('messages.Update')</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i
                                                                 class="icon-copy fa fa-close" aria-hidden="true"></i>
                                                             @lang('messages.Cancel')</button>
                                                     </div>
@@ -370,7 +359,7 @@
                                                         @method('put')
                                                         <div class="row">
                                                             <div class="col-sm-12">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <div class="card-box-content">
                                                                         @foreach ($rooms as $no_inv_room => $room_inv)
                                                                             @if ($room_inv->id == $accommodation_inv->rooms_id)
@@ -418,9 +407,9 @@
                                                             </div>
                                                             @if ($orderWedding->service != "Wedding Package")
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="checkin">@lang('messages.Check-in')</label>
-                                                                        <input readonly type="text" name="checkin" class="form-control date-picker @error('checkin') is-invalid @enderror" placeholder="@lang('messages.Check-in')" value="{{ $accommodation_inv->checkin }}" required>
+                                                                        <input readonly type="text" name="checkin" class="backend-form-control date-picker @error('checkin') is-invalid @enderror" placeholder="@lang('messages.Check-in')" value="{{ $accommodation_inv->checkin }}" required>
                                                                         @error('checkin')
                                                                             <span class="invalid-feedback">
                                                                                 {{ $message }}
@@ -429,9 +418,9 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="form-group">
+                                                                    <div class="backend-form-field">
                                                                         <label for="checkout">@lang('messages.Check-out')</label>
-                                                                        <input readonly type="text" name="checkout" class="form-control date-picker @error('checkout') is-invalid @enderror" placeholder="@lang('messages.Check-out')" value="{{ $accommodation_inv->checkout }}" required>
+                                                                        <input readonly type="text" name="checkout" class="backend-form-control date-picker @error('checkout') is-invalid @enderror" placeholder="@lang('messages.Check-out')" value="{{ $accommodation_inv->checkout }}" required>
                                                                         @error('checkout')
                                                                             <span class="invalid-feedback">
                                                                                 {{ $message }}
@@ -441,11 +430,11 @@
                                                                 </div>
                                                             @endif
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="number_of_guests">@lang('messages.Number of Guests')</label>
                                                                     <input type="number" name="number_of_guests" min="1"
                                                                         max="{{ $room_inv->capacity }}"
-                                                                        class="form-control @error('number_of_guests') is-invalid @enderror"
+                                                                        class="backend-form-control @error('number_of_guests') is-invalid @enderror"
                                                                         placeholder="@lang('messages.Number of guests')"
                                                                         value="{{ $accommodation_inv->number_of_guests }}">
                                                                     @error('number_of_guests')
@@ -456,10 +445,10 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="guest_detail">@lang('messages.Guests Name')</label>
                                                                     <input type="text" name="guest_detail"
-                                                                        class="form-control @error('guest_detail') is-invalid @enderror"
+                                                                        class="backend-form-control @error('guest_detail') is-invalid @enderror"
                                                                         placeholder="@lang('messages.Guests Name')"
                                                                         value="{{ $accommodation_inv->guest_detail }}">
                                                                     @error('guest_detail')
@@ -470,11 +459,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-sm-6">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="extra_bed_id">@lang('messages.Extra Bed')
                                                                         <span>*</span> </label>
                                                                     <select name="extra_bed_id"
-                                                                        class="custom-select @error('extra_bed_id') is-invalid @enderror">
+                                                                        class="backend-form-control @error('extra_bed_id') is-invalid @enderror">
                                                                             <option value="">@lang('messages.None')</option>
                                                                             @foreach ($extraBeds as $extraBed)
                                                                                 @if ($extra_bed_order)
@@ -490,10 +479,10 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-12">
-                                                                <div class="form-group">
+                                                                <div class="backend-form-field">
                                                                     <label for="remark"
                                                                         class="form-label">@lang('messages.Remark')</label>
-                                                                    <textarea name="remark" class="textarea_editor form-control @error('remark') is-invalid @enderror"
+                                                                    <textarea data-backend-richtext="true" name="remark" class="textarea_editor backend-form-control @error('remark') is-invalid @enderror"
                                                                         placeholder="Insert remark" value="@lang('messages.Remark')">{!! old('remark') !!}</textarea>
                                                                     @error('remark')
                                                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -507,9 +496,9 @@
                                                     <div class="card-box-footer">
                                                         <button type="submit"
                                                             form="updateWeddingAccommodation-{{ $accommodation_inv->id }}"
-                                                            class="btn btn-primary"><i class="icon-copy fa fa-pencil"
+                                                            class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"
                                                                 aria-hidden="true"></i> @lang('messages.Update')</button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i
+                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i
                                                                 class="icon-copy fa fa-close" aria-hidden="true"></i>
                                                             @lang('messages.Cancel')</button>
                                                     </div>
@@ -575,7 +564,7 @@
                         </div>
                         <div class="card-box-footer">
                             <a href="/validate-orders-wedding-{{ $orderWedding->id }}#weddingAccommodation">
-                                <button type="button" class="btn btn-danger"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back to Order</button>
+                                <button type="button" class="backend-button backend-button-danger"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back to Order</button>
                             </a>
                         </div>
                     </div>
@@ -588,9 +577,9 @@
         var guestsName = document.getElementById('guestsNameForm');
         var numberOfGuests = document.getElementById('numberOfGuestsForm');
         var extraBed = document.getElementById('extraBedIdForm');
-         
-        
-        
+
+
+
         if (roomFor.value == 'Couple') {
             roomFor.addEventListener('change', function() {
                 if (this.value === 'Couple') {

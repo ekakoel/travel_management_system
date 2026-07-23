@@ -28,9 +28,9 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="form-group">
+                                <div class="backend-form-field">
                                     <label for="title">Title (English)</label>
-                                    <input type="text" name="title" id="title" wire:model="title" class="form-control  @error('title') is-invalid @enderror" placeholder="Insert Title" value="Don't miss out on our exciting promo, book now and enjoy special offers!">
+                                    <input type="text" name="title" id="title" wire:model="title" class="backend-form-control  @error('title') is-invalid @enderror" placeholder="Insert Title" value="Don't miss out on our exciting promo, book now and enjoy special offers!">
                                     @error('title')
                                         <span class="invalid-feedback">
                                             <strong>{{ $message }}</strong>
@@ -39,9 +39,9 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="form-group">
+                                <div class="backend-form-field">
                                     <label for="title_mandarin">Title (Mandarin)</label>
-                                    <input type="text" name="title_mandarin" id="title_mandarin" wire:model="title_mandarin" class="form-control  @error('title_mandarin') is-invalid @enderror" placeholder="Insert Title" value="別錯過我們精彩的優惠活動，立即預訂，尊享專屬優惠！">
+                                    <input type="text" name="title_mandarin" id="title_mandarin" wire:model="title_mandarin" class="backend-form-control  @error('title_mandarin') is-invalid @enderror" placeholder="Insert Title" value="別錯過我們精彩的優惠活動，立即預訂，尊享專屬優惠！">
                                     @error('title_mandarin')
                                         <span class="invalid-feedback">
                                             <strong>{{ $message }}</strong>
@@ -50,31 +50,31 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="backend-form-field">
                                     <label for="suggestion">Suggestion (English)</label>
-                                    <textarea id="suggestion" name="suggestion"  class="textarea_editor form-control border-radius-0 @error('suggestion') is-invalid @enderror" placeholder="Insert some text ...">Enjoy our exclusive promotion available for a limited time only, carefully curated to bring you the very best in comfort, value, and experience.</textarea>
+                                    <textarea data-backend-richtext="true" id="suggestion" name="suggestion"  class="textarea_editor backend-form-control border-radius-0 @error('suggestion') is-invalid @enderror" placeholder="Insert some text ...">Enjoy our exclusive promotion available for a limited time only, carefully curated to bring you the very best in comfort, value, and experience.</textarea>
                                     @error('suggestion')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="backend-form-field">
                                     <label for="suggestion_mandarin">Suggestion (Mandarin)</label>
-                                    <textarea id="suggestion_mandarin" name="suggestion_mandarin"  class="textarea_editor form-control border-radius-0 @error('suggestion_mandarin') is-invalid @enderror" placeholder="Insert some text ...">把握限時專屬優惠，為您精心打造極致舒適、超值體驗與難忘回憶！</textarea>
+                                    <textarea data-backend-richtext="true" id="suggestion_mandarin" name="suggestion_mandarin"  class="textarea_editor backend-form-control border-radius-0 @error('suggestion_mandarin') is-invalid @enderror" placeholder="Insert some text ...">把握限時專屬優惠，為您精心打造極致舒適、超值體驗與難忘回憶！</textarea>
                                     @error('suggestion_mandarin')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            
+
                         </div>
                         <input type="hidden" name="link" value="https://online.balikamitour.com/hotel-{{ $hotel->code }}">
                     </form>
                 </div>
                 <div class="card-box-footer">
-                    <button type="submit" form="send-promo-email-{{ $promo->id }}" class="btn btn-primary"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> Send Promo</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
+                    <button type="submit" form="send-promo-email-{{ $promo->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-envelope" aria-hidden="true"></i> Send Promo</button>
+                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                 </div>
             </div>
         </div>

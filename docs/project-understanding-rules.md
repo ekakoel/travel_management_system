@@ -14,6 +14,8 @@ Sebelum melanjutkan implementasi, setiap AI atau developer wajib memahami projec
 4. relasi antar controller, Blade, asset, helper, dan redirect
 5. pola route frontend, backend, auth, approval, dan profile completeness
 6. dampak perubahan terhadap flow lain yang terhubung
+7. konfigurasi database dan testing bila pekerjaan membutuhkan test, migration, seeder, atau command database
+8. cakupan multi-language bila perubahan menambah atau mengubah teks UI
 
 Jika pemahaman menyeluruh itu belum dilakukan, maka pekerjaan dianggap belum siap untuk diimplementasikan.
 
@@ -34,6 +36,8 @@ Jika pemahaman menyeluruh itu belum dilakukan, maka pekerjaan dianggap belum sia
 5. Redirect, login return flow, approval flow, dan profile completeness flow harus diperiksa sebelum mengubah CTA, form submit, atau navigation.
 6. Perubahan kecil pada Blade atau tombol dapat berdampak pada controller, auth flow, intended redirect, translation, dan route canonicalization.
 7. Jika sebuah flow menyentuh frontend, backend, dan auth sekaligus, maka AI wajib membaca ketiga area tersebut sebelum mengedit.
+8. Test dan command database tidak boleh dijalankan sebelum database target diverifikasi sebagai database testing atau database disposable.
+9. Copy user-facing tidak boleh ditambahkan tanpa language key untuk semua locale aktif.
 
 ## Aturan Wajib Sebelum Mengubah Apa Pun
 
@@ -55,7 +59,9 @@ Sebelum menulis patch, AI atau developer wajib melakukan minimal langkah berikut
    - session seperti `url.intended`, `previous_url`, `booking_dates`, atau state lain
 8. Memastikan perubahan tidak menabrak route lain yang masih satu keluarga flow.
 9. Memastikan tidak ada implementasi lama, route transisional, atau alias route yang masih dipakai oleh halaman lain.
-10. Baru setelah itu melakukan perubahan.
+10. Jika akan menjalankan test atau command database, baca `docs/testing-database-safety-standard.md` dan verifikasi database target lebih dulu.
+11. Jika menambah atau mengubah teks UI, baca `docs/multi-language-standard.md` dan siapkan language key untuk semua locale aktif.
+12. Baru setelah itu melakukan perubahan.
 
 ## Fokus Khusus Yang Wajib Dipahami
 
@@ -129,6 +135,8 @@ Sebelum melakukan perubahan, jawab ya untuk semua pertanyaan ini:
 8. Apakah perubahan ini aman terhadap login return flow, submit flow, dan canonical URL?
 9. Apakah ada dokumentasi project lain yang perlu diperbarui bersamaan?
 10. Apakah perubahan dilakukan berdasarkan pemahaman sistem, bukan asumsi?
+11. Jika test akan dijalankan, apakah database test sudah terisolasi dari database utama?
+12. Jika teks UI berubah, apakah semua language key sudah tersedia untuk `en`, `zh`, dan `zh-CN`?
 
 Jika salah satu jawabannya belum, maka jangan lanjut implementasi.
 
@@ -143,6 +151,8 @@ Setelah perubahan selesai, wajib dicek kembali:
 5. route canonical tetap konsisten
 6. halaman tetap kompatibel dengan aturan asset separation
 7. dokumentasi yang relevan ikut diperbarui bila standard atau flow berubah
+8. tidak ada hardcoded user-facing text baru yang melewati language file
+9. tidak ada test atau command database yang dijalankan pada database utama
 
 ## Dokumen Yang Wajib Dibaca Sebelum Perubahan
 
@@ -151,8 +161,11 @@ Minimal baca dokumen berikut lebih dulu:
 1. `README.md`
 2. `docs/project-understanding-rules.md`
 3. `docs/blade-asset-rules.md`
-4. `docs/frontend-ui-standards.md` jika menyentuh frontend
-5. `docs/frontend-roadmap.md` jika menyentuh frontend flow, UI, copy, layout, atau interaction
+4. `docs/multi-language-standard.md`
+5. `docs/testing-database-safety-standard.md` jika akan menjalankan test, migration, seeder, tinker, atau command database
+6. `docs/frontend-ui-standards.md` jika menyentuh frontend
+7. `docs/backend-ui-standards.md` jika menyentuh backend
+8. `docs/frontend-roadmap.md` jika menyentuh frontend flow, UI, copy, layout, atau interaction
 
 ## File Kode Yang Biasanya Wajib Ditelusuri
 
@@ -166,6 +179,7 @@ Tergantung task, AI biasanya wajib menelusuri area berikut:
 6. `public/css/...`
 7. `public/frontend/js/...`
 8. `resources/lang/...`
+9. `.env`, `.env.testing`, dan `phpunit.xml` sebelum menjalankan test atau command database
 
 ## Larangan
 
@@ -176,6 +190,8 @@ AI atau developer tidak boleh:
 3. mengubah CTA tanpa memeriksa login state dan middleware flow
 4. memindahkan logic tanpa memahami siapa saja yang memanggil flow tersebut
 5. menyimpulkan bahwa perubahan aman hanya karena halaman tampak sederhana
+6. menjalankan test atau command database saat database testing belum terisolasi
+7. menambahkan hardcoded copy user-facing tanpa language key untuk semua locale aktif
 
 ## Aturan Review
 

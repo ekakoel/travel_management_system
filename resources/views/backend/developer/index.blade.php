@@ -10,22 +10,32 @@
         @php
             $userId = Auth::id();
             $currencyNames = ['USD', 'CNY', 'TWD'];
+            $trafficSeries = $trafficAnalytics['series'];
+            $trafficPeriods = $trafficAnalytics['periods'];
         @endphp
 
         <div class="mobile-menu-overlay"></div>
         <main class="main-container admin-panel-page" data-admin-panel>
             <div class="pd-ltr-20">
-                <section class="admin-panel-hero">
-                    <div>
-                        <span class="admin-panel-eyebrow">Developer Workspace</span>
-                        <h1>Admin Panel</h1>
-                        <p>Review platform configuration, service registry health, integration readiness, and developer notes from one focused backend workspace.</p>
-                    </div>
-                    <button type="button" class="admin-panel-primary-action" data-toggle="modal" data-target="#add-service">
-                        <i class="fa fa-plus"></i>
-                        Add Service
-                    </button>
-                </section>
+                <x-backend.page-hero class="admin-panel-hero">
+                    <x-slot name="kicker">
+                        Developer Workspace
+                    </x-slot>
+                    <x-slot name="heading">
+                        Admin Panel
+                    </x-slot>
+                    <x-slot name="copy">
+                        <p>
+                            Review platform configuration, service registry health, integration readiness, and developer notes from one focused backend workspace.
+                        </p>
+                    </x-slot>
+                    <x-slot name="action">
+                        <button type="button" class="backend-page-primary-action" data-toggle="modal" data-target="#add-service">
+                            <i class="fa fa-plus"></i>
+                            Add Service
+                        </button>
+                    </x-slot>
+                </x-backend.page-hero>
 
                 @if ($errors->any() || session()->has('success'))
                     <section class="admin-panel-feedback">
@@ -48,10 +58,10 @@
                     </section>
                 @endif
 
-                <section class="admin-panel-stat-grid" aria-label="Admin panel summary">
+                <section class="backend-kpi-grid backend-kpi-grid--4" aria-label="Admin panel summary">
                     @foreach ($dashboardStats as $stat)
-                        <article class="admin-panel-stat admin-panel-stat--{{ $stat['tone'] }}">
-                            <div class="admin-panel-stat__icon">
+                        <article class="backend-kpi-card backend-kpi-card--{{ $stat['tone'] }}">
+                            <div class="backend-kpi-card__icon">
                                 <i class="{{ $stat['icon'] }}"></i>
                             </div>
                             <div>
@@ -63,11 +73,136 @@
                     @endforeach
                 </section>
 
-                <section class="admin-panel-grid">
-                    <div class="admin-panel-section admin-panel-section--wide">
-                        <div class="admin-panel-section__header">
+                <section class="backend-panel admin-registration-access">
+                    <div class="backend-section-header">
+                        <div>
+                            <span class="backend-section-header__label">Access Control</span>
+                            <h2>Registration Access</h2>
+                        </div>
+                        <p>Control public registration availability. When disabled, registration pages and direct submit requests are blocked by backend middleware.</p>
+                    </div>
+
+                    <div class="admin-registration-access__body">
+                        <div class="admin-registration-access__state">
+                            <span class="admin-registration-access__indicator {{ $registrationAccess->status ? 'is-enabled' : 'is-disabled' }}"></span>
                             <div>
-                                <span class="admin-panel-section__label">Service Registry</span>
+                                <strong>{{ $registrationAccess->status ? 'Registration Enabled' : 'Registration Disabled' }}</strong>
+                                <small>{{ $registrationAccess->status ? 'Visitors can open registration pages and submit requests.' : 'Visitors cannot open or submit registration from any public endpoint.' }}</small>
+                            </div>
+                        </div>
+
+                        <form action="{{ route('admin-panel.registration-access.update') }}" method="post" class="admin-registration-access__form">
+                            @csrf
+                            @method('PUT')
+                            <button
+                                type="submit"
+                                name="enabled"
+                                value="1"
+                                class="admin-registration-access__button {{ $registrationAccess->status ? 'is-active' : '' }}"
+                                {{ $registrationAccess->status ? 'disabled' : '' }}
+                            >
+                                Enable
+                            </button>
+                            <button
+                                type="submit"
+                                name="enabled"
+                                value="0"
+                                class="admin-registration-access__button {{ ! $registrationAccess->status ? 'is-active' : '' }}"
+                                {{ ! $registrationAccess->status ? 'disabled' : '' }}
+                                data-confirm="Disable public registration? Existing users can still log in, but new registration GET and POST requests will be blocked."
+                            >
+                                Disable
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="backend-panel admin-analytics-section" data-traffic-analytics='@json($trafficPeriods)'>
+                    <div class="backend-section-header">
+                        <div>
+                            <span class="backend-section-header__label">Website Analytics</span>
+                            <h2>Traffic Overview</h2>
+                        </div>
+                        <p>Monitor website access trends, visitor origin, and the pages receiving the most attention.</p>
+                    </div>
+
+                    {{-- <div class="admin-analytics-summary">
+                        @foreach ($trafficAnalytics['summary'] as $item)
+                            <div class="admin-analytics-summary__item">
+                                <span>{{ $item['label'] }}</span>
+                                <strong>{{ number_format($item['value']) }}</strong>
+                                <small>{{ $item['meta'] }}</small>
+                            </div>
+                        @endforeach
+                    </div> --}}
+
+                    <div class="admin-analytics-toolbar" aria-label="Traffic period selector">
+                        @foreach (['day' => 'Daily', 'week' => 'Weekly', 'month' => 'Monthly', 'year' => 'Yearly'] as $period => $label)
+                            <button
+                                type="button"
+                                class="admin-analytics-period {{ $period === 'day' ? 'is-active' : '' }}"
+                                data-analytics-period="{{ $period }}"
+                                aria-pressed="{{ $period === 'day' ? 'true' : 'false' }}"
+                            >
+                                {{ $label }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <div class="admin-analytics-period-summary" data-analytics-summary></div>
+
+                    <div class="admin-analytics-chart-shell">
+                        <article class="admin-analytics-chart">
+                            <div class="admin-analytics-chart__header">
+                                <div>
+                                    <span data-analytics-chart-label>Daily</span>
+                                    <strong data-analytics-chart-total>0 visits</strong>
+                                </div>
+                                <small data-analytics-chart-range>-</small>
+                            </div>
+                            <div class="admin-analytics-chart__canvas">
+                                <div class="admin-analytics-chart__grid" aria-hidden="true">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                                <div class="admin-analytics-chart__bars" data-analytics-chart-bars aria-label="Traffic chart"></div>
+                            </div>
+                            <div class="admin-analytics-chart__labels" data-analytics-chart-labels></div>
+                        </article>
+
+                        <aside class="admin-analytics-insight">
+                            <span class="backend-section-header__label">Period Insight</span>
+                            <strong data-analytics-insight-title>Daily traffic</strong>
+                            <p data-analytics-insight-copy>Loading tracked website traffic.</p>
+                        </aside>
+                    </div>
+
+                    <div class="admin-analytics-breakdown">
+                        <div data-analytics-breakdown="countries">
+                            <h3>Top Countries</h3>
+                        </div>
+                        <div data-analytics-breakdown="pages">
+                            <h3>Top Pages</h3>
+                        </div>
+                        <div data-analytics-breakdown="devices">
+                            <h3>Device Split</h3>
+                        </div>
+                        <div data-analytics-breakdown="referrers">
+                            <h3>Referrers</h3>
+                        </div>
+                        <div data-analytics-breakdown="areas">
+                            <h3>Site Areas</h3>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-panel-grid">
+                    <div class="backend-panel admin-panel-wide">
+                        <div class="backend-section-header">
+                            <div>
+                                <span class="backend-section-header__label">Service Registry</span>
                                 <h2>Registered Services</h2>
                             </div>
                             <p>Maintain service metadata, status, icon classes, and content health from the developer registry.</p>
@@ -167,10 +302,10 @@
                         </div>
                     </div>
 
-                    <aside class="admin-panel-section">
-                        <div class="admin-panel-section__header">
+                    <aside class="backend-panel">
+                        <div class="backend-section-header">
                             <div>
-                                <span class="admin-panel-section__label">Integration</span>
+                                <span class="backend-section-header__label">Integration</span>
                                 <h2>Currency Readiness</h2>
                             </div>
                         </div>
@@ -188,10 +323,10 @@
                 </section>
 
                 <section class="admin-panel-grid admin-panel-grid--single">
-                    <div class="admin-panel-section">
-                        <div class="admin-panel-section__header">
+                    <div class="backend-panel">
+                        <div class="backend-section-header">
                             <div>
-                                <span class="admin-panel-section__label">Developer Focus</span>
+                                <span class="backend-section-header__label">Developer Focus</span>
                                 <h2>Platform Health Checks</h2>
                             </div>
                             <p>High-signal technical checks that developer users should review before changing backend configuration.</p>
@@ -207,25 +342,6 @@
                         </div>
                     </div>
                 </section>
-
-                @if ($attentions->isNotEmpty())
-                    <section class="admin-panel-section admin-panel-attention">
-                        <div class="admin-panel-section__header">
-                            <div>
-                                <span class="admin-panel-section__label">Attention</span>
-                                <h2>Admin Notes</h2>
-                            </div>
-                        </div>
-                        <div class="admin-attention-list">
-                            @foreach ($attentions as $attention)
-                                <article>
-                                    <strong>{{ $attention->name }}</strong>
-                                    <p>{{ $attention->attention_en ?: $attention->attention_zh }}</p>
-                                </article>
-                            @endforeach
-                        </div>
-                    </section>
-                @endif
 
                 @include('layouts.footer')
             </div>

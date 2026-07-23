@@ -149,9 +149,9 @@
                                                                     @if ($order->handled_by == $admin->id)
                                                                         @if ($invoice->balance > 0)
                                                                             <div class="col-md-12">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="status" class="form-label">Receipt Status <span>*</span></label>
-                                                                                    <select name="status" class="custom-select @error('status') is-invalid @enderror" required>
+                                                                                    <select name="status" class="backend-form-control @error('status') is-invalid @enderror" required>
                                                                                         <option selected value="{{ $desktop_receipt->status }}">{{ $desktop_receipt->status }}</option>
                                                                                         <option value="Valid">Valid</option>
                                                                                         <option value="Invalid">Invalid</option>
@@ -160,9 +160,9 @@
                                                                             </div>
                                                                             @if ($desktop_receipt->status == "Pending" or $desktop_receipt->status == "Invalid")
                                                                                 <div class="col-md-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="kurs_id" class="form-label">Currency<span>*</span></label>
-                                                                                        <select name="kurs_id" class="custom-select @error('kurs_id') is-invalid @enderror" required>
+                                                                                        <select name="kurs_id" class="backend-form-control @error('kurs_id') is-invalid @enderror" required>
                                                                                             <option value="1">USD</option>
                                                                                             <option value="2">CNY</option>
                                                                                             <option value="3">TWD</option>
@@ -171,9 +171,9 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-12">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="amoun" class="form-label col-form-label">Amount</label>
-                                                                                        <input type="text" name="amount" class="input-icon form-control @error('amount') is-invalid @enderror" placeholder="Insert Amount" value="{{ $desktop_receipt->amount }}" required>
+                                                                                        <input type="text" name="amount" class="input-icon backend-form-control @error('amount') is-invalid @enderror" placeholder="Insert Amount" value="{{ $desktop_receipt->amount }}" required>
                                                                                         @error('amount')
                                                                                             <div class="alert alert-danger">{{ $message }}</div>
                                                                                         @enderror
@@ -184,18 +184,18 @@
                                                                                 <input hidden type="text" name="amount" value="{{ $desktop_receipt->amount }}">
                                                                             @endif
                                                                             <div class="col-md-12">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="payment_date" class="form-label col-form-label">Payment Date</label>
-                                                                                    <input readonly type="text" name="payment_date" class="form-control date-picker @error('payment_date') is-invalid @enderror" placeholder="Payment Date" value="{{ date('d F Y',strtotime($desktop_receipt->payment_date)) }}" required>
+                                                                                    <input readonly type="text" name="payment_date" class="backend-form-control date-picker @error('payment_date') is-invalid @enderror" placeholder="Payment Date" value="{{ date('d F Y',strtotime($desktop_receipt->payment_date)) }}" required>
                                                                                     @error('payment_date')
                                                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                                                     @enderror
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-12">
-                                                                                <div class="form-group">
+                                                                                <div class="backend-form-field">
                                                                                     <label for="note">Descritption </label>
-                                                                                    <textarea name="note" class="textarea_editor form-control @error('note') is-invalid @enderror" placeholder="Description">{{ $desktop_receipt->note }}</textarea>
+                                                                                    <textarea name="note" class="textarea_editor backend-form-control @error('note') is-invalid @enderror" placeholder="Description">{{ $desktop_receipt->note }}</textarea>
                                                                                     @error('note')
                                                                                         <span class="invalid-feedback">
                                                                                             <strong>{{ $message }}</strong>
@@ -224,10 +224,10 @@
                                         <div class="card-box-footer">
                                             @if ($order->handled_by == $admin->id)
                                                 @if ($invoice->balance > 0)
-                                                    <button type="submit" form="{{ $device }}-confirmation-payment-{{ $desktop_receipt->id }}" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $desktop_receipt->status == 'Pending'?"Validate":"Update" }}</button>
+                                                    <button type="submit" form="{{ $device }}-confirmation-payment-{{ $desktop_receipt->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $desktop_receipt->status == 'Pending'?"Validate":"Update" }}</button>
                                                 @endif
                                             @endif
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
+                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                         </div>
                                     </div>
                                 </div>
@@ -329,9 +329,9 @@
                             <div class="ptext-value"><b>{{ "Rp ".currencyFormatUsd($invoice->total_idr) }}</b></div>
                         @endif
                     </div>
-                    
+
                 </div>
-                
+
             </div>
         </div>
     @endif
@@ -364,30 +364,30 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <div class="form-group">
+                                        <div class="backend-form-field">
                                             <label for="cover" class="form-label">@lang('messages.Receipt Image')</label>
                                             <div class="dropzone">
                                                 <div class="tour-receipt-div">
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="backend-form-field">
                                             <label for="receipt_name" class="form-label">@lang('messages.Select Receipt') </label><br>
-                                            <input type="file" name="receipt_name" class="custom-file-input @error('receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('receipt_name') }}" required>
+                                            <input type="file" name="receipt_name" class="backend-form-control @error('receipt_name') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('receipt_name') }}" required>
                                             @error('receipt_name')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                             <input type="hidden" name="order_id" value="{{ $order->id }}">
                         </div>
                     </form>
                     <div class="card-box-footer">
-                        <button type="submit" form="payment-confirm-{{ $order->id }}" class="btn btn-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                        <button type="submit" form="payment-confirm-{{ $order->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
+                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                     </div>
                 </div>
             </div>

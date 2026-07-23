@@ -6,23 +6,13 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    @if ($service != "")
-                                        {!! $service->icon !!} {{ $service->name }}
-                                    @endif
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">{{ $service->name }}</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            @if ($service != "")
+                                                                    {!! $service->icon !!} {{ $service->name }}
+                                                                @endif
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (\Session::has('error'))
                             <div class="alert alert-danger">
@@ -97,7 +87,6 @@
                                 </div>
                             @endif
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -113,15 +102,15 @@
                                             <div class="input-group">
                                                 <div class="col-md-4">
                                                     <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                    <input id="searchWeddingByName" type="text" onkeyup="searchWeddingByName()" class="form-control" name="search-wedding-byname" placeholder="Search by name...">
+                                                    <input id="searchWeddingByName" type="text" onkeyup="searchWeddingByName()" class="backend-form-control" name="search-wedding-byname" placeholder="Search by name...">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <span class="input-group-addon"><i class="icon-copy fa fa-search" aria-hidden="true"></i></span>
-                                                    <input id="searchWeddingByLocation" type="text" onkeyup="searchWeddingByLocation()" class="form-control" name="search-wedding-location" placeholder="Search by Hotel...">
+                                                    <input id="searchWeddingByLocation" type="text" onkeyup="searchWeddingByLocation()" class="backend-form-control" name="search-wedding-location" placeholder="Search by Hotel...">
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                                 @if (count($weddings)>0)
@@ -147,7 +136,7 @@
                                                     <td>
                                                         <div class="table-service-name">{{ $wedding['name'] }}</div>
                                                     </td>
-                                                    
+
                                                     <td>
                                                         @if ($hotel)
                                                             <p class="p-0 m-0">{{ $hotel->name }}</p>
@@ -155,12 +144,12 @@
                                                             -
                                                         @endif
                                                     </td>
-                                                   
+
                                                     <td>
                                                         <div class="property-icon">
                                                             <div class="icon-list" data-toggle="tooltip" data-placement="top" title="PDF">
                                                                 <a href="#" data-target="#wedding-pdf-{{ $wedding->id }}" data-toggle="modal">
-                                                                    <i class="icon-copy fa fa-file-pdf-o" aria-hidden="true"></i> 
+                                                                    <i class="icon-copy fa fa-file-pdf-o" aria-hidden="true"></i>
                                                                 </a>
                                                             </div>
                                                             {{-- Modal Property PDF ----------------------------------------------------------------------------------------------------------- --}}
@@ -215,7 +204,7 @@
                                 @canany(['posDev','posAuthor'])
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 text-right m-t-8 m-b-18">
-                                            <a href="/{{ $service->nicname }}-add"><button class="btn btn-primary"><i class="ion-plus-round"></i> Add Wedding Package</button></a>
+                                            <a href="/{{ $service->nicname }}-add"><button class="backend-button backend-button-primary"><i class="ion-plus-round"></i> Add Wedding Package</button></a>
                                         </div>
                                     </div>
                                 @endcan
@@ -278,7 +267,6 @@
                                 </div>
                             @endif
                             <div class="row">
-                                @include('layouts.attentions')
                             </div>
                         </div>
                     </div>
@@ -304,7 +292,7 @@
                 } else {
                     tr[i].style.display = "none";
                 }
-            }       
+            }
         }
     }
 </script>
@@ -324,7 +312,7 @@
                 } else {
                     tr[i].style.display = "none";
                 }
-            }       
+            }
         }
     }
 </script>

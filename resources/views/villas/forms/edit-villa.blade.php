@@ -6,17 +6,11 @@
         @can('isAdmin')
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Villa</div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="/villas-admin">Villas</a></li>
-                                <li class="breadcrumb-item"><a href="/admin-villa-detail-{{ $villa->id }}">{{ $villa->name }}</a></li>
-                                <li class="breadcrumb-item active">Edit Villa</li>
-                            </ol>
-                        </nav>
-                    </div>
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
+                            <i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Villa
+                        </x-slot>
+                    </x-backend.page-hero>
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
                             <ul>
@@ -34,11 +28,9 @@
                         </div>
                     @endif
                     <div class="row">
-                        {{-- ATTENTIONS --}}
                         <div class="col-md-4 mobile">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                             </div>
                         </div>
                         {{-- VILLA DETAIL --}}
@@ -345,11 +337,9 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- ATTENTIONS --}}
                         <div class="col-md-4 desktop">
                             <div class="row">
                                 @include('admin.usd-rate')
-                                @include('layouts.attentions')
                             </div>
                         </div>
                     </div>

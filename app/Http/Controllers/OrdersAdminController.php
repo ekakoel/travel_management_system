@@ -25,10 +25,8 @@ use App\Models\OrderLog;
 use App\Models\UsdRates;
 use App\Models\Weddings;
 use App\Models\ActionLog;
-use App\Models\Attention;
 use App\Models\Countries;
 use App\Models\HotelRoom;
-use App\Models\Itinerary;
 use App\Models\OrderNote;
 use App\Models\HotelPrice;
 use App\Models\TourPrices;
@@ -63,6 +61,7 @@ use App\Models\WeddingAccomodations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use App\Models\WeddingDinnerPackages;
 use Illuminate\Support\Facades\Cache;
 use App\Models\WeddingReceptionVenues;
@@ -116,7 +115,6 @@ class OrdersAdminController extends Controller
         $villa = Villas::find($order->service_id);
         $usdrates = UsdRates::where('name', 'USD')->first();
         $tax = Tax::where('id', 1)->first();
-        $attentions = Attention::where('page', 'user-order-detail')->get();
         $business = BusinessProfile::where('id', 1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type', 'Meals')->get();
@@ -182,7 +180,6 @@ class OrdersAdminController extends Controller
             'usdrates' => $usdrates,
             'business' => $business,
             'optional_rate_orders' => $optional_rate_orders,
-            'attentions' => $attentions,
             'optionalrate_meals' => $optionalrate_meals,
             'logoImage' => public_path('storage/logo/bali-kami-tour-logo.png'),
             'guest_name' => $guest_name,
@@ -245,444 +242,565 @@ class OrdersAdminController extends Controller
     public function index()
     {
         $now = Carbon::now();
-        $listed = date('Y-m-d',strtotime('-7 days',strtotime($now)));
-        $business = BusinessProfile::where('id',1)->first();
-        $activeorders=Orders::with('reservations.invoice.payment')
-            ->where('status','active')
-            ->where('checkin','>', $listed)
+        $today = $now->copy()->startOfDay();
+        $listed = $now->copy()->subDays(7)->toDateString();
+        $orderStatuses = ['Paid', 'Approved', 'confirmed', 'active', 'Pending', 'invalid', 'rejected'];
+        $ordersByStatus = Orders::query()
+            ->select([
+                'id',
+                'user_id',
+                'orderno',
+                'service',
+                'subservice',
+                'servicename',
+                'status',
+                'created_at',
+                'updated_at',
+                'checkin',
+                'checkout',
+                'pickup_date',
+                'dropoff_date',
+                'travel_date',
+                'guest_detail',
+                'request_quotation',
+                'final_price',
+                'rsv_id',
+            ])
+            ->with([
+                'user:id,name',
+                'guests:id,order_id,rsv_id,name,name_mandarin',
+                'reservation_guests:id,order_id,rsv_id,name,name_mandarin',
+            ])
+            ->whereIn('status', $orderStatuses)
+            ->where('checkin', '>', $listed)
             ->orderBy('updated_at', 'ASC')
-            ->get();
-        $waitingorders=Orders::with('reservations')
-            ->where('status','Pending')
-            ->where('checkin','>', $listed)
-            ->orderBy('updated_at', 'ASC')
-            ->get();
-        $rejectedorders=Orders::with('reservations')
-            ->where('status','rejected')
-            ->where('checkin','>', $listed)
-            ->orderBy('updated_at', 'ASC')
-            ->get();
-        $invalidorders=Orders::with('reservations')
-            ->where('status','invalid')
-            ->where('checkin','>', $listed)
-            ->orderBy('updated_at', 'ASC')
-            ->get();
-        $approvedorders=Orders::with('reservations')
-            ->where('status','Approved')
-            ->where('checkin','>', $listed)
-            ->orderBy('updated_at', 'ASC')
-            ->get();
-        $paidorders=Orders::with('reservations')
-            ->where('status','Paid')
-            ->where('checkin','>', $listed)
-            ->orderBy('updated_at', 'ASC')
-            ->get();
-        $confirmedorders=Orders::with('reservations')
-            ->where('status','confirmed')
-            ->where('checkin','>', $listed)
-            ->orderBy('updated_at', 'ASC')
-            ->get();
-        
-        $historyorders=Orders::where([['checkout','<=', $now]])
-        ->orWhere([['status','Archive']])
-        ->orderBy('updated_at', 'ASC')
-        ->paginate(8);
-       
-        $attentions = Attention::where('page','orders-admin')->get();
-        $users= User::all();
-        $usdrates = UsdRates::where('id',1)->first();
-        $reservations = Reservation::all();
-        $invoices = InvoiceAdmin::all();
-        $banks = BankAccount::all();
+            ->get()
+            ->groupBy('status');
 
-        $orderWeddings = OrderWedding::all();
-        $bride = Brides::all();
-        $additionalCharges = WeddingAdditionalServices::all();
-        $transports = Transports::all();
-        $weddingAccommodations = WeddingAccomodations::all();
+        $paidorders = $ordersByStatus->get('Paid', collect());
+        $approvedorders = $ordersByStatus->get('Approved', collect());
+        $confirmedorders = $ordersByStatus->get('confirmed', collect());
+        $activeorders = $ordersByStatus->get('active', collect());
+        $waitingorders = $ordersByStatus->get('Pending', collect());
+        $invalidorders = $ordersByStatus->get('invalid', collect());
+        $rejectedorders = $ordersByStatus->get('rejected', collect());
+
+        $validWeddingOrders = OrderWedding::query()
+            ->select([
+                'id',
+                'agent_id',
+                'hotel_id',
+                'brides_id',
+                'rsv_id',
+                'orderno',
+                'service',
+                'status',
+                'created_at',
+                'updated_at',
+                'checkin',
+                'checkout',
+                'number_of_invitation',
+                'final_price',
+            ])
+            ->with([
+                'agent:id,name',
+                'hotel:id,name',
+                'bride:id,groom,bride',
+            ])
+            ->whereNotNull('checkin')
+            ->where('checkin', '>=', $today->toDateString())
+            ->orderBy('updated_at', 'ASC')
+            ->get();
+        $tourOrderSections = collect([
+            [
+                'id' => 'paidorders',
+                'status' => 'paid',
+                'label' => __('admin-orders.status.paid'),
+                'description' => __('admin-orders.section_descriptions.paid'),
+                'orders' => $paidorders,
+            ],
+            [
+                'id' => 'approvedorders',
+                'status' => 'approved',
+                'label' => __('admin-orders.status.approved'),
+                'description' => __('admin-orders.section_descriptions.approved'),
+                'orders' => $approvedorders,
+            ],
+            [
+                'id' => 'confirmedorders',
+                'status' => 'confirmed',
+                'label' => __('admin-orders.status.confirmed'),
+                'description' => __('admin-orders.section_descriptions.confirmed'),
+                'orders' => $confirmedorders,
+            ],
+            [
+                'id' => 'activeorders',
+                'status' => 'active',
+                'label' => __('admin-orders.status.active'),
+                'description' => __('admin-orders.section_descriptions.active'),
+                'orders' => $activeorders,
+            ],
+            [
+                'id' => 'pendingorders',
+                'status' => 'pending',
+                'label' => __('admin-orders.status.pending'),
+                'description' => __('admin-orders.section_descriptions.pending'),
+                'orders' => $waitingorders,
+            ],
+            [
+                'id' => 'invalidorders',
+                'status' => 'invalid',
+                'label' => __('admin-orders.status.invalid'),
+                'description' => __('admin-orders.section_descriptions.invalid'),
+                'orders' => $invalidorders,
+            ],
+            [
+                'id' => 'rejectedorders',
+                'status' => 'rejected',
+                'label' => __('admin-orders.status.rejected'),
+                'description' => __('admin-orders.section_descriptions.rejected'),
+                'orders' => $rejectedorders,
+            ],
+        ]);
+        $weddingOrderSections = collect([
+            [
+                'id' => 'weddingOrders',
+                'status' => 'wedding',
+                'label' => __('admin-orders.wedding.title'),
+                'description' => __('admin-orders.wedding.description'),
+                'orders' => $validWeddingOrders->values(),
+            ],
+        ]);
+        $orderAdminSummary = [
+            'tour_total' => $tourOrderSections->sum(fn ($section) => $section['orders']->count()),
+            'wedding_total' => $validWeddingOrders->count(),
+            'pending_total' => $waitingorders->count() + $validWeddingOrders->where('status', 'Pending')->count(),
+            'attention_total' => $invalidorders->count() + $rejectedorders->count() + $validWeddingOrders->whereIn('status', ['Invalid', 'Rejected'])->count(),
+        ];
+        $translateWithFallback = fn ($key, $fallback) => __($key) === $key ? $fallback : __($key);
+        $orderAdminFocus = collect([
+            [
+                'label' => $translateWithFallback('admin-orders.focus.validation', 'Validate new orders'),
+                'description' => $translateWithFallback('admin-orders.focus.validation_help', 'Start with pending tour and wedding orders.'),
+                'count' => $waitingorders->count() + $validWeddingOrders->whereIn('status', ['Pending', 'Process'])->count(),
+                'href' => '#pendingorders',
+                'tone' => 'pending',
+            ],
+            [
+                'label' => $translateWithFallback('admin-orders.focus.correction', 'Resolve exceptions'),
+                'description' => $translateWithFallback('admin-orders.focus.correction_help', 'Review invalid and rejected orders.'),
+                'count' => $invalidorders->count() + $rejectedorders->count() + $validWeddingOrders->whereIn('status', ['Invalid', 'Rejected'])->count(),
+                'href' => '#invalidorders',
+                'tone' => 'danger',
+            ],
+            [
+                'label' => $translateWithFallback('admin-orders.focus.payment', 'Follow up payment'),
+                'description' => $translateWithFallback('admin-orders.focus.payment_help', 'Check confirmed and approved orders.'),
+                'count' => $confirmedorders->count() + $approvedorders->count() + $validWeddingOrders->whereIn('status', ['Confirm', 'Confirmed', 'Approved'])->count(),
+                'href' => '#approvedorders',
+                'tone' => 'approved',
+            ],
+            [
+                'label' => $translateWithFallback('admin-orders.focus.active', 'Monitor active trips'),
+                'description' => $translateWithFallback('admin-orders.focus.active_help', 'Track orders already in operation.'),
+                'count' => $activeorders->count() + $validWeddingOrders->where('status', 'Active')->count(),
+                'href' => '#activeorders',
+                'tone' => 'active',
+            ],
+        ]);
         return view('admin.ordersadmin',[
             'now'=>$now,
-            'usdrates'=>$usdrates,
-            'reservations'=>$reservations,
-            'invoices'=>$invoices,
-            'banks'=>$banks,
-            'users'=>$users,
-            'attentions' => $attentions,
-            'business'=>$business,
-            "invalidorders" => $invalidorders,
-            "waitingorders" => $waitingorders,
-            "historyorders" => $historyorders,
-            "rejectedorders" => $rejectedorders,
-            "activeorders" => $activeorders,
-            "approvedorders" => $approvedorders,
-            "confirmedorders" => $confirmedorders,
-            "paidorders" => $paidorders,
-            "invoices" => $invoices,
             "listed" => $listed,
-            "orderWeddings" => $orderWeddings,
-            "additionalCharges" => $additionalCharges,
-            "transports" => $transports,
-            "weddingAccommodations" => $weddingAccommodations,
+            "tourOrderSections" => $tourOrderSections,
+            "weddingOrderSections" => $weddingOrderSections,
+            "orderAdminSummary" => $orderAdminSummary,
+            "orderAdminFocus" => $orderAdminFocus,
         ]);
     }
+
+    private function orderAdminDetailRelations(): array
+    {
+        $guestColumns = ['id', 'rsv_id', 'name', 'name_mandarin', 'sex', 'age', 'phone'];
+        $relations = [
+            'optional_rate_orders',
+            'reservations.invoice.payment.kurs',
+            'reservations.invoice.currency',
+            'reservations.invoice.bank',
+            'user:id,name,code',
+            'guide:id,name',
+            'driver:id,name',
+            'airport_shuttles.transport:id,brand,name',
+        ];
+
+        if (Schema::hasColumn('guests', 'order_id')) {
+            $guestColumns[] = 'order_id';
+            $relations[] = 'guests:' . implode(',', $guestColumns);
+        }
+
+        $relations[] = 'reservation_guests:' . implode(',', $guestColumns);
+
+        return $relations;
+    }
+
+    private function isAccommodationOrder(Orders $order): bool
+    {
+        return in_array($order->service, ['Hotel', 'Hotel Promo', 'Hotel Package', 'Wedding Package'], true);
+    }
+
+    private function getOrCreateReservationForOrder(Orders $order, ?User $agent): Reservation
+    {
+        if ($order->rsv_id) {
+            return Reservation::findOrFail($order->rsv_id);
+        }
+
+        return DB::transaction(function () use ($order, $agent) {
+            $reservation = Reservation::create([
+                'rsv_no' => $order->orderno,
+                'service' => $order->service ?: 'Order',
+                'checkin' => $order->checkin,
+                'checkout' => $order->checkout,
+                'agn_id' => $agent?->id ?? $order->user_id,
+                'adm_id' => Auth::id(),
+                'status' => 'Pending',
+                'arrival_flight' => $order->arrival_flight,
+                'arrival_time' => $order->arrival_time,
+                'departure_flight' => $order->departure_flight,
+                'departure_time' => $order->departure_time,
+            ]);
+
+            if ($order->include) {
+                IncludeReservation::create([
+                    'rsv_id' => $reservation->id,
+                    'include' => $order->include,
+                ]);
+            }
+
+            if ($order->note) {
+                RemarkReservation::create([
+                    'rsv_id' => $reservation->id,
+                    'remark' => $order->note,
+                ]);
+            }
+
+            Guests::where('order_id', $order->id)
+                ->whereNull('rsv_id')
+                ->update(['rsv_id' => $reservation->id]);
+
+            $order->forceFill(['rsv_id' => $reservation->id])->save();
+            $order->setRelation('reservation_guests', Guests::where('rsv_id', $reservation->id)->get());
+
+            return $reservation;
+        });
+    }
+
+    private function additionalServiceSummary(Orders $order): array
+    {
+        $services = json_decode($order->additional_service);
+        $dates = json_decode($order->additional_service_date);
+        $quantities = json_decode($order->additional_service_qty) ?: [];
+        $prices = json_decode($order->additional_service_price) ?: [];
+
+        $total = 0;
+        if (!empty($services)) {
+            $total = array_sum(array_map(
+                fn ($price, $quantity) => (float) $price * (float) $quantity,
+                $prices,
+                $quantities
+            ));
+        }
+
+        return [
+            'additional_service' => $services,
+            'additional_service_date' => $dates,
+            'additional_service_qty' => $quantities,
+            'additional_service_price' => $prices,
+            'total_additional_service' => $total,
+        ];
+    }
+
+    private function paymentSummary(?InvoiceAdmin $invoice): array
+    {
+        $paymentCollection = $invoice ? $invoice->payment : collect();
+        $validReceipts = $paymentCollection->where('status', 'Valid');
+
+        return [
+            'receipts' => $paymentCollection->isNotEmpty() ? $paymentCollection : null,
+            'total_payment_usd' => $validReceipts->filter(fn ($receipt) => $receipt->kurs?->name === 'USD')->sum('amount'),
+            'total_payment_cny' => $validReceipts->filter(fn ($receipt) => $receipt->kurs?->name === 'CNY')->sum('amount'),
+            'total_payment_twd' => $validReceipts->filter(fn ($receipt) => $receipt->kurs?->name === 'TWD')->sum('amount'),
+            'total_payment_idr' => $validReceipts->filter(fn ($receipt) => $receipt->kurs?->name === 'IDR')->sum('amount'),
+        ];
+    }
+
+    private function guestsForOrder(Orders $order, Reservation $reservation)
+    {
+        $hasOrderId = Schema::hasColumn('guests', 'order_id');
+        $columns = ['id', 'rsv_id', 'name', 'name_mandarin', 'sex', 'age', 'phone'];
+
+        if ($hasOrderId) {
+            $columns[] = 'order_id';
+
+            Guests::where('order_id', $order->id)
+                ->whereNull('rsv_id')
+                ->update(['rsv_id' => $reservation->id]);
+        }
+
+        return Guests::query()
+            ->select($columns)
+            ->where(function ($query) use ($order, $reservation, $hasOrderId) {
+                if ($hasOrderId) {
+                    $query->where('order_id', $order->id);
+
+                    if ($reservation->id) {
+                        $query->orWhere('rsv_id', $reservation->id);
+                    }
+
+                    return;
+                }
+
+                $query->where('rsv_id', $reservation->id);
+            })
+            ->orderBy('id')
+            ->get()
+            ->unique('id')
+            ->values();
+    }
+
+    private function weddingDetailData(Orders $order, $hotel, $transports): array
+    {
+        if ($order->service !== 'Wedding Package') {
+            return [
+                'wedding' => null,
+                'wedding_order' => null,
+                'bride' => null,
+                'wedding_venue' => null,
+                'wedding_fixed_services' => null,
+                'wedding_room' => null,
+                'wedding_makeup' => null,
+                'wedding_decoration' => null,
+                'wedding_dinner_venue' => null,
+                'wedding_entertainment' => null,
+                'wedding_documentation' => null,
+                'wedding_other_service' => null,
+                'wedding_transport' => null,
+                'wedding_transport_price' => collect(),
+                'hotel_price' => collect(),
+            ];
+        }
+
+        $weddingOrder = OrderWedding::with(['bride', 'hotel'])->find($order->wedding_order_id);
+
+        return [
+            'wedding' => Weddings::find($order->service_id),
+            'wedding_order' => $weddingOrder,
+            'bride' => $weddingOrder?->bride,
+            'wedding_room' => $hotel ? HotelRoom::where('hotels_id', $hotel->id)->get() : collect(),
+            'wedding_fixed_services' => VendorPackage::where('type', 'Fixed Service')->get(),
+            'wedding_venue' => VendorPackage::where('type', 'Wedding Venue')->get(),
+            'wedding_makeup' => VendorPackage::where('type', 'Make-up')->get(),
+            'wedding_decoration' => VendorPackage::where('type', 'Decoration')->get(),
+            'wedding_dinner_venue' => VendorPackage::where('type', 'Wedding Dinner')->get(),
+            'wedding_entertainment' => VendorPackage::where('type', 'Entertainment')->get(),
+            'wedding_documentation' => VendorPackage::where('type', 'Documentation')->get(),
+            'wedding_other_service' => VendorPackage::where('type', 'Other')->get(),
+            'wedding_transport' => $transports,
+            'wedding_transport_price' => $hotel
+                ? TransportPrice::where('type', 'Airport Shuttle')->where('duration', $hotel->airport_duration)->get()
+                : collect(),
+            'hotel_price' => $weddingOrder
+                ? HotelPrice::where('hotels_id', $weddingOrder->hotel_id)
+                    ->where('start_date', '<', $weddingOrder->wedding_date)
+                    ->where('end_date', '>', $weddingOrder->wedding_date)
+                    ->get()
+                : collect(),
+        ];
+    }
+
+    private function hotelValidationData(Orders $order): array
+    {
+        $isHotelOrder = in_array($order->service, ['Hotel', 'Hotel Promo', 'Hotel Package'], true);
+        $hotel = $isHotelOrder ? Hotels::with(['rooms' => fn ($query) => $query->select('id', 'hotels_id', 'rooms', 'capacity_adult', 'capacity_child', 'beds', 'status')])->find($order->service_id) : null;
+        $room = $isHotelOrder ? HotelRoom::find($order->subservice_id) : null;
+        $matchingRate = null;
+
+        if ($isHotelOrder && $order->checkin && $order->checkout) {
+            $matchingRate = HotelPrice::with('rooms:id,rooms')
+                ->where('hotels_id', $order->service_id)
+                ->when($order->subservice_id, fn ($query) => $query->where('rooms_id', $order->subservice_id))
+                ->whereDate('start_date', '<=', $order->checkin)
+                ->whereDate('end_date', '>=', $order->checkout)
+                ->orderByDesc('start_date')
+                ->first();
+        }
+
+        $checklist = collect([
+            [
+                'label' => 'Reservation record',
+                'value' => $order->rsv_id ? 'Created' : 'Will be created on open',
+                'tone' => $order->rsv_id ? 'success' : 'warning',
+            ],
+            [
+                'label' => 'Hotel profile',
+                'value' => $hotel ? ($hotel->status ?: 'Available') : 'Missing hotel data',
+                'tone' => $hotel ? 'success' : 'danger',
+            ],
+            [
+                'label' => 'Requested room',
+                'value' => $room ? ($room->status ?: 'Available') : 'Missing room data',
+                'tone' => $room ? 'success' : 'warning',
+            ],
+            [
+                'label' => 'Contract rate coverage',
+                'value' => $matchingRate ? 'Rate covers selected stay' : 'Needs hotel confirmation',
+                'tone' => $matchingRate ? 'success' : 'warning',
+            ],
+        ]);
+
+        return [
+            'isHotelOrder' => $isHotelOrder,
+            'hotel' => $hotel,
+            'hotelRoom' => $room,
+            'hotelRate' => $matchingRate,
+            'hotelValidationChecklist' => $checklist,
+        ];
+    }
+
     // View Detail ORDER =========================================================================================>
     public function view_order_admin_detail($id)
     {
-        $order = Orders::with(['optional_rate_orders','reservations.invoice'])->find($id);
-        if (!$order) {
-            return redirect('/orders-admin')->with('warning',"Sorry we couldn't find the order.");
-        }
+        $order = Orders::with($this->orderAdminDetailRelations())->findOrFail($id);
         $now = Carbon::now();
-        $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
-        $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
-        $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
-        $attentions = Attention::where('page',"admin-order-detail")->get();
-        
-        $rates = UsdRates::all();
-        $banks = BankAccount::all();
-        $admins = Auth::user()->all();
-        $admin = Auth::user();
-        $hotel = Hotels::with(['optionalrates'])->where('id',$order->service_id)->first();
-        $optionalrates = $hotel->optionalrates??null;
-        $villa = Villas::with(['optionalrates'])->where('id',$order->service_id)->first();
-        $villa_optionalrates = $villa->optionalrates??null;
-        $orderlogs = OrderLog::where('order_id',$id)->get();
-        $guideOrder = Guide::where('id',$order->guide_id)->first();
-        $driverOrder = Drivers::where('id',$order->driver_id)->first();
-        $guides = Guide::All();
-        $drivers = Drivers::All();
-        $pickup_people = Guests::where('id',$order->pickup_name)->first();
-        $airport_shuttles = AirportShuttle::where('order_id',$order->id)->get();
+        $agent = User::find($order->sales_agent ?: $order->user_id);
+        $handled_by = $order->handled_by ?: Auth::id();
+        $reservation = $this->getOrCreateReservationForOrder($order, $agent);
+        $reservation->loadMissing(['invoice.payment.kurs', 'invoice.currency', 'invoice.bank']);
+        $order->refresh()->loadMissing($this->orderAdminDetailRelations());
 
-        $handled_by = User::where('id',$order->handled_by)->first();
-        $extra_beds = ExtraBed::where('hotels_id',$order->service_id)->get();
-        $agent = User::where('id',$order->sales_agent)->first();
+        $guests = $this->guestsForOrder($order, $reservation);
+        $invoice = $reservation->invoice ?: InvoiceAdmin::with(['payment.kurs', 'currency', 'bank'])->where('rsv_id', $reservation->id)->first();
+        $paymentSummary = $this->paymentSummary($invoice);
+        $receipts = $paymentSummary['receipts'];
+
         $optional_rate_orders = $order->optional_rate_orders;
-        $optional_rate_order_total_price = $order->optional_rate_orders->sum('price_total');
-        $users= User::where('id',$order->user_id)->first();
-        $action_log = ActionLog::where('service_id',$id)
-        ->where('service','Order')
-        ->get();
-        $additional_service = json_decode($order->additional_service);
-        $additional_service_date = json_decode($order->additional_service_date);
-        $additional_service_qty = json_decode($order->additional_service_qty);
-        $additional_service_price = json_decode($order->additional_service_price);
-        $total_additional_service = 0;
-        if (!empty($additional_service)) {
-            $total_additional_service = array_sum(
-                array_map(function ($price, $qty) {
-                    return $price * $qty;
-                }, $additional_service_price, $additional_service_qty)
-            );
-        }
-        if (!$order->rsv_id) {
-            $rsv_no = $order->orderno;
-            $reservation = new Reservation ([
-                'rsv_no' =>$rsv_no,
-                'checkin' =>$order->checkin,
-                'checkout' =>$order->checkout,
-                'agn_id'=>$agent->id,
-                'adm_id'=>Auth::user()->id,
-                'status'=>"Pending",
-                'arrival_flight' =>$order->arrival_flight,
-                'arrival_time' =>$order->arrival_time,
-                'departure_flight'=>$order->departure_flight,
-                'departure_time'=>$order->departure_time,
-            ]);
-            $reservation->save();
-            if ($order->include) {
-                $includeReservation = new IncludeReservation([
-                    'rsv_id'=>$reservation->id,
-                    'include'=>$order->include,
-                ]);
-                $includeReservation->save();
-            }
-            if (isset($order->note)) {
-                $remarkReservation = new RemarkReservation([
-                    'rsv_id'=>$reservation->id,
-                    'remark'=>$order->note,
-                ]);
-                $remarkReservation->save();
-            }
-            $guests = Guests::where('order_id',$order->id)->get();
-            $order->update([
-                "rsv_id"=>$reservation->id,
-            ]);
-        }else{
-            $reservation = Reservation::where('id',$order->rsv_id)->first();
-            $guests = Guests::where('order_id',$order->id)->get();
-        }
-        $inv_no = "INV-".$reservation->rsv_no;
-        if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf") or File::exists("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf")) {
-            $status_contract = 1;
-        }else{
-            $status_contract = 0;
-        }
-        $invoice = InvoiceAdmin::where('rsv_id',$order->rsv_id)->first();
-        $order_notes = OrderNote::where('order_id',$id)->get();
-        if ($invoice) {
-            $receipts = PaymentConfirmation::where('inv_id',$invoice->id)->get();
-        }else{
-            $receipts = null;
-        }
-        if ($receipts) {
-            $total_payment_usd = $receipts->where('status', 'Valid')->where('kurs_name', 'USD')->sum('amount');
-            $total_payment_cny = $receipts->where('status', 'Valid')->where('kurs_name', 'CNY')->sum('amount');
-            $total_payment_twd = $receipts->where('status', 'Valid')->where('kurs_name', 'TWD')->sum('amount');
-            $total_payment_idr = $receipts->where('status', 'Valid')->where('kurs_name', 'IDR')->sum('amount');
-        }else{
-            $total_payment_usd = 0;
-            $total_payment_cny = 0;
-            $total_payment_twd = 0;
-            $total_payment_idr = 0;
-        }
+        $optional_rate_order_total_price = (float) $optional_rate_orders->sum('price_total');
+        $additionalServiceSummary = $this->additionalServiceSummary($order);
+        $total_promotion_disc = array_sum(json_decode($order->promotion_disc, true) ?: []);
+        $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
+        $hotelValidation = $this->hotelValidationData($order);
+        $hotel = $hotelValidation['hotel'] ?: Hotels::find($order->service_id);
+        $villa = Villas::find($order->service_id);
+        $transports = Transports::select('id', 'brand', 'name')->get();
+        $weddingData = $this->weddingDetailData($order, $hotel, $transports);
+        $invoiceBalance = $invoice ? (float) $invoice->balance : null;
 
-        $transports = Transports::where('status',"Active")->get();
-        
-        if ($order->service == "Wedding Package") {
-            $wedding = Weddings::where('id', $order->service_id)->first();
-            $wedding_order = OrderWedding::where('id', $order->wedding_order_id)->first();
-            if ( $wedding_order) {
-                $bride = Brides::where('id',$wedding_order->brides_id)->first();
-            }else{
-                $bride = null;
-            }
-            if ($hotel) {
-                $wedding_room = HotelRoom::where('hotels_id',$hotel->id)->get();
-            }else{
-                $wedding_room = null;
-            }
-            $wedding_fixed_services = VendorPackage::where('type',"Fixed Service")->get();
-            $wedding_venue = VendorPackage::where('type',"Wedding Venue")->get();
-            $wedding_makeup = VendorPackage::where('type',"Make-up")->get();
-            $wedding_decoration = VendorPackage::where('type',"Decoration")->get();
-            $wedding_dinner_venue = VendorPackage::where('type',"Wedding Dinner")->get();
-            $wedding_entertainment = VendorPackage::where('type',"Entertainment")->get();
-            $wedding_documentation = VendorPackage::where('type',"Documentation")->get();
-            $wedding_other_service = VendorPackage::where('type',"Other")->get();
-            $wedding_transport = $transports;
-            $wedding_transport_price = TransportPrice::where('type','Airport Shuttle')
-            ->where('duration',$hotel->airport_duration)->get();
-            $wedding_itineraries = Itinerary::where('order_id',$order->id)->orderBy('time','ASC')->get();
-            $hotel_price = HotelPrice::where('hotels_id',$wedding_order->hotel_id)
-            ->where('start_date','<', $wedding_order->wedding_date)
-            ->where('end_date','>', $wedding_order->wedding_date)
-            ->get();
-        }else{
-            $wedding = null;
-            $wedding_order = null;
-            $bride = null;
-            $wedding_venue = null;
-            $wedding_fixed_services = null;
-            $wedding_room = null;
-            $wedding_makeup = null;
-            $wedding_decoration = null;
-            $wedding_dinner_venue = null;
-            $wedding_entertainment = null;
-            $wedding_documentation = null;
-            $wedding_other_service = null;
-            $wedding_transport = null;
-            $wedding_transport_price = null;
-            $wedding_itineraries = null;
-            $hotel_price = 0;
-        }
-        $guest_detail = json_decode($order->guest_detail);
+        $orderDetailSummary = [
+            'reservation_no' => $reservation->rsv_no ?? '-',
+            'service' => $order->service ?? '-',
+            'schedule' => $order->checkin && $order->checkout
+                ? dateFormat($order->checkin) . ' - ' . dateFormat($order->checkout)
+                : ($order->travel_date ? dateTimeFormat($order->travel_date) : '-'),
+            'guests' => ($order->number_of_guests ?: $guests->count() ?: 0) . ' pax',
+            'agent' => $agent?->name ?? $order->name ?? '-',
+            'handled_by' => User::find($handled_by)?->name ?? '-',
+            'confirmation' => $order->confirmation_order ?: 'Not set',
+            'payment_status' => !$invoice ? __('admin-orders.detail.payment_not_generated') : ($invoiceBalance <= 1 ? __('admin-orders.detail.payment_paid') : __('admin-orders.detail.payment_due')),
+            'total_price' => currencyFormatUsd($order->final_price ?: 0),
+        ];
 
-        $nor = $order->number_of_room;
-        $nogr = json_decode($order->number_of_guests_room);
-        $special_day = json_decode($order->special_day);
-        $special_date = json_decode($order->special_date);
-        $extra_bed = json_decode($order->extra_bed);
-        $r=1;
-        $room_price_normal = $nor * $order->normal_price;
-        $kick_back = $order->kick_back;
-        $room_price_total = $nor * $order->normal_price;
-        $final_price = $order->final_price;
-        $extra_bed_price = json_decode($order->extra_bed_price);
-        $extra_bed_id = json_decode($order->extra_bed_id);
-        if ($nor or $order->number_of_guests < 1) {
-            $order->optional_price = 0;
-        }
+        $orderDetailRecommendations = collect([
+            !$order->confirmation_order ? [
+                'tone' => 'warning',
+                'label' => __('admin-orders.detail.recommendations.confirmation'),
+                'description' => __('admin-orders.detail.recommendations.confirmation_help'),
+                'href' => '#confirmation',
+            ] : null,
+            $hotelValidation['isHotelOrder'] && !$hotelValidation['hotelRate'] ? [
+                'tone' => 'warning',
+                'label' => 'Confirm hotel availability',
+                'description' => 'Check room availability and rate coverage directly with the hotel before confirming.',
+                'href' => '#hotel-validation',
+            ] : null,
+            $guests->isEmpty() ? [
+                'tone' => 'danger',
+                'label' => __('admin-orders.detail.recommendations.guests'),
+                'description' => __('admin-orders.detail.recommendations.guests_help'),
+                'href' => '#guests',
+            ] : null,
+            !$invoice ? [
+                'tone' => 'info',
+                'label' => __('admin-orders.detail.recommendations.invoice'),
+                'description' => __('admin-orders.detail.recommendations.invoice_help'),
+                'href' => '#billing',
+            ] : null,
+            $invoice && $invoiceBalance > 1 ? [
+                'tone' => 'warning',
+                'label' => __('admin-orders.detail.recommendations.payment'),
+                'description' => __('admin-orders.detail.recommendations.payment_help'),
+                'href' => '#billing',
+            ] : null,
+        ])->filter()->values();
 
-        if (isset($order->promotion)){
-            $promotion_name = json_decode($order->promotion);
-            $promotion_disc = json_decode($order->promotion_disc);
-            $total_promotion_disc = array_sum($promotion_disc);
-            $cpn = count($promotion_name);
-        }else{
-            $total_promotion_disc = 0;
-        }
-        
-        if (isset($extra_bed_price)) {
-            $total_extra_bed = array_sum($extra_bed_price);
-        }else{
-            $total_extra_bed = 0;
-        }
-        $guest_pick_up = Guests::find($order->pickup_name)??null;
-        $tours = Tours::all();
-        return view('admin.ordersadmindetail',[
-            'total_promotion_disc'=>$total_promotion_disc,
-            'guest_detail'=>$guest_detail,
-            'banks'=>$banks,
-            'handled_by'=>$handled_by,
-            'usdrates'=>$usdrates,
-            'rates'=>$rates,
-            'tax'=>$tax,
-            'inv_no'=>$inv_no,
-            'reservation'=>$reservation,
-            'guests'=>$guests,
-            'guest_pick_up'=>$guest_pick_up,
-            'extra_beds'=>$extra_beds,
-            'extra_bed'=>$extra_bed,
-            'users'=>$users,
-            'optionalrates'=>$optionalrates,
-            'villa'=>$villa,
-            'villa_optionalrates'=>$villa_optionalrates,
-            'optional_rate_orders'=>$optional_rate_orders,
-            'optional_rate_order_total_price'=>$optional_rate_order_total_price,
-            'action_log' => $action_log,
+        return view('admin.ordersadmindetail', array_merge([
+            'order' => $order,
+            'orderDetailSummary' => $orderDetailSummary,
+            'orderDetailRecommendations' => $orderDetailRecommendations,
+            'orderDetailQuickLinks' => [
+                ['href' => '#order-snapshot', 'label' => __('admin-orders.detail.quick_links.snapshot')],
+                ['href' => '#hotel-validation', 'label' => 'Hotel Validation'],
+                ['href' => '#guests', 'label' => __('admin-orders.detail.quick_links.guests')],
+                ['href' => '#billing', 'label' => __('admin-orders.detail.quick_links.billing')],
+                ['href' => '#workflow', 'label' => __('admin-orders.detail.quick_links.workflow')],
+            ],
+            'reservation' => $reservation,
+            'guests' => $guests,
+            'invoice' => $invoice,
+            'receipts' => $receipts,
+            'banks' => BankAccount::select('id', 'bank', 'currency')->get(),
+            'rates' => UsdRates::select('id', 'name', 'rate')->get(),
+            'admins' => User::select('id', 'name')->get(),
+            'agent' => $agent,
+            'handled_by' => $handled_by,
+            'guideOrder' => $order->guide,
+            'driverOrder' => $order->driver,
+            'pickup_people' => Guests::find($order->pickup_name),
+            'guest_pick_up' => Guests::find($order->pickup_name),
+            'airport_shuttles' => $order->airport_shuttles,
+            'order_notes' => $order->order_notes()->latest()->get(),
+            'optional_rate_orders' => $optional_rate_orders,
+            'optional_rate_order_total_price' => $optional_rate_order_total_price,
+            'total_promotion_disc' => $total_promotion_disc,
+            'extra_bed' => json_decode($order->extra_bed),
+            'extra_bed_id' => json_decode($order->extra_bed_id),
+            'extra_bed_price' => json_decode($order->extra_bed_price),
+            'extra_bed_total_price' => $extraBedSummary['total'],
+            'nor' => $order->number_of_room,
+            'nogr' => $order->number_of_guests_room,
+            'inv_no' => 'INV-' . $reservation->rsv_no,
             'now' => $now,
-            'business'=>$business,
-            'agent'=>$agent,
-            'orderlogs'=>$orderlogs,
-            'admin'=>$admin,
-            'admins'=>$admins,
-            'attentions'=>$attentions,
-            'guides'=>$guides,
-            'drivers'=>$drivers,
-            'guideOrder'=>$guideOrder,
-            'driverOrder'=>$driverOrder,
-            'pickup_people'=>$pickup_people,
-            'wedding_fixed_services'=>$wedding_fixed_services,
-            'additional_service'=>$additional_service,
-            'additional_service_date'=>$additional_service_date,
-            'additional_service_price'=>$additional_service_price,
-            'additional_service_qty'=>$additional_service_qty,
-            'total_additional_service'=>$total_additional_service,
-            'status_contract'=>$status_contract,
-            'airport_shuttles'=>$airport_shuttles,
-            'invoice'=>$invoice,
-            'order_notes'=>$order_notes,
-            'receipts'=>$receipts,
-            'wedding'=>$wedding,
-            'wedding_order'=>$wedding_order,
-            'bride'=>$bride,
-            'hotel'=>$hotel,
-            'nogr'=>$nogr,
-            'tours'=>$tours,
-            'extra_bed_id'=>$extra_bed_id,
-            'extra_bed_price'=>$extra_bed_price,
-            
-            'wedding_room'=>$wedding_room,
-            'wedding_venue'=>$wedding_venue,
-            'wedding_makeup'=>$wedding_makeup,
-            'wedding_decoration'=>$wedding_decoration,
-            'wedding_dinner_venue'=>$wedding_dinner_venue,
-            'wedding_entertainment'=>$wedding_entertainment,
-            'wedding_documentation'=>$wedding_documentation,
-            'wedding_transport'=>$wedding_transport,
-            'wedding_other_service'=>$wedding_other_service,
-            'hotel_price'=>$hotel_price,
-            'wedding_itineraries'=>$wedding_itineraries,
-            'wedding_transport_price'=>$wedding_transport_price,
-            'total_payment_usd' => $total_payment_usd,
-            'total_payment_cny' => $total_payment_cny,
-            'total_payment_twd' => $total_payment_twd,
-            'total_payment_idr' => $total_payment_idr,
-            'nor' => $nor,
-            'special_day' => $special_day,
-        ])->with('order',$order);
-            
+            'hotel' => $hotel,
+            'villa' => $villa,
+            'tax' => Tax::find(1),
+            'business' => BusinessProfile::find(1),
+            'users' => User::select('id', 'name')->get(),
+            'guides' => Guide::select('id', 'name')->get(),
+            'drivers' => Drivers::select('id', 'name')->get(),
+            'hotels' => Hotels::select('id', 'name', 'status')->get(),
+            'tours' => Tours::select('id', 'name')->get(),
+            'optionalrates' => OptionalRate::with('hotels')->get(),
+            'villa_optionalrates' => collect(),
+            'guest_detail' => json_decode($order->guest_detail),
+            'action_log' => ActionLog::where('service', 'Order')->where('service_id', $order->id)->latest()->get(),
+            'orderlogs' => OrderLog::where('order_id', $order->id)->latest()->get(),
+            'admin' => User::find($order->verified_by),
+            'status_contract' => $invoice ? 'Available' : 'Not generated',
+            'total_payment_usd' => $paymentSummary['total_payment_usd'],
+            'total_payment_cny' => $paymentSummary['total_payment_cny'],
+            'total_payment_twd' => $paymentSummary['total_payment_twd'],
+            'total_payment_idr' => $paymentSummary['total_payment_idr'],
+            'special_day' => json_decode($order->special_day),
+        ], $additionalServiceSummary, $hotelValidation, $weddingData));
     }
 
-    // Function Add Order Wedding Itinerary =========================================================================================>
-    public function func_add_order_wedding_itinerary(Request $request, $id)
-        {
-            $now = Carbon::now();
-            $today = date('Y-m-d H.i',strtotime($now));
-            $order = Orders::findOrFail($id);
-            $rsv_id = $order->rsv_id;
-            $confirmation_order = $request->confirmation_order;
-            $day_and_date = $request->day; 
-            $day = substr($day_and_date,0,1);
-            $date = substr($day_and_date,1,12);
-            $duration = $request->duration;
-            $time = date('H.i',strtotime($request->time));
-            $author_id = Auth::user()->id;
-            $any_action = Itinerary::where('created_at','>',$today)->get();
-            $itineraries = new Itinerary([
-                "author_id"=>$author_id,
-                "rsv_id"=>$rsv_id,
-                "order_id"=>$order->id,
-                "date"=>$date,
-                "time"=>$time,
-                "day"=>$day,
-                "duration"=>$duration,
-                "itinerary"=>$request->itinerary,
-            ]);
-            $itineraries->save();
-            
-            if ($any_action) {
-                $any_auth = $any_action->where('author_id',$author_id)->first();
-                if (!$any_auth) {
-                    $order_log = new OrderLog([
-                        "order_id"=>$order->id,
-                        "action"=>"Add Itinerary",
-                        "url"=>$request->getClientIp(),
-                        "method"=>"Add",
-                        "agent"=>$order->name,
-                        "admin"=>Auth::user()->id,
-                    ]);
-                    $order_log->save();
-                }
-            }else{
-                $order_log = new OrderLog([
-                    "order_id"=>$order->id,
-                    "action"=>"Add Itinerary",
-                    "url"=>$request->getClientIp(),
-                    "method"=>"Add",
-                    "agent"=>$order->name,
-                    "admin"=>Auth::user()->id,
-                ]);
-                $order_log->save();
-            }
-            // dd($order);
-            return redirect("/orders-admin-$id#additionalServices")->with('success','Order itinerary has been updated');
-            // return redirect('/orders-admin-'.$id)->with('warning',"Sorry we couldn't find the order.");
-        }
-
-    // Update Order Itinerary =========================================================================================>
-    public function func_update_order_itinerary(Request $request, $id)
-    {
-        $itinerary = Itinerary::findOrFail($id);
-        $checkin = $request->checkin;
-        $duration = $request->duration;
-        $date_day = $checkin;
-        $day_and_date = $request->day; 
-        $day = substr($day_and_date,0,1);
-        $date = substr($day_and_date,1,12);
-        $duration = $request->duration;
-        $time = date('H.i',strtotime($request->time));
-        
-        $itinerary->update([
-            "date"=>$date,
-            "time"=>$time,
-            "day"=>$day,
-            "duration"=>$duration,
-            "itinerary"=>$request->itinerary,
-        ]);
-        // dd($itinerary);
-        return redirect()->back()->with('success','Itinerary has been updated');
-    }
-    
-    // Function Delete Guide to Order =========================================================================================>
-    public function func_delete_order_wedding_itinerary(Request $request, $id)
-    {
-        $itinerary = Itinerary::findOrFail($id);
-        $itinerary->delete();
-        // @dd($order);
-        return redirect()->to(app('url')->previous()."#weddingItinerary")->with('success','Service has been removed from itinerary');
-    }
     // View detail order room =========================================================================================>
     public function admin_edit_order_room($id)
     {
@@ -694,7 +812,6 @@ class OrdersAdminController extends Controller
                     $user_id = Auth::User()->id;
                     $usdrates = UsdRates::where('name','USD')->first();
                     $tax = Tax::where('id',1)->first();
-                    $attentions = Attention::where('page','editorder-room')->get();
                     
                     $business = BusinessProfile::where('id',1)->first();
                     $extrabed = ExtraBed::where('hotels_id',$order->service_id)->get();
@@ -711,7 +828,6 @@ class OrdersAdminController extends Controller
                         'now'=>$now,
                         'usdrates'=>$usdrates,
                         'business'=>$business,
-                        'attentions'=>$attentions,
                         'handled_by'=>$handled_by,
                     ]);
                 }else{
@@ -724,7 +840,6 @@ class OrdersAdminController extends Controller
                 $user_id = Auth::User()->id;
                 $usdrates = UsdRates::where('name','USD')->first();
                 $tax = Tax::where('id',1)->first();
-                $attentions = Attention::where('page','editorder-room')->get();
                 $business = BusinessProfile::where('id',1)->first();
                 $extrabed = ExtraBed::where('hotels_id',$order->service_id)->get();
                 $room = HotelRoom::where('id',$order->subservice_id)->first();
@@ -740,7 +855,6 @@ class OrdersAdminController extends Controller
                     'now'=>$now,
                     'usdrates'=>$usdrates,
                     'business'=>$business,
-                    'attentions'=>$attentions,
                     'handled_by'=>$handled_by,
                 ]);
             }else{
@@ -1276,9 +1390,8 @@ class OrdersAdminController extends Controller
     // View Add Optional Rate Order =========================================================================================>
     public function add_optional_rate_order($id){
         $order = Orders::where('id', $id)->first();
-        $attentions = Attention::where('page','orders-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
-        $optional_rate_orders = OptionalRateOrder::where('orders_id', $id)->get();
+        $optional_rate_orders = OptionalRateOrder::where('order_id', $id)->get();
         $optionalrates = OptionalRate::all();
         $optional_services = OptionalRate::where('hotels_id', $order->service_id)
             ->orWhere('villas_id',$order->service_id)
@@ -1293,7 +1406,6 @@ class OrdersAdminController extends Controller
                         'order'=> $order,
                         'business'=>$business,
                         'optional_rate_orders'=>$optional_rate_orders,
-                        'attentions'=>$attentions,
                         'optionalrates'=>$optionalrates,
                         'optional_services'=>$optional_services,
                         'tax'=>$tax,
@@ -1312,7 +1424,6 @@ class OrdersAdminController extends Controller
                     'order'=> $order,
                     'business'=>$business,
                     'optional_rate_orders'=>$optional_rate_orders,
-                    'attentions'=>$attentions,
                     'optionalrates'=>$optionalrates,
                     'optional_services'=>$optional_services,
                     'tax'=>$tax,
@@ -1349,7 +1460,7 @@ class OrdersAdminController extends Controller
         $extra_bed_total_price = $order->extra_bed_total_price ?? 0;
         $airport_shuttle_price = $order->airport_shuttle_price ?? 0;
         $additional_service_total_price = $order->additional_service_total_price??0;
-        $optional_price = OptionalRateOrder::where('orders_id', $order_id)->sum('price_total');
+        $optional_price = OptionalRateOrder::where('order_id', $order_id)->sum('price_total');
         
         $price_total = $order->normal_price + $extra_bed_total_price + $airport_shuttle_price + $additional_service_total_price + $optional_price;
 
@@ -1373,7 +1484,7 @@ class OrdersAdminController extends Controller
     public function func_update_optional_service_order(Request $request,$id){
         $now = Carbon::now();
         $order = Orders::find($id);
-        $optionalrateorder=OptionalRateOrder::where("orders_id",$id)->first();
+        $optionalrateorder=OptionalRateOrder::where("order_id",$id)->first();
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
         $price_pax_nd = [];
@@ -1621,7 +1732,6 @@ class OrdersAdminController extends Controller
     {
         $order = Orders::where('id',$id)->first();
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','add-additional-service')->get();
         $additional_service = json_decode($order->additional_service);
         $additional_service_date = json_decode($order->additional_service_date);
         $additional_service_qty = json_decode($order->additional_service_qty);
@@ -1633,7 +1743,6 @@ class OrdersAdminController extends Controller
                     return view('backend.operations.orders.actions.add-additional-services',[
                         'order'=> $order,
                         'usdrates'=> $usdrates,
-                        'attentions'=> $attentions,
                         "additional_service_date"=>$additional_service_date,
                         "additional_service"=>$additional_service,
                         "additional_service_qty"=>$additional_service_qty,
@@ -1650,7 +1759,6 @@ class OrdersAdminController extends Controller
             return view('backend.operations.orders.actions.add-additional-services',[
                 'order'=> $order,
                 'usdrates'=> $usdrates,
-                'attentions'=> $attentions,
                 "additional_service_date"=>$additional_service_date,
                 "additional_service"=>$additional_service,
                 "additional_service_qty"=>$additional_service_qty,
@@ -1659,35 +1767,10 @@ class OrdersAdminController extends Controller
             ]);
         }
     }
-    // View edit Itinerary =========================================================================================>
-    public function admin_edit_order_itinerary($id)
-    {
-        $order = Orders::where('id',$id)->first();
-        $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','add-order-itinerary')->get();
-        $additional_service = json_decode($order->additional_service);
-        $additional_service_date = json_decode($order->additional_service_date);
-        $additional_service_qty = json_decode($order->additional_service_qty);
-        $additional_service_price = json_decode($order->additional_service_price);
-        $order_wedding = OrderWedding::where('id',$order->wedding_order_id)->firstOrFail();
-        $wedding_itineraries = Itinerary::where('order_id',$order->id)->orderBy('day', 'asc')->get();
-        return view('backend.operations.orders.actions.add-order-itinerary',[
-            'order'=> $order,
-            'usdrates'=> $usdrates,
-            'attentions'=> $attentions,
-            "additional_service_date"=>$additional_service_date,
-            "additional_service"=>$additional_service,
-            "additional_service_qty"=>$additional_service_qty,
-            "additional_service_price"=>$additional_service_price,
-            "order_wedding"=>$order_wedding,
-            "wedding_itineraries"=>$wedding_itineraries,
-        ]);
-    }
     // VIEW EDIT AIRPORT SHUTTLE
     public function edit_airport_shuttle($id){
         $order = Orders::where('id',$id)->first();
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','add-additional-service')->get();
         $airport_shuttles = AirportShuttle::where('order_id',$id)->get();
         $transports = Transports::where('status',"Active")->get();
         $hotel = Hotels::where('id',$order->service_id)->first();
@@ -1697,7 +1780,6 @@ class OrdersAdminController extends Controller
                     return view('backend.operations.orders.actions.edit-airport-shuttle',[
                         'order'=> $order,
                         'usdrates'=> $usdrates,
-                        'attentions'=> $attentions,
                         'airport_shuttles'=> $airport_shuttles,
                         'transports'=> $transports,
                         'hotel'=> $hotel,
@@ -1713,7 +1795,6 @@ class OrdersAdminController extends Controller
             return view('backend.operations.orders.actions.edit-airport-shuttle',[
                 'order'=> $order,
                 'usdrates'=> $usdrates,
-                'attentions'=> $attentions,
                 'airport_shuttles'=> $airport_shuttles,
                 'transports'=> $transports,
                 'hotel'=> $hotel,
@@ -2607,12 +2688,11 @@ class OrdersAdminController extends Controller
         $cnyrates = UsdRates::where('name','CNY')->first();
         $twdrates = UsdRates::where('name','TWD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         // $optional_rate_order = OptionalRateOrder::all();
         $optionalrates = OptionalRate::all();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
-        $optional_rate_orders = OptionalRateOrder::where('orders_id', $id)->first();
+        $optional_rate_orders = OptionalRateOrder::where('order_id', $id)->first();
         $extra_beds = ExtraBed::all();
         $agent = User::where('id', $order->user_id)->first();
         $order_link = 'https://online.balikamitour.com/detail-order-'.$order->id;
@@ -2709,7 +2789,6 @@ class OrdersAdminController extends Controller
         $weddingFixedServices = VendorPackage::where('type',"Fixed Service")->get();
 
         $wedding_hotel = Hotels::where('id',$order_wedding->wedding_id)->firstOrFail();
-        $wedding_itineraries = Itinerary::where('order_id',$order->id)->orderBy('time','ASC')->get();
 
         $data = [
             'now'=>$now,
@@ -2740,7 +2819,6 @@ class OrdersAdminController extends Controller
             'twdrates'=>$twdrates,
             'business'=>$business,
             'optional_rate_orders'=>$optional_rate_orders,
-            'attentions'=>$attentions,
             'optionalrate_meals'=>$optionalrate_meals,
             'data'=>$data,
             'agent'=>$agent,
@@ -2756,7 +2834,6 @@ class OrdersAdminController extends Controller
             'weddingTransportations'=>$weddingTransportations,
             'weddingOthers'=>$weddingOthers,
             'weddingFixedServices'=>$weddingFixedServices,
-            'wedding_itineraries'=>$wedding_itineraries,
             'wedding_hotel'=>$wedding_hotel,
             'bride'=>$bride,
             'nor'=>$nor,
@@ -2796,12 +2873,11 @@ class OrdersAdminController extends Controller
         $cnyrates = UsdRates::where('name','CNY')->first();
         $twdrates = UsdRates::where('name','TWD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         // $optional_rate_order = OptionalRateOrder::all();
         $optionalrates = OptionalRate::all();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
-        $optional_rate_orders = OptionalRateOrder::where('orders_id', $id)->get();
+        $optional_rate_orders = OptionalRateOrder::where('order_id', $id)->get();
         $extra_beds = ExtraBed::all();
         $agent = User::where('id', $order->user_id)->first();
         $order_link = 'https://online.balikamitour.com/detail-order-'.$order->id;
@@ -2911,7 +2987,6 @@ class OrdersAdminController extends Controller
             $weddingOthers = VendorPackage::where('type',"Other")->get();
             $weddingFixedServices = VendorPackage::where('type',"Fixed Service")->get();
             $wedding_hotel = Hotels::where('id',$order_wedding->hotel_id)->first();
-            $wedding_itineraries = Itinerary::where('order_id',$order->id)->orderBy('time','ASC')->get();
         }
 
         if ($order->service == "Wedding Package") {
@@ -2931,7 +3006,6 @@ class OrdersAdminController extends Controller
                 'twdrates'=>$twdrates,
                 'business'=>$business,
                 'optional_rate_orders'=>$optional_rate_orders,
-                'attentions'=>$attentions,
                 'optionalrate_meals'=>$optionalrate_meals,
                 'data'=>$data,
                 'agent'=>$agent,
@@ -2951,7 +3025,6 @@ class OrdersAdminController extends Controller
                 'weddingTransportations'=>$weddingTransportations,
                 'weddingOthers'=>$weddingOthers,
                 'weddingFixedServices'=>$weddingFixedServices,
-                'wedding_itineraries'=>$wedding_itineraries,
                 'wedding_hotel'=>$wedding_hotel,
                 'bride'=>$bride,
 
@@ -2999,7 +3072,6 @@ class OrdersAdminController extends Controller
                 'twdrates'=>$twdrates,
                 'business'=>$business,
                 'optional_rate_orders'=>$optional_rate_orders,
-                'attentions'=>$attentions,
                 'optionalrate_meals'=>$optionalrate_meals,
                 'data'=>$data,
                 'hotel'=>$hotel,
@@ -3076,11 +3148,10 @@ class OrdersAdminController extends Controller
         $twdrates = UsdRates::where('name','TWD')->first();
         $idrrates = UsdRates::where('name','IDR')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
-        $optional_rate_orders = OptionalRateOrder::where('orders_id', $id)->get();
+        $optional_rate_orders = OptionalRateOrder::where('order_id', $id)->get();
         $extra_beds = ExtraBed::all();
         $now = Carbon::now();
         $reservation = Reservation::where('id',$order->rsv_id)->first();
@@ -3174,7 +3245,6 @@ class OrdersAdminController extends Controller
             $weddingOthers = VendorPackage::where('type',"Other")->get();
             $weddingFixedServices = VendorPackage::where('type',"Fixed Service")->get();
             $wedding_hotel = Hotels::where('id',$order_wedding->wedding_id)->first();
-            $wedding_itineraries = Itinerary::where('order_id',$order->id)->orderBy('time','ASC')->get();
         }else{
             $bride = null;
             $order_wedding = null;
@@ -3190,7 +3260,6 @@ class OrdersAdminController extends Controller
             $weddingFixedServices = null;
     
             $wedding_hotel = null;
-            $wedding_itineraries = null;
         }
         
         
@@ -3201,8 +3270,7 @@ class OrdersAdminController extends Controller
             "handled_by"=>$handled_by,
         ]);
         $reservation->update([
-            "status"=>"Active",
-            "send"=>"yes",
+            "status"=>"Active"
         ]);
         // INVOICE
         $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
@@ -3302,7 +3370,6 @@ class OrdersAdminController extends Controller
             'idrrates'=>$idrrates,
             'business'=>$business,
             'optional_rate_orders'=>$optional_rate_orders,
-            'attentions'=>$attentions,
             'optionalrate_meals'=>$optionalrate_meals,
             'logoImage'=> public_path('storage/logo/bali-kami-tour-logo.png'),
             'guest_name'=>$guest_name,
@@ -3336,7 +3403,6 @@ class OrdersAdminController extends Controller
             'airport_shuttles'=>$airport_shuttles,
             'order_wedding'=>$order_wedding,
             'rooms'=>$rooms,
-            'wedding_itineraries'=>$wedding_itineraries,
             'wedding_hotel'=>$wedding_hotel,
             'weddingVenues'=>$weddingVenues,
             'weddingMakeups'=>$weddingMakeups,
@@ -3412,7 +3478,6 @@ class OrdersAdminController extends Controller
         $twdrates = UsdRates::where('name','TWD')->first();
         $idrrates = UsdRates::where('name','IDR')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
@@ -3581,11 +3646,10 @@ class OrdersAdminController extends Controller
         $user_id = Auth::User()->id;
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
-        $optional_rate_orders = OptionalRateOrder::where('orders_id', $id)->get();
+        $optional_rate_orders = OptionalRateOrder::where('order_id', $id)->get();
         $extra_beds = ExtraBed::all();
         $now = Carbon::now();
         $reservation = Reservation::where('id',$order->rsv_id)->first();
@@ -3714,7 +3778,6 @@ class OrdersAdminController extends Controller
             'usdrates'=>$usdrates,
             'business'=>$business,
             'optional_rate_orders'=>$optional_rate_orders,
-            'attentions'=>$attentions,
             'optionalrate_meals'=>$optionalrate_meals,
             'logoImage'=> public_path('storage/logo/bali-kami-tour-logo.png'),
             'guest_name'=>$guest_name,
@@ -4612,7 +4675,6 @@ class OrdersAdminController extends Controller
             $reservation_staf = Auth::user();
             $agent = Auth::user()->where('id',$orderWedding->agent_id)->first();
             $now = Carbon::now();
-            $attentions = Attention::where('page','weddings-admin')->get();
             $usdrates = UsdRates::where('name','USD')->first();
             $business = BusinessProfile::where('id',1)->first();
             $hotel = Hotels::where('id',$orderWedding->hotel_id)->first();
@@ -4666,7 +4728,8 @@ class OrdersAdminController extends Controller
             if (!$orderWedding->rsv_id) {
                 $reservation = new Reservation ([
                     'rsv_no' =>$orderWedding->orderno,
-                    'agn_id'=>$agent->id,
+                    'service' =>$orderWedding->service ?: 'Wedding Package',
+                    'agn_id'=>$agent?->id ?? $orderWedding->agent_id ?? Auth::id(),
                     'adm_id'=>Auth::user()->id,
                     'status'=>"Draft",
                     'checkin'=>$orderWedding->checkin,
@@ -4744,7 +4807,6 @@ class OrdersAdminController extends Controller
                 "ceremonyVenue"=>$ceremonyVenue,
                 "ceremonyVenues"=>$ceremonyVenues,
                 "bride"=>$bride,
-                "attentions"=>$attentions,
                 "now"=>$now,
                 "usdrates"=>$usdrates,
                 "slots"=>$slots,
@@ -4812,7 +4874,6 @@ class OrdersAdminController extends Controller
         $user_id = Auth::User()->id;
         $usdrates = UsdRates::where('name','USD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','validate-order-wedding-accommodation')->get();
         $business = BusinessProfile::where('id',1)->first();
         $accommodationInvs = WeddingAccomodations::where('order_wedding_package_id',$id)->where('room_for',"Inv")->get();
         $brides = Brides::where('id',$orderWedding->brides_id)->first();
@@ -4828,7 +4889,6 @@ class OrdersAdminController extends Controller
             'user_id'=>$user_id,
             'usdrates'=>$usdrates,
             'tax'=>$tax,
-            'attentions'=>$attentions,
             'business'=>$business,
             'orderWedding'=>$orderWedding,
             'accommodationInvs'=>$accommodationInvs,
@@ -6334,7 +6394,6 @@ class OrdersAdminController extends Controller
         $order_log->save();
 
         $wedding = Weddings::where('id',$order_wedding->service_id)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $bride = Brides::where('id',$order_wedding->brides_id)->first();
         $transports = Transports::all();
         $transport_id = json_decode($order_wedding->transport_id);
@@ -6368,7 +6427,6 @@ class OrdersAdminController extends Controller
             'title'=>"Confirmation Order - ".$order_wedding->orderno,
             "email"=>$email,
             "business"=>$business,
-            "attentions"=>$attentions,
             "tax"=>$tax,
             "twdrates"=>$twdrates,
             "cnyrates"=>$cnyrates,
@@ -6669,7 +6727,6 @@ class OrdersAdminController extends Controller
         $cnyrates = UsdRates::where('name','CNY')->first();
         $twdrates = UsdRates::where('name','TWD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         $reservation = Reservation::where('id',$order->rsv_id)->first();
         $bride = Brides::where('id',$order->brides_id)->first();
@@ -6702,7 +6759,6 @@ class OrdersAdminController extends Controller
         
         return view('emails.orderContractWeddingEn',[
             "business"=>$business,
-            "attentions"=>$attentions,
             "tax"=>$tax,
             "twdrates"=>$twdrates,
             "cnyrates"=>$cnyrates,
@@ -6748,7 +6804,6 @@ class OrdersAdminController extends Controller
         $cnyrates = UsdRates::where('name','CNY')->first();
         $twdrates = UsdRates::where('name','TWD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         $reservation = Reservation::where('id',$order->rsv_id)->first();
         $bride = Brides::where('id',$order->brides_id)->first();
@@ -6781,7 +6836,6 @@ class OrdersAdminController extends Controller
         
         return view('emails.orderContractWeddingZh',[
             "business"=>$business,
-            "attentions"=>$attentions,
             "tax"=>$tax,
             "twdrates"=>$twdrates,
             "cnyrates"=>$cnyrates,
@@ -6827,7 +6881,6 @@ class OrdersAdminController extends Controller
         $cnyrates = UsdRates::where('name','CNY')->first();
         $twdrates = UsdRates::where('name','TWD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         $reservation = Reservation::where('id',$order->rsv_id)->first();
         $bride = Brides::where('id',$order->brides_id)->first();
@@ -6860,7 +6913,6 @@ class OrdersAdminController extends Controller
         
         return view('emails.orderContractWeddingEn',[
             "business"=>$business,
-            "attentions"=>$attentions,
             "tax"=>$tax,
             "twdrates"=>$twdrates,
             "cnyrates"=>$cnyrates,
@@ -6907,7 +6959,6 @@ class OrdersAdminController extends Controller
         $cnyrates = UsdRates::where('name','CNY')->first();
         $twdrates = UsdRates::where('name','TWD')->first();
         $tax = Tax::where('id',1)->first();
-        $attentions = Attention::where('page','user-order-detail')->get();
         $business = BusinessProfile::where('id',1)->first();
         $reservation = Reservation::where('id',$order->rsv_id)->first();
         $bride = Brides::where('id',$order->brides_id)->first();
@@ -6940,7 +6991,6 @@ class OrdersAdminController extends Controller
         
         return view('emails.orderContractWeddingEn',[
             "business"=>$business,
-            "attentions"=>$attentions,
             "tax"=>$tax,
             "twdrates"=>$twdrates,
             "cnyrates"=>$cnyrates,
@@ -7000,11 +7050,10 @@ class OrdersAdminController extends Controller
         //     $twdrates = UsdRates::where('name','TWD')->first();
         //     $idrrates = UsdRates::where('name','IDR')->first();
         //     $tax = Tax::where('id',1)->first();
-        //     $attentions = Attention::where('page','user-order-detail')->get();
         //     $business = BusinessProfile::where('id',1)->first();
         //     $optionalrates = OptionalRate::with('hotels')->get();
         //     $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
-        //     $optional_rate_orders = OptionalRateOrder::where('orders_id', $id)->first();
+        //     $optional_rate_orders = OptionalRateOrder::where('order_id', $id)->first();
         //     $extra_beds = ExtraBed::all();
         //     $now = Carbon::now();
         //     $reservation = Reservation::where('id',$order->rsv_id)->first();
@@ -7120,7 +7169,6 @@ class OrdersAdminController extends Controller
         //         $weddingOthers = VendorPackage::where('type',"Other")->get();
         //         $weddingFixedServices = VendorPackage::where('type',"Fixed Service")->get();
         //         $wedding_hotel = Hotels::where('id',$order_wedding->wedding_id)->first();
-        //         $wedding_itineraries = Itinerary::where('order_id',$order->id)->orderBy('time','ASC')->get();
         //     }else{
         //         $bride = null;
         //         $order_wedding = null;
@@ -7136,7 +7184,6 @@ class OrdersAdminController extends Controller
         //         $weddingFixedServices = null;
         
         //         $wedding_hotel = null;
-        //         $wedding_itineraries = null;
         //     }
 
         //     $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
@@ -7212,7 +7259,6 @@ class OrdersAdminController extends Controller
         //         'idrrates'=>$idrrates,
         //         'business'=>$business,
         //         'optional_rate_orders'=>$optional_rate_orders,
-        //         'attentions'=>$attentions,
         //         'optionalrate_meals'=>$optionalrate_meals,
         //         'logoImage'=> public_path('storage/logo/bali-kami-tour-logo.png'),
         //         'guest_name'=>$guest_name,
@@ -7247,7 +7293,6 @@ class OrdersAdminController extends Controller
         //         'airport_shuttles'=>$airport_shuttles,
         //         'order_wedding'=>$order_wedding,
         //         'rooms'=>$rooms,
-        //         'wedding_itineraries'=>$wedding_itineraries,
         //         'wedding_hotel'=>$wedding_hotel,
         //         'weddingVenues'=>$weddingVenues,
         //         'weddingMakeups'=>$weddingMakeups,

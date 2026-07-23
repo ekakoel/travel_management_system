@@ -9,7 +9,6 @@ use App\Models\Tours;
 use App\Models\UserLog;
 use App\Models\Partners;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use App\Models\Activities;
 use Illuminate\Support\Str;
 use App\Models\ActivityType;
@@ -31,13 +30,11 @@ class PartnersController extends Controller
         $activepartners=Partners::where('status', '=','Active')->get();
         $draft_partners=Partners::where('status', '=','Draft')->get();
         $partners = Partners::where('status','!=','Removed')->get();
-        $attentions = Attention::where('page','partners')->get();
         return view('admin.partners', compact('activepartners'),[
             // "ctpackage" => $ctpackage,
             "activepartners" => $activepartners,
             "draft_partners" => $draft_partners,
             "partners" => $partners,
-            "attentions" => $attentions,
             
         ]);
     }
@@ -48,7 +45,6 @@ class PartnersController extends Controller
         $tax = Tax::where('id',1)->first();
         $partner = Partners::find($id);
         $usdrates = UsdRates::where('name','USD')->first();
-        $attentions = Attention::where('page','partners')->get();
         $author = Auth::user()->where('id',$partner->author_id)->first();
         $type = ActivityType::all();
         
@@ -65,7 +61,6 @@ class PartnersController extends Controller
             return view('admin.partner-detail',[
                 'partner'=>$partner,
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
                 'author'=>$author,
                 'type'=>$type,
                 'tax'=>$tax,
@@ -77,13 +72,11 @@ class PartnersController extends Controller
     }
 // View Partner Add Activity=========================================================================================>
     public function view_partner_add_activity($id){
-        $attentions = Attention::where('page','partner-add-activity')->get();
         $activities = Activities::all();
         $type = ActivityType::all();
         $partners = Partners::find($id);
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             return view('backend.operations.partners.forms.add-activity', [
-                "attentions"=>$attentions,
                 "type" => $type,
                 "partners" => $partners,
             ])->with('activities',$activities);
@@ -94,13 +87,11 @@ class PartnersController extends Controller
     }
 // View Partner Add Tour=========================================================================================>
     public function view_partner_add_tour($id){
-        $attentions = Attention::where('page','partner-add-tour')->get();
         $tours = Activities::all();
         $type = ActivityType::all();
         $partners = Partners::find($id);
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             return view('backend.operations.partners.forms.add-tour', [
-                "attentions"=>$attentions,
                 "type" => $type,
                 "partners" => $partners,
             ])->with('tours',$tours);

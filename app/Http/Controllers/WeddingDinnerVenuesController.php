@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Hotels;
 use App\Models\UserLog;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use Illuminate\Http\Request;
 use App\Models\WeddingDinnerVenues;
 use App\Models\WeddingVenues;
@@ -26,12 +25,10 @@ class WeddingDinnerVenuesController extends Controller
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $hotel = Hotels::find($id);
             $usdrates = UsdRates::where('name','USD')->first();
-            $attentions = Attention::where('page','update-dinner-venue')->get();
 
             return view('backend.operations.weddings.forms.dinner-venue-create',[
                 'hotel'=>$hotel,
                 'usdrates'=>$usdrates,
-                'attentions'=>$attentions,
             ]);
         }else{
             return redirect("/dashboard")->with('success','Page not found!');
@@ -44,14 +41,12 @@ class WeddingDinnerVenuesController extends Controller
             if ($dinnerVenue->status == "Draft") {
                 $usdrates = UsdRates::where('name','USD')->first();
                 $hotel = Hotels::where('id',$dinnerVenue->hotel_id)->first();
-                $attentions = Attention::where('page','update-dinner-venue')->get();
                 $weddingVenues = WeddingVenues::where('hotels_id',$hotel->id)->get();
                 return view('backend.operations.weddings.forms.dinner-venue-edit',[
                     'dinner_venue'=>$dinnerVenue,
                     'usdrates'=>$usdrates,
                     'weddingVenues'=>$weddingVenues,
                     'hotel'=>$hotel,
-                    'attentions'=>$attentions,
                 ]);
             }else{
                 return redirect("/weddings-hotel-admin-$dinnerVenue->hotel_id#dinnerVenue")->with('success',"Dinner venue can't be edited!");
@@ -246,7 +241,6 @@ class WeddingDinnerVenuesController extends Controller
         if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
             $usdrates = UsdRates::where('name','USD')->first();
             $hotel = Hotels::where('id',$id)->first();
-            $attentions = Attention::where('page','update-dinner-package')->get();
             $weddingVenues = WeddingVenues::where('hotels_id',$id)->get();
             $dinnerVenues = WeddingDinnerVenues::where('hotels_id',$id)->get();
             return view('backend.operations.weddings.forms.dinner-package-create',[
@@ -254,7 +248,6 @@ class WeddingDinnerVenuesController extends Controller
                 'usdrates'=>$usdrates,
                 'weddingVenues'=>$weddingVenues,
                 'hotel'=>$hotel,
-                'attentions'=>$attentions,
             ]);
             
         }else{
@@ -268,7 +261,6 @@ class WeddingDinnerVenuesController extends Controller
             if ($dinnerPackage) {
                 $dinner_venue_cover = WeddingDinnerVenues::where('id',$dinnerPackage->dinner_venues_id)->first();
                 $hotel = Hotels::where('id',$dinnerPackage->hotels_id)->first();
-                $attentions = Attention::where('page','update-dinner-package')->get();
                 $weddingVenues = WeddingVenues::where('hotels_id',$hotel->id)->get();
                 $dinnerVenues = WeddingDinnerVenues::where('hotels_id',$hotel->id)->get();
                 $dinner_venue = WeddingDinnerVenues::where('id',$dinnerPackage->dinner_venues_id)->first();
@@ -280,7 +272,6 @@ class WeddingDinnerVenuesController extends Controller
                     'usdrates'=>$usdrates,
                     'weddingVenues'=>$weddingVenues,
                     'hotel'=>$hotel,
-                    'attentions'=>$attentions,
                 ]);
             }else{
                 return redirect("/weddings-admin")->with('success','Dinner Venue not found!');

@@ -1,104 +1,172 @@
+@extends('layouts.head')
+
 @section('title', __('messages.Activity'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/operations/activities/forms.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/operations/activities/forms.js') }}" defer></script>
+@endpush
+
 @section('content')
-    @extends('layouts.head')
-    <div class="mobile-menu-overlay"></div>
-    <div class="main-container">
-        <div class="pd-ltr-20">
-            <div class="page-header">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="title">
-                            <h4>Edit Activity - {{ $activities['name'] }}</h4>
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a href="activities-admin">Admin Activity</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Detail</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+    @can('isAdmin')
+        <div class="mobile-menu-overlay"></div>
+        <main class="main-container activity-gallery-page">
+            <div class="pd-ltr-20">
+                <x-backend.page-hero
+                    eyebrow="Operations Inventory"
+                    title="Edit Activity Gallery"
+                    description="Manage gallery assets for {{ $activities->name }} using the shared backend workspace pattern."
+                >
+                    <x-slot name="action">
+                        <a href="{{ route('admin.activities.show', $activities->id) }}" class="backend-page-primary-action">
+                            <i class="fa fa-arrow-left"></i>
+                            Back to Detail
+                        </a>
+                    </x-slot>
+                </x-backend.page-hero>
 
-            <div class="row">
-                <div class="col-md-6 col-md-6">
-                    <div class="card-box mb-30 pd-20 row">
-                        @if (count($activities->images) > 0)
-                            @foreach ($activities->images as $img)
-                                <div class="col-sm-6 col-md-6">
-                                    <form action="/fdelete-activity-img/{{ $img->id }}" method="post">
-                                        <button class="btn text-right"
-                                            style="color: white; position: absolute; right: 30; z-index:99;">X</button>
-                                        @csrf
-                                        @method('delete')
-                                    </form>
-                                    <img src="{{ asset ('storage/activities/activities-images/' . $img->image) }}" alt="{{ $activities->name }}">
-                                    {{-- <img src="/images/activities/{{ $img->image }}" class="img-responsive"
-                                        style="max-width: 100%; padding:0 8px 8px 8px;"> --}}
-                                </div>
-                            @endforeach
+                <section class="backend-page-toolbar activity-gallery-toolbar">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('activities-admin.index') }}">Activities</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.show', $activities->id) }}">{{ $activities->name }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Gallery</li>
+                        </ol>
+                    </nav>
+                    <div class="backend-page-toolbar__actions">
+                        <span class="backend-status-badge backend-status-badge--info">{{ $activities->images->count() }} Images</span>
+                    </div>
+                </section>
+
+                @if ($errors->any() || session()->has('success') || session()->has('error'))
+                    <section class="backend-feedback activity-gallery-feedback">
+                        @if ($errors->any())
+                            <div class="backend-alert backend-alert--danger">
+                                <strong>Action needs attention.</strong>
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         @endif
-                    </div>
-                </div>
 
+                        @if (session()->has('success'))
+                            <div class="backend-alert backend-alert--success">
+                                <strong>{{ session('success') }}</strong>
+                            </div>
+                        @endif
 
-                <div class="col-md-6 col-md-6">
-                    <form action="/fupdate-activity/{{ $activities->id }}" method="post" enctype="multipart/form-data">
-                        @csrf
-                        @method('put')
-                        {{ csrf_field() }}
-                        <div class="card-box mb-30 pd-20">
-                            <div class="card-body">
+                        @if (session()->has('error'))
+                            <div class="backend-alert backend-alert--danger">
+                                <strong>{{ session('error') }}</strong>
+                            </div>
+                        @endif
+                    </section>
+                @endif
+
+                <div class="row">
+                    <div class="col-12 col-lg-7">
+                        <section class="backend-panel activity-gallery-panel">
+                            <div class="backend-section-header">
+                                <div>
+                                    <span class="backend-section-header__label">Gallery</span>
+                                    <h2>Current Images</h2>
+                                </div>
+                                <p>Delete images that should no longer be part of this activity gallery.</p>
+                            </div>
+
+                            @if ($activities->images->count() > 0)
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="hidden" name="name" value="{{ $activities->name }}">
-                                        <input type="hidden" name="type" value="{{ $activities->type }}">
-                                        <input type="hidden" name="location" value="{{ $activities->location }}">
-                                        <input type="hidden" name="duration" value="{{ $activities->duration }}">
-                                        <input type="hidden" name="description" value="{{ $activities->description }}">
-                                        <input type="hidden" name="itinerary" value="{{ $activities->itinerary }}">
-                                        <input type="hidden" name="include" value="{{ $activities->include }}">
-                                        <input type="hidden" name="note" value="{{ $activities->note }}">
-                                        <input type="hidden" name="price" value="{{ $activities->price }}">
-                                        <input type="hidden" name="additional_info" value="{{ $activities->additional_info }}">
-                                        <input type="hidden" name="qty" value="{{ $activities->qty }}">
-                                        <input type="hidden" name="status" value="{{ $activities->status }}">
-                                        <input type="hidden" name="author" value="{{ Auth::user()->id }}" >
-                                        <input type="hidden" name="cover" value="{{ $activities->cover }}">
-
-                                        <div class="col-md-12 mb-30">
-                                            <div class="dropzone mt-1 text-center pd-20">
-                                                <div class="images-preview-div">
+                                    @foreach ($activities->images as $img)
+                                        <div class="col-12 col-md-6">
+                                            <article class="backend-table-card activity-gallery-card">
+                                                <img class="img-fluid" src="{{ asset('storage/activities/activities-images/' . $img->image) }}" alt="{{ $activities->name }}" loading="lazy">
+                                                <div class="backend-table-actions">
+                                                    <form action="{{ route('admin.activities.images.destroy', $img->id) }}" method="post">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button type="submit" class="backend-icon-action is-danger" data-activity-gallery-delete="{{ $activities->name }}" aria-label="Delete gallery image for {{ $activities->name }}">
+                                                            <i class="fa fa-trash-o"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
-                                            </div>
+                                            </article>
                                         </div>
-                                        <div class="form-group">
-                                            <input type="file" name="images[]" id="images"
-                                                class="@error('images[]') is-invalid @enderror" placeholder="Choose images"
-                                                value="{{ $activities->images }}" multiple>
-                                            @error('images[]')
-                                                <div class="alert alert-danger">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="text-right">
-                                            <a href="/detail-activity-{{ $activities['id'] }}"><button
-                                                    type="button"class="btn btn-danger">Cancel</button></a>
-                                            <button type="submit" class="btn btn-info">Update Galery</button>
-                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="backend-empty-state">
+                                    <i class="fa fa-picture-o"></i>
+                                    <strong>No gallery images.</strong>
+                                    <span>Upload images to enrich this activity detail page.</span>
+                                </div>
+                            @endif
+                        </section>
+                    </div>
+
+                    <div class="col-12 col-lg-5">
+                        <form action="{{ route('admin.activities.update', $activities->id) }}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            @method('put')
+
+                            <section class="backend-panel activity-gallery-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Upload</span>
+                                        <h2>Add Gallery Images</h2>
+                                    </div>
+                                    <p>Profile fields are carried as hidden values so this gallery action does not overwrite existing activity data.</p>
+                                </div>
+
+                                <input type="hidden" name="name" value="{{ $activities->name }}">
+                                <input type="hidden" name="type" value="{{ $activities->type }}">
+                                <input type="hidden" name="location" value="{{ $activities->location }}">
+                                <input type="hidden" name="map" value="{{ $activities->map }}">
+                                <input type="hidden" name="partners_id" value="{{ $activities->partners_id }}">
+                                <input type="hidden" name="duration" value="{{ $activities->duration }}">
+                                <input type="hidden" name="description" value="{{ $activities->description }}">
+                                <input type="hidden" name="itinerary" value="{{ $activities->itinerary }}">
+                                <input type="hidden" name="include" value="{{ $activities->include }}">
+                                <input type="hidden" name="additional_info" value="{{ $activities->additional_info }}">
+                                <input type="hidden" name="cancellation_policy" value="{{ $activities->cancellation_policy }}">
+                                <input type="hidden" name="contract_rate" value="{{ $activities->contract_rate }}">
+                                <input type="hidden" name="markup" value="{{ $activities->markup }}">
+                                <input type="hidden" name="min_pax" value="{{ $activities->min_pax }}">
+                                <input type="hidden" name="qty" value="{{ $activities->qty }}">
+                                <input type="hidden" name="status" value="{{ $activities->status }}">
+                                <input type="hidden" name="validity" value="{{ $activities->validity }}">
+                                <input type="hidden" name="author" value="{{ Auth::user()->id }}">
+
+                                <div class="backend-form-field">
+                                    <label for="images" class="backend-form-label">Gallery Images</label>
+                                    <input type="file" name="images[]" id="images" class="backend-form-control @error('images[]') is-invalid @enderror" data-activity-file-input data-activity-file-input-target="#activityGalleryFileStatus" multiple>
+                                    <span id="activityGalleryFileStatus" class="activity-file-status" data-activity-file-input-default="No gallery images selected">No gallery images selected</span>
+                                    @error('images[]')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="backend-page-toolbar backend-form-actions">
+                                    <div class="backend-page-toolbar__actions">
+                                        <a href="{{ route('admin.activities.show', $activities->id) }}" class="backend-button backend-button-secondary">Cancel</a>
+                                        <button type="submit" class="backend-button backend-button-primary">
+                                            <i class="fa fa-check"></i>
+                                            Update Gallery
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </form>
+                            </section>
+                        </form>
+                    </div>
                 </div>
 
-
+                @include('layouts.footer')
             </div>
-
-        </div>
-    </div>
-
-    @include('layouts.footer')
-    </div>
-    </div>
+        </main>
+    @endcan
+@endsection

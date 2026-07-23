@@ -3,7 +3,7 @@
     $from = date('Y-m-d',strtotime($reservation->checkin));
     $dur = $dur_res + 1;
     $date_stay = [];
-    for ($a=0; $a < $dur ; $a++) { 
+    for ($a=0; $a < $dur ; $a++) {
         $date_stay[$a] = $from;
         $from = date('Y-m-d',strtotime('+1 days',strtotime($from)));
     }
@@ -16,19 +16,11 @@
         <div class="main-container">
             <div class="pd-ltr-20">
                 <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="title">
+                    <x-backend.page-hero>
+                        <x-slot name="heading">
                             <i class="icon-copy fa fa-file-text-o" aria-hidden="true"></i> @lang('messages.Invoice')
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/admin-panel">@lang('messages.Admin Panel')</a></li>
-                                <li class="breadcrumb-item"><a href="/reservation">@lang('messages.Reservation')</a></li>
-                                <li class="breadcrumb-item"><a href="/reservation-{{ $reservation->id }}">{{ $reservation->rsv_no }}</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ $invoice->inv_no }}</li>
-                            </ol>
-                        </nav>
-                    </div>
+                        </x-slot>
+                    </x-backend.page-hero>
                     <div class="info-action">
                         @if (count($errors) > 0)
                             <div class="alert alert-danger">
@@ -50,11 +42,9 @@
                     <div class="product-wrap">
                         <div class="product-detail-wrap">
                             <div class="row">
-                                {{-- ATTENTIONS --}}
                                 <div class="col-md-4 mobile">
                                     <div class="row">
                                         @include('admin.usd-rate')
-                                        @include('layouts.attentions')
                                     </div>
                                 </div>
                                 <div class="col-md-8 m-b-18">
@@ -241,7 +231,7 @@
                                                                             <td>
                                                                                 <div class="reservation-guest">
                                                                                     <span>
-                                                                                        <a href="#" data-toggle="modal" data-target="#edit-additional-inv-{{ $additionalinv->id }}"> 
+                                                                                        <a href="#" data-toggle="modal" data-target="#edit-additional-inv-{{ $additionalinv->id }}">
                                                                                             <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
                                                                                         </a>
                                                                                         <form action="/delete-additional-inv/{{ $additionalinv->id }}" method="post">
@@ -271,9 +261,9 @@
                                                                                         @method('put')
                                                                                         <div class="row">
                                                                                             <div class="col-sm-4">
-                                                                                                <div class="form-group">
+                                                                                                <div class="backend-form-field">
                                                                                                     <label for="date">Date <span>*</span></label>
-                                                                                                    <select name="date" class="custom-select @error('date') is-invalid @enderror" placeholder="Select date" required>
+                                                                                                    <select name="date" class="backend-form-control @error('date') is-invalid @enderror" placeholder="Select date" required>
                                                                                                         <option selected value="{{ date('Y-m-d',strtotime($additionalinv->date)) }}">{{ date('d M Y',strtotime($additionalinv->date)) }}</option>
                                                                                                         @foreach ($date_stay as $datestay)
                                                                                                             <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y',strtotime($datestay)) }}</option>
@@ -282,10 +272,10 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-8">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="description" class="col-sm-12 col-md-12 col-form-label">Description <span>*</span></label>
                                                                                                     <div class="col-sm-12">
-                                                                                                    <input type="text" name="description" class="form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ $additionalinv->description }}" required>
+                                                                                                    <input type="text" name="description" class="backend-form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ $additionalinv->description }}" required>
                                                                                                     </div>
                                                                                                     @error('description')
                                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -293,10 +283,10 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-4">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="rate" class="col-sm-12 col-md-12 col-form-label">Rate </label>
                                                                                                     <div class="col-sm-12">
-                                                                                                    <input type="number" min=1 name="rate" class="form-control @error('rate') is-invalid @enderror" placeholder="Insert USD rate" value="{{ $additionalinv->rate }}">
+                                                                                                    <input type="number" min=1 name="rate" class="backend-form-control @error('rate') is-invalid @enderror" placeholder="Insert USD rate" value="{{ $additionalinv->rate }}">
                                                                                                     </div>
                                                                                                     @error('rate')
                                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -304,10 +294,10 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-4">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="unit" class="col-sm-12 col-md-12 col-form-label">Unit/Pax </label>
                                                                                                     <div class="col-sm-12">
-                                                                                                    <input type="number" min=1 name="unit" class="form-control @error('unit') is-invalid @enderror" placeholder="Insert unit or pax" value="{{ $additionalinv->unit }}">
+                                                                                                    <input type="number" min=1 name="unit" class="backend-form-control @error('unit') is-invalid @enderror" placeholder="Insert unit or pax" value="{{ $additionalinv->unit }}">
                                                                                                     </div>
                                                                                                     @error('unit')
                                                                                                         <div class="alert-form">{{ $message }}</div>
@@ -315,20 +305,20 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-4">
-                                                                                                <div class="form-group row">
+                                                                                                <div class="backend-form-field row">
                                                                                                     <label for="times" class="col-sm-12 col-md-12 col-form-label">Night/Times </label>
                                                                                                     <div class="col-sm-12">
-                                                                                                    <input type="number" min=1 name="times" class="form-control @error('times') is-invalid @enderror" placeholder="insert night or times" value="{{ $additionalinv->times }}">
+                                                                                                    <input type="number" min=1 name="times" class="backend-form-control @error('times') is-invalid @enderror" placeholder="insert night or times" value="{{ $additionalinv->times }}">
                                                                                                     </div>
                                                                                                     @error('times')
                                                                                                         <div class="alert-form">{{ $message }}</div>
                                                                                                     @enderror
                                                                                                 </div>
                                                                                             </div>
-                                                                                            
+
                                                                                             <div class="col-sm-12 col-md-12 text-right">
-                                                                                                <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                                <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
+                                                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                             </div>
                                                                                         </div>
                                                                                     </form>
@@ -342,9 +332,9 @@
                                                        {{-- {{ "Total Price: $". number_format($total_price_order) }} --}}
                                                     </div>
                                                     @if ($reservation->status != "Active")
-                                                        <div class="col-md-12 text-right"> 
-                                                            <a href="#" data-toggle="modal" data-target="#add-additional-inv"> 
-                                                                <button class="btn btn-primary" data-toggle="tooltip" data-placement="left" title="Add Additional Invoice"><i class="icon-copy fa fa-plus"></i> Add</button>
+                                                        <div class="col-md-12 text-right">
+                                                            <a href="#" data-toggle="modal" data-target="#add-additional-inv">
+                                                                <button class="backend-button backend-button-primary" data-toggle="tooltip" data-placement="left" title="Add Additional Invoice"><i class="icon-copy fa fa-plus"></i> Add</button>
                                                             </a>
                                                         </div>
                                                         <div class="col-md-12">
@@ -356,7 +346,7 @@
                                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                                             <div class="modal-content text-left">
                                                                 <div class="product-detail-wrap">
-                                                                    
+
                                                                         <div class="row">
                                                                             <div class="col-md-12">
                                                                                 <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Guest</div>
@@ -370,9 +360,9 @@
                                                                             @method('put')
                                                                             <div class="row">
                                                                                 <div class="col-sm-4">
-                                                                                    <div class="form-group">
+                                                                                    <div class="backend-form-field">
                                                                                         <label for="date">Date <span>*</span></label>
-                                                                                        <select name="date" class="custom-select @error('date') is-invalid @enderror" placeholder="Select date" required>
+                                                                                        <select name="date" class="backend-form-control @error('date') is-invalid @enderror" placeholder="Select date" required>
                                                                                             <option selected value="">Select Date</option>
                                                                                             @foreach ($date_stay as $datestay)
                                                                                                 <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y',strtotime($datestay)) }}</option>
@@ -381,10 +371,10 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-8">
-                                                                                    <div class="form-group row">
+                                                                                    <div class="backend-form-field row">
                                                                                         <label for="description" class="col-sm-12 col-md-12 col-form-label">Description <span>*</span></label>
                                                                                         <div class="col-sm-12">
-                                                                                        <input type="text" name="description" class="form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ old('description') }}" required>
+                                                                                        <input type="text" name="description" class="backend-form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ old('description') }}" required>
                                                                                         </div>
                                                                                         @error('description')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -392,10 +382,10 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-4">
-                                                                                    <div class="form-group row">
+                                                                                    <div class="backend-form-field row">
                                                                                         <label for="rate" class="col-sm-12 col-md-12 col-form-label">Rate </label>
                                                                                         <div class="col-sm-12">
-                                                                                        <input type="number" min=1 name="rate" class="form-control @error('rate') is-invalid @enderror" placeholder="Insert rate" value="{{ old('rate') }}">
+                                                                                        <input type="number" min=1 name="rate" class="backend-form-control @error('rate') is-invalid @enderror" placeholder="Insert rate" value="{{ old('rate') }}">
                                                                                         </div>
                                                                                         @error('rate')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -403,10 +393,10 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-4">
-                                                                                    <div class="form-group row">
+                                                                                    <div class="backend-form-field row">
                                                                                         <label for="unit" class="col-sm-12 col-md-12 col-form-label">Unit/Pax </label>
                                                                                         <div class="col-sm-12">
-                                                                                        <input type="number" min=1 name="unit" class="form-control @error('unit') is-invalid @enderror" placeholder="Insert unit or pax" value="{{ old('unit') }}">
+                                                                                        <input type="number" min=1 name="unit" class="backend-form-control @error('unit') is-invalid @enderror" placeholder="Insert unit or pax" value="{{ old('unit') }}">
                                                                                         </div>
                                                                                         @error('unit')
                                                                                             <div class="alert-form">{{ $message }}</div>
@@ -414,25 +404,25 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-sm-4">
-                                                                                    <div class="form-group row">
+                                                                                    <div class="backend-form-field row">
                                                                                         <label for="times" class="col-sm-12 col-md-12 col-form-label">Night/Times </label>
                                                                                         <div class="col-sm-12">
-                                                                                        <input type="number" min=1 name="times" class="form-control @error('times') is-invalid @enderror" placeholder="insert night or times" value="{{ old('times') }}">
+                                                                                        <input type="number" min=1 name="times" class="backend-form-control @error('times') is-invalid @enderror" placeholder="insert night or times" value="{{ old('times') }}">
                                                                                         </div>
                                                                                         @error('times')
                                                                                             <div class="alert-form">{{ $message }}</div>
                                                                                         @enderror
                                                                                     </div>
                                                                                 </div>
-                                                                                
+
                                                                                 <div class="col-sm-12 col-md-12 text-right">
                                                                                     <input type="hidden" name="inv_id" value="{{ $invoice->id }}">
-                                                                                    <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                    <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
+                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                 </div>
                                                                             </div>
                                                                         </form>
-                                                                    
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -515,7 +505,7 @@
                                                             </div>
                                                             <div class="btn-edit-modal m-r-18">
                                                                 @if ($reservation->status != "Active")
-                                                                    <a href="#" data-toggle="modal" data-target="#edit-bank-{{ $invoice->id }}"> 
+                                                                    <a href="#" data-toggle="modal" data-target="#edit-bank-{{ $invoice->id }}">
                                                                         <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
                                                                     </a>
                                                                 @endif
@@ -536,10 +526,10 @@
                                                                                     @method('put')
                                                                                     <div class="row">
                                                                                         <div class="col-sm-12">
-                                                                                            <div class="form-group">
+                                                                                            <div class="backend-form-field">
                                                                                                 <label for="bank_id" class="col-sm-12 col-md-12 col-form-label">Select Bank Account <span>*</span></label>
                                                                                                 <div class="col-sm-12">
-                                                                                                    <select name="bank_id" class="custom-select @error('bank_id') is-invalid @enderror" placeholder="Select bank account" required>
+                                                                                                    <select name="bank_id" class="backend-form-control @error('bank_id') is-invalid @enderror" placeholder="Select bank account" required>
                                                                                                         <option selected value="">Select bank account</option>
                                                                                                         @foreach ($bank_acc as $bankacc)
                                                                                                             <option value="{{ $bankacc->id }}">{{ $bankacc->name }}</option>
@@ -549,8 +539,8 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-12 col-md-12 text-right">
-                                                                                            <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Select</button>
-                                                                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                            <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Select</button>
+                                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                         </div>
                                                                                     </div>
                                                                                 </form>
@@ -567,7 +557,7 @@
                                                         </div>
                                                         <div class="col-md-4 text-right">
                                                             @if ($reservation->status != "Active")
-                                                                <a href="#" data-toggle="modal" data-target="#edit-bank-{{ $invoice->id }}"> 
+                                                                <a href="#" data-toggle="modal" data-target="#edit-bank-{{ $invoice->id }}">
                                                                     <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
                                                                 </a>
                                                             @endif
@@ -588,10 +578,10 @@
                                                                                 @method('put')
                                                                                 <div class="row">
                                                                                     <div class="col-sm-12">
-                                                                                        <div class="form-group">
+                                                                                        <div class="backend-form-field">
                                                                                             <label for="bank_id" class="col-sm-12 col-md-12 col-form-label">Select Bank Account <span>*</span></label>
                                                                                             <div class="col-sm-12">
-                                                                                                <select name="bank_id" class="custom-select @error('bank_id') is-invalid @enderror" placeholder="Select bank account" required>
+                                                                                                <select name="bank_id" class="backend-form-control @error('bank_id') is-invalid @enderror" placeholder="Select bank account" required>
                                                                                                     <option selected value="">Select bank account</option>
                                                                                                     @foreach ($bank_acc as $bankacc)
                                                                                                         <option value="{{ $bankacc->id }}">{{ $bankacc->name }}</option>
@@ -601,8 +591,8 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-12 col-md-12 text-right">
-                                                                                        <button type="submit" class="btn btn-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Select</button>
-                                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                                                                        <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Select</button>
+                                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                                                                                     </div>
                                                                                 </div>
                                                                             </form>
@@ -616,16 +606,14 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12 m-t-8 text-right">
-                                                <a href="/reservation-{{ $reservation->id }}"><button type="button" class="btn btn-dark"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
+                                                <a href="/reservation-{{ $reservation->id }}"><button type="button" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                {{-- ATTENTIONS --}}
                                 <div class="col-md-4 desktop">
                                     <div class="row">
                                         @include('admin.usd-rate')
-                                        @include('layouts.attentions')
                                     </div>
                                 </div>
                             </div>

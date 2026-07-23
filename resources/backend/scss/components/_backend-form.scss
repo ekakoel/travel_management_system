@@ -1,0 +1,503 @@
+body.sidebar-light {
+  --backend-form-height: 42px;
+  --backend-form-height-compact: 36px;
+  --backend-form-radius: var(--backend-radius-sm);
+  --backend-form-bg: #ffffff;
+  --backend-form-bg-soft: #f8fbff;
+  --backend-form-border: var(--backend-line);
+  --backend-form-border-hover: #b7c7da;
+  --backend-form-placeholder: #94a3b8;
+  --backend-form-disabled-bg: #eef2f7;
+  --backend-form-disabled-ink: #8795aa;
+  --backend-form-focus-border: var(--backend-brand);
+  --backend-form-focus-ring: var(--backend-button-focus-ring);
+  --backend-form-danger-ring: 0 0 0 3px rgba(220, 38, 38, 0.14);
+  --backend-form-button-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+body.sidebar-light .backend-form,
+body.sidebar-light .backend-form-grid,
+body.sidebar-light .backend-form-section {
+  min-width: 0;
+}
+
+body.sidebar-light .backend-form-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+body.sidebar-light .backend-form-grid--compact {
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 260px));
+}
+
+body.sidebar-light .backend-form-field,
+body.sidebar-light .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+body.sidebar-light .backend-form-field.is-wide,
+body.sidebar-light .backend-form-grid > .is-wide {
+  grid-column: 1 / -1;
+}
+
+body.sidebar-light .backend-form-label,
+body.sidebar-light .backend-form-field > label,
+body.sidebar-light .form-group > label,
+body.sidebar-light label.form-label,
+body.sidebar-light .form-label {
+  color: var(--backend-muted-link);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  margin: 0;
+}
+
+body.sidebar-light .backend-form-label b,
+body.sidebar-light .backend-form-label span,
+body.sidebar-light .backend-form-field > label b,
+body.sidebar-light .form-group > label b,
+body.sidebar-light label.form-label b,
+body.sidebar-light .form-label b,
+body.sidebar-light label > span > b {
+  color: var(--backend-required);
+}
+
+body.sidebar-light .backend-form-help,
+body.sidebar-light .backend-form-field small,
+body.sidebar-light .form-group small {
+  color: var(--backend-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+body.sidebar-light .backend-form-control,
+body.sidebar-light .main-container input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+body.sidebar-light .modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+body.sidebar-light .main-container select,
+body.sidebar-light .modal select,
+body.sidebar-light .main-container textarea:not(.backend-richtext-control),
+body.sidebar-light .modal textarea:not(.backend-richtext-control),
+body.sidebar-light .form-control,
+body.sidebar-light .custom-select {
+  background-color: var(--backend-form-bg);
+  border: 1px solid var(--backend-form-border);
+  border-radius: var(--backend-form-radius);
+  box-shadow: none;
+  color: var(--backend-ink);
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  min-height: var(--backend-form-height);
+  padding: 9px 12px;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
+  width: 100%;
+}
+
+body.sidebar-light .backend-form-control:hover,
+body.sidebar-light .main-container input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):hover,
+body.sidebar-light .modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):hover,
+body.sidebar-light .main-container select:hover,
+body.sidebar-light .modal select:hover,
+body.sidebar-light .main-container textarea:not(.backend-richtext-control):hover,
+body.sidebar-light .modal textarea:not(.backend-richtext-control):hover,
+body.sidebar-light .form-control:hover,
+body.sidebar-light .custom-select:hover {
+  border-color: var(--backend-form-border-hover);
+}
+
+body.sidebar-light .backend-form-control:focus,
+body.sidebar-light .main-container input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):focus,
+body.sidebar-light .modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):focus,
+body.sidebar-light .main-container select:focus,
+body.sidebar-light .modal select:focus,
+body.sidebar-light .main-container textarea:not(.backend-richtext-control):focus,
+body.sidebar-light .modal textarea:not(.backend-richtext-control):focus,
+body.sidebar-light .form-control:focus,
+body.sidebar-light .custom-select:focus {
+  background-color: var(--backend-form-bg);
+  border-color: var(--backend-form-focus-border);
+  box-shadow: var(--backend-form-focus-ring);
+  color: var(--backend-ink);
+  outline: 0;
+}
+
+body.sidebar-light .backend-form-control::placeholder,
+body.sidebar-light .form-control::placeholder,
+body.sidebar-light textarea::placeholder,
+body.sidebar-light input::placeholder {
+  color: var(--backend-form-placeholder);
+  font-weight: 600;
+}
+
+body.sidebar-light .backend-form-control:disabled,
+body.sidebar-light .backend-form-control[readonly],
+body.sidebar-light .form-control:disabled,
+body.sidebar-light .form-control[readonly],
+body.sidebar-light .custom-select:disabled,
+body.sidebar-light input:disabled,
+body.sidebar-light select:disabled,
+body.sidebar-light textarea:disabled {
+  background-color: var(--backend-form-disabled-bg);
+  color: var(--backend-form-disabled-ink);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+body.sidebar-light select.backend-form-control,
+body.sidebar-light select.form-control,
+body.sidebar-light .custom-select,
+body.sidebar-light .main-container select,
+body.sidebar-light .modal select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--backend-muted-link) 50%),
+    linear-gradient(135deg, var(--backend-muted-link) 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) calc(50% - 2px),
+    calc(100% - 11px) calc(50% - 2px);
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 5px 5px;
+  padding-right: 34px;
+}
+
+body.sidebar-light textarea.backend-form-control,
+body.sidebar-light textarea.form-control,
+body.sidebar-light .main-container textarea:not(.backend-richtext-control),
+body.sidebar-light .modal textarea:not(.backend-richtext-control) {
+  min-height: 116px;
+  resize: vertical;
+}
+
+body.sidebar-light .is-invalid,
+body.sidebar-light .form-control.is-invalid,
+body.sidebar-light .custom-select.is-invalid,
+body.sidebar-light .backend-form-control.is-invalid {
+  border-color: var(--backend-danger);
+}
+
+body.sidebar-light .is-invalid:focus,
+body.sidebar-light .form-control.is-invalid:focus,
+body.sidebar-light .custom-select.is-invalid:focus,
+body.sidebar-light .backend-form-control.is-invalid:focus {
+  border-color: var(--backend-danger);
+  box-shadow: var(--backend-form-danger-ring);
+}
+
+body.sidebar-light .backend-form-error,
+body.sidebar-light .invalid-feedback,
+body.sidebar-light .alert-form.alert-danger {
+  color: var(--backend-danger-strong);
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-top: 2px;
+}
+
+body.sidebar-light .backend-form-actions,
+body.sidebar-light .form-actions,
+body.sidebar-light .hotel-form-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+body.sidebar-light .backend-width-full {
+  width: 100%;
+}
+
+body.sidebar-light .backend-align-self-end {
+  align-self: end;
+  padding-bottom: 6px;
+}
+
+body.sidebar-light .backend-help-icon {
+  color: #7e7e7e;
+  cursor: help;
+}
+
+body.sidebar-light .backend-inline-amount {
+  display: inline-flex;
+  font-size: 1rem;
+}
+
+body.sidebar-light .backend-button,
+body.sidebar-light .backend-button-primary,
+body.sidebar-light .backend-button-secondary,
+body.sidebar-light .backend-button-danger,
+body.sidebar-light .backend-page-primary-action,
+body.sidebar-light .backend-toolbar-action,
+body.sidebar-light .main-container .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete),
+body.sidebar-light .modal .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete),
+body.sidebar-light button.backend-button,
+body.sidebar-light a.backend-button {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--backend-radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 900;
+  gap: 8px;
+  justify-content: center;
+  line-height: 1;
+  min-height: 40px;
+  padding: 10px 16px;
+  text-decoration: none;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+body.sidebar-light .backend-button i,
+body.sidebar-light .backend-button-primary i,
+body.sidebar-light .backend-button-secondary i,
+body.sidebar-light .backend-button-danger i,
+body.sidebar-light .backend-page-primary-action i,
+body.sidebar-light .backend-toolbar-action i,
+body.sidebar-light .btn i {
+  font-size: 13px;
+  line-height: 1;
+}
+
+body.sidebar-light .backend-button-primary,
+body.sidebar-light .backend-page-primary-action,
+body.sidebar-light .main-container .btn-primary,
+body.sidebar-light .main-container .btn-success,
+body.sidebar-light .modal .btn-primary,
+body.sidebar-light .modal .btn-success,
+body.sidebar-light button[type="submit"]:not(.note-btn):not(.btn-delete):not(.backend-icon-action) {
+  background: linear-gradient(135deg, var(--backend-brand), var(--backend-brand-strong));
+  border-color: transparent;
+  color: #ffffff;
+  // box-shadow: 0 10px 22px rgba(20, 184, 166, 0.22);
+}
+
+body.sidebar-light .backend-button-secondary,
+body.sidebar-light .backend-toolbar-action,
+body.sidebar-light .main-container .btn-secondary,
+body.sidebar-light .main-container .btn-light,
+body.sidebar-light .main-container .btn-default,
+body.sidebar-light .modal .btn-secondary,
+body.sidebar-light .modal .btn-light,
+body.sidebar-light .modal .btn-default {
+  background: var(--backend-brand-soft);
+  border-color: rgba(20, 184, 166, 0.18);
+  color: var(--backend-brand-strong);
+}
+
+body.sidebar-light .backend-button-danger,
+body.sidebar-light .main-container .btn-danger,
+body.sidebar-light .modal .btn-danger,
+body.sidebar-light button[data-dismiss="modal"]:not(.close),
+body.sidebar-light .backend-cancel-action {
+  background: var(--backend-danger);
+  border-color: var(--backend-danger);
+  color: #ffffff;
+}
+
+body.sidebar-light .backend-button:hover,
+body.sidebar-light .backend-button:focus,
+body.sidebar-light .backend-button-primary:hover,
+body.sidebar-light .backend-button-primary:focus,
+body.sidebar-light .backend-button-secondary:hover,
+body.sidebar-light .backend-button-secondary:focus,
+body.sidebar-light .backend-button-danger:hover,
+body.sidebar-light .backend-button-danger:focus,
+body.sidebar-light .backend-page-primary-action:hover,
+body.sidebar-light .backend-page-primary-action:focus,
+body.sidebar-light .backend-toolbar-action:hover,
+body.sidebar-light .backend-toolbar-action:focus,
+body.sidebar-light .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete):hover,
+body.sidebar-light .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete):focus {
+  // box-shadow: var(--backend-button-hover-shadow);
+  color: #ffffff;
+  text-decoration: none;
+  transform: var(--backend-button-hover-transform);
+}
+
+body.sidebar-light .backend-button-primary:hover,
+body.sidebar-light .backend-button-primary:focus,
+body.sidebar-light .backend-page-primary-action:hover,
+body.sidebar-light .backend-page-primary-action:focus,
+body.sidebar-light .btn-primary:hover,
+body.sidebar-light .btn-primary:focus,
+body.sidebar-light .btn-success:hover,
+body.sidebar-light .btn-success:focus,
+body.sidebar-light button[type="submit"]:not(.note-btn):not(.btn-delete):not(.backend-icon-action):hover,
+body.sidebar-light button[type="submit"]:not(.note-btn):not(.btn-delete):not(.backend-icon-action):focus {
+  background: linear-gradient(135deg, var(--backend-brand-strong), #075e57);
+}
+
+body.sidebar-light .backend-button-secondary:hover,
+body.sidebar-light .backend-button-secondary:focus,
+body.sidebar-light .backend-toolbar-action:hover,
+body.sidebar-light .backend-toolbar-action:focus,
+body.sidebar-light .btn-secondary:hover,
+body.sidebar-light .btn-secondary:focus,
+body.sidebar-light .btn-light:hover,
+body.sidebar-light .btn-light:focus,
+body.sidebar-light .btn-default:hover,
+body.sidebar-light .btn-default:focus {
+  background: var(--backend-brand);
+  border-color: var(--backend-brand);
+}
+
+body.sidebar-light .backend-button-danger:hover,
+body.sidebar-light .backend-button-danger:focus,
+body.sidebar-light .btn-danger:hover,
+body.sidebar-light .btn-danger:focus,
+body.sidebar-light button[data-dismiss="modal"]:not(.close):hover,
+body.sidebar-light button[data-dismiss="modal"]:not(.close):focus,
+body.sidebar-light .backend-cancel-action:hover,
+body.sidebar-light .backend-cancel-action:focus {
+  background: var(--backend-danger-strong);
+  border-color: var(--backend-danger-strong);
+  // box-shadow: var(--backend-danger-hover-shadow);
+}
+
+body.sidebar-light .backend-button:focus-visible,
+body.sidebar-light .backend-button-primary:focus-visible,
+body.sidebar-light .backend-button-secondary:focus-visible,
+body.sidebar-light .backend-button-danger:focus-visible,
+body.sidebar-light .backend-page-primary-action:focus-visible,
+body.sidebar-light .backend-toolbar-action:focus-visible,
+body.sidebar-light .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete):focus-visible {
+  // box-shadow: var(--backend-button-focus-ring), var(--backend-button-hover-shadow);
+  outline: 0;
+}
+
+body.sidebar-light .backend-button:active,
+body.sidebar-light .backend-button-primary:active,
+body.sidebar-light .backend-button-secondary:active,
+body.sidebar-light .backend-button-danger:active,
+body.sidebar-light .backend-page-primary-action:active,
+body.sidebar-light .backend-toolbar-action:active,
+body.sidebar-light .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete):active {
+  transform: translateY(0);
+}
+
+body.sidebar-light .backend-button:disabled,
+body.sidebar-light .backend-button-primary:disabled,
+body.sidebar-light .backend-button-secondary:disabled,
+body.sidebar-light .backend-button-danger:disabled,
+body.sidebar-light .btn:disabled,
+body.sidebar-light button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.25);
+  opacity: 0.62;
+  transform: none;
+}
+
+body.sidebar-light .backend-radio,
+body.sidebar-light .backend-check {
+  align-items: center;
+  color: var(--backend-muted-link);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 10px;
+}
+
+body.sidebar-light .main-container input[type="checkbox"],
+body.sidebar-light .modal input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #cbd5e1;
+  background-image: radial-gradient(circle, #ffffff 46%, transparent 48%);
+  background-position: 3px 50%;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  border: 1px solid #b8c4d4;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.14);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 24px;
+  margin: 0;
+  min-height: 24px;
+  opacity: 1 !important;
+  padding: 0;
+  position: relative !important;
+  transition: background-color 180ms ease, background-position 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  vertical-align: middle;
+  width: 44px;
+  z-index: auto !important;
+}
+
+body.sidebar-light .main-container input[type="checkbox"]:checked,
+body.sidebar-light .modal input[type="checkbox"]:checked {
+  background-color: var(--backend-brand);
+  background-position: 21px 50%;
+  border-color: var(--backend-brand-strong);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12), 0 8px 18px rgba(20, 184, 166, 0.22);
+}
+
+body.sidebar-light .main-container input[type="checkbox"]:focus-visible,
+body.sidebar-light .modal input[type="checkbox"]:focus-visible {
+  box-shadow: var(--backend-button-focus-ring), inset 0 1px 2px rgba(15, 23, 42, 0.12);
+  outline: none;
+}
+
+body.sidebar-light .main-container input[type="checkbox"]:disabled,
+body.sidebar-light .modal input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.3);
+  opacity: 0.55 !important;
+}
+
+body.sidebar-light .main-container .custom-control.custom-checkbox,
+body.sidebar-light .modal .custom-control.custom-checkbox {
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
+  min-height: 32px;
+  padding-left: 0;
+}
+
+body.sidebar-light .main-container .custom-checkbox .custom-control-label::before,
+body.sidebar-light .main-container .custom-checkbox .custom-control-label::after,
+body.sidebar-light .modal .custom-checkbox .custom-control-label::before,
+body.sidebar-light .modal .custom-checkbox .custom-control-label::after {
+  display: none;
+}
+
+body.sidebar-light .main-container input[type="radio"],
+body.sidebar-light .modal input[type="radio"] {
+  accent-color: var(--backend-brand);
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+}
+
+@media (max-width: 767px) {
+  body.sidebar-light .backend-form-grid,
+  body.sidebar-light .backend-form-grid--compact {
+    grid-template-columns: 1fr;
+  }
+
+  body.sidebar-light .backend-form-actions,
+  body.sidebar-light .form-actions,
+  body.sidebar-light .hotel-form-actions,
+  body.sidebar-light .backend-button,
+  body.sidebar-light .backend-button-primary,
+  body.sidebar-light .backend-button-secondary,
+  body.sidebar-light .backend-button-danger,
+  body.sidebar-light .backend-page-primary-action,
+  body.sidebar-light .backend-toolbar-action {
+    width: 100%;
+  }
+}

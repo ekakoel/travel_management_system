@@ -17,7 +17,7 @@ class CreateHotelPromosTable extends Migration
             $table->string('promotion_type')->nullable();
             $table->longText('quotes')->nullable();
             $table->foreignId("hotels_id")->constrained("hotels")->onDelete("cascade");
-            $table->foreignId("rooms_id")->constrained("hotelroom")->onDelete("cascade");
+            $table->foreignId("rooms_id")->constrained("hotel_rooms")->onDelete("cascade");
             $table->string('name');
             $table->date('book_periode_start');
             $table->date('book_periode_end');

@@ -1,315 +1,328 @@
 @extends('layouts.head')
-@section('title', __('messages.Transportation Reservation'))
+
+@section('title', __('transport-management.title'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/operations/transport-management/index.css') }}">
+@endpush
+
 @section('content')
     <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
-        <div class="main-container">
+        <main class="main-container transport-management-page">
             <div class="pd-ltr-20">
-                <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <i class="icon-copy dw dw-bus"></i> Transport Management
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/admin-panel">Admin Panel</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Surat Perintah Kerja (SPK)</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                    @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
-                    @if (session('error'))
-                        <div class="alert alert-danger">
-                            {{ session('error') }}
-                        </div>
-                    @endif
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $err)
-                                    <li>{{ $err }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    <div class="row mb-4">
-                        <div class="col-md-8 mb-4">
-                            <div class="card m-b-18 h-100">
-                                <div class="card-header">SPK List</div>
-                                <div class="card-body">
-                                    <table class="data-table table stripe nowrap dataTable no-footer dtr-inline">
-                                        <thead>
-                                            <tr>
-                                                <th data-priority="1">#</th>
-                                                <th data-priority="2">Date</th>
-                                                <th data-priority="1" class="datatable-nosort">Order Number</th>
-                                                <th data-priority="2">Vehicles - Driver</th>
-                                                <th data-priority="2">Status</th>
-                                                <th data-priority="2" class="text-right noshort">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($spks as $spk)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>
-                                                        {{ date("m/d/y",strtotime($spk->spk_date)) }}
-                                                    </td>
-                                                    <td>
-                                                        <b>{{ $spk->order_number??"-" }}</b>
-                                                        <p><i>{{ $spk->type }} ({{ $spk->number_of_guests }} pax)</i></p>
-                                                    </td>
-                                                    <td>
-                                                        <i>
-                                                            {{ $spk->spk_number }}<br>
-                                                            {{ $spk->transport ? $spk->transport->brand." ".$spk->transport->name : 'N/A' }} - 
-                                                            {{ $spk->driver ? $spk->driver->name : 'N/A' }}<br>
-                                                            {{ $spk->plate_number ? $spk->plate_number : '-' }}
-                                                        </i>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge {{ $statusColors[$spk->status] ?? 'bg-secondary' }}">{{ $spk->status }}</span>
-                                                    </td>
-                                                    <td class="text-right">
-                                                        <a href="{{ route('view.detail-spk',$spk->id) }}">
-                                                            <button class="btn btn-sm btn-light"><i class="icon-copy dw dw-eye"></i> Detail</button>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="6" class="text-center">No SPK Found</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-header">Create New SPK</div>
-                                <div class="card-body">
-                                    <form id="createReservation" action="{{ route('spks.store') }}" method="post" enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="row g-3">
-                                            <div class="col-md-12">
-                                                <div class="alert alert-info" role="alert">
-                                                    Gunakan form ini untuk membuat Surat Perintah Kerja (SPK) baru. 
-                                                    Pastikan Order Number, dan Tanggal terisi dengan benar.
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Reservation <span>*</span></label>
-                                                    <div class="btn-icon">
-                                                        <span><i class="icon-copy fa fa-server" aria-hidden="true"></i></span>
-                                                        <select name="operator_id" class="custom-select input-icon form-select" required>
-                                                            <option disabled selected value="">Select Reservation</option>
-                                                            @foreach ($operator as $operator)
-                                                                <option value="{{ $operator->id }}">{{ $operator->name }}</option>
-                                                            @endforeach
-                                                            
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label for="orderNumber">Order Number <span>*</span></label>
-                                                    <div class="btn-icon">
-                                                        <span><i class="icon-copy fa fa-qrcode" aria-hidden="true"></i></span>
-                                                        <input type="text" name="order_number" class="form-control input-icon @error('order_number') is-invalid @enderror" placeholder="Insert order number" value="{{ old('order_number') }}" required>
-                                                    </div>
-                                                    @error('order_number')
-                                                        <span class="invalid-feedback">
-                                                            {{ $message }}
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>SPK Date <span>*</span></label>
-                                                    <div class="btn-icon">
-                                                        <span><i class="icon-copy fa fa-calendar-check-o" aria-hidden="true"></i></span>
-                                                        <input readonly
-                                                            class="form-control input-icon @error('spk_date') is-invalid @enderror"
-                                                            name="spk_date"
-                                                            type="text"
-                                                            value="{{ old('spk_date') }}"
-                                                            placeholder="@lang('messages.Select date')" 
-                                                            required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Transport Service <span>*</span></label>
-                                                    <div class="btn-icon">
-                                                        <span><i class="icon-copy fa fa-server" aria-hidden="true"></i></span>
-                                                        <select name="type" class="custom-select input-icon form-select" required>
-                                                            <option disabled selected value="">Select Service</option>
-                                                            <option value="Airport Shuttle">Airport Shuttle</option>
-                                                            <option value="Hotel Transfer">Hotel Transfer</option>
-                                                            <option value="Tour">Tour</option>
-                                                            <option value="Daily Rent">Daily Rent</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label for="number_of_guests">Number of Guests <span>*</span></label>
-                                                    <div class="btn-icon">
-                                                        <span><i class="icon-copy fa fa-users" aria-hidden="true"></i></span>
-                                                        <input  name="number_of_guests" min="1" class="form-control input-icon @error('number_of_guests') is-invalid @enderror" type="number" value="{{ old('number_of_guest') }}" placeholder="@lang('messages.Number of guests')" required>
-                                                    </div>
-                                                    @error('number_of_guests')
-                                                        <span class="invalid-feedback">
-                                                            {{ $message }}
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label>Vehicle <span>*</span></label>
-                                                    <div class="btn-icon">
-                                                        <span><i class="icon-copy fa fa-car" aria-hidden="true"></i></span>
-                                                        <select name="transport_id" class="custom-select form-select" required>
-                                                            <option disabled selected value="">Select Vehicle</option>
-                                                            @foreach ($vehicles as $vehicle)
-                                                                <option value="{{ $vehicle->id }}">{{ $vehicle->brand." ".$vehicle->name }} {{ $vehicle->number_plate?" (".$vehicle->number_plate.")":"" }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="plateNumber">Nomor Kendaraan</label>
-                                                    <input type="text" name="plate_number" class="form-control @error('plate_number') is-invalid @enderror" placeholder="ex: DK 1234 ABC" value="{{ old('plate_number') }}" required>
-                                                    @error('plate_number')
-                                                        <span class="invalid-feedback">
-                                                            {{ $message }}
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Driver <span>*</span></label>
-                                                    <div class="btn-icon">
-                                                        <span><i class="icon-copy fa fa-user-circle-o" aria-hidden="true"></i></span>
-                                                        <select name="driver_id" class="custom-select form-select" required>
-                                                            <option disabled selected value="">Select Driver</option>
-                                                            @foreach ($drivers as $driver)
-                                                                <option value="{{ $driver->id }}">{{ $driver->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 text-right">
-                                                <button type="submit" form="createReservation" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Create SPK</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-8 md-4">
-                            <div class="card m-b-18">
-                                <div class="card-header">SPK Archived</div>
-                                <div class="card-body">
-                                    <!-- Filter -->
-                                    <div class="row m-b-8">
-                                        <div class="col-md-6">
-                                            <input type="text" id="filter_order_no" class="form-control" placeholder="Search by Order No">
-                                        </div>
-                                    </div>
-                                    <!-- Table Result -->
-                                    <div id="spkArchiveResults">
-                                        @include('admin.transportmanagement.partials.spk-archive',['spk_archives' => $spk_archives])
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <x-backend.page-hero class="transport-management-hero">
+                    <x-slot name="kicker">
+                        @lang('transport-management.eyebrow')
+                    </x-slot>
+                    <x-slot name="heading">
+                        @lang('transport-management.title')
+                    </x-slot>
+                    <x-slot name="copy">
+                        <p>
+                            @lang('transport-management.subtitle')
+                        </p>
+                    </x-slot>
+                    <x-slot name="action">
+                        <a href="#create-spk" class="backend-page-primary-action">
+                            <i class="icon-copy fa fa-plus" aria-hidden="true"></i>
+                            <span>@lang('transport-management.actions.create_spk')</span>
+                        </a>
+                    </x-slot>
+                </x-backend.page-hero>
+
+                <div class="backend-page-toolbar transport-management-toolbar">
+                    <nav aria-label="{{ __('transport-management.breadcrumb.label') }}">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('view.admin-panel-main') }}">@lang('left-navbar.Admin Panel')</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">@lang('transport-management.title')</li>
+                        </ol>
+                    </nav>
+                    <span class="transport-management-date">
+                        <i class="icon-copy fa fa-calendar-check-o" aria-hidden="true"></i>
+                        {{ dateFormat($today) }}
+                    </span>
                 </div>
-                {{-- Add Reservation --}}
-                
 
-                {{-- Reservations List --}}
+                @if(session('success') || session('error') || $errors->any())
+                    <div class="backend-feedback transport-management-feedback">
+                        @if(session('success'))
+                            <div class="backend-alert backend-alert--success transport-management-alert transport-management-alert--success">
+                                <strong>@lang('transport-management.feedback.success')</strong>
+                                <span>{{ session('success') }}</span>
+                            </div>
+                        @endif
+                        @if (session('error'))
+                            <div class="backend-alert backend-alert--danger transport-management-alert transport-management-alert--danger">
+                                <strong>@lang('transport-management.feedback.error')</strong>
+                                <span>{{ session('error') }}</span>
+                            </div>
+                        @endif
+                        @if($errors->any())
+                            <div class="backend-alert backend-alert--danger transport-management-alert transport-management-alert--danger">
+                                <strong>@lang('transport-management.feedback.validation')</strong>
+                                <ul>
+                                    @foreach($errors->all() as $err)
+                                        <li>{{ $err }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                <section class="backend-kpi-grid backend-kpi-grid--4" aria-label="{{ __('transport-management.stats.label') }}">
+                    <article class="backend-kpi-card backend-kpi-card--teal">
+                        <div class="backend-kpi-card__icon"><i class="icon-copy fa fa-road" aria-hidden="true"></i></div>
+                        <div>
+                            <span>@lang('transport-management.stats.active')</span>
+                            <strong>{{ number_format($statusSummary['active']) }}</strong>
+                        </div>
+                    </article>
+                    <article class="backend-kpi-card backend-kpi-card--amber">
+                        <div class="backend-kpi-card__icon"><i class="icon-copy fa fa-clock-o" aria-hidden="true"></i></div>
+                        <div>
+                            <span>@lang('transport-management.stats.pending')</span>
+                            <strong>{{ number_format($statusSummary['pending']) }}</strong>
+                        </div>
+                    </article>
+                    <article class="backend-kpi-card backend-kpi-card--blue">
+                        <div class="backend-kpi-card__icon"><i class="icon-copy fa fa-refresh" aria-hidden="true"></i></div>
+                        <div>
+                            <span>@lang('transport-management.stats.in_progress')</span>
+                            <strong>{{ number_format($statusSummary['in_progress']) }}</strong>
+                        </div>
+                    </article>
+                    <article class="backend-kpi-card backend-kpi-card--green">
+                        <div class="backend-kpi-card__icon"><i class="icon-copy fa fa-archive" aria-hidden="true"></i></div>
+                        <div>
+                            <span>@lang('transport-management.stats.archived')</span>
+                            <strong>{{ number_format($statusSummary['archived']) }}</strong>
+                        </div>
+                    </article>
+                </section>
+
+                <div class="transport-management-grid">
+                    <section class="backend-panel transport-management-panel transport-management-panel--list">
+                        <div class="backend-section-header transport-management-panel__heading">
+                            <div>
+                                <span class="backend-section-header__label">@lang('transport-management.active.eyebrow')</span>
+                                <h2>@lang('transport-management.active.title')</h2>
+                            </div>
+                            <span class="transport-management-chip">
+                                {{ trans_choice('transport-management.active.count', $spks->count(), ['count' => $spks->count()]) }}
+                            </span>
+                        </div>
+
+                        <div class="backend-table-wrap transport-management-table-wrap">
+                            <table class="backend-table transport-management-table">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('transport-management.table.no')</th>
+                                        <th>@lang('transport-management.table.date')</th>
+                                        <th>@lang('transport-management.table.order')</th>
+                                        <th>@lang('transport-management.table.assignment')</th>
+                                        <th>@lang('transport-management.table.status')</th>
+                                        <th class="text-right">@lang('transport-management.table.actions')</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($spks as $spk)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                <strong>{{ $spk->spk_date ? dateFormat($spk->spk_date) : '-' }}</strong>
+                                            </td>
+                                            <td>
+                                                <strong>{{ $spk->order_number ?? '-' }}</strong>
+                                                <span>{{ $spk->type ?? '-' }} / {{ trans_choice('transport-management.table.pax', (int) $spk->number_of_guests, ['count' => (int) $spk->number_of_guests]) }}</span>
+                                            </td>
+                                            <td>
+                                                <strong>{{ $spk->spk_number ?? '-' }}</strong>
+                                                <span>
+                                                    {{ $spk->transport ? trim($spk->transport->brand . ' ' . $spk->transport->name) : __('transport-management.empty.na') }}
+                                                    /
+                                                    {{ $spk->driver?->name ?? __('transport-management.empty.na') }}
+                                                </span>
+                                                <small>{{ $spk->plate_number ?: '-' }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="backend-status-badge backend-status-badge--{{ Str::slug($spk->status ?? 'pending') }} transport-management-status transport-management-status--{{ Str::slug($spk->status ?? 'pending') }}">
+                                                    {{ $spk->status ?? __('transport-management.empty.na') }}
+                                                </span>
+                                            </td>
+                                            <td class="text-right">
+                                                <div class="backend-table-actions">
+                                                    <a class="backend-table-action backend-table-action-view transport-management-row-action" href="{{ route('view.detail-spk', $spk->id) }}">
+                                                        <i class="icon-copy dw dw-eye" aria-hidden="true"></i>
+                                                        <span>@lang('transport-management.actions.detail')</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6">
+                                                <div class="backend-table-empty transport-management-empty">
+                                                    <i class="icon-copy fa fa-road" aria-hidden="true"></i>
+                                                    <strong>@lang('transport-management.empty.active_title')</strong>
+                                                    <span>@lang('transport-management.empty.active_message')</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="backend-table-card-list transport-management-card-list" aria-label="{{ __('transport-management.active.mobile_label') }}">
+                            @forelse($spks as $spk)
+                                <article class="backend-table-card transport-management-card">
+                                    <div class="backend-table-card__header transport-management-card__header">
+                                        <div>
+                                            <span>{{ $spk->spk_date ? dateFormat($spk->spk_date) : '-' }}</span>
+                                            <strong>{{ $spk->order_number ?? '-' }}</strong>
+                                        </div>
+                                        <span class="backend-status-badge backend-status-badge--{{ Str::slug($spk->status ?? 'pending') }} transport-management-status transport-management-status--{{ Str::slug($spk->status ?? 'pending') }}">
+                                            {{ $spk->status ?? __('transport-management.empty.na') }}
+                                        </span>
+                                    </div>
+                                    <dl class="backend-table-card-grid">
+                                        <div>
+                                            <dt>@lang('transport-management.table.service')</dt>
+                                            <dd>{{ $spk->type ?? '-' }} / {{ trans_choice('transport-management.table.pax', (int) $spk->number_of_guests, ['count' => (int) $spk->number_of_guests]) }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>@lang('transport-management.table.assignment')</dt>
+                                            <dd>{{ $spk->transport ? trim($spk->transport->brand . ' ' . $spk->transport->name) : __('transport-management.empty.na') }} / {{ $spk->driver?->name ?? __('transport-management.empty.na') }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>@lang('transport-management.table.spk_number')</dt>
+                                            <dd>{{ $spk->spk_number ?? '-' }}</dd>
+                                        </div>
+                                    </dl>
+                                    <a class="backend-table-action backend-table-action-view transport-management-row-action" href="{{ route('view.detail-spk', $spk->id) }}">
+                                        <i class="icon-copy dw dw-eye" aria-hidden="true"></i>
+                                        <span>@lang('transport-management.actions.detail')</span>
+                                    </a>
+                                </article>
+                            @empty
+                                <div class="backend-table-empty transport-management-empty">
+                                    <i class="icon-copy fa fa-road" aria-hidden="true"></i>
+                                    <strong>@lang('transport-management.empty.active_title')</strong>
+                                    <span>@lang('transport-management.empty.active_message')</span>
+                                </div>
+                            @endforelse
+                        </div>
+                    </section>
+
+                    <aside class="backend-panel transport-management-panel transport-management-create" id="create-spk">
+                        <div class="backend-section-header transport-management-panel__heading">
+                            <div>
+                                <span class="backend-section-header__label">@lang('transport-management.create.eyebrow')</span>
+                                <h2>@lang('transport-management.create.title')</h2>
+                            </div>
+                        </div>
+                        <p class="transport-management-help">@lang('transport-management.create.help')</p>
+
+                        <form class="transport-management-form" action="{{ route('spks.store') }}" method="post" enctype="multipart/form-data" data-transport-management-form>
+                            @csrf
+                            <label>
+                                <span>@lang('transport-management.form.operator') <b>*</b></span>
+                                <select class="backend-form-control" name="operator_id" required>
+                                    <option disabled selected value="">@lang('transport-management.form.select_operator')</option>
+                                    @foreach ($operator as $operatorUser)
+                                        <option value="{{ $operatorUser->id }}" @selected(old('operator_id') == $operatorUser->id)>{{ $operatorUser->name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+
+                            <label>
+                                <span>@lang('transport-management.form.order_number') <b>*</b></span>
+                                <input class="backend-form-control" type="text" name="order_number" value="{{ old('order_number') }}" placeholder="{{ __('transport-management.form.order_number_placeholder') }}" required>
+                            </label>
+
+                            <label>
+                                <span>@lang('transport-management.form.spk_date') <b>*</b></span>
+                                <input class="backend-form-control" readonly name="spk_date" type="text" value="{{ old('spk_date') }}" placeholder="{{ __('transport-management.form.select_date') }}" required>
+                            </label>
+
+                            <label>
+                                <span>@lang('transport-management.form.service') <b>*</b></span>
+                                <select class="backend-form-control" name="type" required>
+                                    <option disabled selected value="">@lang('transport-management.form.select_service')</option>
+                                    @foreach (['Airport Shuttle', 'Hotel Transfer', 'Tour', 'Daily Rent'] as $serviceType)
+                                        <option value="{{ $serviceType }}" @selected(old('type') === $serviceType)>{{ $serviceType }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+
+                            <label>
+                                <span>@lang('transport-management.form.guests') <b>*</b></span>
+                                <input class="backend-form-control" name="number_of_guests" min="1" type="number" value="{{ old('number_of_guests') }}" placeholder="{{ __('transport-management.form.guests_placeholder') }}" required>
+                            </label>
+
+                            <div class="transport-management-form__split">
+                                <label>
+                                    <span>@lang('transport-management.form.vehicle') <b>*</b></span>
+                                    <select class="backend-form-control" name="transport_id" required>
+                                        <option disabled selected value="">@lang('transport-management.form.select_vehicle')</option>
+                                        @foreach ($vehicles as $vehicle)
+                                            <option value="{{ $vehicle->id }}" @selected(old('transport_id') == $vehicle->id)>
+                                                {{ trim($vehicle->brand . ' ' . $vehicle->name) }}{{ $vehicle->number_plate ? ' (' . $vehicle->number_plate . ')' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </label>
+
+                                <label>
+                                    <span>@lang('transport-management.form.plate_number') <b>*</b></span>
+                                    <input class="backend-form-control" type="text" name="plate_number" value="{{ old('plate_number') }}" placeholder="{{ __('transport-management.form.plate_number_placeholder') }}" required>
+                                </label>
+                            </div>
+
+                            <label>
+                                <span>@lang('transport-management.form.driver') <b>*</b></span>
+                                <select class="backend-form-control" name="driver_id" required>
+                                    <option disabled selected value="">@lang('transport-management.form.select_driver')</option>
+                                    @foreach ($drivers as $driver)
+                                        <option value="{{ $driver->id }}" @selected(old('driver_id') == $driver->id)>{{ $driver->name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+
+                            <button type="submit" class="backend-button backend-button-primary transport-management-submit-action" data-processing-label="{{ __('transport-management.actions.creating') }}">
+                                <i class="icon-copy fa fa-plus" aria-hidden="true"></i>
+                                @lang('transport-management.actions.create_spk')
+                            </button>
+                        </form>
+                    </aside>
+                </div>
+
+                <section class="backend-panel transport-management-panel transport-management-archive">
+                    <div class="backend-section-header transport-management-panel__heading">
+                        <div>
+                            <span class="backend-section-header__label">@lang('transport-management.archive.eyebrow')</span>
+                            <h2>@lang('transport-management.archive.title')</h2>
+                        </div>
+                        <label class="transport-management-search">
+                            <span class="sr-only">@lang('transport-management.archive.search')</span>
+                            <i class="icon-copy fa fa-search" aria-hidden="true"></i>
+                            <input class="backend-form-control" type="search" id="filter_order_no" placeholder="{{ __('transport-management.archive.search') }}">
+                        </label>
+                    </div>
+
+                    <div id="spkArchiveResults">
+                        @include('admin.transportmanagement.partials.spk-archive', ['spk_archives' => $spk_archives])
+                    </div>
+                </section>
             </div>
-        </div>
-        
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Jika ingin menyembunyikan warning di console, bisa set ke 'none'
-                // $.fn.dataTable.ext.errMode = 'none';
-
-                let table = null;
-
-                // Debounce helper
-                function debounce(fn, delay) {
-                    let t;
-                    return function () {
-                        const ctx = this, args = arguments;
-                        clearTimeout(t);
-                        t = setTimeout(() => fn.apply(ctx, args), delay);
-                    };
-                }
-
-                function initSpkArchivedTable() {
-                    // Jika sudah ada DataTable, destroy dulu (aman)
-                    if ($.fn.dataTable.isDataTable('#spkArchived')) {
-                        try {
-                            $('#spkArchived').DataTable().clear().destroy();
-                        } catch (err) {
-                            console.warn('Error saat destroy DataTable (ignored):', err);
-                        }
-                    }
-
-                    // Inisialisasi ulang DataTable
-                    table = $('#spkArchived').DataTable({
-                        responsive: true,
-                        order: [[1, 'desc']],
-                        pageLength: 10,
-
-                    });
-
-                    // Hapus binding lama dan pasang binding baru (menggunakan namespace .spkFilter)
-                    $('#filter_order_no').off('.spkFilter').on('keyup.spkFilter', debounce(function () {
-                        // kolom index 2 = Order Number (sesuaikan bila kolom berbeda)
-                        table.column(2).search(this.value).draw();
-                    }, 300));
-
-                
-
-                    // Jika ingin re-init dari luar (mis. setelah AJAX partial replace), expose function
-                    window.spksTable = table;
-                }
-
-                // Inisialisasi pertama
-                initSpkArchivedTable();
-
-                // Jika kamu melakukan partial reload (AJAX / Livewire), panggil:
-                // window.initSpkArchivedTable();  <- kapanpun setelah tabel DOM diupdate
-
-                // Expose fungsi agar mudah dipanggil setelah update DOM dari AJAX/Livewire
-                window.initSpkArchivedTable = initSpkArchivedTable;
-            });
-        </script>
-        
+        </main>
     @endcan
 @endsection
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/operations/transport-management/index.js') }}"></script>
+@endpush

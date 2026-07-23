@@ -26,7 +26,11 @@ class CreateHotelsTable extends Migration
             $table->longText('description_traditional')->nullable();
             $table->longText('description_simplified')->nullable();
             $table->longText('facility')->nullable();
+            $table->longText('facility_traditional')->nullable();
+            $table->longText('facility_simplified')->nullable();
             $table->longText('additional_info')->nullable();
+            $table->longText('additional_info_traditional')->nullable();
+            $table->longText('additional_info_simplified')->nullable();
             $table->longText('wedding_info')->nullable();
             $table->longText('entrance_fee')->nullable();
             $table->longText('wedding_cancellation_policy')->nullable();
@@ -42,6 +46,8 @@ class CreateHotelsTable extends Migration
             $table->string('benefits')->nullable();
             $table->string('optional_rate')->nullable();
             $table->longText('cancellation_policy')->nullable();
+            $table->longText('cancellation_policy_traditional')->nullable();
+            $table->longText('cancellation_policy_simplified')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

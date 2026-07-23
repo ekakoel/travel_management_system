@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Models\Hotels;
 use App\Models\UserLog;
 use App\Models\UsdRates;
-use App\Models\Attention;
 use Illuminate\Http\Request;
 use App\Models\WeddingDinnerVenues;
 use App\Models\WeddingVenues;
@@ -28,14 +27,12 @@ class WeddingReceptionVenuesController extends Controller
             if ($reception_venue->status == "Draft") {
                 
                 $hotel = Hotels::where('id',$reception_venue->hotel_id)->first();
-                $attentions = Attention::where('page','update-reception-venue')->get();
                 $weddingVenues = WeddingVenues::where('hotels_id',$hotel->id)->get();
                 return view('backend.operations.weddings.forms.reception-venue-edit',[
                     'reception_venue'=>$reception_venue,
                     'usdrates'=>$usdrates,
                     'weddingVenues'=>$weddingVenues,
                     'hotel'=>$hotel,
-                    'attentions'=>$attentions,
                 ]);
             }else {
                 return redirect("/weddings-hotel-admin-$reception_venue->hotel_id#receptionVenue")->with('success',"Reception venue has been updated!");

@@ -6,34 +6,11 @@
 	<div class="main-container">
 		<div class="pd-ltr-20 xs-pd-20-10">
 			<div class="min-height-200px">
-				<div class="page-header">
-					<div class="row">
-						<div class="col-md-8 col-sm-12">
-							<div class="title">
-								<h4>Detail Partner - {{ $dpartners["name"] }}</h4>
-							</div>
-							<nav aria-label="breadcrumb" role="navigation">
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-									<li class="breadcrumb-item"><a href="partners">Partner</a></li>
-									<li class="breadcrumb-item active" aria-current="page">Details</li>
-								</ol>
-							</nav>
-						</div>
-                        <div class="col-md-2 col-sm-12">
-							<div class="title text-right" style="height: 100%">
-                                <h6>Status : </h6>
-                                {{ $dpartners["status"] }} 
-                            </div>
-						</div>
-                        <div class="col-md-2 col-sm-12 text-right">
-							<div class="title">
-								<a href="partner-update" class="bg-light-blue btn text-blue weight-500"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Partner</a>
-                                
-                            </div>
-						</div>
-					</div>
-				</div>
+								<x-backend.page-hero>
+				    <x-slot name="heading">
+				        Detail Partner - {{ $dpartners["name"] }}
+				    </x-slot>
+				</x-backend.page-hero>
 				<div class="product-wrap">
 					<div class="product-detail-wrap mb-30">
 						<div class="row">
@@ -73,7 +50,7 @@
 									<h4 class="mb-10">{{ $dpartners["name"] }}</h4>
                                     {{-- <div class="price">
                                         <i class="icon-copy fa fa-envelope-o" style="color: rgb(95, 95, 95)" aria-hidden="true"></i> &nbsp; {{ $dpartners["email"] }}<br>
-                                        <i class="icon-copy fa fa-map-marker" style="color: red" aria-hidden="true"></i> &nbsp; {{ $dpartners["address"] }} 
+                                        <i class="icon-copy fa fa-map-marker" style="color: red" aria-hidden="true"></i> &nbsp; {{ $dpartners["address"] }}
 									</div> --}}
 									<hr>
                                     <p>Status : {{ $dpartners["status"] }}</p>
@@ -84,9 +61,9 @@
                                     <p>Update At : {{ date('d M Y', strtotime($dpartners->updated_at)) }}</p>
 									<hr>
 									<div class="row">
-										
+
 										<div class="col-md-12 col-12">
-											<a href="partners" class="btn btn-outline-primary btn-block">Back to all Partner</a>
+											<a href="partners" class="backend-button backend-button-secondary btn-block">Back to all Partner</a>
 										</div>
 									</div>
 								</div>

@@ -7,8 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
+        body {
+            font-family: Arial, sans-serif;
             font-size: 14px;
             line-height: 1.5;
         }
@@ -21,9 +21,9 @@
             margin: 18px 0 4px 0;
             text-decoration: none;
         }
-        .spk-header { 
-            text-align: center; 
-            margin-bottom: 20px; 
+        .spk-header {
+            text-align: center;
+            margin-bottom: 20px;
         }
         .section-title {
             margin-top: 20px;
@@ -110,7 +110,7 @@
             border-radius: 50px;
             border: 2px solid #000077;
         }
-        
+
         .description{
             width: 100%;
         }
@@ -127,7 +127,7 @@
             width: 28px;         /* ukuran konsisten */
             height: 28px;        /* tinggi sama */
             display: flex;
-            align-items: center; 
+            align-items: center;
             justify-content: center;
             font-size: 18px;     /* ukuran emoji/icon */
             margin-right: 8px;   /* jarak dengan teks */
@@ -314,7 +314,7 @@
             <td>{{ \Carbon\Carbon::parse($spk->spk_date)->locale('id')->translatedFormat('l, d M Y')  }}</td>
         </tr>
     </table>
-    @if (count($guests)>0)    
+    @if (count($guests)>0)
         <h4 class="section-title">Daftar Tamu</h4>
         <table>
             <thead>
@@ -373,11 +373,11 @@
             </table>
         </div>
     </div>
-    
 
-    
 
-    
+
+
+
     <div class="page-brake-avoid">
         @if (isset($spk->destinations) && count($spk->destinations) > 0)
             <h4 class="section-title">Destinasi / Tujuan</h4>

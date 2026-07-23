@@ -1,0 +1,106 @@
+body.sidebar-light .backend-detail-layout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+
+body.sidebar-light .backend-detail-main,
+body.sidebar-light .backend-detail-side {
+  min-width: 0;
+}
+
+body.sidebar-light .backend-detail-main {
+  display: grid;
+  gap: 18px;
+}
+
+body.sidebar-light .backend-detail-side {
+  align-self: start;
+  display: grid;
+  gap: 18px;
+  position: sticky;
+  top: 96px;
+}
+
+body.sidebar-light .backend-detail-side-card {
+  overflow: hidden;
+  padding: 0;
+}
+
+body.sidebar-light .backend-detail-side-card .backend-section-header {
+  margin-bottom: 0;
+  padding: 16px;
+}
+
+body.sidebar-light .backend-detail-side-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px 16px;
+}
+
+body.sidebar-light .backend-detail-side-list li,
+body.sidebar-light .backend-detail-side-item {
+  background: var(--backend-sidebar-bg-soft);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+}
+
+body.sidebar-light .backend-detail-side-list span,
+body.sidebar-light .backend-detail-side-item span {
+  color: var(--backend-muted-link);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.sidebar-light .backend-detail-side-list strong,
+body.sidebar-light .backend-detail-side-item strong,
+body.sidebar-light .backend-detail-side-list small,
+body.sidebar-light .backend-detail-side-item small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body.sidebar-light .backend-detail-side-list strong,
+body.sidebar-light .backend-detail-side-item strong {
+  color: var(--backend-ink);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+body.sidebar-light .backend-detail-side-list small,
+body.sidebar-light .backend-detail-side-item small {
+  color: var(--backend-muted);
+  line-height: 1.5;
+}
+
+body.sidebar-light .backend-detail-side-actions {
+  display: grid;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+body.sidebar-light .backend-detail-side-actions .backend-toolbar-action,
+body.sidebar-light .backend-detail-side-actions .backend-page-primary-action,
+body.sidebar-light .backend-detail-side-actions .backend-secondary-action {
+  justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 1199px) {
+  body.sidebar-light .backend-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  body.sidebar-light .backend-detail-side {
+    position: static;
+  }
+}

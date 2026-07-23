@@ -31,6 +31,9 @@
 				@if (session('message'))
 					<div class="alert alert-success auth-alert" role="alert">{{ session('message') }}</div>
 				@endif
+				@if ($errors->has('registration'))
+					<div class="alert alert-warning auth-alert" role="alert">{{ $errors->first('registration') }}</div>
+				@endif
 
 				<form method="POST" action="{{ route('login') }}" class="auth-form">
 					@csrf
@@ -62,7 +65,11 @@
 				</form>
 
 				<div class="auth-divider" aria-hidden="true"></div>
-				<p class="auth-switch">@lang('messages.Do not have an account?') <a class="auth-link" href="{{ route('register') }}">@lang('messages.Create One')</a></p>
+				@if ($registrationEnabled)
+					<p class="auth-switch">@lang('messages.Do not have an account?') <a class="auth-link" href="{{ route('register') }}">@lang('messages.Create One')</a></p>
+				@else
+					<p class="auth-switch">@lang('messages.Registration is currently unavailable.')</p>
+				@endif
 				<div class="auth-security-note">
 					<i class="fa fa-circle-info" aria-hidden="true"></i>
 					<span>@lang('messages.For your protection, authentication requests are CSRF protected and repeated attempts are throttled.')</span>

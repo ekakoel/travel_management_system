@@ -144,7 +144,7 @@
 .accommodation-title,
 .accommodation-cta__title {
     margin: 0;
-    color: var(--frontend-shell-surface-solid);
+    // color: var(--frontend-shell-surface-solid);
     font-size: clamp(1.55rem, 2.3vw, 2.25rem);
     font-weight: 800;
     line-height: 1.15;
@@ -157,7 +157,7 @@
 .accommodation-cta__text {
     max-width: 780px;
     margin: 0;
-    color: var(--frontend-shell-surface-solid);
+    // color: var(--frontend-shell-surface-solid);
     font-size: 1rem;
     line-height: 1.75;
 }

@@ -14,11 +14,11 @@ class CreateOrderLogsTable extends Migration
 
         Schema::create('order_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id');
-            $table->integer('order_wedding_id');
-            $table->string('action');
-            $table->string('url');
-            $table->string('method');
+            $table->string('order_id')->nullable();
+            $table->integer('order_wedding_id')->nullable();
+            $table->string('action')->nullable();
+            $table->string('url')->nullable();
+            $table->string('method')->nullable();
             $table->string('agent')->nullable();
             $table->string('admin')->nullable();
             $table->timestamps();
