@@ -80,6 +80,10 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
 use App\Http\Controllers\WeddingsController;
 use App\Http\Controllers\WeddingVenuesController;
 use App\Http\Controllers\WhatsAppController;
+
+use App\Http\Controllers\SpkReportController;
+use App\Http\Controllers\SpkWhatsAppController;
+
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -167,11 +171,23 @@ use Illuminate\Support\Facades\Route;
     Route::post('/send-whatsapp-driver', [WhatsAppController::class, 'send_wa_driver'])->name('send.whatsapp-driver');
     Route::post('/send-whatsapp-operator', [WhatsAppController::class, 'send_wa_operator'])->name('send.whatsapp-operator');
 
-    Route::get('/spk-report/{id}', [WhatsAppController::class, 'spk_report'])->name('view.spk-report');
+    // Route::get('/spk-report/{id}', [WhatsAppController::class, 'spk_report'])->name('view.spk-report');
 
     Route::get('/test-wa', function () {
         return Http::timeout(5)->get("http://127.0.0.1:3000/status")->json();
     });
+
+    // |--------------------------------------------------------------------------
+    // | Public SPK Report
+    // |--------------------------------------------------------------------------
+    // Route::get('/spk-report/{spk}', [
+    //     SpkReportController::class,
+    //     'show',
+    // ])->middleware('signed')->name('spks.public-report');
+    Route::get('/spk-report/{token}', [
+        SpkReportController::class,
+        'show',
+    ])->name('spks.public-report');
     // Route::post('/spk/{id}/send-whatsapp', [WhatsAppController::class, 'send'])->name('spk.send.whatsapp');
     // Route::post('/send-whatsapp-both', [WhatsAppController::class, 'send_wa_both'])->name('send.whatsapp-both');
     // Route::post('/send-whatsapp-driver', [WhatsAppController::class, 'send_wa_driver'])->name('send.whatsapp-driver');
@@ -883,6 +899,13 @@ use Illuminate\Support\Facades\Route;
             Route::resource('spks', SpksController::class)->only(['show']);
             Route::get('/spks/{id}/detail', [SpksController::class, 'spk_detail'])->name('spks.detail.partials');
 
+            // Send WhatsApp melalui web whatsapp
+            // |--------------------------------------------------------------------------
+            // | SPK WhatsApp
+            // |--------------------------------------------------------------------------
+            Route::get('/spks/{spk}/send-whatsapp', [SpkWhatsAppController::class,'send',])->name('spks.send-whatsapp');
+            Route::get('/spks/{spk}/send-whatsapp-driver', [SpkWhatsAppController::class,'send_to_driver',])->name('spks.send-whatsapp-driver');
+
             
             // ---------------------------------------------------
             //                        CHAT
@@ -910,7 +933,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                      HOTELS 
             // ---------------------------------------------------
-            Route::get('/hotels',[HotelsController::class,'index'])->name('view.hotels');
+            // Route::get('/hotels',[HotelsController::class,'index'])->name('view.hotels');
             Route::get('/hotels/autocomplete', [HotelsController::class, 'autocomplete'])->name('hotels.autocomplete');
             Route::get('/hotels/autocomplete-region', [HotelsController::class, 'autocompleteRegion'])->name('hotels.autocompleteRegion');
             Route::get('/hotels/load-more', [HotelsController::class, 'loadMore'])->name('hotels.load-more');
@@ -972,8 +995,8 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                 HOTEL PROMO FLYER 
             // ---------------------------------------------------
-            Route::get('/promotion-flyer/{id}', [FlyerGeneratorController::class, 'flyer_detail'])->name('view.flyers-detail');
-            Route::get('/flyers', [FlyerGeneratorController::class, 'index'])->name('index.flyers');
+            // Route::get('/promotion-flyer/{id}', [FlyerGeneratorController::class, 'flyer_detail'])->name('view.flyers-detail');
+            // Route::get('/flyers', [FlyerGeneratorController::class, 'index'])->name('index.flyers');
             // ---------------------------------------------------
             //                      ACTIVITY
             // ---------------------------------------------------

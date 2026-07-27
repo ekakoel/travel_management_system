@@ -147,7 +147,7 @@ body.sidebar-light select:disabled,
 body.sidebar-light textarea:disabled {
   background-color: var(--backend-form-disabled-bg);
   color: var(--backend-form-disabled-ink);
-  cursor: not-allowed;
+  // cursor: not-allowed;
   opacity: 1;
 }
 

@@ -1,55 +1,33 @@
 # Transport Order Number Standard
 
-Dokumen ini menetapkan format order number untuk order transport frontend/backend.
+Status: active
+Updated: 2026-07-27
+
+Standar nomor order transport dipakai untuk menjaga identitas order dan SPK mudah dilacak.
 
 ## Format
 
-```text
-{USER_CODE}{YY}{MM}{DD}{DAILY_SEQUENCE}
-```
+Gunakan service `app/Services/TransportOrderNumberService.php` sebagai satu source of truth.
 
-Contoh:
+Format business-facing:
 
 ```text
-ABC260715A
+TRP-YYYYMMDD-XXX
 ```
 
-Penjelasan:
+- `TRP` = transport order prefix.
+- `YYYYMMDD` = tanggal order/creation sesuai domain service.
+- `XXX` = sequence harian zero-padded.
 
-- `ABC`: kode user atau agent yang menjadi sales agent order.
-- `26`: tahun order dibuat, format dua digit.
-- `07`: bulan order dibuat.
-- `15`: tanggal order dibuat.
-- `A`: urutan order transport pada hari yang sama untuk sales agent tersebut.
+## Rules
 
-## Sequence Harian
-
-Sequence memakai format huruf spreadsheet-style:
-
-- Order pertama: `A`
-- Order kedua: `B`
-- Order ketiga: `C`
-- Setelah `Z`: `AA`
-- Setelah `ZZ`: `AAA`
-
-Sequence dihitung berdasarkan order transport yang sudah memiliki prefix `{USER_CODE}{YY}{MM}{DD}` dan `sales_agent` yang sama.
+- Jangan generate nomor manual di controller atau Blade.
+- Sequence harian harus konsisten dan aman dari duplikasi.
+- Jika nomor dipakai untuk SPK/report/WhatsApp, gunakan nilai dari model/order yang sudah tersimpan.
+- Jangan mengubah format tanpa audit invoice, SPK, report, WhatsApp message, search/filter, dan test.
 
 ## Implementasi
 
-- Generator utama: `App\Services\TransportOrderNumberService`
-- Submit backend: `OrderController::generateTransportOrderNumber()` mendelegasikan ke shared service.
-- Preview halaman detail transport: `HomeController::show_transport()` wajib memakai shared service yang sama.
-- Konversi angka ke huruf: `TransportOrderNumberService::numberToLetters()`
-- Konversi huruf ke angka: `TransportOrderNumberService::lettersToNumber()`
-- Tanggal yang dipakai adalah tanggal order dibuat, bukan tanggal service/pickup.
-- Modal order transport wajib menyinkronkan preview `Order No`, hidden `orderno`, dan `data-transport-booking-order-number`. Jika user memilih agent berbeda, preview order number wajib mengikuti `data-order-number` milik agent tersebut.
-
-## Test Guard
-
-Guard test berada di `tests/Feature/TransportOrderNumberTest.php` dan wajib menjaga:
-
-- Format awal `ABC260715A`
-- Increment `A`, `B`, `C`
-- Transisi `Z -> AA`
-- Transisi `ZZ -> AAA`
-- Sequence terpisah berdasarkan sales agent dan tanggal order.
+- Service: `app/Services/TransportOrderNumberService.php`.
+- Test guard: `tests/Feature/TransportOrderNumberTest.php`.
+- Domain terkait: `OrderController`, `TransportManagementController`, `Spks`, `SpkDestinations`.

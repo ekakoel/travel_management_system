@@ -45,7 +45,6 @@ body.sidebar-light .btn-edit:hover,
 body.sidebar-light .btn-edit:focus,
 body.sidebar-light .btn-delete:hover,
 body.sidebar-light .btn-delete:focus {
-  box-shadow: var(--backend-button-hover-shadow);
   text-decoration: none;
   transform: var(--backend-button-hover-transform);
 }
@@ -57,7 +56,6 @@ body.sidebar-light .terms-admin-icon-action:focus-visible,
 body.sidebar-light .btn-view:focus-visible,
 body.sidebar-light .btn-edit:focus-visible,
 body.sidebar-light .btn-delete:focus-visible {
-  box-shadow: var(--backend-button-focus-ring), var(--backend-button-hover-shadow);
   outline: none;
 }
 

@@ -531,7 +531,6 @@ body.sidebar-light .admin-panel-secondary-action:hover,
 body.sidebar-light .currency-admin-primary-action:hover,
 body.sidebar-light .currency-admin-secondary-action:hover,
 body.sidebar-light .currency-admin-ghost-action:hover {
-  // box-shadow: var(--backend-button-hover-shadow);
   transform: var(--backend-button-hover-transform);
 }
 
@@ -548,7 +547,6 @@ body.sidebar-light .admin-panel-secondary-action:focus-visible,
 body.sidebar-light .currency-admin-primary-action:focus-visible,
 body.sidebar-light .currency-admin-secondary-action:focus-visible,
 body.sidebar-light .currency-admin-ghost-action:focus-visible {
-  box-shadow: var(--backend-button-focus-ring), var(--backend-button-hover-shadow);
   outline: none;
   transform: var(--backend-button-hover-transform);
 }
@@ -646,7 +644,6 @@ body.sidebar-light .backend-danger-action:hover,
 body.sidebar-light .backend-danger-action:focus {
   background: var(--backend-danger-strong);
   border-color: var(--backend-danger-strong);
-  box-shadow: var(--backend-danger-hover-shadow);
   color: #ffffff;
   outline: none;
   transform: var(--backend-button-hover-transform);
@@ -674,7 +671,6 @@ body.sidebar-light .modal button.close[data-dismiss="modal"]:hover,
 body.sidebar-light .modal button.close[data-dismiss="modal"]:focus {
   background: var(--backend-danger-strong);
   border-color: var(--backend-danger-strong);
-  box-shadow: var(--backend-danger-hover-shadow);
   color: #ffffff;
   opacity: 1;
   outline: none;

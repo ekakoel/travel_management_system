@@ -73,28 +73,24 @@
                     </nav>
                     <div class="transport-spk-detail-toolbar__actions">
                         @if($spk->send_report === 1 && $spk->operator?->phone)
-                            <button
-                                id="btnSendWaToDriver"
-                                class="backend-button backend-button-secondary sendWA"
-                                type="button"
-                                data-route="{{ route('send.whatsapp-driver') }}"
-                                data-phone="{{ $spk->driver?->phone }}"
-                                data-spk="{{ $spk->id }}"
+                            <a
+                                href="{{ route('spks.send-whatsapp', $spk) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="btn btn-success"
                             >
-                                <i class="fa fa-share" aria-hidden="true"></i>
-                                @lang('transport-management.detail.actions.share_driver')
-                            </button>
-                            <button
-                                id="btnSendWaToOperator"
-                                class="backend-button backend-button-secondary sendWA"
-                                type="button"
-                                data-route="{{ route('send.whatsapp-operator') }}"
-                                data-phone="{{ $spk->operator?->phone }}"
-                                data-spk="{{ $spk->id }}"
+                                <i class="bi bi-whatsapp me-1"></i>
+                                Send to Operator
+                            </a>
+                            <a
+                                href="{{ route('spks.send-whatsapp-driver', $spk) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="btn btn-success"
                             >
-                                <i class="fa fa-share" aria-hidden="true"></i>
-                                @lang('transport-management.detail.actions.share_operator')
-                            </button>
+                                <i class="bi bi-whatsapp me-1"></i>
+                                Send to Driver
+                            </a>
                         @endif
                         @if($spk->send_report === 0 && $spk->operator?->phone)
                             <button
@@ -597,7 +593,7 @@
                     </div>
 
                     <aside class="transport-spk-detail-side">
-                        <section class="backend-panel transport-spk-detail-panel">
+                        {{-- <section class="backend-panel transport-spk-detail-panel">
                             <div class="backend-section-header transport-spk-detail-panel__heading">
                                 <div>
                                     <span class="backend-section-header__label">@lang('transport-management.detail.wa.eyebrow')</span>
@@ -624,7 +620,7 @@
                                     </button>
                                 </div>
                             </div>
-                        </section>
+                        </section> --}}
 
                         <section class="backend-panel transport-spk-detail-panel">
                             <div class="backend-section-header transport-spk-detail-panel__heading">

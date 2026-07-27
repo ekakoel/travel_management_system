@@ -1,157 +1,78 @@
-# Travel Management System
+# Balikami Tour Travel Management System
 
-See [docs/project-understanding-rules.md](docs/project-understanding-rules.md) for the mandatory project understanding rules that must be followed before any AI agent or developer makes changes in this repository.
-See [docs/project-blueprint-roadmap.md](docs/project-blueprint-roadmap.md) for the product blueprint, frontend/backend separation direction, and staged UI/UX standardization roadmap.
-See [docs/blade-asset-rules.md](docs/blade-asset-rules.md) for the mandatory Blade, CSS, and JavaScript separation rules used in this repository.
-See [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md) for the mandatory frontend UI consistency rules used in this repository.
-See [docs/backend-ui-standards.md](docs/backend-ui-standards.md) for the mandatory backend-only UI consistency rules used in this repository.
-See [docs/multi-language-standard.md](docs/multi-language-standard.md) for the mandatory translation and multi-language rules used in this repository.
-See [docs/testing-database-safety-standard.md](docs/testing-database-safety-standard.md) for the mandatory database and testing safety rules that must be followed before running tests, migrations, seeders, or database commands.
-See [docs/frontend-roadmap.md](docs/frontend-roadmap.md) for the mandatory frontend roadmap and change log that must be updated on every frontend change.
-See [docs/frontend-roadmap-entry-template.md](docs/frontend-roadmap-entry-template.md) for the ready-to-copy roadmap entry template used for frontend work.
+Status: active
+Updated: 2026-07-27
 
-This repository contains the source code for a comprehensive Travel Management System, a web application designed to streamline the management of tours, bookings, and customer relations for a travel agency.
+Balikami Tour adalah aplikasi Laravel untuk public travel service browsing, customer/agent booking, dan operasional internal travel agency.
 
-The application features a robust admin panel for managing tours, orders, users, and other site content, alongside a customer-facing interface for browsing and booking tour packages.
+## Wajib Dibaca Sebelum Mengubah Kode
 
-## Mandatory Working Rule
+1. `AGENTS.md`
+2. `docs/README.md`
+3. `docs/project-understanding-rules.md`
+4. Dokumen standar/modul yang relevan
+5. `docs/testing-database-safety-standard.md` sebelum test, migration, seeder, tinker, atau command database
 
-Before making any code change, adjustment, refactor, or debugging step in this project, every AI agent and developer must first understand the relevant system flow thoroughly, especially:
+Project ini memiliki database aktif. Jangan menjalankan command destructive seperti `migrate:fresh`, `migrate:refresh`, `db:wipe`, `truncate`, atau mass delete.
 
-- route structure
-- route groups and middleware layers
-- auth, approval, and profile completeness flow
-- controller to view flow
-- redirect and canonical URL behavior
+## Stack
 
-Do not implement changes based on a single file in isolation. Read [docs/project-understanding-rules.md](docs/project-understanding-rules.md) first and treat it as mandatory.
+- Laravel 10
+- PHP compatible `^7.3|^8.0` sesuai `composer.json`
+- MySQL/MariaDB
+- Vue 2, Vue Router, Laravel Mix
+- AdminLTE/Bootstrap legacy plus shared backend UI components
+- Laravel Passport dan Sanctum
+- DomPDF, Maatwebsite Excel, Livewire, Pusher, Firebase, Google API, WhatsApp bot proxy
 
-## ✨ Features
+## Area Aplikasi
 
-- **Tour & Travel Package Management:** Easily create, update, and manage tour packages with detailed information, including itineraries, pricing, and availability.
-- **Customer Booking System:** A seamless booking process for customers to browse tours, make reservations, and manage their bookings.
-- **Admin Dashboard:** A powerful dashboard for administrators to get an overview of the business, including recent bookings, revenue, and user activity.
-- **User Authentication & Role Management:** Secure user authentication with role-based access control (e.g., admin, staff, customer).
-- **PDF Invoice & Contract Generation:** Automatically generate PDF invoices and contracts for bookings.
-- **Payment Confirmation:** A system for customers to confirm their payments and for admins to verify them.
-- **Content Management:** Manage website content such as pages, blog posts, and testimonials.
-- **Real-time Notifications:** Instant notifications for new bookings, payments, and other important events.
+- Public frontend: home, accommodations/hotels, activities, tours, transports, villas, static pages, reviews, agent registration.
+- Authenticated frontend: profile, orders dashboard, detail/edit/history, booking/payment flow.
+- Backend/internal: dashboard, users/roles/modules, hotels, tours, activities, transports, reservations, orders, finance, reports, SPK transport management, content settings.
+- API: profile/product/category/tag, review links, Doku webhook, WhatsApp endpoints.
 
-## 🛠️ Tech Stack
+## Struktur Aktif
 
-- **Backend:** PHP 8.1 / Laravel 10
-- **Frontend:** Vue.js 2, Vue Router, Vuex
-- **Admin UI:** AdminLTE 3, Bootstrap 5
-- **Database:** MySQL / MariaDB
-- **API Authentication:** Laravel Passport
-- **Key Libraries:**
-  - `barryvdh/laravel-dompdf` for PDF generation.
-  - `maatwebsite/excel` for Excel data import/export.
-  - `livewire/livewire` for dynamic interfaces.
-  - `jenssegers/agent` for user-agent detection.
-  - `pusher/pusher-php-server` for real-time notifications.
+- Public frontend views: `resources/views/frontend/landing-page`
+- Authenticated frontend views: `resources/views/frontend/home`
+- Backend views: `resources/views/backend` and legacy `resources/views/admin`
+- Frontend assets: `resources/frontend`
+- Backend assets: `resources/backend`
+- Routes: `routes/web.php`, `routes/api.php`
+- Language files: `resources/lang/en`, `resources/lang/zh`, `resources/lang/zh-CN`
 
-## 🚀 Getting Started
+Beberapa route/controller/view legacy masih aktif. Jangan memindahkan atau menghapus tanpa audit referensi.
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+## Documentation
 
-### Prerequisites
+Mulai dari `docs/README.md`. Dokumen project sudah dipadatkan menjadi standar aktif, tracker ringkas, dan dokumen modul.
 
-- PHP >= 8.1
-- Composer
-- Node.js & NPM
-- A database server (e.g., MySQL, MariaDB)
+## Safe Verification
 
-### Installation
+Aman untuk audit awal:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/ekakoel/travel_management_system.git
-    cd travel_management_system
-    ```
+```bash
+php -l path/to/file.php
+php artisan route:list
+composer validate
+```
 
-2.  **Install backend dependencies:**
-    ```bash
-    composer install
-    ```
-
-3.  **Set up your environment file:**
-    ```bash
-    cp .env.example .env
-    ```
-    *After copying, open the `.env` file and configure your database connection details (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD).*
-
-4.  **Generate an application key:**
-    ```bash
-    php artisan key:generate
-    ```
-
-5.  **Run database migrations and seeders:**
-    ```bash
-    php artisan migrate --seed
-    ```
-
-6.  **Install Laravel Passport for API authentication:**
-    ```bash
-    php artisan passport:install
-    ```
-
-7.  **Install frontend dependencies:**
-    ```bash
-    npm install
-    ```
-
-8.  **Compile frontend assets:**
-    - For development:
-      ```bash
-      npm run dev
-      ```
-    - For production:
-      ```bash
-      npm run prod
-      ```
-
-## Project Structure
-
-Frontend and backend files must follow the project structure standard in [docs/project-structure-standard.md](docs/project-structure-standard.md).
-
-- Public frontend pages live under `resources/views/frontend/landing-page`, with page assets under `resources/frontend/js/landing-page` and `resources/frontend/scss/landing-page`.
-- Authenticated customer pages live under `resources/views/frontend/home`, with page assets under `resources/frontend/js/home` and `resources/frontend/scss/home`.
-- Internal staff/admin pages live under `resources/views/backend`, with backend assets under `resources/backend/js` and `resources/backend/scss`.
-- Shared frontend-only partials live under `resources/views/frontend/shared`; shared cross-area components should only be introduced when there are at least two real consumers.
-- Do not create new active files in legacy namespaces such as `resources/views/home`, `resources/views/form`, `resources/views/order`, or old page-level frontend folders.
-- User-facing text in frontend and backend must use language files for all supported locales. Do not add hardcoded UI copy in Blade, controllers, services, or JavaScript.
-- Do not run PHPUnit, Laravel tests, migrations, seeders, tinker write operations, or destructive database commands until the target database has been verified as a dedicated testing or disposable database.
-
-When moving files, update controller view paths, Blade `@include`/`@extends`, Mix entries, documentation, and run the relevant route/view tests plus `npm run development`.
-
-## 🏃 Usage
-
-1.  **Start the Laravel development server:**
-    ```bash
-    php artisan serve
-    ```
-2.  Your application should now be running at `http://127.0.0.1:8000`.
+Sebelum menjalankan PHPUnit, migration, seeder, atau tinker, verifikasi database testing mengikuti `docs/testing-database-safety-standard.md`.
 
 ## WhatsApp API
 
-This project can proxy and control a local WhatsApp bot server. Configure these in `.env`:
+Konfigurasi:
+
 ```env
 WHATSAPP_BOT_URL=http://127.0.0.1:3000
 WA_API_KEY=your-secret-key
 ```
 
-All WhatsApp endpoints are under `POST /api/whatsapp/*` and protected by `X-API-KEY`.
+Endpoint WhatsApp API berada di `POST /api/whatsapp/*` dan dilindungi header `X-API-KEY`.
 
-Example send:
-```bash
-curl -X POST http://127.0.0.1:8000/api/whatsapp/send \
-  -H "X-API-KEY: your-secret-key" \
-  -H "Content-Type: application/json" \
-  -d "{\"phone\":\"08123456789\",\"message\":\"Hello\"}"
-```
+Contoh endpoint:
 
-Other endpoints:
 ```text
 GET  /api/whatsapp/status
 GET  /api/whatsapp/qr
@@ -160,30 +81,8 @@ POST /api/whatsapp/disconnect
 POST /api/whatsapp/reload
 POST /api/whatsapp/restart
 POST /api/whatsapp/reset
+POST /api/whatsapp/send
 POST /api/whatsapp/send-driver
 POST /api/whatsapp/send-operator
 POST /api/whatsapp/send-both
 ```
-
-## ✅ Testing
-
-To run the PHPUnit test suite, execute the following command:
-```bash
-./vendor/bin/phpunit
-```
-
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -23,7 +23,6 @@
 <!-- JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 <script src="{{ mix('build/backend/js/app.js') }}" defer></script>
-
 <script>
     Dropzone.autoDiscover = false;
     document.addEventListener('DOMContentLoaded', function () {
@@ -84,17 +83,6 @@
 	});
 </script>
 
-{{-- <script>
-	$('form').submit(function (event) {
-        if ($(this).hasClass('submitted')) {
-            event.preventDefault();
-        }
-        else {
-            $(this).find(':submit').html('<i class="fa fa-spinner fa-spin spn"></i>');
-            $(this).addClass('submitted');
-        }
-    });
-</script> --}}
 
 <script type="text/javascript">
     $(document).ready(function(){  
@@ -117,10 +105,6 @@
     });
 </script>
 
-
-
-
-
 <script>
 	$(document).ready(function() {
         var today = moment().toDate();
@@ -132,30 +116,30 @@
             .datepicker({
                 minDate: sevenDaysAfter,
                 defaultDate: defaultDate,
-				format: 'MM/DD/YYYY',
+				format: 'YYYY-MM-DD',
             });
         $("#arrivalFlightDate, #departureFlightDate, #checkIn, #datein, #dateout").datepicker({
             minDate: oneDayAfter,
-			format: 'MM/DD/YYYY',
+			format: 'YYYY-MM-DD',
         });
 
         $("#checkout").datepicker({
             minDate: nineDaysAfter,
-			format: 'MM/DD/YYYY',
+			format: 'YYYY-MM-DD',
         });
 
         $('input[name="checkincout"]').daterangepicker({
             minDate: sevenDaysAfter,
             opens: 'left',
             autoApply: true,
-			format: 'MM/DD/YYYY',
+			format: 'YYYY-MM-DD',
         });
 
         $('.wedding-date').each(function () {
             $(this).datepicker({
                 minDate: sevenDaysAfter,
                 defaultDate: defaultDate,
-				format: 'MM/DD/YYYY',
+				format: 'YYYY-MM-DD',
             }).datepicker('setDate', defaultDate);
         });
 
@@ -163,7 +147,7 @@
             $(this).datetimepicker({
                 minDate: sevenDaysAfter,
                 defaultDate: defaultDate,
-				format: 'MM/DD/YYYY',
+				format: 'YYYY-MM-DD',
             }).datepicker('setDate', defaultDate);
         });
        
@@ -172,14 +156,14 @@
             opens: 'left',
             autoApply: true,
 			language: 'en',
-			format: 'MM/DD/YYYY',
+			format: 'YYYY-MM-DD',
         });
 
         $("#travel_date").datepicker({
             minDate: oneDayAfter,
             defaultDate: defaultDate,
             locale: 'de',
-            format: 'MM/DD/YYYY',
+            format: 'YYYY-MM-DD',
         });
         $('input[name="spk_date"]').daterangepicker({
             singleDatePicker: true,
@@ -189,7 +173,7 @@
 			 minDate: today,
 			language: 'en',
 			locale: {
-				format: 'MM/DD/YYYY',
+				format: 'YYYY-MM-DD',
 			}
         });
         $('input[name="flight_date"]').daterangepicker({
@@ -200,7 +184,7 @@
 			minDate: today,
 			language: 'en',
 			locale: {
-				format: 'MM/DD/YYYY',
+				format: 'YYYY-MM-DD',
 			}
         });
         $('input[name="travel_date"]').daterangepicker({
@@ -211,7 +195,7 @@
 			 minDate: today,
 			language: 'en',
 			locale: {
-				format: 'MM/DD/YYYY',
+				format: 'YYYY-MM-DD',
 			}
         });
     });

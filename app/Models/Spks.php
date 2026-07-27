@@ -9,12 +9,17 @@ use App\Models\Reservation;
 use App\Models\AirportShuttle;
 use App\Models\SpkDestinations;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 
 class Spks extends Model
 {
     use HasFactory;
+
+    protected $table = 'spks';
 
     protected $fillable = [
         'order_number',
@@ -26,20 +31,67 @@ class Spks extends Model
         'plate_number',
         'spk_number',
         'number_of_guests',
+        'public_token',
         'spk_date',
         'send_report',
         'status',
     ];
 
-    public function reservation()
+    protected $casts = [
+        'spk_date' => 'date',
+    ];
+
+    protected static function booted(): void
     {
-        return $this->belongsTo(Reservation::class, 'reservation_id');
+        static::creating(function (Spks $spk) {
+            if (blank($spk->public_token)) {
+                $spk->public_token =
+                    static::generateUniquePublicToken();
+            }
+        });
     }
 
-    public function driver()
+    public static function generateUniquePublicToken(): string
     {
-        return $this->belongsTo(Drivers::class, 'driver_id');
+        do {
+            $token = strtoupper(Str::random(8));
+        } while (
+            static::query()
+                ->where('public_token', $token)
+                ->exists()
+        );
+
+        return $token;
     }
+
+    public function reservation(): BelongsTo
+    {
+        return $this->belongsTo(
+            Reservation::class,
+            'reservation_id'
+        );
+    }
+
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(
+            Drivers::class,
+            'driver_id'
+        );
+    }
+
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(
+            Transports::class,
+            'transport_id'
+        );
+    }
+
+    // public function driver()
+    // {
+    //     return $this->belongsTo(Drivers::class, 'driver_id');
+    // }
 
     public function transport()
     {

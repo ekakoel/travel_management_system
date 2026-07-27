@@ -49,8 +49,8 @@
                         </select>
                     </label>
                     <label>
-                        <span>@lang('transport-management.form.spk_date') <b>*</b></span>
-                        <input class="backend-form-control" readonly name="spk_date" type="text" value="{{ old('spk_date', $spk->spk_date ? dateFormat($spk->spk_date) : '') }}" placeholder="{{ __('transport-management.form.select_date') }}" required>
+                        <span>@lang('transport-management.form.spk_date') <b>*</b></span> 
+                        <input class="backend-form-control js-datepicker" readonly autocomplete="off" name="spk_date" type="text" value="{{ old('spk_date', $spk->spk_date ? dateFormat($spk->spk_date) : '') }}" placeholder="{{ __('transport-management.form.select_date') }}" required>
                     </label>
                     <label>
                         <span>@lang('transport-management.form.guests') <b>*</b></span>

@@ -1,0 +1,396 @@
+/* =========================================================
+   INPUT DATE
+   ========================================================= */
+
+.backend-date-input {
+    position: relative;
+    width: 100%;
+}
+
+.backend-date-input .backend-form-control {
+    width: 100%;
+    min-height: 42px;
+    padding-right: 44px;
+    cursor: pointer;
+}
+
+.backend-date-input__icon {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #64748b;
+    font-size: 16px;
+
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+   ========================================================= */
+
+.daterangepicker {
+    z-index: 999999 !important;
+
+    width: 312px !important;
+    min-width: 312px !important;
+    max-width: 312px !important;
+
+    margin-top: 10px !important;
+    padding: 14px !important;
+
+    font-family: inherit !important;
+
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+
+    box-sizing: border-box !important;
+
+    box-shadow:
+        0 20px 45px rgba(15, 23, 42, 0.16),
+        0 8px 18px rgba(15, 23, 42, 0.08) !important;
+}
+
+.daterangepicker::before {
+    border-bottom-color: #e2e8f0 !important;
+}
+
+.daterangepicker::after {
+    border-bottom-color: #ffffff !important;
+}
+
+
+/* =========================================================
+   SINGLE CALENDAR
+   ========================================================= */
+
+.daterangepicker.single .drp-calendar {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+}
+
+.daterangepicker.single .drp-calendar.left {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.daterangepicker .calendar-table {
+    width: 100% !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+    border: 0 !important;
+}
+
+.daterangepicker .calendar-table table {
+    width: 100% !important;
+
+    border-collapse: separate !important;
+    border-spacing: 2px !important;
+    table-layout: fixed !important;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+
+.daterangepicker .calendar-table th {
+    padding: 0 !important;
+
+    color: #475569;
+    background: transparent;
+    border: 0 !important;
+}
+
+.daterangepicker .calendar-table th.month {
+    width: auto !important;
+    padding: 0 4px !important;
+
+    color: #0f172a !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+}
+
+
+/* =========================================================
+   MONTH AND YEAR DROPDOWN
+   ========================================================= */
+
+.daterangepicker .monthselect,
+.daterangepicker .yearselect {
+    height: 36px !important;
+    margin: 0 !important;
+    padding: 0 30px 0 12px !important;
+
+    color: #0f172a !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+
+    background-color: #f8fafc !important;
+    border: 1px solid #dbe3ee !important;
+    border-radius: 9px !important;
+    outline: none !important;
+
+    box-sizing: border-box !important;
+}
+
+.daterangepicker .monthselect {
+    width: 112px !important;
+}
+
+.daterangepicker .yearselect {
+    width: 82px !important;
+}
+
+.daterangepicker .monthselect:focus,
+.daterangepicker .yearselect:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+}
+
+
+/* =========================================================
+   PREVIOUS AND NEXT BUTTON
+   ========================================================= */
+
+.daterangepicker th.prev,
+.daterangepicker th.next {
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 38px !important;
+
+    background-color: #f8fafc !important;
+    border-radius: 10px !important;
+
+    cursor: pointer !important;
+    overflow: hidden !important;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease !important;
+}
+
+.daterangepicker th.prev:hover,
+.daterangepicker th.next:hover {
+    background-color: #eff6ff !important;
+}
+
+.daterangepicker th.prev span,
+.daterangepicker th.next span {
+    display: inline-block !important;
+
+    width: 9px !important;
+    height: 9px !important;
+    padding: 0 !important;
+
+    border-width: 0 2px 2px 0 !important;
+    border-color: #64748b !important;
+}
+
+.daterangepicker th.prev:hover span,
+.daterangepicker th.next:hover span {
+    border-color: #2563eb !important;
+}
+
+
+/* =========================================================
+   WEEKDAY HEADER
+   ========================================================= */
+
+.daterangepicker thead tr:last-child th {
+    height: 34px !important;
+
+    color: #94a3b8 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 34px !important;
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   DATE CELLS
+   ========================================================= */
+
+.daterangepicker .calendar-table td {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    padding: 0 !important;
+
+    color: #475569;
+    font-size: 13px !important;
+    font-weight: 500;
+    line-height: 36px !important;
+    text-align: center;
+
+    background: transparent;
+    border: 0 !important;
+    border-radius: 9px !important;
+
+    box-sizing: border-box !important;
+
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        transform 0.15s ease !important;
+}
+
+.daterangepicker td.available:hover {
+    color: #2563eb !important;
+    background-color: #eff6ff !important;
+
+    transform: scale(1.04);
+}
+
+
+/* Other month dates */
+
+.daterangepicker td.off,
+.daterangepicker td.off.in-range,
+.daterangepicker td.off.start-date,
+.daterangepicker td.off.end-date {
+    color: #cbd5e1 !important;
+    background-color: transparent !important;
+}
+
+
+/* Disabled dates */
+
+.daterangepicker td.disabled {
+    color: #d6deea !important;
+
+    text-decoration: none !important;
+    cursor: not-allowed !important;
+}
+
+
+/* Today */
+
+.daterangepicker td.today:not(.active) {
+    color: #2563eb !important;
+    font-weight: 700 !important;
+
+    background-color: #eff6ff !important;
+    box-shadow: inset 0 0 0 1px #93c5fd !important;
+}
+
+
+/* Selected date */
+
+.daterangepicker td.active,
+.daterangepicker td.active:hover,
+.daterangepicker td.start-date,
+.daterangepicker td.end-date {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+
+    background-color: #2563eb !important;
+    border-radius: 10px !important;
+
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28) !important;
+}
+
+
+/* =========================================================
+   HIDE UNUSED RANGE ELEMENTS FOR SINGLE DATE
+   ========================================================= */
+
+.daterangepicker.single .ranges {
+    display: none !important;
+}
+
+.daterangepicker.single .drp-buttons {
+    display: none !important;
+}
+
+.daterangepicker.single .calendar-time {
+    display: none;
+}
+
+/* Input tanggal berdasarkan name, id, atau class yang sudah digunakan */
+input[name$="_date"],
+input[name*="[date]"],
+input[id$="_date"],
+input[id*="-date"],
+input.daterangepicker-input,
+input.datepicker,
+input.date-range-picker {
+    padding-right: 46px !important;
+
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M16 3v4M8 3v4M3 10h18'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 18px 18px;
+
+    cursor: pointer;
+}
+
+input[name$="_date"]:hover,
+input[name*="[date]"]:hover,
+input[id$="_date"]:hover,
+input[id*="-date"]:hover,
+input.daterangepicker-input:hover,
+input.datepicker:hover,
+input.date-range-picker:hover {
+    border-color: #94a3b8 !important;
+}
+
+input[name$="_date"]:focus,
+input[name*="[date]"]:focus,
+input[id$="_date"]:focus,
+input[id*="-date"]:focus,
+input.daterangepicker-input:focus,
+input.datepicker:focus,
+input.date-range-picker:focus {
+    border-color: #3b82f6 !important;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M16 3v4M8 3v4M3 10h18'/%3E%3C/svg%3E");
+
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+    outline: none !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .daterangepicker {
+        width: calc(100vw - 24px) !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 24px) !important;
+
+        left: 12px !important;
+        right: 12px !important;
+
+        padding: 12px !important;
+    }
+
+    .daterangepicker .monthselect {
+        width: 105px !important;
+    }
+
+    .daterangepicker .yearselect {
+        width: 76px !important;
+    }
+
+    .daterangepicker .calendar-table td {
+        height: 34px !important;
+        line-height: 34px !important;
+    }
+}

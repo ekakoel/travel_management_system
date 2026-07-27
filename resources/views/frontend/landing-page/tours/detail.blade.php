@@ -88,24 +88,6 @@
                         <h1 class="frontend-page-intro__title">@lang('tour-detail.topband_title')</h1>
                         <p class="frontend-page-intro__text">@lang('tour-detail.topband_text')</p>
                     </div>
-                    {{-- <div class="frontend-page-summary">
-                        <div class="frontend-page-summary__item">
-                            <span>@lang('messages.Duration')</span>
-                            <strong>{{ $durationLabel }}</strong>
-                        </div>
-                        <div class="frontend-page-summary__item">
-                            <span>@lang('messages.Price')</span>
-                            <strong>{{ $lowestRate ? __('tour-detail.from') . ' ' . currencyFormatUsd($lowestRate) : '-' }}</strong>
-                        </div>
-                        <div class="frontend-page-summary__item">
-                            <span>@lang('tour-map.planned_stops')</span>
-                            <strong>{{ count($tourMapLocations) }}</strong>
-                        </div>
-                        <div class="frontend-page-summary__item">
-                            <span>@lang('tour-detail.gallery')</span>
-                            <strong>{{ $tourLocationGalleryImages->count() }}</strong>
-                        </div>
-                    </div> --}}
                 </div>
             </div>
         </section>

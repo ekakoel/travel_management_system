@@ -1,41 +1,20 @@
 # Frontend Roadmap Entry Template
 
-Gunakan template ini setiap kali ada perubahan frontend dan salin hasilnya ke:
+Status: active
+Updated: 2026-07-27
 
-- `docs/frontend-roadmap.md`
+Tambahkan entry singkat ke `docs/frontend-roadmap.md` setiap perubahan frontend menyentuh Blade, CSS, JavaScript, copy, layout, komponen, submit, modal, atau interaction.
 
-## Template Umum
+```markdown
+## YYYY-MM-DD - Area / Halaman
 
-```text
-## YYYY-MM-DD - Judul Perubahan
-- Status: planned | in progress | done | blocked
-- Area: halaman / komponen / asset / flow
-- Summary: jelaskan apa yang diubah dalam 1-3 kalimat
-- Impact: jelaskan pengaruhnya terhadap UI, UX, consistency, reusability, atau performance
+- Status: done|partial|planned
 - Files:
-  - `path/file-1`
-  - `path/file-2`
-- Follow-up: tulis langkah berikutnya, atau `none` jika tidak ada
+  - `path/to/file`
+- Summary: ringkasan perubahan.
+- Impact: dampak terhadap UI/UX, flow, reusable component, atau language.
+- Verification: command atau pemeriksaan yang dijalankan.
+- Follow-up: opsional, hanya jika ada risiko/sisa kerja nyata.
 ```
 
-## Template Frontend UI/UX
-
-```text
-## YYYY-MM-DD - Nama Halaman / Fitur
-- Status: planned | in progress | done | blocked
-- Area: frontend UI/UX
-- Summary: perubahan visual, struktur halaman, flow, atau interaction yang dilakukan
-- Impact: dampak pada baseline `hotelavailability`, consistency, mobile usability, CTA clarity, atau readability
-- Files:
-  - `resources/views/...`
-  - `public/css/...`
-  - `public/frontend/js/...`
-  - `app/Http/Controllers/...`
-- Follow-up: alignment page lain / audit translation / cleanup reusable component / none
-```
-
-## Aturan Wajib
-
-1. Jangan merge perubahan frontend tanpa menambahkan entry ke `docs/frontend-roadmap.md`.
-2. Jika perubahan mengubah standar, update juga `docs/frontend-ui-standards.md`.
-3. Jika perubahan menyentuh Blade atau asset separation, pastikan tetap sesuai `docs/blade-asset-rules.md`.
+Jangan menulis changelog panjang. Simpan hanya konteks yang membantu agent berikutnya memahami perubahan aktif.

@@ -179,7 +179,7 @@
                                             <div class="tour-package-card__media">
                                                 <img src="{{ $tourImage }}" alt="{{ $tour->display_name }}" loading="lazy"
                                                     onerror="this.onerror=null;this.src='{{ asset('storage/images/default.webp') }}';">
-                                                <span class="tour-package-card__badge"><i class="fa fa-map-marker-alt" aria-hidden="true"></i>{{ $tour->display_area }}</span>
+                                                {{-- <span class="tour-package-card__badge"><i class="fa fa-map-marker-alt" aria-hidden="true"></i>{{ $tour->display_area }}</span> --}}
                                                 <span class="tour-package-card__duration"><i class="fa fa-clock" aria-hidden="true"></i>{{ $duration }}</span>
                                             </div>
                                             <div class="tour-package-card__body">

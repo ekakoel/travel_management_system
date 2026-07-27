@@ -1,100 +1,40 @@
 # Backend Legacy UI Audit
 
-Tanggal audit: 2026-07-22
+Status: active
+Updated: 2026-07-27
 
-Audit ini memindai view backend/admin untuk pola legacy yang harus dihindari pada standardisasi backend UI:
+Audit ringkas area backend yang masih perlu perhatian.
 
-- `card-box`, `card-box-title`, `card-box-footer`
-- `btn-view`, `btn-edit`, `btn-delete`, `btn btn-*`
-- `alert alert-*`, `alert-form`
-- inline `style=`, inline `<script>`, `onkeyup`, `onclick`
-- `.data-table`, `status-active`, `status-draft`
+## Legacy Pattern Yang Harus Dihindari
 
-## Status domain yang sudah bersih/ditutup
+- `card-box`
+- `btn-view`, `btn-edit`, `btn-delete`
+- `status-active`, `status-draft`
+- `.data-table.table` sebagai style utama
+- inline `<style>`, inline `<script>`, `onclick`, `onkeyup`
+- page-specific form/button/status/modal primitive
 
-- [x] Activities backend sudah selesai sampai Phase 6.
-- [x] Hotels workspace sudah selesai sampai Phase 8J.
-- [x] Guides index sudah memakai asset architecture backend.
-- [x] Drivers index sudah memakai asset architecture backend.
-- [x] Dashboard, Company Profile, Footer Manager, Reviews, Terms, Currency, User Manager, Orders Admin index/detail, dan Transport Management utama sudah memiliki banyak shared UI guard.
+## Domain Bersih Atau Sudah Punya Baseline
 
-## Temuan prioritas global
+- Admin Dashboard.
+- Hotels operations.
+- Activities operations.
+- Tours operations.
+- Transports operations.
+- Drivers/Guides.
+- Admin content pages utama.
 
-File dengan temuan legacy terbanyak:
+## Kandidat Cleanup Berikutnya
 
-| Prioritas | File | Jumlah temuan |
-| --- | --- | ---: |
-| 1 | `resources/views/admin/order/order-wedding-detail.blade.php` | 443 |
-| 2 | `resources/views/admin/reservation_detail.blade.php` | 197 |
-| 3 | `resources/views/admin/update-wedding-services.blade.php` | 87 |
-| 4 | `resources/views/admin/wedding-hotel-detail.blade.php` | 67 |
-| 5 | `resources/views/admin/transportmanagement/detail-spk.blade.php` | 63 |
-| 6 | `resources/views/admin/partner-detail.blade.php` | 53 |
-| 7 | `resources/views/admin/create-hotel-order.blade.php` | 51 |
-| 8 | `resources/views/admin/promotion.blade.php` | 49 |
-| 9 | `resources/views/admin/toursadmindetail.blade.php` | 48 |
-| 10 | `resources/views/admin/villas/show.blade.php` | 47 |
+1. Wedding operations workspace.
+2. Reservation detail/list lanjutan.
+3. Orders admin legacy helpers.
+4. SPK/transport management polish setelah public report token stabil.
 
-## Kandidat domain berikutnya
+## Cara Audit
 
-### Opsi A - Wedding Operations Workspace
+Gunakan `rg` pada view dan SCSS domain:
 
-Alasan:
-
-- Jumlah legacy paling besar ada di `order-wedding-detail`, `update-wedding-services`, `wedding-hotel-detail`, dan banyak form `backend/operations/weddings`.
-- Domain ini tampaknya besar dan kompleks, sehingga paling perlu roadmap sendiri seperti Hotels/Activities.
-
-Risiko:
-
-- Scope besar; sebaiknya dipecah menjadi beberapa phase.
-- Kemungkinan banyak coupling order/wedding/reservation.
-
-Rekomendasi:
-
-- [ ] Buat roadmap `Wedding Operations Backend Standardization`.
-- [ ] Mulai dari audit route/controller/view/asset.
-- [ ] Pindahkan index/detail utama ke `resources/views/backend/operations/weddings`.
-- [ ] Buat wrapper legacy di `resources/views/admin/weddings*.blade.php`.
-- [ ] Standarisasi hero/toolbar/KPI/panel/detail sebelum menyentuh CRUD form kompleks.
-
-### Opsi B - Reservations Workspace
-
-Alasan:
-
-- `resources/views/admin/reservation_detail.blade.php` memiliki 197 temuan legacy.
-- Banyak action reservation sudah berada di `resources/views/backend/operations/reservations/actions`.
-
-Risiko:
-
-- Reservation biasanya menyentuh order, invoice, booking code, hotel/activity/tour/transport sekaligus.
-
-Rekomendasi:
-
-- [ ] Mulai dari detail reservation.
-- [ ] Pisahkan partial/action yang paling sering dipakai.
-- [ ] Buat asset domain `resources/backend/js/operations/reservations`.
-
-### Opsi C - Tours Workspace
-
-Alasan:
-
-- `backend/tours/create-tour.blade.php`, `backend/tours/update-tour.blade.php`, `admin/toursadmin.blade.php`, dan `admin/toursadmindetail.blade.php` masih memiliki legacy UI.
-- Polanya mirip Activities, sehingga bisa distandarisasi lebih cepat daripada Wedding/Reservations.
-
-Risiko:
-
-- Ada repeater lokasi tour dengan inline script dan inline style yang perlu dipindah hati-hati ke JS domain.
-
-Rekomendasi:
-
-- [ ] Buat roadmap `Tours Backend Standardization`.
-- [ ] Mulai dari route/view wrapper dan asset architecture.
-- [ ] Setelah itu standardisasi index/detail, lalu create/update form.
-
-## Rekomendasi pilihan berikutnya
-
-Mulai dari **Tours Workspace** bila ingin progress cepat dan risiko lebih kecil, karena pola CRUD/service-nya paling dekat dengan Activities.
-
-Mulai dari **Wedding Operations Workspace** bila ingin membersihkan area legacy paling besar dan berdampak paling luas.
-
-Pilihan teknis terbaik saya: **Tours Workspace dulu**, lalu Wedding. Tours akan menjadi template tambahan setelah Activities untuk resource product backend, sehingga Wedding yang lebih rumit punya dua pembanding standard: Hotels dan Activities/Tours.
+```powershell
+rg -n "card-box|btn-view|btn-edit|btn-delete|status-active|status-draft|<style|<script|onclick|onkeyup" resources\views resources\backend
+```

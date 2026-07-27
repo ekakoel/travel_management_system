@@ -155,9 +155,8 @@
                                             </td>
                                             <td class="text-right">
                                                 <div class="backend-table-actions">
-                                                    <a class="backend-table-action backend-table-action-view transport-management-row-action" href="{{ route('view.detail-spk', $spk->id) }}">
+                                                    <a class="backend-icon-action backend-table-action-view transport-management-row-action" href="{{ route('view.detail-spk', $spk->id) }}">
                                                         <i class="icon-copy dw dw-eye" aria-hidden="true"></i>
-                                                        <span>@lang('transport-management.actions.detail')</span>
                                                     </a>
                                                 </div>
                                             </td>

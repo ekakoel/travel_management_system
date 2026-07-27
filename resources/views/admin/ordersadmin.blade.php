@@ -163,19 +163,20 @@
                 </section>
 
                 <section class="backend-filter-panel orders-admin-filter">
-                    <label class="backend-filter-label" for="ordersAdminSearch">@lang('admin-orders.filter.search')</label>
-                    <div class="backend-filter-search">
-                        <i class="fa fa-search" aria-hidden="true"></i>
-                        <input
-                            class="backend-filter-control"
-                            id="ordersAdminSearch"
-                            type="search"
-                            placeholder="{{ __('admin-orders.filter.placeholder') }}"
-                            data-orders-search
-                        >
-                    </div>
+                    <label class="backend-filter-field">
+                        <span class="backend-filter-label">@lang('admin-orders.filter.search')</span>
+                        <span class="backend-filter-search">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <input
+                                class="backend-filter-control"
+                                id="ordersAdminSearch"
+                                type="search"
+                                placeholder="{{ __('admin-orders.filter.placeholder') }}"
+                                data-orders-search
+                            >
+                        </span>
+                    </label>
                 </section>
-
                 <div class="orders-admin-layout">
                     <aside class="orders-admin-side" aria-label="{{ $translateWithFallback('admin-orders.navigation.label', 'Orders navigation') }}">
                         <section class="orders-admin-side-card orders-admin-focus">

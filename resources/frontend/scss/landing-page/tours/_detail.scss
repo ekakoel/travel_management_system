@@ -341,7 +341,7 @@
 
     .tour-similar-grid {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 1rem;
     }
 
@@ -2148,7 +2148,7 @@ body.tour-gallery-modal-open .modal-backdrop.show {
     .tour-detail-page {
         .tour-detail-info-grid,
         .tour-similar-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
         .tour-detail-info-grid {
@@ -2156,7 +2156,7 @@ body.tour-gallery-modal-open .modal-backdrop.show {
         }
 
         .tour-gallery-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
         .tour-gallery-showcase__main {

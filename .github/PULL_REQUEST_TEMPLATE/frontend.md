@@ -1,40 +1,37 @@
 ## Frontend PR Checklist
 
+Status: active
+Updated: 2026-07-27
+
 ### Summary
 
-- Jelaskan secara singkat perubahan frontend yang dilakukan.
+- Ringkasan perubahan:
+- Halaman/komponen:
+- Flow yang berubah:
 
-### UI/UX Scope
+### Required Context
 
-- Halaman atau komponen apa yang diubah:
-- Flow apa yang berubah:
-- Apakah perubahan ini mengikuti baseline `hotelavailability`:
-
-### Required Checks
-
-- [ ] Perubahan sudah mengikuti `docs/frontend-ui-standards.md`
-- [ ] Perubahan sudah mengikuti `docs/blade-asset-rules.md`
-- [ ] Jika ada pattern reusable baru, standard terkait sudah diperbarui
-- [ ] `docs/frontend-roadmap.md` sudah diperbarui
-- [ ] Jika perlu, entry baru juga disiapkan memakai `docs/frontend-roadmap-entry-template.md`
-- [ ] CTA, breadcrumb, hierarchy, dan page shell sudah konsisten dengan baseline frontend
-- [ ] Tidak ada inline CSS atau inline JavaScript baru di Blade
-- [ ] Data shaping kompleks tidak diletakkan di Blade
-- [ ] Flow login, redirect, refresh, dan language switch tetap aman
-- [ ] Perubahan sudah dicek pada desktop dan mobile
-
-### Roadmap Entry
-
-- Tanggal entry roadmap:
-- Judul entry roadmap:
+- [ ] `AGENTS.md` dan `docs/README.md` sudah dibaca.
+- [ ] Route, middleware, controller, view, asset, redirect, dan language key terkait sudah dicek.
+- [ ] Perubahan mengikuti `docs/frontend-ui-standards.md`.
+- [ ] Perubahan mengikuti `docs/blade-asset-rules.md`.
+- [ ] Submit penting mengikuti `docs/form-submit-standard.md`.
+- [ ] Modal order service mengikuti `docs/frontend-order-modal-standard.md` bila relevan.
+- [ ] Copy user-facing memakai language key untuk `en`, `zh`, dan `zh-CN`.
+- [ ] Tidak ada inline CSS/JS baru di Blade.
+- [ ] Desktop dan mobile sudah dicek.
+- [ ] `docs/frontend-roadmap.md` sudah diperbarui.
 
 ### Files Changed
 
-- `resources/views/...`
-- `public/css/...`
-- `public/frontend/js/...`
+- `resources/views/frontend/...`
+- `resources/frontend/js/...`
+- `resources/frontend/scss/...`
+- `resources/lang/{en,zh,zh-CN}/...`
 - `app/Http/Controllers/...`
 
-### Notes
+### Verification
 
-- Catatan tambahan, tradeoff, atau follow-up jika ada.
+- Command/pemeriksaan:
+- Hasil:
+- Risiko atau follow-up:
