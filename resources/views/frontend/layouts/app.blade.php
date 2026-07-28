@@ -22,7 +22,7 @@
             @yield('content')
         </div>
     </div>
-    <a href="#" id="backToTopBtn" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top" style="display: none; place-content: center;"><i class="bi bi-arrow-up"></i></a>
+    <a href="#" id="backToTopBtn" class="btn btn-primary btn-lg-square rounded-circle back-to-top" style="display: none; place-content: center;"><i class="bi bi-arrow-up"></i></a>
     @include('frontend.layouts.footer-modern')
 
     <!-- JavaScript Libraries -->

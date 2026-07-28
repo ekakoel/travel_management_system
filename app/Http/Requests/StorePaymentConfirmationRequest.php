@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SafeReceiptUpload;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePaymentConfirmationRequest extends FormRequest
@@ -13,7 +14,7 @@ class StorePaymentConfirmationRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +25,7 @@ class StorePaymentConfirmationRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'receipt_name' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'mimetypes:image/jpeg,image/png,application/pdf', 'max:5120', new SafeReceiptUpload()],
         ];
     }
 }

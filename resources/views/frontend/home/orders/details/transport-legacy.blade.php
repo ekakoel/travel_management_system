@@ -33,7 +33,7 @@
                                                 <div class="card-box-title">
                                                     <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
                                                 </div>
-                                                <img src="{{ asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                                <img src="{{ route('orders.transport.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" alt="">
                                                 <div class="card-box-footer">
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                                 </div>
@@ -81,7 +81,7 @@
                                                 <div class="card-box-title">
                                                     <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
                                                 </div>
-                                                <img src="{{ asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                                <img src="{{ route('orders.transport.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" alt="">
                                                 <div class="notification-text" style="margin-top: 8px; color:rgb(143, 0, 0);">
                                                     {!! $receipt->note !!}
                                                 </div>
@@ -118,7 +118,7 @@
                                                 <div class="card-box-title">
                                                     <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
                                                 </div>
-                                                <img src="{{ asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                                <img src="{{ route('orders.transport.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" alt="">
                                                 <div class="notification-text" style="margin-top: 8px; color:rgb(143, 0, 0);">
                                                     {!! $receipt->note !!}
                                                 </div>

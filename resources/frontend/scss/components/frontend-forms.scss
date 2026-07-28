@@ -148,8 +148,6 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
-    border-top: 1px solid var(--frontend-shell-border);
-    border-bottom: 1px solid var(--frontend-shell-border);
 }
 
 .booking-review__card {
@@ -181,8 +179,6 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0;
-    border-top: 1px solid var(--frontend-shell-border);
-    border-bottom: 1px solid var(--frontend-shell-border);
 }
 
 .booking-review__fact,
@@ -193,15 +189,6 @@
     border-radius: 0;
     background: transparent;
     box-shadow: none;
-}
-
-.booking-review__fact:nth-child(even) {
-    padding-left: 0.85rem;
-    border-left: 1px solid var(--frontend-shell-border);
-}
-
-.booking-review__fact:nth-child(n + 3) {
-    border-top: 1px solid var(--frontend-shell-border);
 }
 
 .booking-review__fact span,

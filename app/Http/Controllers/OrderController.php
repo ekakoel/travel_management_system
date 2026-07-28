@@ -48,7 +48,19 @@ use App\Models\BusinessProfile;
 use App\Models\AdditionalService;
 use App\Models\OptionalRateOrder;
 use App\Models\Activities;
+use App\Services\ActivityOrderLifecycleService;
+use App\Services\ActivityReservationService;
+use App\Services\AccommodationBookingGuardService;
+use App\Services\AccommodationFinancialFileService;
+use App\Services\AccommodationOrderLifecycleService;
+use App\Services\AccommodationReservationService;
+use App\Services\Hotels\HotelPricingService;
 use App\Services\TransportOrderNumberService;
+use App\Services\TransportAvailabilityService;
+use App\Services\TransportOrderLifecycleService;
+use App\Services\TransportReservationService;
+use App\Services\TourOrderLifecycleService;
+use App\Services\TourReservationService;
 use Illuminate\Support\Facades\DB;
 use App\Models\PaymentConfirmation;
 use Illuminate\Validation\ValidationException;
@@ -68,6 +80,9 @@ class OrderController extends Controller
     use InteractsWithFormSubmissions;
 
     private const TOUR_ORDER_SUBMISSION_SCOPE = 'tour-order-create';
+    private const ACCOMMODATION_ORDER_SUBMISSION_SCOPE = 'accommodation-order-create';
+    private const TRANSPORT_ORDER_SUBMISSION_SCOPE = 'transport-order-create';
+    private const ACTIVITY_ORDER_SUBMISSION_SCOPE = 'activity-order-create';
 
     public function __construct()
     {
@@ -91,6 +106,8 @@ class OrderController extends Controller
                 'request_quotation' => $requestQuotation,
                 'status' => 'Pending',
             ]);
+
+            app(AccommodationReservationService::class)->ensurePendingReservationForOrder($order);
 
             OrderLog::create([
                 'order_id' => $order->id,
@@ -138,6 +155,56 @@ class OrderController extends Controller
     private function flashDuplicateOrderNumberRefresh(): void
     {
         session()->flash('warning', __('messages.Order number already exists. The form has been refreshed with a new order number.'));
+    }
+
+    private function findProcessedAccommodationOrderBySubmissionToken(?string $token): ?Orders
+    {
+        $orderId = $this->findProcessedFormSubmission(self::ACCOMMODATION_ORDER_SUBMISSION_SCOPE, $token);
+
+        return $orderId ? Orders::find($orderId) : null;
+    }
+
+    private function rememberProcessedAccommodationOrderSubmission(?string $token, Orders $order): void
+    {
+        if (!$token) {
+            return;
+        }
+
+        $this->rememberProcessedFormSubmission(self::ACCOMMODATION_ORDER_SUBMISSION_SCOPE, $token, $order->id);
+    }
+
+    private function redirectToExistingAccommodationOrder(Orders $order)
+    {
+        $route = in_array(Auth::user()?->position, ['developer', 'reservation', 'author'], true)
+            ? 'view.detail-order-admin'
+            : 'view.detail-order-hotel';
+
+        return redirect()->route($route, ['id' => $order->id])->with('info', __('messages.The order has already been submitted'));
+    }
+
+    private function revalidateAccommodationAvailability(int $hotelId, int $roomId, string $checkin, string $checkout, int $rooms, bool $lock = false): void
+    {
+        app(AccommodationBookingGuardService::class)->ensureRoomCanBeBooked(
+            $hotelId,
+            $roomId,
+            $checkin,
+            $checkout,
+            $rooms,
+            null,
+            $lock
+        );
+    }
+
+    private function findProcessedActivityOrderBySubmissionToken(?string $token): ?Orders
+    {
+        $orderId = $this->findProcessedFormSubmission(self::ACTIVITY_ORDER_SUBMISSION_SCOPE, $token);
+
+        return $orderId ? Orders::find($orderId) : null;
+    }
+
+    private function rememberProcessedActivityOrderSubmission(string $token, Orders $order): void
+    {
+        $this->rememberProcessedFormSubmission(self::ACTIVITY_ORDER_SUBMISSION_SCOPE, $token, $order->id);
     }
 
     private function transportOrderNumberToLetters(int $number): string
@@ -240,14 +307,28 @@ class OrderController extends Controller
 
     private function buildOrderHistoryInvoiceLinks(Orders $order): array
     {
-        $invoiceNumber = optional(optional($order->reservations)->invoice)->inv_no;
+        $invoice = optional($order->reservations)->invoice;
+        $invoiceNumber = optional($invoice)->inv_no;
 
         if (!$invoiceNumber) {
             return [];
         }
 
         return collect(['en' => 'EN', 'zh' => 'ZH'])
-            ->map(function ($label, $locale) use ($order, $invoiceNumber) {
+            ->map(function ($label, $locale) use ($order, $invoice, $invoiceNumber) {
+                if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
+                    $file = app(AccommodationFinancialFileService::class)->resolveInvoiceFile($order, $invoice, $locale);
+
+                    if (!$file) {
+                        return null;
+                    }
+
+                    return [
+                        'label' => $label,
+                        'url' => route('orders.invoice.preview', ['id' => $order->id]),
+                    ];
+                }
+
                 $relativePath = "storage/document/invoice-{$invoiceNumber}-{$order->id}_{$locale}.pdf";
 
                 if (!File::exists(public_path($relativePath))) {
@@ -271,8 +352,9 @@ class OrderController extends Controller
 
     private function resolveOrderInvoiceFileData(Orders $order, ?string $locale = null): ?array
     {
-        $invoiceNumber = optional(optional($order->reservations)->invoice)->inv_no
-            ?: optional(InvoiceAdmin::firstWhere('rsv_id', $order->rsv_id))->inv_no;
+        $invoice = optional($order->reservations)->invoice
+            ?: InvoiceAdmin::firstWhere('rsv_id', $order->rsv_id);
+        $invoiceNumber = optional($invoice)->inv_no;
 
         if (!$invoiceNumber) {
             return null;
@@ -280,6 +362,27 @@ class OrderController extends Controller
 
         $preferredLocale = $locale ?: $this->resolveInvoiceDocumentLocale();
         $candidateLocales = array_values(array_unique([$preferredLocale, 'en', 'zh']));
+
+        if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
+            foreach ($candidateLocales as $candidateLocale) {
+                $file = app(AccommodationFinancialFileService::class)->resolveInvoiceFile($order, $invoice, $candidateLocale);
+
+                if (!$file) {
+                    continue;
+                }
+
+                return [
+                    'invoice_number' => $invoiceNumber,
+                    'locale' => $candidateLocale,
+                    'relative_path' => null,
+                    'absolute_path' => $file['absolute_path'],
+                    'download_name' => $file['download_name'],
+                    'mime' => $file['mime'],
+                ];
+            }
+
+            return null;
+        }
 
         foreach ($candidateLocales as $candidateLocale) {
             $relativePath = "storage/document/invoice-{$invoiceNumber}-{$order->id}_{$candidateLocale}.pdf";
@@ -436,6 +539,8 @@ class OrderController extends Controller
         return response()->file($invoiceFile['absolute_path'], [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $invoiceFile['download_name'] . '"',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
         ]);
     }
 
@@ -466,6 +571,8 @@ class OrderController extends Controller
 
         return response()->download($invoiceFile['absolute_path'], $invoiceFile['download_name'], [
             'Content-Type' => 'application/pdf',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
         ]);
     }
 
@@ -485,6 +592,7 @@ class OrderController extends Controller
             'service_label' => $serviceLabel,
             'status' => $order->status,
             'status_label' => $statusLabel,
+            'display_group' => app(AccommodationOrderLifecycleService::class)->displayGroup($order),
             'title' => $order->servicename ?: $serviceLabel,
             'subtitle' => $order->subservice ?: $order->location,
             'location' => $order->location,
@@ -496,7 +604,7 @@ class OrderController extends Controller
             'price' => $order->final_price,
             'guest_label' => (int) $order->number_of_guests > 0 ? $order->number_of_guests . ' ' . __('messages.Guests') : __('messages.To be advised'),
             'detail_url' => $this->resolveFrontendOrderDetailUrl($order),
-            'invoice_links' => $order->status === 'Paid' ? $this->buildOrderHistoryInvoiceLinks($order) : [],
+            'invoice_links' => ($order->completed_at || in_array($order->status, ['Paid', 'Completed'], true)) ? $this->buildOrderHistoryInvoiceLinks($order) : [],
             'search' => strtolower(implode(' ', array_filter([
                 $order->orderno,
                 $serviceLabel,
@@ -806,15 +914,15 @@ class OrderController extends Controller
                     'flight_number' => trim((string) $request->arrival_flight) !== '' ? trim((string) $request->arrival_flight) : 'Insert flight number',
                     'number_of_guests' => $numberOfGuests,
                     'transport_id' => $transportIn->id,
-                    'price_id' => $request->input('transport_in_price_id', $selectedPrice->id ?? null),
+                    'price_id' => $selectedPrice->id ?? null,
                     'src' => 'Airport',
                     'dst' => $hotel->name,
                     'duration' => $hotel->airport_duration,
                     'distance' => $hotel->airport_distance,
-                    'price' => (float) $request->input('airport_shuttle_in_price', $selectedPrice ? $selectedPrice->calculatePrice(
+                    'price' => $selectedPrice ? $selectedPrice->calculatePrice(
                         Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first()),
                         Cache::remember('tax_1', 3600, fn() => Tax::find(1))
-                    ) : 0),
+                    ) : 0,
                     'nav' => 'In',
                 ]);
             }
@@ -829,15 +937,15 @@ class OrderController extends Controller
                     'flight_number' => trim((string) $request->departure_flight) !== '' ? trim((string) $request->departure_flight) : 'Insert flight number',
                     'number_of_guests' => $numberOfGuests,
                     'transport_id' => $transportOut->id,
-                    'price_id' => $request->input('transport_out_price_id', $selectedPrice->id ?? null),
+                    'price_id' => $selectedPrice->id ?? null,
                     'src' => $hotel->name,
                     'dst' => 'Airport',
                     'duration' => $hotel->airport_duration,
                     'distance' => $hotel->airport_distance,
-                    'price' => (float) $request->input('airport_shuttle_out_price', $selectedPrice ? $selectedPrice->calculatePrice(
+                    'price' => $selectedPrice ? $selectedPrice->calculatePrice(
                         Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first()),
                         Cache::remember('tax_1', 3600, fn() => Tax::find(1))
-                    ) : 0),
+                    ) : 0,
                     'nav' => 'Out',
                 ]);
             }
@@ -937,29 +1045,49 @@ class OrderController extends Controller
         $optionalrates = OptionalRate::all();
         $wedding_order = OrderWedding::all();
         $brides = Brides::all();
-        $tourorders = Orders::where('service','Tour Package')
-            ->where('sales_agent','=', $userid)
-            ->where('checkin', '>=' , $now)
-            ->whereNotIn('status', ['Removed', 'Archive'])
-            ->orderBy('updated_at','DESC')
-            ->get();
-        $hotelorders = Orders::whereIn('service', ['Hotel', 'Hotel Promo', 'Hotel Package'])
-            ->whereNotIn('status', ['Removed', 'Archive'])
-            ->where('sales_agent', $userid)
-            ->where('checkin', '>=', $now)
+        $tourLifecycle = app(TourOrderLifecycleService::class);
+        $activityLifecycle = app(ActivityOrderLifecycleService::class);
+        $tourorders = $tourLifecycle->applyTourCurrentScope(
+            Orders::query()
+                ->where('sales_agent', $userid)
+                ->whereNotIn('status', ['Removed', 'Archive']),
+            $now
+        )
             ->orderBy('updated_at', 'DESC')
             ->get();
-        $activityorders = Orders::where('service','Activity')
-            ->where('sales_agent','=', $userid)
-            ->where('checkin', '>=' , $now)
-            ->whereNotIn('status', ['Removed', 'Archive'])
-            ->orderBy('updated_at','DESC')
+        $lifecycle = app(AccommodationOrderLifecycleService::class);
+        $transportLifecycle = app(TransportOrderLifecycleService::class);
+        $hotelorders = $lifecycle->applyAccommodationCurrentScope(
+            Orders::query()
+                ->whereNotIn('status', ['Removed', 'Archive'])
+                ->where('sales_agent', $userid),
+            $now
+        )
+            ->orderBy('updated_at', 'DESC')
             ->get();
-        $transportorders = Orders::where('service','Transport')
-            ->where('sales_agent','=', $userid)
-            ->where('checkin', '>=' , $now)
-            ->whereNotIn('status', ['Removed', 'Archive'])
-            ->orderBy('updated_at','DESC')
+        $accommodationHistoryOrders = $lifecycle->applyAccommodationHistoryScope(
+            Orders::with(['reservations'])
+                ->where('sales_agent', $userid)
+                ->whereNotIn('status', ['Removed', 'Archive']),
+            $now
+        )
+            ->orderBy('updated_at', 'DESC')
+            ->get();
+        $activityorders = $activityLifecycle->applyActivityCurrentScope(
+            Orders::query()
+                ->where('sales_agent', $userid)
+                ->whereNotIn('status', ['Removed', 'Archive']),
+            $now
+        )
+            ->orderBy('updated_at', 'DESC')
+            ->get();
+        $transportorders = $transportLifecycle->applyTransportCurrentScope(
+            Orders::query()
+                ->where('sales_agent', $userid)
+                ->whereNotIn('status', ['Removed', 'Archive']),
+            $now
+        )
+            ->orderBy('updated_at', 'DESC')
             ->get();
         $villaorders = Orders::where('service', 'Private Villa')
             ->where('sales_agent', $userid)
@@ -969,10 +1097,24 @@ class OrderController extends Controller
             ->get();
         $orderhistories = Orders::with(['reservations'])
             ->where('sales_agent', $userid)
-            ->where('checkin', '<', $now)
+            ->where(function ($query) use ($now, $transportLifecycle, $tourLifecycle, $activityLifecycle) {
+                $query->where(function ($legacyHistory) use ($now) {
+                    $legacyHistory->whereNotIn('service', array_merge(Orders::ACCOMMODATION_SERVICES, [Orders::PUBLIC_TRANSPORT_SERVICE, Orders::PUBLIC_TOUR_SERVICE, Orders::PUBLIC_ACTIVITY_SERVICE]))
+                        ->where('checkin', '<', $now);
+                })->orWhere(function ($transportHistory) use ($now, $transportLifecycle) {
+                    $transportLifecycle->applyTransportHistoryScope($transportHistory, $now);
+                })->orWhere(function ($tourHistory) use ($now, $tourLifecycle) {
+                    $tourLifecycle->applyTourHistoryScope($tourHistory, $now);
+                })->orWhere(function ($activityHistory) use ($now, $activityLifecycle) {
+                    $activityLifecycle->applyActivityHistoryScope($activityHistory, $now);
+                });
+            })
             ->whereNotIn('status', ['Removed', 'Archive'])
             ->orderBy('updated_at', 'DESC')
-            ->get();
+            ->get()
+            ->concat($accommodationHistoryOrders)
+            ->sortByDesc('updated_at')
+            ->values();
 
         $weddingorders = OrderWedding::where('agent_id', $userid)
             ->orderBy('updated_at','DESC')
@@ -981,11 +1123,16 @@ class OrderController extends Controller
         $hotelRoo = HotelRoom::all();
 
 
-        $orders = Orders::where('sales_agent','=', $userid)
+        $standardCurrentOrders = Orders::where('sales_agent','=', $userid)
+            ->whereNotIn('service', array_merge(Orders::ACCOMMODATION_SERVICES, [Orders::PUBLIC_TRANSPORT_SERVICE, Orders::PUBLIC_TOUR_SERVICE, Orders::PUBLIC_ACTIVITY_SERVICE]))
             ->whereNotIn('status', ['Removed', 'Archive'])
             ->where('checkin', '>=' , $now)
             ->orderBy('updated_at','DESC')
             ->get();
+        $orders = $standardCurrentOrders
+            ->concat($hotelorders)
+            ->sortByDesc('updated_at')
+            ->values();
         
         if (isset($orders->checkin) == "")
             $checkin = $now;
@@ -1061,10 +1208,26 @@ class OrderController extends Controller
         $sort = $request->query('sort', 'recent');
         $perPage = 12;
 
+        $lifecycle = app(AccommodationOrderLifecycleService::class);
+        $tourLifecycle = app(TourOrderLifecycleService::class);
+        $activityLifecycle = app(ActivityOrderLifecycleService::class);
         $standardOrdersQuery = Orders::with(['reservations.invoice'])
             ->where('sales_agent', $userid)
-            ->where('checkin', '<', $now)
-            ->whereNotIn('status', ['Removed', 'Archive']);
+            ->whereNotIn('status', ['Removed', 'Archive'])
+            ->where(function ($builder) use ($now, $lifecycle, $tourLifecycle, $activityLifecycle) {
+                $builder->where(function ($legacyHistory) use ($now) {
+                    $legacyHistory->whereNotIn('service', array_merge(Orders::ACCOMMODATION_SERVICES, [Orders::PUBLIC_TRANSPORT_SERVICE, Orders::PUBLIC_TOUR_SERVICE, Orders::PUBLIC_ACTIVITY_SERVICE]))
+                        ->where('checkin', '<', $now);
+                })->orWhere(function ($accommodationHistory) use ($now, $lifecycle) {
+                    $lifecycle->applyAccommodationHistoryScope($accommodationHistory, $now);
+                })->orWhere(function ($transportHistory) use ($now) {
+                    app(TransportOrderLifecycleService::class)->applyTransportHistoryScope($transportHistory, $now);
+                })->orWhere(function ($tourHistory) use ($now, $tourLifecycle) {
+                    $tourLifecycle->applyTourHistoryScope($tourHistory, $now);
+                })->orWhere(function ($activityHistory) use ($now, $activityLifecycle) {
+                    $activityLifecycle->applyActivityHistoryScope($activityHistory, $now);
+                });
+            });
 
         if ($service === 'Wedding') {
             $standardOrdersQuery->whereRaw('1 = 0');
@@ -1073,7 +1236,21 @@ class OrderController extends Controller
         }
 
         if ($status !== 'all') {
-            $standardOrdersQuery->where('status', $status);
+            if ($status === 'Completed') {
+                $standardOrdersQuery->where(function ($builder) {
+                    $builder->where('status', 'Completed')
+                        ->orWhere(function ($completedPublicService) {
+                            $completedPublicService->whereIn('service', array_merge(Orders::ACCOMMODATION_SERVICES, [Orders::PUBLIC_TRANSPORT_SERVICE, Orders::PUBLIC_TOUR_SERVICE, Orders::PUBLIC_ACTIVITY_SERVICE]))
+                                ->when(Schema::hasColumn('orders', 'completed_at'), function ($query) {
+                                    $query->whereNotNull('completed_at');
+                                }, function ($query) {
+                                    $query->whereRaw('1 = 0');
+                                });
+                        });
+                });
+            } else {
+                $standardOrdersQuery->where('status', $status);
+            }
         }
 
         if ($year !== 'all' && ctype_digit((string) $year)) {
@@ -1183,7 +1360,7 @@ class OrderController extends Controller
             ->sortDesc()
             ->values();
 
-        $statusOptions = collect(['Paid', 'Approved', 'Confirmed', 'Active', 'Canceled', 'Rejected', 'Invalid', 'Pending']);
+        $statusOptions = collect(['Completed', 'Paid', 'Approved', 'Confirmed', 'Active', 'Canceled', 'Rejected', 'Invalid', 'Pending']);
         $serviceOptions = collect(['Hotel', 'Hotel Promo', 'Hotel Package', 'Tour Package', 'Activity', 'Transport', 'Private Villa', 'Wedding']);
         $summary = [
             'total' => $historyItems->count(),
@@ -2064,6 +2241,10 @@ class OrderController extends Controller
     // FUNCTION USER CREATE ORDER HOTEL PACKAGE =====================================================================> OK
     public function func_create_order_hotel_package(Request $request, $id){
         $user = Auth::user();
+        $submissionToken = $request->input('submission_token');
+        if ($existingOrder = $this->findProcessedAccommodationOrderBySubmissionToken($submissionToken)) {
+            return $this->redirectToExistingAccommodationOrder($existingOrder);
+        }
         $developerRoles = ["developer", "reservation", "author"];
         if (in_array($user->position, $developerRoles)) {
             $sales_agent = $request->user_id;
@@ -2105,7 +2286,7 @@ class OrderController extends Controller
         $special_day = json_encode($request->special_day);
         $special_date = json_encode($request->special_date);
         $request_quotation = $this->resolveHotelQuotationValue($request);
-        $duration = $request->duration;
+        $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
         $cancellation_policy = $hotel->cancellation_policy;
         $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
 
@@ -2142,15 +2323,32 @@ class OrderController extends Controller
         $airport_shuttle_prices = $airportShuttleRows->sum('price');
 
         
-        $price_pax = $package->calculatePrice($usdrates,$tax);
-        $normal_price = $price_pax * $number_of_room;
-        $price_total = $normal_price + $total_extra_bed_price ;
-        $final_price = $price_total  + $airport_shuttle_prices;
+        $pricing = app(HotelPricingService::class)->calculatePackageRate([
+            'hotel_id' => $hotel->id,
+            'room_id' => $room->id,
+            'package_id' => $package->id,
+            'checkin' => $checkin,
+            'checkout' => $checkout,
+            'rooms' => $number_of_room,
+            'user_id' => $sales_agent,
+            'usd_rate' => $usdrates,
+            'tax' => $tax,
+            'booking_code' => $this->activeAccommodationBookingCodeFromSession(),
+            'extra_bed_total' => $total_extra_bed_price,
+            'airport_shuttle_total' => $airport_shuttle_prices,
+        ]);
+        $price_pax = $pricing['price_pax'];
+        $normal_price = $pricing['normal_price'];
+        $price_total = $pricing['price_total'];
+        $final_price = $pricing['grand_total'];
         $usd_rate = $usdrates->rate;
         $cny_rate = $cnyrates->rate;
         $twd_rate = $twdrates->rate;
 
-        $order = new Orders([
+        $order = DB::transaction(function () use ($request, $user, $user_id, $name, $email, $service, $hotel, $room, $package, $checkin, $checkout, $number_of_guests, $number_of_guests_room, $guest_detail, $request_quotation, $special_date, $special_day, $extra_bed_status, $number_of_room, $duration, $price_pax, $normal_price, $extra_bed_id, $extra_bed_price_list, $total_extra_bed_price, $price_total, $airport_shuttle_prices, $final_price, $usd_rate, $cny_rate, $twd_rate, $status, $sales_agent, $arrivalTime, $departureTime, $compiledNote, $cancellation_policy, $airportShuttleRows, $pricing) {
+            $this->revalidateAccommodationAvailability($hotel->id, $room->id, $checkin, $checkout, $number_of_room, true);
+
+            $order = new Orders([
             'orderno'                   => $request->orderno,
             'service'                   => $service,
             'service_id'                => $hotel->id,
@@ -2183,6 +2381,8 @@ class OrderController extends Controller
             'extra_bed_price'           => $extra_bed_price_list,
             'extra_bed_total_price'     => $total_extra_bed_price,
             'price_total'               => $price_total,
+            'bookingcode'               => $pricing['booking_code_value'],
+            'bookingcode_disc'          => $pricing['booking_code_discount'],
             'airport_shuttle_price'     => $airport_shuttle_prices,
             'final_price'               => $final_price,
             'usd_rate'                  => $usd_rate,
@@ -2198,16 +2398,16 @@ class OrderController extends Controller
             'airport_shuttle_out'       => $request->airport_shuttle_out,
             'note'                      => $compiledNote,
             'cancellation_policy'       => $cancellation_policy,
-        ]);
-        // dd($order);
-        $order->save();
+            ]);
+            $order->save();
+            app(AccommodationReservationService::class)->ensurePendingReservationForOrder($order);
 
-        if ($airportShuttleRows->isNotEmpty()) {
-            $order_airport_shuttle = $this->create_order_airport_shuttle($order, $airportShuttleRows);
-        }
+            if ($airportShuttleRows->isNotEmpty()) {
+                $this->create_order_airport_shuttle($order, $airportShuttleRows);
+            }
 
-        $note = "Created order hotel package with order no: ".$order->orderno;
-        $user_log =new UserLog([
+            $note = "Created order hotel package with order no: ".$order->orderno;
+            $user_log =new UserLog([
             "action"=>"Create Order",
             "service"=>$service,
             "subservice"=>$order->subservice,
@@ -2216,18 +2416,24 @@ class OrderController extends Controller
             "user_id"=>$user_id,
             "user_ip"=>$request->getClientIp(),
             "note" =>$note, 
-        ]);
-        $user_log->save();
-        $order_log =new OrderLog([
+            ]);
+            $user_log->save();
+            $order_log =new OrderLog([
             "order_id" => $order->id,
             "action"=>"Create Order",
             "url"=>$request->getClientIp(),
             "method"=>"Create",
             "agent"=>$order->name,
             "admin"=>Auth::user()->id,
-        ]);
-        $order_log->save();
+            ]);
+            $order_log->save();
+            $this->consumeBookingCodeAfterOrder($pricing);
+
+            return $order;
+        });
+        $this->rememberProcessedAccommodationOrderSubmission($submissionToken, $order);
         session()->forget('booking_dates');
+        session()->forget('bookingcode');
         if (Auth::user()->position == "developer" || Auth::user()->position == "reservation" || Auth::user()->position == "author") {
             $rquotation = $request_quotation;
             Mail::to(config('app.reservation_mail'))
@@ -2241,6 +2447,10 @@ class OrderController extends Controller
     // FUNCTION USER CREATE ORDER HOTEL PROMO =======================================================================> OK
     public function func_create_order_hotel_promo(Request $request){
         $user = Auth::user();
+        $submissionToken = $request->input('submission_token');
+        if ($existingOrder = $this->findProcessedAccommodationOrderBySubmissionToken($submissionToken)) {
+            return $this->redirectToExistingAccommodationOrder($existingOrder);
+        }
         $developerRoles = ["developer", "reservation", "author"];
         if (in_array($user->position, $developerRoles)) {
             $sales_agent = $request->user_id;
@@ -2276,8 +2486,20 @@ class OrderController extends Controller
         $agent_id = $sales_agent;
         $promo_ids = json_decode($request->promo_id);
         $promos = HotelPromo::whereIn('id', $promo_ids)->get()->keyBy('id');
-        $priceList = $request->price_list;
-        $room_promo_price = array_sum(json_decode($priceList));
+        $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
+        $pricingBase = app(HotelPricingService::class)->calculatePromoRate([
+            'hotel_id' => $hotel->id,
+            'room_id' => $room->id,
+            'promo_ids' => $promo_ids,
+            'checkin' => $checkin,
+            'checkout' => $checkout,
+            'rooms' => count($request->number_of_guests),
+            'user_id' => $sales_agent,
+            'usd_rate' => $usdrates,
+            'tax' => $tax,
+            'booking_code' => $this->activeAccommodationBookingCodeFromSession(),
+        ]);
+        $room_promo_price = $pricingBase['price_pax'];
         $service = "Hotel Promo";
         $orderData = [
             'book_period_start'         => $promos->pluck('book_periode_start')->toJson(),
@@ -2296,15 +2518,16 @@ class OrderController extends Controller
         foreach ($promo_ids as $pro_id) {
             $hotel_promo = HotelPromo::find($pro_id);
             if ($hotel_promo) {
-                $includes[] = $hotel_promo->include;
-                $benefits[] = $hotel_promo->benefits;
-                $additional_info[] = $hotel_promo->additional_info;
+                $data_includes[] = $hotel_promo->include;
+                $data_benefits[] = $hotel_promo->benefits;
+                $data_additional_info[] = $hotel_promo->additional_info;
             }
         }
         $include = implode('<br>', $data_includes);
         $benefits = implode('<br>', $data_benefits);
         $additional_info = implode('<br>', $data_additional_info);
         $total_room = count($request->number_of_guests);
+        $number_of_room = $total_room;
         $cancellation_policy = $room->hotels->cancellation_policy;
         $remark = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
         $usd_rate_sell = $usdrates->sell;
@@ -2313,7 +2536,6 @@ class OrderController extends Controller
         $cny_rate_buy = $cnyrates->buy;
         $twd_rate_sell = $twdrates->sell;
         $twd_rate_buy = $twdrates->buy;
-        $duration = $request->duration;
         $extraBeds = $this->getBookingExtraBeds($hotel->id, $room->id);
         $adultCapacity = $this->getRoomAdultCapacity($room);
         $extra_bed_proses = [];
@@ -2355,57 +2577,81 @@ class OrderController extends Controller
             return $rate->calculatePrice($usdrates, $tax);
         });
         $optional_price = $totalPriceOptionalRates * $number_of_guests;
-        $order = $this->create_order($request, $user_id, $name, $email, $orderData, $room, $request_quotation, $duration, $extra_bed_id, $extra_bed_proses, $extra_bed_price_list, $total_extra_bed_price, $extra_bed_status, $airport_shuttle_prices, $agent_id, $usdrates, $cnyrates, $twdrates, $tax, $status, $optional_price);
-        $order->update([
-            'arrival_time' => $arrivalTime,
-            'departure_time' => $departureTime,
+        $pricing = app(HotelPricingService::class)->calculatePromoRate([
+            'hotel_id' => $hotel->id,
+            'room_id' => $room->id,
+            'promo_ids' => $promo_ids,
+            'checkin' => $checkin,
+            'checkout' => $checkout,
+            'rooms' => $number_of_room,
+            'user_id' => $sales_agent,
+            'usd_rate' => $usdrates,
+            'tax' => $tax,
+            'booking_code' => $this->activeAccommodationBookingCodeFromSession(),
+            'extra_bed_total' => $total_extra_bed_price,
+            'optional_rate_total' => $optional_price,
+            'airport_shuttle_total' => $airport_shuttle_prices,
         ]);
-        if ($airportShuttleRows->isNotEmpty()) {
-            $order_airport_shuttle = $this->create_order_airport_shuttle($order, $airportShuttleRows);
-        }
 
-        if ($optional_rates) {
-            foreach ($optional_rates as $optional_rate) {
-                $or_price_pax = $optional_rate->calculatePrice($usdrates, $tax);
-                $or_price_total = $or_price_pax * $order->number_of_guests;
-                $optional_rate_order =new OptionalRateOrder([
-                    "orders_id"=>$order->id,
-                    "service"=>$order->service,
-                    "optional_rate_id"=>$optional_rate->id,
-                    "number_of_guest"=>$order->number_of_guests,
-                    "service_date"=>$optional_rate->active_date,
-                    "price_pax"=>$or_price_pax,
-                    "price_total" =>$or_price_total, 
-                    "mandatory" =>1, 
-                ]);
-                $optional_rate_order->save();
+        $order = DB::transaction(function () use ($request, $user_id, $name, $email, $orderData, $room, $request_quotation, $duration, $extra_bed_id, $extra_bed_proses, $extra_bed_price_list, $total_extra_bed_price, $extra_bed_status, $airport_shuttle_prices, $agent_id, $usdrates, $cnyrates, $twdrates, $tax, $status, $optional_price, $pricing, $arrivalTime, $departureTime, $airportShuttleRows, $optional_rates, $service, $hotel) {
+            $this->revalidateAccommodationAvailability($hotel->id, $room->id, $pricing['checkin'], $pricing['checkout'], (int) $pricing['rooms'], true);
+
+            $order = $this->create_order($request, $user_id, $name, $email, $orderData, $room, $request_quotation, $duration, $extra_bed_id, $extra_bed_proses, $extra_bed_price_list, $total_extra_bed_price, $extra_bed_status, $airport_shuttle_prices, $agent_id, $usdrates, $cnyrates, $twdrates, $tax, $status, $optional_price, $pricing);
+            app(AccommodationReservationService::class)->ensurePendingReservationForOrder($order);
+            $order->update([
+                'arrival_time' => $arrivalTime,
+                'departure_time' => $departureTime,
+            ]);
+            if ($airportShuttleRows->isNotEmpty()) {
+                $this->create_order_airport_shuttle($order, $airportShuttleRows);
             }
-        }
 
+            if ($optional_rates) {
+                foreach ($optional_rates as $optional_rate) {
+                    $or_price_pax = $optional_rate->calculatePrice($usdrates, $tax);
+                    $or_price_total = $or_price_pax * $order->number_of_guests;
+                    $optional_rate_order =new OptionalRateOrder([
+                        "order_id"=>$order->id,
+                        "service"=>$order->service,
+                        "optional_rate_id"=>$optional_rate->id,
+                        "number_of_guest"=>$order->number_of_guests,
+                        "service_date"=>$optional_rate->active_date,
+                        "price_pax"=>$or_price_pax,
+                        "price_total" =>$or_price_total,
+                        "mandatory" =>1,
+                    ]);
+                    $optional_rate_order->save();
+                }
+            }
 
-        $note = "Created order hotel promo with order no: ".$order->orderno;
-        // dd($order, $agent_id, $sales_agent);
-        $user_log =new UserLog([
-            "action"=>"Create Order",
-            "service"=>$service,
-            "subservice"=>$order->subservice,
-            "subservice_id"=>$order->subservice_id,
-            "page"=>"hotel-price-".$hotel->code,
-            "user_id"=>$user_id,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        $order_log =new OrderLog([
-            "order_id" => $order->id,
-            "action"=>"Create Order",
-            "url"=>$request->getClientIp(),
-            "method"=>"Create",
-            "agent"=>$order->name,
-            "admin"=>Auth::user()->id,
-        ]);
-        $order_log->save();
+            $note = "Created order hotel promo with order no: ".$order->orderno;
+            $user_log =new UserLog([
+                "action"=>"Create Order",
+                "service"=>$service,
+                "subservice"=>$order->subservice,
+                "subservice_id"=>$order->subservice_id,
+                "page"=>"hotel-price-".$hotel->code,
+                "user_id"=>$user_id,
+                "user_ip"=>$request->getClientIp(),
+                "note" =>$note,
+            ]);
+            $user_log->save();
+            $order_log =new OrderLog([
+                "order_id" => $order->id,
+                "action"=>"Create Order",
+                "url"=>$request->getClientIp(),
+                "method"=>"Create",
+                "agent"=>$order->name,
+                "admin"=>Auth::user()->id,
+            ]);
+            $order_log->save();
+            $this->consumeBookingCodeAfterOrder($pricing);
+
+            return $order;
+        });
+        $this->rememberProcessedAccommodationOrderSubmission($submissionToken, $order);
         session()->forget('booking_dates');
+        session()->forget('bookingcode');
         if (Auth::user()->position == "developer" || Auth::user()->position == "reservation" || Auth::user()->position == "author") {
             $rquotation = $request_quotation;
             Mail::to(config('app.reservation_mail'))
@@ -2419,6 +2665,10 @@ class OrderController extends Controller
     // FUNCTION USER CREATE ORDER HOTEL =============================================================================> OK
     public function func_create_order_hotel_normal(Request $request){
         $user = Auth::user();
+        $submissionToken = $request->input('submission_token');
+        if ($existingOrder = $this->findProcessedAccommodationOrderBySubmissionToken($submissionToken)) {
+            return $this->redirectToExistingAccommodationOrder($existingOrder);
+        }
         $developerRoles = ["developer", "reservation", "author"];
         if (in_array($user->position, $developerRoles)) {
             $sales_agent = $request->user_id;
@@ -2458,7 +2708,7 @@ class OrderController extends Controller
         $special_day = json_encode($request->special_day);
         $special_date = json_encode($request->special_date);
         $request_quotation = $this->resolveHotelQuotationValue($request);
-        $duration = $request->duration;
+        $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
         $cancellation_policy = $hotel->cancellation_policy;
         $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
 
@@ -2493,20 +2743,34 @@ class OrderController extends Controller
 
         $airportShuttleRows = $this->buildAirportShuttleRowsFromRequest($request, $hotel, $number_of_guests, $checkin, $checkout);
         $airport_shuttle_prices = $airportShuttleRows->sum('price');
-        $total_kick_back = $request->var_kick_back_total;
-        $total_promotions_discount = $request->var_promotions_discount;
-        $price_pax = $request->var_normal_price;
-        $normal_price = $price_pax * $number_of_room;
-        $price_total = ($normal_price - $total_kick_back) + $total_extra_bed_price ;
-        $final_price = ($price_total - $total_promotions_discount)  + $airport_shuttle_prices;
+        $pricing = app(HotelPricingService::class)->calculateNormalRate([
+            'hotel_id' => $hotel->id,
+            'room_id' => $room->id,
+            'checkin' => $checkin,
+            'checkout' => $checkout,
+            'rooms' => $number_of_room,
+            'user_id' => $sales_agent,
+            'usd_rate' => $usdrates,
+            'tax' => $tax,
+            'booking_code' => $this->activeAccommodationBookingCodeFromSession(),
+            'extra_bed_total' => $total_extra_bed_price,
+            'airport_shuttle_total' => $airport_shuttle_prices,
+        ]);
+        $total_kick_back = $pricing['kick_back_total'];
+        $total_promotions_discount = $pricing['promotion_discount_total'];
+        $price_pax = $pricing['price_pax'];
+        $normal_price = $pricing['normal_price'];
+        $price_total = $pricing['price_total'];
+        $final_price = $pricing['grand_total'];
         $usd_rate = $usdrates->rate;
         $cny_rate = $cnyrates->rate;
         $twd_rate = $twdrates->rate;
-        $promotionsId = json_decode($request->promotions_id, true);
-        $promotions = Promotion::whereIn('id', $promotionsId)->get();
-        $promotion = json_encode($promotions->pluck('name'));
-        $promotion_disc = json_encode($promotions->pluck('discounts'));
-        $order = new Orders([
+        $promotion = json_encode($pricing['promotion_names']);
+        $promotion_disc = json_encode($pricing['promotion_discounts']);
+        $order = DB::transaction(function () use ($request, $user, $hotel, $room, $service, $name, $email, $checkin, $checkout, $number_of_guests, $number_of_guests_room, $guest_detail, $request_quotation, $special_date, $special_day, $extra_bed_status, $number_of_room, $duration, $price_pax, $normal_price, $total_kick_back, $extra_bed_id, $extra_bed_price_list, $total_extra_bed_price, $price_total, $promotion, $promotion_disc, $airport_shuttle_prices, $final_price, $usd_rate, $cny_rate, $twd_rate, $status, $sales_agent, $arrivalTime, $departureTime, $compiledNote, $cancellation_policy, $airportShuttleRows, $pricing) {
+            $this->revalidateAccommodationAvailability($hotel->id, $room->id, $checkin, $checkout, $number_of_room, true);
+
+            $order = new Orders([
             'orderno'                   => $request->orderno,
             'service'                   => $service,
             'service_id'                => $hotel->id,
@@ -2539,6 +2803,8 @@ class OrderController extends Controller
             'extra_bed_price'           => $extra_bed_price_list,
             'extra_bed_total_price'     => $total_extra_bed_price,
             'price_total'               => $price_total,
+            'bookingcode'               => $pricing['booking_code_value'],
+            'bookingcode_disc'          => $pricing['booking_code_discount'],
             'promotion'                 => $promotion,
             'promotion_disc'            => $promotion_disc,
             'airport_shuttle_price'     => $airport_shuttle_prices,
@@ -2556,15 +2822,15 @@ class OrderController extends Controller
             'airport_shuttle_out'       => $request->airport_shuttle_out,
             'note'                      => $compiledNote,
             'cancellation_policy'       => $cancellation_policy,
-        ]);
-        // dd($order);
-        $order->save();
+            ]);
+            $order->save();
+            app(AccommodationReservationService::class)->ensurePendingReservationForOrder($order);
 
-        if ($airportShuttleRows->isNotEmpty()) {
-            $order_airport_shuttle = $this->create_order_airport_shuttle($order, $airportShuttleRows);
-        }
-        $note = "Created order hotel promo with order no: ".$order->orderno;
-        $user_log =new UserLog([
+            if ($airportShuttleRows->isNotEmpty()) {
+                $this->create_order_airport_shuttle($order, $airportShuttleRows);
+            }
+            $note = "Created order hotel with order no: ".$order->orderno;
+            $user_log =new UserLog([
             "action"=>"Create Order",
             "service"=>$service,
             "subservice"=>$order->subservice,
@@ -2573,18 +2839,24 @@ class OrderController extends Controller
             "user_id"=>$user->id,
             "user_ip"=>$request->getClientIp(),
             "note" =>$note, 
-        ]);
-        $user_log->save();
-        $order_log =new OrderLog([
+            ]);
+            $user_log->save();
+            $order_log =new OrderLog([
             "order_id" => $order->id,
             "action"=>"Create Order",
             "url"=>$request->getClientIp(),
             "method"=>"Create",
             "agent"=>$order->name,
             "admin"=>$user->id,
-        ]);
-        $order_log->save();
+            ]);
+            $order_log->save();
+            $this->consumeBookingCodeAfterOrder($pricing);
+
+            return $order;
+        });
+        $this->rememberProcessedAccommodationOrderSubmission($submissionToken, $order);
         session()->forget('booking_dates');
+        session()->forget('bookingcode');
         if (Auth::user()->position == "developer" || Auth::user()->position == "reservation" || Auth::user()->position == "author") {
             $rquotation = $request_quotation;
             Mail::to(config('app.reservation_mail'))
@@ -2597,7 +2869,7 @@ class OrderController extends Controller
     }
 
     // PRIVATE FUNCTION USER CREATE ORDER HOTEL ====================================================================> OK
-    private function create_order($request, $user_id, $name, $email, $orderData, $room, $request_quotation, $duration, $extra_bed_id, $extra_bed_proses, $extra_bed_price_list, $total_extra_bed_price, $extra_bed_status, $airport_shuttle_prices, $agent_id, $usdrates, $cnyrates, $twdrates, $tax, $status, $optional_price){
+    private function create_order($request, $user_id, $name, $email, $orderData, $room, $request_quotation, $duration, $extra_bed_id, $extra_bed_proses, $extra_bed_price_list, $total_extra_bed_price, $extra_bed_status, $airport_shuttle_prices, $agent_id, $usdrates, $cnyrates, $twdrates, $tax, $status, $optional_price, ?array $pricing = null){
         $hotel = $room->hotels;
         $number_of_room = count($request->number_of_guests);
         $number_of_guests = array_sum($request->number_of_guests);
@@ -2621,10 +2893,10 @@ class OrderController extends Controller
             $arrival_flight = NULL;
             $departure_flight = NULL;
         }
-        $normal_price = $orderData['room_promo_price'] * $number_of_room;
-        $price_pax = ($normal_price / $number_of_room);
-        $price_total = $normal_price + $total_extra_bed_price ;
-        $final_price = $price_total + $airport_shuttle_prices;
+        $normal_price = $pricing['normal_price'] ?? ($orderData['room_promo_price'] * $number_of_room);
+        $price_pax = $pricing['price_pax'] ?? ($normal_price / $number_of_room);
+        $price_total = $pricing['price_total'] ?? ($normal_price + $total_extra_bed_price);
+        $final_price = $pricing['grand_total'] ?? ($price_total + $airport_shuttle_prices);
         $promo_name = $orderData['name'];
         $book_period_start = $orderData['book_period_start'];
         $book_period_end = $orderData['book_period_end'];
@@ -2678,6 +2950,8 @@ class OrderController extends Controller
             "normal_price" =>$normal_price,
             "optional_price" =>$optional_price,
             "price_total" =>$price_total, 
+            "bookingcode" =>$pricing['booking_code_value'] ?? null,
+            "bookingcode_disc" =>$pricing['booking_code_discount'] ?? 0,
             "final_price" =>$final_price, 
             "usd_rate" =>$usdrates->rate, 
             "cny_rate" =>$cnyrates->rate, 
@@ -2734,19 +3008,34 @@ class OrderController extends Controller
         return [$bk_code, "Valid"];
     }
 
+    private function activeAccommodationBookingCodeFromSession(): ?string
+    {
+        return session('bookingcode.code') ?: null;
+    }
+
+    private function consumeBookingCodeAfterOrder(array $pricing): void
+    {
+        $bookingCode = $pricing['booking_code_model'] ?? null;
+
+        if ($bookingCode) {
+            $bookingCode->increment('used');
+        }
+    }
+
     // VIEW EDIT ORDER HOTEL =============================================================================================> OK
     public function edit_order_hotel($id)
     {
         $user_id = Auth::id(); 
         $now = Carbon::now();
         $order = Orders::where('sales_agent', $user_id)
+            ->accommodationService()
             ->where('checkin', '>', $now)
             ->where('id',$id)
             ->first();
-        $agent = User::find($order->sales_agent);
         if (!$order) {
             return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
         }
+        $agent = User::find($order->sales_agent);
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
@@ -3054,35 +3343,49 @@ class OrderController extends Controller
     // FUNCTION USER CREATE ORDER TRANSPORT =========================================================================> OK
     public function func_create_order_transport(Request $request,$id){
         $user = Auth::user();
-        $transport_price = TransportPrice::findOrFail($id);
-        $transport = Transports::findOrFail($request->transport_id);
+        $submissionToken = $request->input('submission_token');
+        if ($existingOrderId = $this->findProcessedFormSubmission(self::TRANSPORT_ORDER_SUBMISSION_SCOPE, $submissionToken)) {
+            return redirect()->route('view.detail-order-transport', ['id' => $existingOrderId])
+                ->with('info', 'Your transport reservation has already been submitted.');
+        }
+
+        $transportPriceId = (int) $request->input('transport_price_id', $id);
+        $transport_price = TransportPrice::findOrFail($transportPriceId);
+        $transport = Transports::where('status', 'Active')->findOrFail($request->transport_id);
+        if ((int) $transport_price->transports_id !== (int) $transport->id) {
+            throw ValidationException::withMessages([
+                'transport_id' => 'The selected transport rate is not available for this transport.',
+            ]);
+        }
         $isDetailModalFlow = $request->input('transport_booking_flow') === 'detail_modal';
         $developerRoles = ["developer", "reservation", "author"];
 
         $validationRules = [
             'transport_id' => ['required', 'integer', 'exists:transports,id'],
+            'transport_price_id' => ['nullable', 'integer', 'exists:transport_prices,id'],
             'duration' => ['required', 'integer', 'min:1'],
             'note' => ['nullable', 'string'],
             'terms_accepted' => ['accepted'],
             'airport_shuttle_type' => ['nullable', 'in:Arrival,Departure'],
             'flight_number' => ['nullable', 'string', 'max:255'],
-            'flight_date' => ['nullable', 'date'],
+            'flight_date' => ['nullable', 'date', 'after_or_equal:today'],
             'arrival_flight' => ['nullable', 'string', 'max:255'],
-            'arrival_time' => ['nullable', 'date'],
+            'arrival_time' => ['nullable', 'date', 'after_or_equal:today'],
             'departure_flight' => ['nullable', 'string', 'max:255'],
-            'departure_time' => ['nullable', 'date'],
+            'departure_time' => ['nullable', 'date', 'after_or_equal:today'],
             'transport_booking_flow' => ['nullable', 'string', 'max:100'],
+            'submission_token' => ['nullable', 'string', 'max:120'],
         ];
 
         if ($isDetailModalFlow) {
-            $validationRules['flight_date'] = ['required', 'date'];
+            $validationRules['flight_date'] = ['required', 'date', 'after_or_equal:today'];
             $validationRules['guest_entries'] = ['required', 'array', 'min:1', 'max:' . max((int) $transport->capacity, 1)];
             $validationRules['guest_entries.*.name'] = ['required', 'string', 'max:255'];
             $validationRules['guest_entries.*.age'] = ['required', 'in:Adult,Child'];
             $validationRules['guest_entries.*.sex'] = ['required', 'in:Male,Female'];
             $validationRules['guest_entries.*.phone'] = ['nullable', 'string', 'max:50'];
         } else {
-            $validationRules['pickup_date'] = ['required', 'date'];
+            $validationRules['pickup_date'] = ['required', 'date', 'after_or_equal:today'];
             $validationRules['pickup_location'] = ['required', 'string', 'max:255'];
             $validationRules['dropoff_location'] = ['required', 'string', 'max:255'];
             $validationRules['number_of_guests'] = ['required', 'integer', 'min:1', 'max:' . max((int) $transport->capacity, 1)];
@@ -3097,10 +3400,10 @@ class OrderController extends Controller
             } else {
                 if ($request->input('airport_shuttle_type', 'Arrival') === 'Departure') {
                     $validationRules['departure_flight'] = ['required', 'string', 'max:255'];
-                    $validationRules['departure_time'] = ['required', 'date'];
+                    $validationRules['departure_time'] = ['required', 'date', 'after_or_equal:today'];
                 } else {
                     $validationRules['arrival_flight'] = ['required', 'string', 'max:255'];
-                    $validationRules['arrival_time'] = ['required', 'date'];
+                    $validationRules['arrival_time'] = ['required', 'date', 'after_or_equal:today'];
                 }
             }
         }
@@ -3154,12 +3457,6 @@ class OrderController extends Controller
         $bookingcode = BookingCode::where('code',$bcode)->first();
         $bookingcode_disc = $bdisc ? $bdisc : 0;
         $bookingcode_id = $bookingcode ? $bookingcode->id : null;
-        if ($bookingcode) {
-            $bookingcode_used = $bookingcode->used + 1;
-            $bookingcode->update([
-                "used"=>$bookingcode_used,
-            ]);
-        }
        
         
         $duration = (int) $validated['duration'];
@@ -3277,7 +3574,16 @@ class OrderController extends Controller
             $dropoff_date = $checkout;
             $dropoff_location = trim((string) ($validated['dropoff_location'] ?? $request->input('dropoff_location', '')));
         }
-        $order =new Orders([
+        $transportGuestEntries = $guestEntries ?? null;
+        app(TransportAvailabilityService::class)->ensureCanBook($transport->id, $checkin, $checkout);
+        $order = DB::transaction(function () use ($request, $bookingcode, $bookingcode_id, $user, $name, $email, $orderNumber, $service, $service_id, $isAirportShuttleOrder, $shuttleDirection, $transport_price, $service_name, $number_of_guests, $guest_detail, $transport, $sales_agent, $bookingcode_disc, $include, $additional_info, $cancellation_policy, $duration, $price_total, $promotions_name, $promotions_discount, $final_price, $usdrates, $cnyrates, $twdrates, $normal_price, $price_pax, $arrivalFlight, $arrivalTime, $airport_shuttle_in, $departureFlight, $departureTime, $airport_shuttle_out, $pickup_location, $pickup_date, $dropoff_date, $dropoff_location, $checkin, $checkout, $status, $validated, $isDetailModalFlow, $transportGuestEntries) {
+            app(TransportAvailabilityService::class)->ensureCanBook($transport->id, $checkin, $checkout, null, true);
+
+            if ($bookingcode) {
+                BookingCode::whereKey($bookingcode->id)->lockForUpdate()->increment('used');
+            }
+
+            $order = new Orders([
             "user_id"=>$user->id,
             "name"=>$name,
             "email"=>$email,
@@ -3326,43 +3632,53 @@ class OrderController extends Controller
             "dropoff_location" =>$dropoff_location,
             "status"=>$status,
             "note"=>$validated['note'] ?? null,
-        ]);
-        // dd($order);
-        $order->save();
+            ]);
+            $order->save();
 
-        if ($isDetailModalFlow && isset($guestEntries)) {
-            $guestEntries->each(function ($guest) use ($order) {
-                Guests::create([
-                    'order_id' => $order->id,
-                    'name' => $guest['name'],
-                    'age' => $guest['age'],
-                    'sex' => $guest['sex'],
-                    'phone' => $guest['phone'] !== '' ? $guest['phone'] : null,
-                ]);
-            });
+            if ($isDetailModalFlow && $transportGuestEntries) {
+                $transportGuestEntries->each(function ($guest) use ($order) {
+                    Guests::create([
+                        'order_id' => $order->id,
+                        'name' => $guest['name'],
+                        'age' => $guest['age'],
+                        'sex' => $guest['sex'],
+                        'phone' => $guest['phone'] !== '' ? $guest['phone'] : null,
+                    ]);
+                });
+            }
+
+            $note = "Created Order with order no: ".$orderNumber;
+            $user_log = new UserLog([
+                "action"=>"Create Order",
+                "service"=>"Transport",
+                "subservice"=>$order->subservice,
+                "subservice_id"=>$order->id,
+                "page"=>"order-transport",
+                "user_id"=>$user->id,
+                "user_ip"=>$request->getClientIp(),
+                "note" =>$note,
+            ]);
+            $user_log->save();
+            $order_log = new OrderLog([
+                "order_id"=>$order->id,
+                "action"=>"Create Order",
+                "url"=>$request->getClientIp(),
+                "method"=>"Create",
+                "agent"=>$order->name,
+                "admin"=>Auth::user()->id,
+            ]);
+            $order_log->save();
+
+            if ($status === 'Pending') {
+                app(TransportReservationService::class)->ensurePendingReservationForOrder($order);
+            }
+
+            return $order->fresh();
+        });
+
+        if ($submissionToken) {
+            $this->rememberProcessedFormSubmission(self::TRANSPORT_ORDER_SUBMISSION_SCOPE, $submissionToken, $order->id);
         }
-        
-        $note = "Created Order with order no: ".$orderNumber;
-        $user_log =new UserLog([
-            "action"=>"Create Order",
-            "service"=>"Transport",
-            "subservice"=>$order->subservice,
-            "subservice_id"=>$order->id,
-            "page"=>"order-transport",
-            "user_id"=>$user->id,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        $order_log =new OrderLog([
-            "order_id"=>$order->id,
-            "action"=>"Create Order",
-            "url"=>$request->getClientIp(),
-            "method"=>"Create",
-            "agent"=>$order->name,
-            "admin"=>Auth::user()->id,
-        ]);
-        $order_log->save();
         $subject = $orderNumber;
         if ($isDetailModalFlow) {
             Mail::to(config('app.reservation_mail'))->send(new ReservationMail($order->id, null));
@@ -3431,24 +3747,70 @@ class OrderController extends Controller
     // FUNCTION =============================================================================================================> OK
     public function func_submit_order_transport(Request $request,$id){
         $user = Auth::user();
+        $submissionToken = $request->input('submission_token');
+        if ($existingOrderId = $this->findProcessedFormSubmission('transport-order-submit:' . $id, $submissionToken)) {
+            return redirect()->route('view.detail-order-transport', ['id' => $existingOrderId])
+                ->with('info', 'Your transport order has already been submitted.');
+        }
         $order=Orders::where('id',$id)
             ->where('sales_agent',$user->id)
+            ->where('service', Orders::PUBLIC_TRANSPORT_SERVICE)
             ->first();
         if (!$order) {
             return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
         }
-        $duration = $request->duration;
+        $validationRules = [
+            'duration' => ['required', 'integer', 'min:1'],
+            'pickup_date' => ['nullable', 'date', 'after_or_equal:today'],
+            'pickup_location' => ['nullable', 'string', 'max:255'],
+            'dropoff_location' => ['nullable', 'string', 'max:255'],
+            'number_of_guests' => ['required', 'integer', 'min:1', 'max:' . max((int) $order->capacity, 1)],
+            'guest_detail' => ['required', 'string'],
+            'airport_shuttle_type' => ['nullable', 'in:Arrival,Departure'],
+            'arrival_flight' => ['nullable', 'string', 'max:255'],
+            'arrival_time' => ['nullable', 'date', 'after_or_equal:today'],
+            'departure_flight' => ['nullable', 'string', 'max:255'],
+            'departure_time' => ['nullable', 'date', 'after_or_equal:today'],
+            'note' => ['nullable', 'string'],
+            'submission_token' => ['nullable', 'string', 'max:120'],
+        ];
+
+        if ($order->subservice == "Airport Shuttle") {
+            $validationRules['airport_shuttle_type'] = ['required', 'in:Arrival,Departure'];
+            if ($request->input('airport_shuttle_type', 'Arrival') === 'Departure') {
+                $validationRules['departure_flight'] = ['required', 'string', 'max:255'];
+                $validationRules['departure_time'] = ['required', 'date', 'after_or_equal:today'];
+            } else {
+                $validationRules['arrival_flight'] = ['required', 'string', 'max:255'];
+                $validationRules['arrival_time'] = ['required', 'date', 'after_or_equal:today'];
+            }
+        } else {
+            $validationRules['pickup_date'] = ['required', 'date', 'after_or_equal:today'];
+            $validationRules['pickup_location'] = ['required', 'string', 'max:255'];
+            $validationRules['dropoff_location'] = ['required', 'string', 'max:255'];
+        }
+
+        $validated = $request->validate($validationRules);
 
         $total_promotions_discount = $order->promotion_disc ? array_sum(json_decode($order->promotion_disc,true)):0;
         $bookingcode_disc = $order->bookingcode_disc ? $order->bookingcode_disc : 0;
         $additional_service_price = $order->additional_service_price ? array_sum(json_decode($order->additional_service_price,true)) : 0;
         $status = "Pending";
-        $duration = $request->duration;
+        $duration = (int) $validated['duration'];
         $price_pax = $order->price_pax;
-        $transport = Transports::find($order->service_id);
-        $transport_price = TransportPrice::find($order->subservice_id);
+        $transport = Transports::where('status', 'Active')->findOrFail($order->service_id);
+        $transport_price = TransportPrice::findOrFail($order->subservice_id);
+        if ((int) $transport_price->transports_id !== (int) $transport->id || $transport_price->type !== $order->subservice) {
+            throw ValidationException::withMessages([
+                'transport_id' => 'The selected transport rate is not available for this transport.',
+            ]);
+        }
+        $price_pax = $transport_price->calculatePrice(
+            Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first()),
+            Cache::remember('tax_1', 3600, fn() => Tax::find(1))
+        );
         if ($order->subservice == "Daily Rent") {
-            $checkin = Carbon::parse($request->pickup_date)->format('Y-m-d H:i');
+            $checkin = Carbon::parse($validated['pickup_date'])->format('Y-m-d H:i');
             $checkinTime = Carbon::parse($checkin);
             $normal_price = $price_pax * $duration;
             $price_total = $normal_price + $additional_service_price;
@@ -3456,9 +3818,9 @@ class OrderController extends Controller
             $checkout = $checkinTime->addDays($duration);
         } elseif ($order->subservice == "Airport Shuttle") {
             if ($request->airport_shuttle_type == "Arrival") {
-                $checkin = Carbon::parse($request->arrival_time)->format('Y-m-d H:i');
+                $checkin = Carbon::parse($validated['arrival_time'])->format('Y-m-d H:i');
             }else{
-                $checkin = Carbon::parse($request->departure_time)->format('Y-m-d H:i');
+                $checkin = Carbon::parse($validated['departure_time'])->format('Y-m-d H:i');
             }
             $checkinTime = Carbon::parse($checkin);
             $normal_price = $price_pax;
@@ -3466,7 +3828,7 @@ class OrderController extends Controller
             $final_price = $price_total - $total_promotions_discount - $bookingcode_disc;
             $checkout = $checkinTime->addHours($duration);
         }else{
-            $checkin = Carbon::parse($request->pickup_date)->format('Y-m-d H:i');
+            $checkin = Carbon::parse($validated['pickup_date'])->format('Y-m-d H:i');
             $checkinTime = Carbon::parse($checkin);
             $normal_price = $price_pax;
             $price_total = $normal_price + $additional_service_price;
@@ -3500,13 +3862,17 @@ class OrderController extends Controller
             $dropoff_location = trim((string) $request->dropoff_location);
         }
         // dd($request->pickup_date, $checkin, $checkout);
-        $order->update([
+        app(TransportAvailabilityService::class)->ensureCanBook((int) $order->service_id, $checkin, $checkout, (int) $order->id);
+        DB::transaction(function () use ($request, $order, $status, $checkin, $checkout, $validated, $duration, $price_total, $final_price, $normal_price, $isAirportShuttleOrder, $shuttleDirection, $airport_shuttle_in, $airport_shuttle_out, $pickup_location, $pickup_date, $dropoff_date, $dropoff_location) {
+            app(TransportAvailabilityService::class)->ensureCanBook((int) $order->service_id, $checkin, $checkout, (int) $order->id, true);
+
+            $order->update([
             "status"=>$status,
             "checkin"=>$checkin,
             "checkout"=>$checkout,
-            "guest_detail"=>$request->guest_detail,
-            "note"=>$request->note,
-            "number_of_guests"=>$request->number_of_guests,
+            "guest_detail"=>$validated['guest_detail'],
+            "note"=>$validated['note'] ?? null,
+            "number_of_guests"=>$validated['number_of_guests'],
             "pickup_name"=>$request->pickup_name,
             "pickup_phone"=>$request->pickup_phone,
             "service_type"=>$isAirportShuttleOrder ? $shuttleDirection : $order->subservice,
@@ -3524,33 +3890,39 @@ class OrderController extends Controller
             "pickup_date" =>$pickup_date,
             "dropoff_date" =>$dropoff_date,
             "dropoff_location" =>$dropoff_location,
-        ]);
+            ]);
+
+            app(TransportReservationService::class)->ensurePendingReservationForOrder($order);
+
+            $note = "Submited order no: ".$order->orderno;
+            $user_log = new UserLog([
+                "action"=>"Submit Order",
+                "service"=>$order->service,
+                "subservice"=>$order->subservice,
+                "subservice_id"=>$order->id,
+                "page"=>"edit-order-transport",
+                "user_id"=>Auth::user()->id,
+                "user_ip"=>$request->getClientIp(),
+                "note" =>$note,
+            ]);
+            $user_log->save();
+            $order_log = new OrderLog([
+                "order_id"=>$order->id,
+                "action"=>'Submit Order',
+                "url"=>$request->getClientIp(),
+                "method"=>"Submit",
+                "agent"=>$order->name,
+                "admin"=>Auth::user()->id,
+            ]);
+            $order_log->save();
+        });
         // dd($order);
         $rquotation = $request->request_quotation;
         $agent = User::where('id',$order->user_id)->first();
         Mail::to(config('app.reservation_mail'))->send(new ReservationMail($id,$rquotation));
-        $note = "Submited order no: ".$order->orderno;
-        
-        $user_log =new UserLog([
-            "action"=>"Submit Order",
-            "service"=>$order->service,
-            "subservice"=>$order->subservice,
-            "subservice_id"=>$id,
-            "page"=>"edit-order-transport",
-            "user_id"=>Auth::user()->id,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        $order_log =new OrderLog([
-            "order_id"=>$order->id,
-            "action"=>'Submit Order',
-            "url"=>$request->getClientIp(),
-            "method"=>"Submit",
-            "agent"=>$order->name,
-            "admin"=>Auth::user()->id,
-        ]);
-        $order_log->save();
+        if ($submissionToken) {
+            $this->rememberProcessedFormSubmission('transport-order-submit:' . $id, $submissionToken, $order->id);
+        }
         return redirect("/detail-order-transport/$order->id")->with('success','Your order has been submited, and we will validate your order');
     }
     // VIEW DETAIL ORDER TRANSPORT ===============================================================================================> OK
@@ -3560,7 +3932,7 @@ class OrderController extends Controller
         $now = Carbon::now();
         $order = Orders::with(['guests', 'optional_rate_orders', 'reservations.invoice'])
             ->where('sales_agent', $user_id)
-            ->where('checkin', '>', $now)
+            ->where('service', Orders::PUBLIC_TRANSPORT_SERVICE)
             ->where('id',$id)
             ->first();
         if (!$order || in_array($order->status, ["Draft", "Invalid", "Rejected"])) {
@@ -4019,6 +4391,7 @@ class OrderController extends Controller
         $agent = Auth::user();
         $order = Orders::select('id', 'service', 'service_id', 'checkin', 'checkout', 'number_of_guests','price_total','optional_price','additional_service_price','airport_shuttle_price','discounts','bookingcode_disc','promotion_disc','final_price')
             ->where('sales_agent', $agent->id)
+            ->accommodationService()
             ->where(function ($query) {
                 $query->where('status', 'Draft')->orWhere('status', 'Invalid');
             })
@@ -4075,6 +4448,10 @@ class OrderController extends Controller
         $now = Carbon::now();
         $order = Orders::with(['optional_rate_orders', 'reservations.invoice'])
             ->where('sales_agent', $user_id)
+            ->where(function ($query) {
+                $query->accommodationService()
+                    ->orWhere('service', Orders::PUBLIC_ACTIVITY_SERVICE);
+            })
             ->where('checkin', '>', $now)
             ->where('id',$id)
             ->first();
@@ -4202,13 +4579,14 @@ class OrderController extends Controller
     public function storeFrontendActivityOrder(Request $request, string $code)
     {
         $validated = $request->validate([
-            'number_of_guests' => ['required', 'integer', 'min:1'],
-            'travel_date' => ['required', 'date'],
+            'submission_token' => ['required', 'string', 'max:120'],
+            'number_of_guests' => ['required', 'integer', 'min:1', 'max:200'],
+            'travel_date' => ['required', 'date', 'after_or_equal:now'],
             'guests' => ['required', 'array', 'min:1', 'max:200'],
             'guests.*.name' => ['required', 'string', 'max:255'],
             'guests.*.phone' => ['nullable', 'string', 'max:50'],
-            'guests.*.age' => ['required', 'string', 'max:50'],
-            'guests.*.sex' => ['required', 'string', 'max:30'],
+            'guests.*.age' => ['required', 'in:Adult,Child'],
+            'guests.*.sex' => ['required', 'in:Male,Female'],
             'guests.*.date_of_birth' => ['nullable', 'date'],
             'guests.*.identification_type' => ['nullable', 'string', 'max:50'],
             'guests.*.identification_no' => ['nullable', 'string', 'max:100'],
@@ -4219,22 +4597,53 @@ class OrderController extends Controller
         ]);
 
         $user = Auth::user();
+        $existingOrder = $this->findProcessedActivityOrderBySubmissionToken($validated['submission_token']);
+
+        if ($existingOrder) {
+            return redirect($this->resolveFrontendOrderDetailUrl($existingOrder))
+                ->with('success', 'This order was already submitted. We reopened the existing order detail.');
+        }
+
         $activity = Activities::with('partners')
             ->where('status', 'Active')
             ->where('code', $code)
             ->firstOrFail();
 
+        $travelDate = Carbon::parse($validated['travel_date']);
+        if (filled($activity->validity) && Carbon::parse($activity->validity)->lt($travelDate->copy()->startOfDay())) {
+            throw ValidationException::withMessages([
+                'travel_date' => __('messages.The selected activity is no longer valid for this date.'),
+            ]);
+        }
+
+        $guestCount = (int) $validated['number_of_guests'];
+        $minimumPax = max((int) ($activity->min_pax ?: 1), 1);
+        if ($guestCount < $minimumPax) {
+            throw ValidationException::withMessages([
+                'number_of_guests' => __('messages.Number of guests is below the activity minimum.'),
+            ]);
+        }
+
         $capacity = (int) ($activity->qty ?: 0);
-        if ($capacity > 0 && (int) $validated['number_of_guests'] > $capacity) {
+        if ($capacity > 0 && $guestCount > $capacity) {
             throw ValidationException::withMessages([
                 'number_of_guests' => __('messages.Number of guests exceeds activity capacity.'),
             ]);
         }
 
-        $activityGuests = $this->normaliseTourGuestRows($validated['guests'] ?? []);
-        $guestCount = (int) $validated['number_of_guests'];
+        if ((float) $activity->contract_rate <= 0 && (float) $activity->markup <= 0) {
+            throw ValidationException::withMessages([
+                'number_of_guests' => __('messages.Activity pricing is not available.'),
+            ]);
+        }
 
-        $travelDate = Carbon::parse($validated['travel_date']);
+        $activityGuests = $this->normaliseTourGuestRows($validated['guests'] ?? []);
+        if (count($activityGuests) < $guestCount) {
+            throw ValidationException::withMessages([
+                'guests' => __('activities.detail.order.guest_count_mismatch'),
+            ]);
+        }
+
         $durationHours = $this->extractActivityDurationHours($activity->duration);
         $checkout = $travelDate->copy()->addHours(max($durationHours, 1));
         $usdrates = UsdRates::where('name', 'USD')->first();
@@ -4265,12 +4674,12 @@ class OrderController extends Controller
 
         $guestDetail = $this->buildTourGuestManifestHtml($activityGuests);
 
-        $order = Orders::create([
+        $orderPayload = [
             'orderno' => $this->generateActivityOrderNumber($travelDate),
             'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'service' => 'Activity',
+            'service' => Orders::PUBLIC_ACTIVITY_SERVICE,
             'service_type' => $activity->type,
             'service_id' => $activity->id,
             'servicename' => optional($activity->partners)->name ?: '-',
@@ -4304,29 +4713,38 @@ class OrderController extends Controller
             'cny_rate' => $cnyrates?->rate,
             'twd_rate' => $twdrates?->rate,
             'status' => 'Pending',
-        ]);
+        ];
 
-        $this->saveTourOrderGuests($order, $activityGuests);
+        $order = DB::transaction(function () use ($orderPayload, $activityGuests, $activity, $request, $user, $validated) {
+            $order = Orders::create($this->filterOrderPayloadByExistingColumns($orderPayload));
 
-        UserLog::create([
-            'action' => 'Create Order',
-            'service' => 'Activity',
-            'subservice' => $activity->name,
-            'subservice_id' => $order->id,
-            'page' => 'activity-detail-modern',
-            'user_id' => $user->id,
-            'user_ip' => $request->getClientIp(),
-            'note' => 'Created activity order with order no: ' . $order->orderno,
-        ]);
+            $this->saveTourOrderGuests($order, $activityGuests);
+            app(ActivityReservationService::class)->ensurePendingReservationForOrder($order);
 
-        OrderLog::create([
-            'order_id' => $order->id,
-            'action' => 'Create Order',
-            'url' => $request->getClientIp(),
-            'method' => 'Create',
-            'agent' => $order->name,
-            'admin' => Auth::id(),
-        ]);
+            UserLog::create([
+                'action' => 'Create Order',
+                'service' => Orders::PUBLIC_ACTIVITY_SERVICE,
+                'subservice' => $activity->name,
+                'subservice_id' => $order->id,
+                'page' => 'activity-detail-modern',
+                'user_id' => $user->id,
+                'user_ip' => $request->getClientIp(),
+                'note' => 'Created activity order with order no: ' . $order->orderno,
+            ]);
+
+            OrderLog::create([
+                'order_id' => $order->id,
+                'action' => 'Create Order',
+                'url' => $request->getClientIp(),
+                'method' => 'Create',
+                'agent' => $order->name,
+                'admin' => Auth::id(),
+            ]);
+
+            $this->rememberProcessedActivityOrderSubmission($validated['submission_token'], $order);
+
+            return $order->fresh();
+        });
 
         Mail::to(config('app.reservation_mail'))->send(new ReservationMail($order->id, null));
 
@@ -5358,13 +5776,9 @@ class OrderController extends Controller
 
     private function filterOrderPayloadByExistingColumns(array $payload): array
     {
-        static $orderColumns = null;
-
-        if ($orderColumns === null) {
-            $orderColumns = collect(Schema::getColumnListing('orders'))
-                ->flip()
-                ->all();
-        }
+        $orderColumns = collect(Schema::getColumnListing('orders'))
+            ->flip()
+            ->all();
 
         return collect($payload)
             ->filter(function ($value, $key) use ($orderColumns) {
@@ -5487,21 +5901,21 @@ class OrderController extends Controller
         if ($preferredPriceId) {
             $preferredPrice = $activePrices->firstWhere('id', $preferredPriceId);
 
-            if ($preferredPrice && $guestCount >= (int) $preferredPrice->min_qty && $guestCount <= (int) $preferredPrice->max_qty) {
-                return $preferredPrice;
-            }
+            return $preferredPrice
+                && $guestCount >= (int) $preferredPrice->min_qty
+                && $guestCount <= (int) $preferredPrice->max_qty
+                    ? $preferredPrice
+                    : null;
         }
 
         $matchedPrice = $activePrices->first(function ($price) use ($guestCount) {
             return $guestCount >= (int) $price->min_qty && $guestCount <= (int) $price->max_qty;
         });
 
-        return $matchedPrice ?: $activePrices->sortByDesc('max_qty')->first();
+        return $matchedPrice;
     }
 
     public function func_create_order_tour_package(Request $request, $id){
-        $transactionStarted = false;
-
         try {
             $leaderGuest = collect($request->input('guests', []))->first(function ($guest) {
                 return (bool) ($guest['is_leader'] ?? false);
@@ -5518,7 +5932,7 @@ class OrderController extends Controller
                 'submission_token' => 'required|string|max:120',
                 'number_of_guests' => 'required|integer|min:2|max:200',
                 'tour_price_id' => 'nullable|integer|exists:tour_prices,id',
-                'travel_date' => 'required|date',
+                'travel_date' => 'required|date|after_or_equal:today',
                 'lead_guest_name' => 'required|string|max:255',
                 'lead_guest_phone' => 'required|string|max:50',
                 'lead_guest_email' => 'nullable|email|max:255',
@@ -5569,16 +5983,16 @@ class OrderController extends Controller
             $cnyrates = UsdRates::where('name','CNY')->first();
             $twdrates = UsdRates::where('name','TWD')->first();
             $idrrates = UsdRates::where('name','IDR')->first();
-            $tour = Tours::with('activeLocations')->findOrFail($id);
+            $tour = Tours::with('activeLocations')
+                ->where('status', 'Active')
+                ->findOrFail($id);
             $nog = $validated['number_of_guests'];
             $tourPrice = $this->resolveTourPriceForGuestCount($tour, $nog, $now, $validated['tour_price_id'] ?? null);
 
             if (!$tourPrice) {
-                if ($request->expectsJson()) {
-                    return response()->json(['error' => __('tour-detail.no_active_price')], 400);
-                }
-
-                return back()->withInput()->with('danger', __('tour-detail.no_active_price'));
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'tour_price_id' => __('tour-detail.no_active_price'),
+                ]);
             }
             $pax = $nog;
             $servicename = $tour->name;
@@ -5593,6 +6007,11 @@ class OrderController extends Controller
             $tour_duration = $duration_days."".$durnight;
             $checkout = $checkin->copy()->addDays($duration);
             $tourGuests = $this->normaliseTourGuestRows($validated['guests'] ?? []);
+            if (count($tourGuests) < $nog) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'guests' => __('activities.detail.order.guest_count_mismatch'),
+                ]);
+            }
             $guestLeader = collect($tourGuests)->first(fn ($guest) => $guest['is_leader'] && $guest['phone']);
 
             if (!$guestLeader) {
@@ -5616,8 +6035,6 @@ class OrderController extends Controller
                 trim((string) ($tour->itinerary ?? ''))
             );
             $destinationsSnapshot = $this->resolveTourPackageHighlightsSnapshot($tour);
-            DB::beginTransaction();
-            $transactionStarted = true;
             $orderPayload = [
                 'user_id' => $user_id,
                 'orderno' => $orderNumber,
@@ -5664,12 +6081,15 @@ class OrderController extends Controller
                 'status' => $status
             ];
 
-            $order = Orders::create($this->filterOrderPayloadByExistingColumns($orderPayload));
+            $order = DB::transaction(function () use ($orderPayload, $tourGuests, $validated) {
+                $order = Orders::create($this->filterOrderPayloadByExistingColumns($orderPayload));
 
-            $this->saveTourOrderGuests($order, $tourGuests);
-            $this->rememberProcessedTourOrderSubmission($validated['submission_token'], $order);
+                $this->saveTourOrderGuests($order, $tourGuests);
+                app(TourReservationService::class)->ensurePendingReservationForOrder($order);
+                $this->rememberProcessedTourOrderSubmission($validated['submission_token'], $order);
 
-            DB::commit();
+                return $order->fresh();
+            });
             return redirect()->route('view.detail-order-tour', ['id' => $order->id])
                 ->with('success', __('messages.The order has been successfully created'));
             // ✅ 6. Kembalikan respons sukses ke AJAX
@@ -5684,9 +6104,6 @@ class OrderController extends Controller
             ], 422);
 
         } catch (\Exception $e) {
-            if ($transactionStarted) {
-                DB::rollBack();
-            }
             if (!$request->expectsJson()) {
                 return back()->withInput()->with('danger', 'An error occurred while creating order: ' . $e->getMessage());
             }

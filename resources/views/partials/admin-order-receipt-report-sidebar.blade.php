@@ -1,4 +1,13 @@
 @if ($invoice)
+    @php
+        $isAccommodationOrder = isset($order) && in_array($order->service, \App\Models\Orders::ACCOMMODATION_SERVICES, true);
+        $receiptRoute = match ($order->service ?? null) {
+            \App\Models\Orders::PUBLIC_TRANSPORT_SERVICE => 'admin.orders.transport.payments.receipt',
+            \App\Models\Orders::PUBLIC_TOUR_SERVICE => 'admin.orders.tour.payments.receipt',
+            \App\Models\Orders::PUBLIC_ACTIVITY_SERVICE => 'admin.orders.activity.payments.receipt',
+            default => $isAccommodationOrder ? 'admin.orders.accommodation.payments.receipt' : null,
+        };
+    @endphp
     @if ($receipts)
         <div class="col-md-12">
             <div class="card-box">
@@ -107,7 +116,7 @@
                                                                 <div class="row">
                                                                     <div class="col-md-12 text-center">
                                                                         <div class="modal-receipt-container">
-                                                                            <img src="/storage/receipt/{{ $desktop_receipt->receipt_img }}" alt="">
+                                                                            <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $desktop_receipt->id]) : '/storage/receipt/' . $desktop_receipt->receipt_img }}" alt="">
                                                                         </div>
                                                                     </div>
                                                                 </div>

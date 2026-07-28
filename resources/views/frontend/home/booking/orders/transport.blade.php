@@ -2,12 +2,10 @@
 @section('title', 'Order Transport')
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/transport-booking-entry.css') }}">
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ mix('build/frontend/js/pages/transport-booking.js') }}" defer></script>
 @endpush
 
@@ -249,6 +247,9 @@
                                                 class="form-control @error('pickup_date') is-invalid @enderror"
                                                 placeholder="@lang('messages.Select date and time')"
                                                 required
+                                                autocomplete="off"
+                                                data-ui-picker="datetime"
+                                                data-ui-picker-format="YYYY-MM-DD HH:mm"
                                                 data-booking-datetime
                                             >
                                             @error('pickup_date')
@@ -306,7 +307,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group mb-0">
                                                 <label for="arrival_time">@lang('messages.Arrival Date and Time')</label>
-                                                <input id="arrival_time" type="text" name="arrival_time" value="{{ old('arrival_time') }}" class="form-control @error('arrival_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" data-booking-datetime>
+                                                <input id="arrival_time" type="text" name="arrival_time" value="{{ old('arrival_time') }}" class="form-control @error('arrival_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" autocomplete="off" data-ui-picker="datetime" data-ui-picker-format="YYYY-MM-DD HH:mm" data-booking-datetime>
                                                 @error('arrival_time')
                                                     <div class="alert-form">{{ $message }}</div>
                                                 @enderror
@@ -329,7 +330,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group mb-0">
                                                 <label for="departure_time">@lang('messages.Departure Date and Time')</label>
-                                                <input id="departure_time" type="text" name="departure_time" value="{{ old('departure_time') }}" class="form-control @error('departure_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" data-booking-datetime>
+                                                <input id="departure_time" type="text" name="departure_time" value="{{ old('departure_time') }}" class="form-control @error('departure_time') is-invalid @enderror" placeholder="@lang('messages.Select date and time')" autocomplete="off" data-ui-picker="datetime" data-ui-picker-format="YYYY-MM-DD HH:mm" data-booking-datetime>
                                                 @error('departure_time')
                                                     <div class="alert-form">{{ $message }}</div>
                                                 @enderror

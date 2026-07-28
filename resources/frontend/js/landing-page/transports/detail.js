@@ -515,7 +515,13 @@ document.addEventListener('DOMContentLoaded', function () {
             serviceDateInput.value = flightDateInput.value;
         }
 
-        var requiredFields = [flightDateInput];
+        var requiredFields = [];
+
+        if (agentSelect) {
+            requiredFields.push(agentSelect);
+        }
+
+        requiredFields.push(flightDateInput);
 
         if (selectedRate.type === 'Airport Shuttle') {
             requiredFields.push(shuttleTypeSelect, page.querySelector('#flight_number'));
@@ -528,7 +534,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (shouldNotify) {
                     var message = field && field.id === 'flight_date'
                         ? 'Please select the flight date before continuing to guest details.'
-                        : flightRequiredValidationMessage;
+                        : (field && field.id === 'transportAgent'
+                            ? 'Please select an agent before continuing.'
+                            : flightRequiredValidationMessage);
 
                     showInlineFieldError(field, message);
 
@@ -1056,17 +1064,80 @@ document.addEventListener('DOMContentLoaded', function () {
         return wrapper;
     }
 
-    if (typeof window.flatpickr === 'function') {
-        page.querySelectorAll('[data-transport-datetime]').forEach(function (input) {
-            window.flatpickr(input, {
-                enableTime: true,
-                dateFormat: 'Y-m-d H:i',
-                time_24hr: true,
-                minuteIncrement: 5,
-                allowInput: true
-            });
-        });
-    }
+    page.querySelectorAll('[data-transport-datetime]').forEach(function (input) {
+        try {
+            if (window.FrontendPickerSystem) {
+                input.dataset.uiPicker = input.dataset.uiPicker || 'datetime';
+                input.dataset.uiPickerFormat = input.dataset.uiPickerFormat || 'YYYY-MM-DD HH:mm';
+                window.FrontendPickerSystem.initPicker(input);
+                return;
+            }
+
+            if (window.jQuery && typeof window.jQuery.fn.daterangepicker === 'function' && typeof window.moment === 'function') {
+                var minimumTransportDate = window.moment().startOf('day').add(1, 'day');
+                var resolveTransportPickerDrops = function (picker) {
+                    if (!picker || !picker.container || !picker.container.length) {
+                        return 'down';
+                    }
+
+                    var inputRect = input.getBoundingClientRect();
+                    var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                    var panelHeight = picker.container.outerHeight() || 360;
+                    var spaceBelow = viewportHeight - inputRect.bottom;
+                    var spaceAbove = inputRect.top;
+
+                    return spaceBelow < panelHeight + 12 && spaceAbove > spaceBelow ? 'up' : 'down';
+                };
+                var pickerInput = window.jQuery(input);
+
+                pickerInput.daterangepicker({
+                    autoApply: true,
+                    autoUpdateInput: false,
+                    singleDatePicker: true,
+                    timePicker: true,
+                    timePicker24Hour: true,
+                    timePickerIncrement: 5,
+                    showDropdowns: true,
+                    parentEl: 'body',
+                    opens: 'center',
+                    drops: 'auto',
+                    minDate: minimumTransportDate,
+                    startDate: minimumTransportDate.clone(),
+                    locale: {
+                        format: 'YYYY-MM-DD HH:mm',
+                    },
+                }).on('apply.daterangepicker', function (_event, picker) {
+                    input.value = picker.startDate.format('YYYY-MM-DD HH:mm');
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }).on('show.daterangepicker', function (_event, picker) {
+                    picker.drops = resolveTransportPickerDrops(picker);
+                    picker.container
+                        .toggleClass('drop-up', picker.drops === 'up')
+                        .toggleClass('drop-down', picker.drops !== 'up');
+
+                    if (typeof picker.move === 'function') {
+                        picker.move();
+                    }
+                });
+                return;
+            }
+
+            if (typeof window.flatpickr === 'function') {
+                window.flatpickr(input, {
+                    enableTime: true,
+                    dateFormat: 'Y-m-d H:i',
+                    time_24hr: true,
+                    minuteIncrement: 5,
+                    allowInput: true
+                });
+            }
+        } catch (error) {
+            if (window.console && typeof window.console.warn === 'function') {
+                window.console.warn('Transport datetime picker init failed.', error);
+            }
+        }
+    });
 
     if (guestList) {
         guestList.addEventListener('click', function (event) {

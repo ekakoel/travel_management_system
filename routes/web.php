@@ -2,6 +2,7 @@
 use App\Http\Controllers\ActivitiesAdminController;
 use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\AdminNotificationController;
+use App\Http\Controllers\AccommodationFinancialFileController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\AgentController;
@@ -742,6 +743,12 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                PAYMENT CONFIRMATION
             // ---------------------------------------------------
+            Route::get('/orders-admin/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'adminReceipt'])->name('admin.orders.accommodation.payments.receipt');
+            Route::get('/orders-admin/{order}/transport/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'adminTransportReceipt'])->name('admin.orders.transport.payments.receipt');
+            Route::get('/orders-admin/{order}/tour/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'adminTourReceipt'])->name('admin.orders.tour.payments.receipt');
+            Route::get('/orders-admin/{order}/activity/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'adminActivityReceipt'])->name('admin.orders.activity.payments.receipt');
+            Route::get('/orders-admin/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'adminInvoicePreview'])->where('locale', 'en|zh')->name('admin.orders.accommodation.invoice.preview');
+            Route::get('/orders-admin/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'adminInvoiceDownload'])->where('locale', 'en|zh')->name('admin.orders.accommodation.invoice.download');
             Route::post('/fconfirmation-payment-{id}',[OrdersAdminController::class,'fconfirmation_payment'])->name('admin.confirm.receipt');
             Route::post('/fadmin-add-payment-confirmation-{id}',[OrdersAdminController::class,'admin_add_payment_confirmation'])->name('func.admin-add-payment-confirmation');
             Route::post('/forder-wedding-confirmation-payment-{id}',[OrdersAdminController::class,'forder_wedding_confirmation_payment']);
@@ -1127,6 +1134,12 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //               PAYMENT CONFIRMATION
             // ---------------------------------------------------
+            Route::get('/orders/accommodation/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerReceipt'])->name('orders.accommodation.payments.receipt');
+            Route::get('/orders/transport/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerTransportReceipt'])->name('orders.transport.payments.receipt');
+            Route::get('/orders/tour/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerTourReceipt'])->name('orders.tour.payments.receipt');
+            Route::get('/orders/activity/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerActivityReceipt'])->name('orders.activity.payments.receipt');
+            Route::get('/orders/accommodation/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'customerInvoicePreview'])->where('locale', 'en|zh')->name('orders.accommodation.invoice.preview');
+            Route::get('/orders/accommodation/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'customerInvoiceDownload'])->where('locale', 'en|zh')->name('orders.accommodation.invoice.download');
             Route::post('/fpayment-confirmation-{id}',[PaymentConfirmationController::class,'payment_confirmation'])->name('upload.payment-confirmation');
             Route::post('/fwedding-payment-confirmation-{id}',[PaymentConfirmationController::class,'wedding_payment_confirmation'])->name('wedding-payment-confirmation');
             Route::put('/fupdate-payment-confirmation/{id}',[PaymentConfirmationController::class,'update_payment_confirmation'])->name('update-payment-confirmation');

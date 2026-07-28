@@ -7,13 +7,10 @@
 
 @push('styles')
     <link rel="stylesheet" type="text/css" href="{{ asset('panel/styles/icon-font.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/hotel-availability-entry.css') }}">
 @endpush
 
 @push('scripts')
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="{{ mix('build/frontend/js/pages/hotel-availability.js') }}" defer></script>
 @endpush
 

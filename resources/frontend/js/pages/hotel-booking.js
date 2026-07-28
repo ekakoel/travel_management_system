@@ -388,15 +388,12 @@
 
     function initDateInputs(scope) {
         var $scope = scope ? $(scope) : $(document);
-        var defaultDate = typeof moment !== 'undefined'
-            ? moment().add(7, 'days').format('YYYY-MM-DD')
-            : '';
-        var defaultDateTime = typeof moment !== 'undefined'
-            ? moment().format('YYYY-MM-DD HH:mm')
+        var minDate = typeof moment !== 'undefined'
+            ? moment().add(1, 'day').startOf('day').format('YYYY-MM-DD')
             : '';
         var minDateTime = typeof moment !== 'undefined'
-            ? moment().startOf('day').format('YYYY-MM-DD HH:mm')
-            : 'today';
+            ? moment().add(1, 'day').startOf('day').format('YYYY-MM-DD HH:mm')
+            : '';
 
         function createFlatpickrConfig(options) {
             return $.extend({
@@ -407,8 +404,31 @@
             }, options);
         }
 
+        function hasFrontendPickerSystem() {
+            return window.FrontendPickerSystem && typeof window.FrontendPickerSystem.initPicker === 'function';
+        }
+
         function initFlatpickrInstance(element, options) {
-            if (typeof window.flatpickr !== 'function' || !element) {
+            if (!element) {
+                return;
+            }
+
+            if (hasFrontendPickerSystem()) {
+                var isDateTime = Boolean(options && options.enableTime);
+
+                element.dataset.uiPicker = isDateTime ? 'datetime' : 'date';
+                element.dataset.uiPickerFormat = isDateTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD';
+                element.dataset.uiPickerMin = options && options.minDate ? options.minDate : '';
+                element.dataset.uiPickerMinuteStep = options && options.minuteIncrement ? String(options.minuteIncrement) : '5';
+                if (isDateTime) {
+                    element.dataset.uiPickerShowButtons = 'true';
+                }
+
+                window.FrontendPickerSystem.initPicker(element);
+                return;
+            }
+
+            if (typeof window.flatpickr !== 'function') {
                 return;
             }
 
@@ -422,37 +442,49 @@
         $scope.find('input[name="special_date[]"]').each(function () {
             initFlatpickrInstance(this, {
                 dateFormat: 'Y-m-d',
-                defaultDate: this.value || defaultDate
+                minDate: minDate,
+                defaultDate: this.value || null
             });
         });
 
-        $scope.find('input[name="arrival_time"], input[name="departure_time"], input[name="flight_time[]"]').each(function () {
+        $scope.find('input[name="flight_time[]"]').each(function () {
             initFlatpickrInstance(this, {
                 enableTime: true,
                 dateFormat: 'Y-m-d H:i',
                 minuteIncrement: 5,
                 minDate: minDateTime,
-                defaultDate: this.value || defaultDateTime
+                defaultDate: this.value || null
             });
         });
     }
 
-    function cleanupClonedFlatpickr($scope) {
+    function cleanupClonedPickerState($scope) {
         $scope.find('.flatpickr-input').each(function () {
             if (!this.name) {
                 $(this).remove();
             }
         });
 
-        $scope.find('input[name="special_date[]"], input[name="arrival_time"], input[name="departure_time"], input[name="flight_time[]"]').each(function () {
+        $scope.find('input[name="special_date[]"], input[name="flight_time[]"]').each(function () {
             var input = this;
             var $input = $(input);
             var isSpecialDate = input.name === 'special_date[]';
+
+            if (window.FrontendPickerSystem && typeof window.FrontendPickerSystem.destroy === 'function') {
+                window.FrontendPickerSystem.destroy(input);
+            }
 
             if (input._flatpickr) {
                 input._flatpickr.destroy();
             }
 
+            if ($input.data('daterangepicker')) {
+                $input.data('daterangepicker').remove();
+                $input.removeData('daterangepicker');
+            }
+
+            delete input._frontendPickerSetDate;
+            delete input.dataset.uiPickerInitialized;
             input.type = 'text';
             $input.removeClass('flatpickr-input');
             $input.removeAttr('data-has-flatpickr');
@@ -461,7 +493,15 @@
             $input.val('');
 
             if (isSpecialDate) {
-                $input.attr('placeholder', '');
+                input.dataset.uiPicker = 'date';
+                input.dataset.uiPickerFormat = 'YYYY-MM-DD';
+                $input.attr('placeholder', $input.attr('placeholder') || '');
+            } else {
+                input.dataset.uiPicker = 'datetime';
+                input.dataset.uiPickerFormat = 'YYYY-MM-DD HH:mm';
+                input.dataset.uiPickerMinuteStep = '5';
+                input.dataset.uiPickerShowButtons = 'true';
+                input.dataset.bookingDatetime = '';
             }
 
             $input.siblings('.flatpickr-input').filter(function () {
@@ -504,8 +544,8 @@
         var $duration = $form.find('#duration');
         var $transferList = $form.find('[data-transfer-list]');
         var $transferTemplate = $form.find('[data-transfer-template]').first();
-        var stayCheckinDate = $form.data('review-checkin') || '';
-        var stayCheckoutDate = $form.data('review-checkout') || '';
+        var stayCheckinDate = $form.data('stay-checkin') || $form.data('review-checkin') || '';
+        var stayCheckoutDate = $form.data('stay-checkout') || $form.data('review-checkout') || '';
 
         if (!$roomList.length) {
             return;
@@ -624,6 +664,15 @@
                 }
             }
 
+            if (typeof moment !== 'undefined') {
+                var parsedDate = moment(date + ' ' + time, ['YYYY-MM-DD HH:mm', 'DD MMM YYYY HH:mm', 'D MMM YYYY HH:mm'], true);
+                var tomorrow = moment().add(1, 'day').startOf('day');
+
+                if (parsedDate.isValid() && parsedDate.isBefore(tomorrow)) {
+                    return tomorrow.hour(11).minute(0).format('YYYY-MM-DD HH:mm');
+                }
+            }
+
             return date + ' ' + time;
         }
 
@@ -639,6 +688,8 @@
 
             if ($timeInput.get(0) && $timeInput.get(0)._flatpickr) {
                 $timeInput.get(0)._flatpickr.setDate(defaultDateTime, false, 'Y-m-d H:i');
+            } else if ($timeInput.get(0) && $timeInput.get(0)._frontendPickerSetDate) {
+                $timeInput.get(0)._frontendPickerSetDate(defaultDateTime);
             } else {
                 $timeInput.val(defaultDateTime);
             }
@@ -968,7 +1019,7 @@
             }
 
             var $clone = $template.clone(false, false);
-            cleanupClonedFlatpickr($clone);
+            cleanupClonedPickerState($clone);
             resetClonedRoom($clone);
             $clone.find('.room-card-head__remove').removeAttr('hidden');
             $roomList.append($clone);

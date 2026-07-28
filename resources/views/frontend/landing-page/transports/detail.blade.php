@@ -1,11 +1,9 @@
 @extends('frontend.layouts.app')
 @section('title', $transport->name)
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/transport-detail-entry.css') }}">
 @endpush
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ mix('build/frontend/js/pages/transport-detail.js') }}"></script>
 @endpush
 @section('content')
@@ -129,6 +127,7 @@
     >
         <section class="container-fluid frontend-page-topband transport-detail-topband py-5">
             <div class="container py-4">
+                @include('partials.alerts')
                 @include('partials.breadcrumbs', [
                     'breadcrumbs' => [
                         ['label' => __('messages.Home'), 'url' => route('home')],
@@ -458,6 +457,7 @@
                                 data-transport-booking-form
                             >
                                 @csrf
+                                <input type="hidden" name="submission_token" value="{{ old('submission_token', (string) \Illuminate\Support\Str::uuid()) }}">
                                 <input type="hidden" name="orderno" value="{{ $orderNumber }}" data-transport-order-number-input>
                                 <input type="hidden" name="transport_id" value="{{ $transport->id }}">
                                 <input type="hidden" name="transport_booking_flow" value="detail_modal">
@@ -504,7 +504,7 @@
                                             <select id="transportAgent" name="user_id" class="form-control @error('user_id') is-invalid @enderror" required>
                                                 <option value="">@lang('messages.Select Agent')</option>
                                                 @foreach ($agents as $agent)
-                                                    <option value="{{ $agent->id }}" data-order-number="{{ $transportOrderNumbersByAgent[$agent->id] ?? $orderNumber }}" @selected((string) old('user_id') === (string) $agent->id)>
+                                                    <option value="{{ $agent->id }}" data-order-number="{{ $transportOrderNumbersByAgent[$agent->id] ?? $orderNumber }}" @selected((string) old('user_id', auth()->id()) === (string) $agent->id)>
                                                         {{ $agent->name }} ({{ $agent->code }}) @ {{ $agent->office }}
                                                     </option>
                                                 @endforeach
@@ -540,7 +540,12 @@
                                             <input id="flight_date" name="flight_date" type="text"
                                                 value="{{ old('flight_date', old('service_date', old('arrival_time', old('departure_time', old('pickup_date'))))) }}"
                                                 class="form-control @error('flight_date') is-invalid @enderror"
-                                                placeholder="@lang('messages.Select date and time')" data-transport-datetime required>
+                                                placeholder="@lang('messages.Select date and time')"
+                                                autocomplete="off"
+                                                data-ui-picker="datetime"
+                                                data-ui-picker-format="YYYY-MM-DD HH:mm"
+                                                data-transport-datetime
+                                                required>
                                             @error('flight_date')
                                                 <div class="alert-form">{{ $message }}</div>
                                             @enderror
@@ -805,7 +810,7 @@
                                     ])
 
                                     <div class="transport-reservation-wizard__actions frontend-order-modal__actions">
-                                        <button type="button" class="btn btn-light" data-wizard-prev>@lang('transports.detail.order.back')</button>
+                                        <button type="button" class="btn btn-secondary" data-wizard-prev>@lang('transports.detail.order.back')</button>
                                         <button type="submit" class="btn btn-primary" data-submit-transport-reservation>
                                             <i class="fa fa-shopping-basket" aria-hidden="true"></i>
                                             <span>@lang('transports.detail.order.submit')</span>

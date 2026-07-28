@@ -37,11 +37,29 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_project_structure_documentation_and_migration_tracker_exist(): void
     {
-        $this->assertFileExists(base_path('docs/project-structure-standard.md'));
-        $this->assertFileExists(base_path('docs/project-structure-migration-todo.md'));
+        foreach ([
+            'docs/README.md',
+            'docs/architecture.md',
+            'docs/database.md',
+            'docs/coding-standards.md',
+            'docs/security-rules.md',
+            'docs/status-contract.md',
+            'docs/frontend-standards.md',
+            'docs/testing.md',
+            'docs/modules/accommodation.md',
+            'docs/modules/transport.md',
+            'docs/modules/tour-package.md',
+            'docs/modules/activity.md',
+        ] as $documentationPath) {
+            $this->assertFileExists(base_path($documentationPath));
+        }
 
-        $standard = file_get_contents(base_path('docs/project-structure-standard.md'));
-        $tracker = file_get_contents(base_path('docs/project-structure-migration-todo.md'));
+        $this->assertDirectoryExists(base_path('docs/decisions'));
+        $this->assertDirectoryExists(base_path('docs/modules'));
+        $this->assertFileExists(base_path('docs/decisions/project-structure-migration-todo.md'));
+
+        $standard = file_get_contents(base_path('docs/architecture.md'));
+        $tracker = file_get_contents(base_path('docs/decisions/project-structure-migration-todo.md'));
 
         $this->assertStringContainsString('frontend/landing-page', $standard);
         $this->assertStringContainsString('frontend/home', $standard);
@@ -100,14 +118,14 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_backend_ui_standard_and_sidebar_theme_are_scoped_to_backend_assets(): void
     {
-        $standard = file_get_contents(base_path('docs/backend-ui-standards.md'));
+        $standard = file_get_contents(base_path('docs/decisions/backend-ui-standards.md'));
         $layout = file_get_contents(resource_path('views/layouts/head.blade.php'));
         $sidebar = file_get_contents(resource_path('views/layouts/left-navbar.blade.php'));
         $backendScss = file_get_contents(resource_path('backend/scss/app.scss'));
         $themeScss = file_get_contents(resource_path('backend/scss/components/_backend-theme.scss'));
 
-        $this->assertFileExists(base_path('docs/backend-ui-standards.md'));
-        $this->assertFileExists(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $this->assertFileExists(base_path('docs/decisions/backend-ui-standards.md'));
+        $this->assertFileExists(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $this->assertFileExists(resource_path('backend/scss/components/_backend-theme.scss'));
         $this->assertFileExists(resource_path('backend/scss/components/_backend-hero.scss'));
         $this->assertFileExists(resource_path('backend/scss/components/_backend-kpi.scss'));
@@ -155,7 +173,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('Backend UI PR Review Checklist', $standard);
         $this->assertStringContainsString('View backend baru harus berada di namespace backend/domain yang sesuai', $standard);
         $this->assertStringContainsString('Tidak ada visual primitive baru di SCSS halaman', $standard);
-        $this->assertStringContainsString('Roadmap `docs/backend-ui-standardization-roadmap.md` diperbarui sesuai progress', $standard);
+        $this->assertStringContainsString('Roadmap `docs/decisions/backend-ui-standardization-roadmap.md` diperbarui sesuai progress', $standard);
         $this->assertStringContainsString('Breadcrumb Standard', $standard);
         $this->assertStringContainsString('backend-page-toolbar', $standard);
         $this->assertStringContainsString("route('view.admin-panel-main')", $standard);
@@ -342,23 +360,23 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_backend_richtext_textarea_standard_is_shared_and_global(): void
     {
-        $standard = file_get_contents(base_path('docs/backend-ui-standards.md'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
-        $richtextRoadmap = file_get_contents(base_path('docs/backend-richtext-textarea-roadmap.md'));
+        $standard = file_get_contents(base_path('docs/decisions/backend-ui-standards.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
+        $richtextRoadmap = file_get_contents(base_path('docs/decisions/backend-richtext-textarea-roadmap.md'));
         $backendJs = file_get_contents(resource_path('backend/js/app.js'));
         $backendScss = file_get_contents(resource_path('backend/scss/app.scss'));
         $richtextScss = file_get_contents(resource_path('backend/scss/components/_backend-richtext.scss'));
         $footJs = file_get_contents(resource_path('views/layouts/footjs.blade.php'));
 
         $this->assertFileExists(resource_path('backend/scss/components/_backend-richtext.scss'));
-        $this->assertFileExists(base_path('docs/backend-richtext-textarea-roadmap.md'));
+        $this->assertFileExists(base_path('docs/decisions/backend-richtext-textarea-roadmap.md'));
         $this->assertStringContainsString('Rich Text Area Standard', $standard);
         $this->assertStringContainsString('initBackendRichText', $standard);
         $this->assertStringContainsString('data-backend-richtext="true"', $standard);
         $this->assertStringContainsString('data-backend-richtext="false"', $standard);
         $this->assertStringContainsString('Rich text textarea shared tersedia', $roadmap);
         $this->assertStringContainsString('Guardrail rich text backend', $roadmap);
-        $this->assertStringContainsString('Gunakan `docs/backend-richtext-textarea-roadmap.md`', $roadmap);
+        $this->assertStringContainsString('Gunakan `docs/decisions/backend-richtext-textarea-roadmap.md`', $roadmap);
         $this->assertStringContainsString('Phase RT-1 - Shared Foundation', $richtextRoadmap);
         $this->assertStringContainsString('resources/views/backend` memiliki 167 textarea', $richtextRoadmap);
         $this->assertStringContainsString('Phase RT-6 - Final Acceptance', $richtextRoadmap);
@@ -390,21 +408,21 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_backend_form_standard_is_shared_and_global(): void
     {
-        $standard = file_get_contents(base_path('docs/backend-ui-standards.md'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
-        $formRoadmap = file_get_contents(base_path('docs/backend-form-standardization-roadmap.md'));
+        $standard = file_get_contents(base_path('docs/decisions/backend-ui-standards.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
+        $formRoadmap = file_get_contents(base_path('docs/decisions/backend-form-standardization-roadmap.md'));
         $backendScss = file_get_contents(resource_path('backend/scss/app.scss'));
         $formScss = file_get_contents(resource_path('backend/scss/components/_backend-form.scss'));
 
         $this->assertFileExists(resource_path('backend/scss/components/_backend-form.scss'));
-        $this->assertFileExists(base_path('docs/backend-form-standardization-roadmap.md'));
+        $this->assertFileExists(base_path('docs/decisions/backend-form-standardization-roadmap.md'));
         $this->assertStringContainsString("@import 'components/backend-form';", $backendScss);
         $this->assertStringContainsString('Form Control Standard', $standard);
         $this->assertStringContainsString('resources/backend/scss/components/_backend-form.scss', $standard);
         $this->assertStringContainsString('backend-form-control', $standard);
         $this->assertStringContainsString('backend-button-primary', $standard);
         $this->assertStringContainsString('backend-button-danger', $standard);
-        $this->assertStringContainsString('docs/backend-form-standardization-roadmap.md', $roadmap);
+        $this->assertStringContainsString('docs/decisions/backend-form-standardization-roadmap.md', $roadmap);
         $this->assertStringContainsString('Shared form style tersedia', $roadmap);
         $this->assertStringContainsString('Phase BF-1 - Shared Foundation', $formRoadmap);
         $this->assertStringContainsString('Phase BF-5 - Final Acceptance', $formRoadmap);
@@ -544,7 +562,7 @@ class ProjectStructureStandardTest extends TestCase
             }
         }
 
-        $formRoadmap = file_get_contents(base_path('docs/backend-form-standardization-roadmap.md'));
+        $formRoadmap = file_get_contents(base_path('docs/decisions/backend-form-standardization-roadmap.md'));
 
         foreach ([
             '- [x] Refactor form Hotels agar markup utama memakai `backend-form-*`.',
@@ -663,7 +681,7 @@ class ProjectStructureStandardTest extends TestCase
             }
         }
 
-        $formRoadmap = file_get_contents(base_path('docs/backend-form-standardization-roadmap.md'));
+        $formRoadmap = file_get_contents(base_path('docs/decisions/backend-form-standardization-roadmap.md'));
 
         foreach ([
             '- [x] Refactor Company Profile, Footer Manager, Terms, Reviews, Currency, User Manager agar markup form memakai `backend-form-*`.',
@@ -784,7 +802,7 @@ class ProjectStructureStandardTest extends TestCase
             }
         }
 
-        $formRoadmap = file_get_contents(base_path('docs/backend-form-standardization-roadmap.md'));
+        $formRoadmap = file_get_contents(base_path('docs/decisions/backend-form-standardization-roadmap.md'));
 
         foreach ([
             '- [x] Refactor Guides, Drivers, Partners, Weddings, Orders Admin, Reservations, Transport Management, Villas, Vendors, Promotions.',
@@ -1199,7 +1217,7 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         $backendJs = file_get_contents(resource_path('backend/js/app.js'));
-        $roadmap = file_get_contents(base_path('docs/backend-richtext-textarea-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-richtext-textarea-roadmap.md'));
 
         $this->assertStringContainsString('textarea.textarea_editor', $backendJs);
         $this->assertStringContainsString('Pertahankan kompatibilitas `textarea_editor`', $roadmap);
@@ -3831,7 +3849,7 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_hotel_phase_8j_final_roadmap_is_marked_complete_through_acceptance(): void
     {
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         $this->assertStringContainsString('### Phase 8J - Final Hotel Workspace Acceptance', $roadmap);
         $this->assertStringNotContainsString("### Phase 8J - Final Hotel Workspace Acceptance\n\n- [ ]", $roadmap);
@@ -3840,7 +3858,7 @@ class ProjectStructureStandardTest extends TestCase
     public function test_activities_phase_1_route_names_and_roadmap_are_registered(): void
     {
         $routes = file_get_contents(base_path('routes/web.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         foreach ([
             "name('activities-admin.index')",
@@ -4080,7 +4098,7 @@ class ProjectStructureStandardTest extends TestCase
         $galleryController = file_get_contents(app_path('Http/Controllers/Backend/Operations/Activities/ActivityGalleryAdminController.php'));
         $storeRequest = file_get_contents(app_path('Http/Requests/StoreActivityAdminRequest.php'));
         $updateRequest = file_get_contents(app_path('Http/Requests/UpdateActivityAdminRequest.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         foreach ([
             app_path('Http/Controllers/Backend/Operations/Activities/ActivityAdminController.php'),
@@ -4140,7 +4158,7 @@ class ProjectStructureStandardTest extends TestCase
         $auditService = file_get_contents(app_path('Services/Activities/ActivityAuditService.php'));
         $indexViewModel = file_get_contents(app_path('ViewModels/Activities/ActivityIndexViewModel.php'));
         $detailViewModel = file_get_contents(app_path('ViewModels/Activities/ActivityDetailViewModel.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         foreach ([
             app_path('Services/Activities/ActivityInventoryService.php'),
@@ -4205,7 +4223,7 @@ class ProjectStructureStandardTest extends TestCase
     {
         $routes = file_get_contents(base_path('routes/web.php'));
         $manifest = file_get_contents(public_path('mix-manifest.json'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $activityViews = collect([
             resource_path('views/backend/operations/activities/index.blade.php'),
             resource_path('views/backend/operations/activities/detail.blade.php'),
@@ -5969,7 +5987,7 @@ class ProjectStructureStandardTest extends TestCase
         $legacyIndexWrapper = file_get_contents(resource_path('views/admin/toursadmin.blade.php'));
         $legacyDetailWrapper = file_get_contents(resource_path('views/admin/toursadmindetail.blade.php'));
         $mix = file_get_contents(base_path('webpack.mix.js'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         $this->assertFileExists(resource_path('views/backend/operations/tours/index.blade.php'));
         $this->assertFileExists(resource_path('views/backend/operations/tours/detail.blade.php'));
@@ -6045,7 +6063,7 @@ class ProjectStructureStandardTest extends TestCase
         $detailJs = file_get_contents(resource_path('backend/js/operations/tours/detail.js'));
         $indexScss = file_get_contents(resource_path('backend/scss/operations/tours/_index.scss'));
         $detailScss = file_get_contents(resource_path('backend/scss/operations/tours/_detail.scss'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         $this->assertStringContainsString('<x-backend.page-hero', $indexView);
         $this->assertStringContainsString('<x-backend.page-hero', $detailView);
@@ -6143,7 +6161,7 @@ class ProjectStructureStandardTest extends TestCase
         $formsJs = file_get_contents(resource_path('backend/js/operations/tours/forms.js'));
         $formsScss = file_get_contents(resource_path('backend/scss/operations/tours/_forms.scss'));
         $mix = file_get_contents(base_path('webpack.mix.js'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         $this->assertFileExists(resource_path('views/backend/operations/tours/forms/create.blade.php'));
         $this->assertFileExists(resource_path('views/backend/operations/tours/forms/edit.blade.php'));
@@ -6240,7 +6258,7 @@ class ProjectStructureStandardTest extends TestCase
         $updateTourRequest = file_get_contents(app_path('Http/Requests/Backend/Operations/Tours/UpdateTourAdminRequest.php'));
         $storePriceRequest = file_get_contents(app_path('Http/Requests/Backend/Operations/Tours/StoreTourPriceAdminRequest.php'));
         $updatePriceRequest = file_get_contents(app_path('Http/Requests/Backend/Operations/Tours/UpdateTourPriceAdminRequest.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         $this->assertFileExists(app_path('Http/Controllers/Backend/Operations/Tours/TourAdminController.php'));
         $this->assertFileExists(app_path('Http/Controllers/Backend/Operations/Tours/TourPriceAdminController.php'));
@@ -6315,7 +6333,7 @@ class ProjectStructureStandardTest extends TestCase
         $audit = file_get_contents(app_path('Services/Tours/TourAuditService.php'));
         $indexVm = file_get_contents(app_path('ViewModels/Tours/TourIndexViewModel.php'));
         $detailVm = file_get_contents(app_path('ViewModels/Tours/TourDetailViewModel.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         $this->assertFileExists(app_path('Services/Tours/TourInventoryService.php'));
         $this->assertFileExists(app_path('Services/Tours/TourPricingService.php'));
@@ -6384,7 +6402,7 @@ class ProjectStructureStandardTest extends TestCase
         $routes = file_get_contents(base_path('routes/web.php'));
         $mix = file_get_contents(base_path('webpack.mix.js'));
         $manifest = file_get_contents(public_path('mix-manifest.json'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $profileController = file_get_contents(app_path('Http/Controllers/Backend/Operations/Tours/TourAdminController.php'));
         $priceController = file_get_contents(app_path('Http/Controllers/Backend/Operations/Tours/TourPriceAdminController.php'));
         $galleryController = file_get_contents(app_path('Http/Controllers/Backend/Operations/Tours/TourGalleryAdminController.php'));
@@ -6508,7 +6526,7 @@ class ProjectStructureStandardTest extends TestCase
     {
         $routes = file_get_contents(base_path('routes/web.php'));
         $mix = file_get_contents(base_path('webpack.mix.js'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $controller = file_get_contents(app_path('Http/Controllers/TransportsAdminController.php'));
         $legacyIndexWrapper = file_get_contents(resource_path('views/admin/transportsadmin.blade.php'));
         $legacyDetailWrapper = file_get_contents(resource_path('views/admin/transportsadmindetail.blade.php'));
@@ -6602,7 +6620,7 @@ class ProjectStructureStandardTest extends TestCase
         $indexJs = file_get_contents(resource_path('backend/js/operations/transports/index.js'));
         $detailJs = file_get_contents(resource_path('backend/js/operations/transports/detail.js'));
         $detailScss = file_get_contents(resource_path('backend/scss/operations/transports/_detail.scss'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $surface = $indexView . $detailView;
 
         foreach ([
@@ -6705,7 +6723,7 @@ class ProjectStructureStandardTest extends TestCase
         $routes = file_get_contents(base_path('routes/web.php'));
         $adminController = file_get_contents(app_path('Http/Controllers/TransportsAdminController.php'));
         $publicController = file_get_contents(app_path('Http/Controllers/TransportsController.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $surface = $createForm . $editForm . $galleryForm . $profileFields . $hiddenFields . $feedback;
 
         foreach ([
@@ -6795,7 +6813,7 @@ class ProjectStructureStandardTest extends TestCase
         $updateRequest = file_get_contents(app_path('Http/Requests/Backend/Operations/Transports/UpdateTransportAdminRequest.php'));
         $storePriceRequest = file_get_contents(app_path('Http/Requests/Backend/Operations/Transports/StoreTransportPriceAdminRequest.php'));
         $updatePriceRequest = file_get_contents(app_path('Http/Requests/Backend/Operations/Transports/UpdateTransportPriceAdminRequest.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         $this->assertFileExists(app_path('Http/Controllers/Backend/Operations/Transports/TransportAdminController.php'));
         $this->assertFileExists(app_path('Http/Controllers/Backend/Operations/Transports/TransportPriceAdminController.php'));
@@ -6902,7 +6920,7 @@ class ProjectStructureStandardTest extends TestCase
         $indexView = file_get_contents(resource_path('views/backend/operations/transports/index.blade.php'));
         $detailView = file_get_contents(resource_path('views/backend/operations/transports/detail.blade.php'));
         $transportPriceModel = file_get_contents(app_path('Models/TransportPrice.php'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $controllers = $profileController . $priceController . $galleryController;
 
         foreach ([
@@ -7041,7 +7059,7 @@ class ProjectStructureStandardTest extends TestCase
         $routes = file_get_contents(base_path('routes/web.php'));
         $webpackMix = file_get_contents(base_path('webpack.mix.js'));
         $mixManifest = file_get_contents(public_path('mix-manifest.json'));
-        $roadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $backendTransportsViews = [
             resource_path('views/backend/operations/transports/index.blade.php'),
             resource_path('views/backend/operations/transports/detail.blade.php'),
@@ -7262,7 +7280,7 @@ class ProjectStructureStandardTest extends TestCase
             }
         }
 
-        $roadmap = file_get_contents(base_path('docs/backend-form-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-form-standardization-roadmap.md'));
 
         foreach ([
             '- [x] Audit global `resources/views/admin`, `resources/views/backend`, dan partial backend/admin tidak menemukan `form-control`, `custom-select`, `custom-file-input`, `btn btn-*`, atau action button legacy.',
@@ -7277,8 +7295,8 @@ class ProjectStructureStandardTest extends TestCase
         $view = file_get_contents(resource_path('views/admin/create-hotel-order.blade.php'));
         $script = file_get_contents(resource_path('backend/js/operations/orders-admin/create-hotel-order.js'));
         $webpackMix = file_get_contents(base_path('webpack.mix.js'));
-        $roadmap = file_get_contents(base_path('docs/backend-legacy-ui-deep-cleanup-roadmap.md'));
-        $uiRoadmap = file_get_contents(base_path('docs/backend-ui-standardization-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-legacy-ui-deep-cleanup-roadmap.md'));
+        $uiRoadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $sharedFormScss = file_get_contents(resource_path('backend/scss/components/_backend-form.scss'));
 
         $this->assertStringContainsString("mix('build/backend/css/app.css')", $view);
@@ -7323,7 +7341,7 @@ class ProjectStructureStandardTest extends TestCase
         $view = file_get_contents(resource_path('views/admin/reservation_detail.blade.php'));
         $script = file_get_contents(resource_path('backend/js/operations/reservations/detail.js'));
         $webpackMix = file_get_contents(base_path('webpack.mix.js'));
-        $roadmap = file_get_contents(base_path('docs/backend-legacy-ui-deep-cleanup-roadmap.md'));
+        $roadmap = file_get_contents(base_path('docs/decisions/backend-legacy-ui-deep-cleanup-roadmap.md'));
 
         $this->assertStringContainsString("mix('build/backend/js/operations/reservations/detail.js')", $view);
         $this->assertStringContainsString(".js('resources/backend/js/operations/reservations/detail.js'", $webpackMix);

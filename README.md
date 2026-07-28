@@ -1,7 +1,7 @@
 # Balikami Tour Travel Management System
 
 Status: active
-Updated: 2026-07-27
+Updated: 2026-07-28
 
 Balikami Tour adalah aplikasi Laravel untuk public travel service browsing, customer/agent booking, dan operasional internal travel agency.
 
@@ -9,9 +9,10 @@ Balikami Tour adalah aplikasi Laravel untuk public travel service browsing, cust
 
 1. `AGENTS.md`
 2. `docs/README.md`
-3. `docs/project-understanding-rules.md`
-4. Dokumen standar/modul yang relevan
-5. `docs/testing-database-safety-standard.md` sebelum test, migration, seeder, tinker, atau command database
+3. `docs/architecture.md`
+4. `docs/coding-standards.md`
+5. Dokumen standar/modul yang relevan
+6. `docs/testing.md` sebelum test, migration, seeder, tinker, atau command database
 
 Project ini memiliki database aktif. Jangan menjalankan command destructive seperti `migrate:fresh`, `migrate:refresh`, `db:wipe`, `truncate`, atau mass delete.
 
@@ -58,7 +59,7 @@ php artisan route:list
 composer validate
 ```
 
-Sebelum menjalankan PHPUnit, migration, seeder, atau tinker, verifikasi database testing mengikuti `docs/testing-database-safety-standard.md`.
+Sebelum menjalankan PHPUnit, migration, seeder, atau tinker, verifikasi database testing mengikuti `docs/testing.md`.
 
 ## WhatsApp API
 

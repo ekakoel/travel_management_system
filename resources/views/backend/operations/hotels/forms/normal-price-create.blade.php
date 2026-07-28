@@ -132,8 +132,6 @@
                         </section>
                     </aside>
                 </div>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan

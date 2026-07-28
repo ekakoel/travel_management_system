@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->job(new UpdateCurrencyRates)->hourly();
         $schedule->call(function () {
+            $now = Carbon::now();
             Orders::query()
                 ->where('service', 'Tour Package')
                 ->where('status', 'Approved')

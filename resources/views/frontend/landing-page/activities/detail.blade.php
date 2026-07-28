@@ -220,6 +220,8 @@
                 tabindex="-1"
                 aria-labelledby="activityOrderModalLabel"
                 aria-hidden="true"
+                data-bs-focus="false"
+                data-activity-order-modal
                 data-activity-name="{{ $activity->name }}"
                 data-activity-supplier="{{ $activityOrderForm['supplier'] }}"
             >
@@ -269,6 +271,7 @@
                         >
                             @csrf
                             <input type="hidden" name="activity_order_source" value="{{ $activityOrderForm['order_source'] }}">
+                            <input type="hidden" name="submission_token" value="{{ $activityOrderForm['submission_token'] }}">
 
                             <div class="transport-reservation-submit-overlay frontend-order-modal__overlay hidden" data-activity-order-overlay aria-hidden="true">
                                 <div class="transport-reservation-submit-overlay__card">
@@ -351,12 +354,20 @@
                                         <label for="activityOrderTravelDate">@lang('messages.Activity Date') <span class="activity-reservation-required" aria-hidden="true">*</span></label>
                                         <input
                                             id="activityOrderTravelDate"
-                                            type="datetime-local"
+                                            type="text"
                                             name="travel_date"
                                             class="form-control @error('travel_date') is-invalid @enderror"
-                                            min="{{ $activityOrderForm['minimum_travel_date'] }}"
-                                            value="{{ $activityOrderForm['prefill']['travel_date'] }}"
+                                            value="{{ str_replace('T', ' ', $activityOrderForm['prefill']['travel_date']) }}"
                                             required
+                                            autocomplete="off"
+                                            data-ui-picker="datetime"
+                                            data-ui-picker-min="{{ $activityOrderForm['minimum_travel_date'] }}"
+                                            data-ui-picker-format="YYYY-MM-DD HH:mm"
+                                            data-ui-picker-parent="body"
+                                            data-ui-picker-opens="center"
+                                            data-ui-picker-drops="auto"
+                                            data-ui-picker-show-buttons="true"
+                                            data-ui-picker-minute-step="5"
                                             data-activity-order-field="travel_date"
                                         >
                                         @error('travel_date')

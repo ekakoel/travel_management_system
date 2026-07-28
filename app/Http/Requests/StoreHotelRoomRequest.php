@@ -24,6 +24,7 @@ class StoreHotelRoomRequest extends FormRequest
             'size' => ['nullable', 'string', 'max:100'],
             'capacity_adult' => ['nullable', 'integer', 'min:0'],
             'capacity_child' => ['nullable', 'integer', 'min:0'],
+            'inventory' => ['required', 'integer', 'min:1'],
         ];
     }
 }

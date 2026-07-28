@@ -71,7 +71,7 @@
                                 placeholder="{{ data_get($footerData, 'newsletter.placeholder') }}"
                                 required
                             >
-                            <button type="submit" class="site-footer__submit">
+                            <button type="submit" class="btn btn-primary">
                                 {{ data_get($footerData, 'newsletter.button') }}
                             </button>
                         </form>

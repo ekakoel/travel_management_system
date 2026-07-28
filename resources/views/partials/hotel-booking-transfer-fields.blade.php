@@ -69,6 +69,11 @@
                                 class="form-control booking-datetime-input"
                                 placeholder="@lang('messages.Select date and time')"
                                 value="{{ $transferTimes[$index] ?? '' }}"
+                                data-ui-picker="datetime"
+                                data-ui-picker-format="YYYY-MM-DD HH:mm"
+                                data-ui-picker-minute-step="5"
+                                data-ui-picker-show-buttons="true"
+                                data-booking-datetime
                             >
                         </div>
                     </div>
@@ -163,7 +168,7 @@
                     <div class="col-xl-3 col-lg-3 col-md-6">
                         <div class="form-group">
                             <label>@lang('messages.Date and time')</label>
-                            <input readonly type="text" name="flight_time[]" class="form-control booking-datetime-input" placeholder="@lang('messages.Select date and time')">
+                            <input readonly type="text" name="flight_time[]" class="form-control booking-datetime-input" placeholder="@lang('messages.Select date and time')" data-ui-picker="datetime" data-ui-picker-format="YYYY-MM-DD HH:mm" data-ui-picker-minute-step="5" data-ui-picker-show-buttons="true" data-booking-datetime>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-8 col-md-6">

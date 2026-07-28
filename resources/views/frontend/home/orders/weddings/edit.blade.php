@@ -427,18 +427,19 @@
     {{-- LOADING SPINNER -----------------------------------------------------------> --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+            var minimumDate = new Date();
+            minimumDate.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+            minimumDate.setDate(minimumDate.getDate() + 1);
             
             flatpickr("#wedding_date", {
-                minDate: today,
+                minDate: minimumDate,
                 dateFormat: "m/d/Y",
                 onChange: function(selectedDates, dateStr, instance) {
                     var selectedDate = new Date(selectedDates[0]);
                     
                     // Mengubah class untuk elemen dengan ID subtitle1
                     var subtitleWeddingDate = document.getElementById('subtitle-wedding-date');
-                    if (selectedDate < today) {
+                    if (selectedDate < minimumDate) {
                         subtitleWeddingDate.classList.add('page-subtitle-error');
                     } else {
                         subtitleWeddingDate.classList.remove('page-subtitle-error');

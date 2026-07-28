@@ -86,7 +86,7 @@
                                 <div class="hotel-form-panel__body">
                                     <div class="backend-form-grid backend-form-grid--compact">
                                         <div class="backend-form-field">
-                                            <label for="name">Promo Name <b>*</b></label>
+                                            <label for="name">Promo Name</label>
                                             <input class="backend-form-control" id="name" name="name" value="{{ old('name', $promo->name) }}" placeholder="Promo name" type="text" required>
                                         </div>
 
@@ -128,37 +128,37 @@
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="book_periode_start">Booking Period Start <b>*</b></label>
+                                            <label for="book_periode_start">Booking Period Start</label>
                                             <input id="book_periode_start" name="book_periode_start" class="backend-form-control date-picker" value="{{ old('book_periode_start', dateFormat($promo->book_periode_start)) }}" type="text" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="book_periode_end">Booking Period End <b>*</b></label>
+                                            <label for="book_periode_end">Booking Period End</label>
                                             <input id="book_periode_end" name="book_periode_end" class="backend-form-control date-picker" value="{{ old('book_periode_end', dateFormat($promo->book_periode_end)) }}" type="text" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="periode_start">Stay Period Start <b>*</b></label>
+                                            <label for="periode_start">Stay Period Start</label>
                                             <input id="periode_start" name="periode_start" class="backend-form-control date-picker" value="{{ old('periode_start', dateFormat($promo->periode_start)) }}" type="text" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="periode_end">Stay Period End <b>*</b></label>
+                                            <label for="periode_end">Stay Period End</label>
                                             <input id="periode_end" name="periode_end" class="backend-form-control date-picker" value="{{ old('periode_end', dateFormat($promo->periode_end)) }}" type="text" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="minimum_stay">Minimum Stay <b>*</b></label>
+                                            <label for="minimum_stay">Minimum Stay</label>
                                             <input class="backend-form-control" id="minimum_stay" name="minimum_stay" value="{{ old('minimum_stay', $promo->minimum_stay) }}" min="1" type="number" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="contract_rate">Contract Rate <b>*</b></label>
+                                            <label for="contract_rate">Contract Rate</label>
                                             <input class="backend-form-control" id="contract_rate" name="contract_rate" value="{{ old('contract_rate', $promo->contract_rate) }}" min="0" type="number" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="markup">Markup <b>*</b></label>
+                                            <label for="markup">Markup</label>
                                             <input class="backend-form-control" id="markup" name="markup" value="{{ old('markup', $promo->markup) }}" min="0" type="number" required>
                                         </div>
 
@@ -213,8 +213,6 @@
                         </section>
                     </aside>
                 </div>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan

@@ -21,6 +21,7 @@ class HotelRoom extends Model
         'hotels_id',
         'capacity_adult',
         'capacity_child',
+        'inventory',
         'view',
         'beds',
         'size',

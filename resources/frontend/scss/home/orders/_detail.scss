@@ -17,6 +17,9 @@
     font-size: 18px;
     align-content: center;
 }
+.alert-success ul, .alert-danger ul{
+    list-style: none;
+}
 .alert-success .close:is(:active, :hover){
     background-color: red;
     color: white;
@@ -511,7 +514,11 @@
 }
 
 .order-detail-btn--primary {
-    background: linear-gradient(135deg, var(--order-detail-primary), var(--order-detail-primary-deep));
+    border-color: var(--frontend-shell-primary);
+    background: linear-gradient(135deg, var(--frontend-shell-primary) 0%, var(--frontend-shell-secondary) 100%);
+    color: #fff;
+}
+.order-detail-btn--primary:is(:active, :hover) {
     color: #fff;
 }
 
@@ -541,7 +548,6 @@
 }
 
 .order-detail-btn:hover {
-    color: inherit;
     transform: translateY(-1px);
 }
 
@@ -651,6 +657,7 @@
 .order-detail-receipt-image {
     display: block;
     width: 100%;
+    height: auto;
     max-height: 70vh;
     object-fit: contain;
     border-radius: 18px;

@@ -12,9 +12,22 @@
         $canConfirmOrder = in_array(strtolower((string) $order->status), ['draft', 'pending'], true);
         $isOwner = !$order->handled_by || $order->handled_by == Auth::id();
         $receiptItems = collect($receipts ?? []);
+        $isAccommodationOrder = in_array($order->service, \App\Models\Orders::ACCOMMODATION_SERVICES, true);
+        $isProtectedPublicOrder = app(\App\Services\AccommodationFinancialFileService::class)->isProtectedPublicOrder($order);
+        $receiptRoute = match ($order->service) {
+            \App\Models\Orders::PUBLIC_TRANSPORT_SERVICE => 'admin.orders.transport.payments.receipt',
+            \App\Models\Orders::PUBLIC_TOUR_SERVICE => 'admin.orders.tour.payments.receipt',
+            \App\Models\Orders::PUBLIC_ACTIVITY_SERVICE => 'admin.orders.activity.payments.receipt',
+            default => $isAccommodationOrder ? 'admin.orders.accommodation.payments.receipt' : null,
+        };
+        $financialFiles = app(\App\Services\AccommodationFinancialFileService::class);
+        $invoiceEnFile = $isProtectedPublicOrder && $invoice ? $financialFiles->resolveInvoiceFile($order, $invoice, 'en') : null;
+        $invoiceZhFile = $isProtectedPublicOrder && $invoice ? $financialFiles->resolveInvoiceFile($order, $invoice, 'zh') : null;
         $invoiceEnPath = "storage/document/invoice-{$inv_no}-{$order->id}_en.pdf";
         $invoiceZhPath = "storage/document/invoice-{$inv_no}-{$order->id}_zh.pdf";
-        $hasInvoicePdf = File::exists(public_path($invoiceEnPath)) || File::exists(public_path($invoiceZhPath));
+        $hasInvoicePdf = $isProtectedPublicOrder
+            ? ($invoiceEnFile || $invoiceZhFile)
+            : (File::exists(public_path($invoiceEnPath)) || File::exists(public_path($invoiceZhPath)));
         $priceRows = collect([
             ['label' => 'Base price', 'value' => currencyFormatUsd($order->price_total ?: $order->normal_price ?: $order->price_pax ?: 0), 'show' => true],
             ['label' => 'Optional charges', 'value' => currencyFormatUsd($optional_rate_order_total_price), 'show' => $optional_rate_order_total_price > 0],
@@ -182,7 +195,7 @@
                                             <label for="confirmation_order">Hotel / supplier confirmation number</label>
                                             <input id="confirmation_order" name="confirmation_order" type="text" value="{{ old('confirmation_order', $order->confirmation_order) }}" class="backend-form-control @error('confirmation_order') is-invalid @enderror" placeholder="Confirmation number" required>
                                         </div>
-                                        <div class="orders-admin-detail-form-action">
+                                        <div class="orders-admin-detail-form-action m-b-18">
                                             <button type="submit" class="backend-button backend-button-primary">
                                                 <i class="icon-copy fa fa-check" aria-hidden="true"></i> Save
                                             </button>
@@ -402,13 +415,13 @@
                                             <i class="fa fa-print" aria-hidden="true"></i> Print Document
                                         </a>
                                     @endif
-                                    @if(File::exists(public_path($invoiceEnPath)))
-                                        <a class="backend-button backend-button-secondary" href="{{ asset($invoiceEnPath) }}" target="_blank">
+                                    @if($isProtectedPublicOrder ? $invoiceEnFile : File::exists(public_path($invoiceEnPath)))
+                                        <a class="backend-button backend-button-secondary" href="{{ $isProtectedPublicOrder ? route('admin.orders.accommodation.invoice.preview', ['order' => $order->id, 'locale' => 'en']) : asset($invoiceEnPath) }}" target="_blank">
                                             <i class="fa fa-download" aria-hidden="true"></i> Invoice EN
                                         </a>
                                     @endif
-                                    @if(File::exists(public_path($invoiceZhPath)))
-                                        <a class="backend-button backend-button-secondary" href="{{ asset($invoiceZhPath) }}" target="_blank">
+                                    @if($isProtectedPublicOrder ? $invoiceZhFile : File::exists(public_path($invoiceZhPath)))
+                                        <a class="backend-button backend-button-secondary" href="{{ $isProtectedPublicOrder ? route('admin.orders.accommodation.invoice.preview', ['order' => $order->id, 'locale' => 'zh']) : asset($invoiceZhPath) }}" target="_blank">
                                             <i class="fa fa-download" aria-hidden="true"></i> Invoice ZH
                                         </a>
                                     @endif
@@ -569,7 +582,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     @if($receipt->receipt_img)
-                                        <img class="orders-admin-detail-receipt-img" src="{{ asset('storage/receipt/' . $receipt->receipt_img) }}" alt="Receipt">
+                                        <img class="orders-admin-detail-receipt-img" src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/' . $receipt->receipt_img) }}" alt="Receipt">
                                     @endif
                                 </div>
                                 <div class="col-md-6">

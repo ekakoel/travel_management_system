@@ -19,6 +19,13 @@
         default => currencyFormatUsd($invoice?->total_usd ?: $order->final_price),
     };
     $paymentStateLabel = $paymentStateLabel ?? ((__('messages.' . $order->status) !== 'messages.' . $order->status) ? __('messages.' . $order->status) : $order->status);
+    $isProtectedPublicInvoice = app(\App\Services\AccommodationFinancialFileService::class)->isProtectedPublicOrder($order);
+    $invoicePreviewRoute = $invoicePreviewRoute ?? ($isProtectedPublicInvoice
+        ? route('orders.accommodation.invoice.preview', ['order' => $order->id, 'locale' => 'en'])
+        : route('orders.invoice.preview', ['id' => $order->id]));
+    $invoiceDownloadRoute = $invoiceDownloadRoute ?? ($isProtectedPublicInvoice
+        ? route('orders.accommodation.invoice.download', ['order' => $order->id, 'locale' => 'en'])
+        : route('orders.invoice.download', ['id' => $order->id]));
     $paymentExpired = $paymentExpired ?? ($order->status === 'Canceled');
     $travelDateLabel = $order->travel_date
         ? dateTimeFormat($order->travel_date)
@@ -170,11 +177,11 @@
                 </div>
             </div>
             <div class="order-detail-modal__footer">
-                <a href="{{ route('orders.invoice.preview', ['id' => $order->id]) }}" target="_blank" rel="noopener" class="order-detail-btn order-detail-btn--soft order-detail-btn--auto">
+                <a href="{{ $invoicePreviewRoute }}" target="_blank" rel="noopener" class="order-detail-btn order-detail-btn--soft order-detail-btn--auto">
                     <i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i>
                     @lang('messages.Open PDF')
                 </a>
-                <a href="{{ route('orders.invoice.download', ['id' => $order->id]) }}" class="order-detail-btn order-detail-btn--primary order-detail-btn--auto">
+                <a href="{{ $invoiceDownloadRoute }}" class="order-detail-btn order-detail-btn--primary order-detail-btn--auto">
                     <i class="fa-solid fa-download" aria-hidden="true"></i>
                     @lang('messages.Download PDF')
                 </a>

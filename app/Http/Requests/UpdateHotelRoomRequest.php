@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class UpdateHotelRoomRequest extends FormRequest
 {
@@ -24,7 +25,20 @@ class UpdateHotelRoomRequest extends FormRequest
             'size' => ['nullable', 'string', 'max:100'],
             'capacity_adult' => ['nullable', 'integer', 'min:0'],
             'capacity_child' => ['nullable', 'integer', 'min:0'],
+            'inventory' => ['required', 'integer', 'min:0'],
             'status' => ['nullable', 'string', 'max:50'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $status = strtolower((string) $this->input('status', 'Active'));
+            $inventory = (int) $this->input('inventory', 0);
+
+            if ($status === 'active' && $inventory < 1) {
+                $validator->errors()->add('inventory', 'Active rooms must have at least one available room. Use a non-active status for stop-sell inventory.');
+            }
+        });
     }
 }

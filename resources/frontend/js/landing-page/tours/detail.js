@@ -1027,6 +1027,28 @@ document.addEventListener('DOMContentLoaded', () => {
             if (emptyCell) emptyCell.textContent = guestTableEmptyLabel;
         }
     };
+    const formatDateTime = (value) => {
+        if (!value) {
+            return '-';
+        }
+
+        const parsed = new Date(value);
+
+        if (Number.isNaN(parsed.getTime())) {
+            return value;
+        }
+
+        const pad = (part) => String(part).padStart(2, '0');
+
+        return [
+            parsed.getFullYear(),
+            pad(parsed.getMonth() + 1),
+            pad(parsed.getDate()),
+        ].join('-') + ' ' + [
+            pad(parsed.getHours()),
+            pad(parsed.getMinutes()),
+        ].join(':');
+    };
     const validateGuestManifest = (showMessage = false) => {
         const leader = guests.find((guest) => guest.is_leader && guest.phone);
         const isValid = guests.length > 0 && Boolean(leader);
@@ -1036,7 +1058,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const updateReservationReview = () => {
         const valueMap = reviewFields.reduce((values, field) => {
-            values[field.dataset.tourReviewField] = field.value || '-';
+            values[field.dataset.tourReviewField] = field.dataset.tourReviewFormat === 'datetime'
+                ? formatDateTime(field.value)
+                : (field.value || '-');
             return values;
         }, {});
         const leader = guests.find((guest) => guest.is_leader);

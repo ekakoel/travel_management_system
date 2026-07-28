@@ -28,6 +28,7 @@ class Transports extends Model
         'contract_rate',
         'markup',
         'capacity',
+        'inventory',
         'status',
         'author_id',
         'cover',

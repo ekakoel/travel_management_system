@@ -3,16 +3,10 @@
 
 @push('styles')
     <link rel="stylesheet" type="text/css" href="{{ asset('panel/styles/icon-font.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="{{ mix('build/frontend/css/pages/hotel-booking-entry.css') }}">
 @endpush
 
 @push('scripts')
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="{{ asset('panel/script/core.js') }}"></script>
     <script src="{{ mix('build/frontend/js/pages/hotel-booking.js') }}" defer></script>
 @endpush
 
@@ -41,6 +35,8 @@
                             data-review-room="{{ $room->rooms }}"
                             data-review-checkin="{{ dateFormat($checkin) }}"
                             data-review-checkout="{{ dateFormat($checkout) }}"
+                            data-stay-checkin="{{ dateFormat($checkin) }}"
+                            data-stay-checkout="{{ dateFormat($checkout) }}"
                             data-review-duration="{{ $duration }} {{ $duration > 1 ? __('messages.nights') : __('messages.Night') }}"
                             data-booking-variant="promo"
                             data-room-max="8"
@@ -68,6 +64,7 @@
                             data-label-quote-review="@lang('messages.This order will be handled as a quote request because it contains more than 8 rooms.')"
                         >
                             @csrf
+                            @include('partials.form-submission-token')
                             @canany(['posDev','posAuthor','posRsv'])
                                 <div class="row">
                                     @include('partials.admin-create-order', compact('agents'))

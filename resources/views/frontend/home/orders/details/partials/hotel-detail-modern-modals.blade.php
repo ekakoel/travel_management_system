@@ -8,9 +8,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@lang('messages.Close')"></button>
                     </div>
                     <div class="modal-body">
-                        <img class="order-detail-receipt-image" src="{{ asset('storage/receipt/' . $receipt->receipt_img) }}" alt="@lang('messages.Payment Receipt')">
+                        <img class="order-detail-receipt-image" src="{{ route('orders.accommodation.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" alt="@lang('messages.Payment Receipt')">
                         @if ($receipt->note)
-                            <div class="order-detail-alert mt-3">{!! $receipt->note !!}</div>
+                            <div class="order-detail-alert mt-3">{{ $receipt->note }}</div>
                         @endif
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="receipt_name" class="form-label">@lang('messages.Select Receipt')</label>
-                                <input type="file" name="receipt_name" id="receipt_name" class="form-control @error('receipt_name') is-invalid @enderror" data-receipt-input="#receipt-preview-{{ $order->id }}" data-receipt-empty="{{ __('messages.No preview available') }}" accept="image/*" required>
+                                <input type="file" name="receipt_name" id="receipt_name" class="form-control @error('receipt_name') is-invalid @enderror" data-receipt-input="#receipt-preview-{{ $order->id }}" data-receipt-empty="{{ __('messages.No preview available') }}" accept="image/jpeg,image/png,application/pdf" required>
                                 @error('receipt_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

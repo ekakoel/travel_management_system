@@ -4,11 +4,13 @@
     $cnyrates = UsdRates::where('name','CNY')->first();
     $twdrates = UsdRates::where('name','TWD')->first();
 @endphp
-<div class="col-md-12 m-b-18">
-    <div class="card-box">
-        <div class="card-box-title">
-            <div class="subtitle"><i class="fa fa-money" aria-hidden="true"></i> Currency</div>
+<section class="backend-panel hotel-form-panel">
+    <div class="backend-section-header hotel-form-panel__heading">
+        <div>
+            <span class="backend-section-header__label">Currency</span>
         </div>
+    </div>
+    <div class="hotel-form-panel__body">
         <div class="grid-3-container">
             <div class="grid-box">
                 <div class="grid-box-title">USD <span>($)</span></div>
@@ -27,4 +29,4 @@
             </div>
         </div>
     </div>
-</div>
+</section>

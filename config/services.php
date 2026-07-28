@@ -35,4 +35,8 @@ return [
         'bot_url' => env('WHATSAPP_BOT_URL', 'http://127.0.0.1:3000'),
         'api_key' => env('WA_API_KEY'),
     ],
+
+    'accommodation' => [
+        'default_room_inventory' => (int) env('ACCOMMODATION_DEFAULT_ROOM_INVENTORY', 1),
+    ],
 ];

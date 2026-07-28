@@ -34,7 +34,7 @@ class ToursController extends Controller
     }
     public function index()
     {   
-        $tours=Tours::where('status','active')->paginate(12)->withQueryString();
+        $tours=Tours::where('status','Active')->paginate(12)->withQueryString();
         $promotions = Promotion::where('status',"Active")->get();
         // $toursType = TourType::all();
         $toursType = TourType::whereHas('tours')->get();
@@ -155,7 +155,10 @@ class ToursController extends Controller
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
 
-        $tour = Tours::with(['images','prices','activeLocations'])->where('slug',$slug)->firstOrFail();
+        $tour = Tours::with(['images','prices','activeLocations'])
+            ->where('slug', $slug)
+            ->where('status', 'Active')
+            ->firstOrFail();
         $prices = collect();
 
         if ($canViewTourRates) {
@@ -258,6 +261,26 @@ class ToursController extends Controller
             $tour,
             trim((string) ($tour->$langItinerary ?: $tour->itinerary))
         );
+        $defaultTravelDate = $now->copy()->addDay()->setTime(9, 0)->format('Y-m-d\TH:i');
+        $prefillTravelDate = old('travel_date');
+
+        if (filled($prefillTravelDate)) {
+            try {
+                $prefillTravelDate = Carbon::parse($prefillTravelDate)->format('Y-m-d\TH:i');
+            } catch (\Throwable $exception) {
+                $prefillTravelDate = $defaultTravelDate;
+            }
+        } else {
+            $prefillTravelDate = $defaultTravelDate;
+        }
+
+        $tourOrderForm = [
+            'default_travel_date' => $defaultTravelDate,
+            'minimum_travel_date' => $now->copy()->startOfDay()->format('Y-m-d\TH:i'),
+            'prefill' => [
+                'travel_date' => $prefillTravelDate,
+            ],
+        ];
 
         return view('frontend.landing-page.tours.detail',[
             'tax'=>$tax,
@@ -288,6 +311,7 @@ class ToursController extends Controller
             'tourMapLocations'=>$tourMapLocations,
             'canViewTourRates'=>$canViewTourRates,
             'tourRateAccess'=>$tourRateAccess,
+            'tourOrderForm'=>$tourOrderForm,
 
 
         ]);

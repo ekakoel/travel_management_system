@@ -448,7 +448,7 @@ select option{
     font-size: 1.1rem;
     font-weight: 600;
 }
-.btn-icon{
+/* .btn-icon{
     position: relative;
 }
 
@@ -484,7 +484,7 @@ select option{
 .btn-book:is(:hover, :active){
     color: white;
     box-shadow: none;
-}
+} */
 
 .shadow-lg {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -839,7 +839,7 @@ textarea.form-control {
     width: 100%;
     height: auto;
     object-fit: cover;
-    aspect-ratio: 3 / 2;
+    /* aspect-ratio: 3 / 2; */
 }
 .modal-header{
     background-color: #f3f3f3;
@@ -1000,7 +1000,7 @@ textarea.form-control {
     font-weight: 600;
     color: #343a40;
 }
-.btn-container{
+/* .btn-container{
     display: block;
     padding: 18px 0px;
 }
@@ -1014,7 +1014,7 @@ textarea.form-control {
 .btn-outline-primary:hover {
     background-color: #0d6efd;
     color: #fff;
-}
+} */
 
 .star-rating {
     direction: rtl;
@@ -1291,15 +1291,14 @@ legend {
     margin-top: 5px;
 }
 
-.btn {
+/* .btn {
     border-radius: 5px;
     border: 1px solid #ffffff42;
-}
-.padding-btn{
+} */
+/* .padding-btn{
     padding: 7px 44px !important;
-}
-/* Base style */
-.btn-light {
+} */
+/* .btn-light {
     display: inline-block;
     font-weight: 500;
     color: #6f6f6f;
@@ -1315,20 +1314,17 @@ legend {
     border: 1px solid #b2b2b2;
 }
 
-/* Hover */
 .btn-light:hover {
-    /* background-color: #174fb1; */
+    /* background-color: #174fb1;
     border-color: #cfcfcf;
     color: #454545;
 }
 
-/* Focus */
 .btn-light:focus {
     outline: none;
     box-shadow: 0 0 0 0.25rem rgba(108,117,125,0.25);
 }
 
-/* Active */
 .btn-light:active,
 .btn-light.active {
     background-color: #174fb1;
@@ -1337,7 +1333,6 @@ legend {
     transform: scale(0.97);
 }
 
-/* Disabled */
 .btn-light:disabled,
 .btn-light.disabled {
     background-color: #f8f9fa;
@@ -1346,14 +1341,11 @@ legend {
     cursor: not-allowed;
     opacity: 0.65;
     pointer-events: none;
-}
+} */
 
 
-.btn-primary {
-    background-color: var(--primary) !important;
-}
 
-.btn-success {
+/* .btn-success {
     background-color: var(--primary) !important;
     color: white;
     font-size: 0.8rem !important;
@@ -1376,7 +1368,7 @@ legend {
 .btn-cancel:is(:hover,:active,:focus){
     background: linear-gradient(135deg, rgb(182, 0, 0) 100%, #8a0000 0%);
     color: white;
-}
+} */
 
 .info-box {
     margin-top: 8px;
@@ -1408,7 +1400,7 @@ legend {
     align-content: center;
     padding: 8px 18px;
     border-radius: 8px 8px 0 0;
-    background-color: #e7e7e7;
+    background-color: #eef6ff;
     border-bottom: 1px solid #e1e1e1;
     color: #4b4b4b;
 }
@@ -1934,23 +1926,7 @@ legend {
 }
 
 
-/*-----------------------------------*\
- * #BACK TO TOP BUTTON
-\*-----------------------------------*/
-.back-to-top {
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-    z-index: 9999;
-    font-size: 20px;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 9px !important;
-    border-radius: 50% !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    transition: opacity 0.3s, visibility 0.3s;
-}
+
 
 /*-----------------------------------*\
  * #MEDIA QUERIES

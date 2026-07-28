@@ -82,18 +82,9 @@
 
 
     $(document).ready(function() {
-        var today = moment().toDate();
-        var oneDayAfter = moment().add(1, 'days').toDate();
-        var sevenDaysAfter = moment().add(7, 'days').toDate();
-        var nineDaysAfter = moment().add(9, 'days').toDate();
-        var defaultDate = moment().add(7, 'days').toDate();
-        $('input[name="checkincout"]').daterangepicker({
-            minDate: sevenDaysAfter,
-            opens: 'left',
-            autoApply: true,
-            language: 'en',
-            format: 'MM/DD/YYYY',
-        });
+        if (window.FrontendPickerSystem) {
+            window.FrontendPickerSystem.init();
+        }
     });
 
 // Tampilkan tombol saat scroll ke bawah

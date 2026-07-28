@@ -90,6 +90,8 @@
                         class="form-control m-0 booking-date-input @error('special_date[]') is-invalid @enderror"
                         placeholder="@lang('messages.Select date')"
                         value="{{ old('special_date[]') }}"
+                        data-ui-picker="date"
+                        data-ui-picker-format="YYYY-MM-DD"
                         readonly
                     >
                     @error('special_date[]')

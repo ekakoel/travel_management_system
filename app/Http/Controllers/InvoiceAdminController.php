@@ -9,6 +9,7 @@ use App\Models\Reservation;
 use App\Models\InvoiceAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 use App\Models\BusinessProfile;
 use App\Models\AdditionalInvoice;
 use App\Http\Requests\StoreInvoiceAdminRequest;
@@ -46,13 +47,19 @@ class InvoiceAdminController extends Controller
         $out=Carbon::parse($reservation->checkout);
         $dur_res = $in->diffInDays($out);
         $usdrates = UsdRates::where('name','USD')->first();
-        $accommodations = Orders::where([
-            ['service','Hotel'],['status','Active'],['rsv_id', $invoice->rsv_id],])
-        ->orWhere([
-            ['service','Hotel Promo'],['status','Active'],['rsv_id', $invoice->rsv_id],])
-        ->orWhere([
-            ['service','Hotel Package'],['status','Active'],['rsv_id', $invoice->rsv_id],])
-        ->orderBy('checkin', 'asc')->get();
+        $accommodations = Orders::query()
+            ->where('rsv_id', $invoice->rsv_id)
+            ->whereIn('service', Orders::ACCOMMODATION_SERVICES)
+            ->where(function ($query) {
+                $query->whereIn('status', ['Approved', 'Paid'])
+                    ->orWhere('status', 'Completed');
+
+                if (Schema::hasColumn('orders', 'completed_at')) {
+                    $query->orWhereNotNull('completed_at');
+                }
+            })
+            ->orderBy('checkin', 'asc')
+            ->get();
         $tours = Orders::where('status',"Active")
         ->where('service',"Tour Package")
         ->where('rsv_id',$invoice->rsv_id)
@@ -61,15 +68,24 @@ class InvoiceAdminController extends Controller
         ->where('service',"Activity")
         ->where('rsv_id',$invoice->rsv_id)
         ->get();
-        $transports = Orders::where('status',"Active")
-        ->where('service',"Transport")
-        ->where('rsv_id',$invoice->rsv_id)
-        ->get();
+        $transports = Orders::query()
+            ->whereIn('status', ['Approved', 'Paid'])
+            ->where('service', Orders::PUBLIC_TRANSPORT_SERVICE)
+            ->where('rsv_id', $invoice->rsv_id)
+            ->orderBy('checkin', 'asc')
+            ->get();
         $bank_acc = BankAccount::all();
         $additional_invoice = AdditionalInvoice::where('inv_id',$id)->get();
-        $total_price_order = Orders::where('status',"Active")
-        ->where('rsv_id',$invoice->rsv_id)
-        ->sum('final_price');
+        $total_price_order = Orders::query()
+            ->where('rsv_id', $invoice->rsv_id)
+            ->where(function ($query) {
+                $query->where('status', 'Active')
+                    ->orWhere(function ($transport) {
+                        $transport->where('service', Orders::PUBLIC_TRANSPORT_SERVICE)
+                            ->whereIn('status', ['Approved', 'Paid']);
+                    });
+            })
+            ->sum('final_price');
         $sum_additional_invoice = AdditionalInvoice::where('inv_id',$invoice->id)
         ->sum('amount');
         return view('backend.finance.invoices.detail',[

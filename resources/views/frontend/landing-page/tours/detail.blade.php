@@ -613,7 +613,20 @@
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label for="tourTravelDate" class="form-label">@lang('messages.Travel Date') <span>*</span></label>
-                                            <input id="tourTravelDate" name="travel_date" class="form-control @error('travel_date') is-invalid @enderror" type="date" value="{{ old('travel_date') }}" required data-tour-review-field="travelDate">
+                                            <input
+                                                id="tourTravelDate"
+                                                name="travel_date"
+                                                class="form-control @error('travel_date') is-invalid @enderror"
+                                                type="text"
+                                                value="{{ str_replace('T', ' ', $tourOrderForm['prefill']['travel_date']) }}"
+                                                required
+                                                autocomplete="off"
+                                                data-ui-picker="datetime"
+                                                data-ui-picker-min="{{ $tourOrderForm['minimum_travel_date'] }}"
+                                                data-ui-picker-format="YYYY-MM-DD HH:mm"
+                                                data-tour-review-field="travelDate"
+                                                data-tour-review-format="datetime"
+                                            >
                                             @error('travel_date')
                                                 <div class="alert-form">{{ $message }}</div>
                                             @enderror

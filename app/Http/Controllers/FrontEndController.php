@@ -721,6 +721,7 @@ class FrontEndController extends Controller
 
         $activityOrderForm = [
             'action' => route('view.activity-order.store', ['code' => $activity->code]),
+            'submission_token' => old('submission_token', (string) Str::uuid()),
             'capacity' => (int) ($activity->qty ?: $activity->display_capacity),
             'min_pax' => (int) $activity->display_min_pax,
             'price_per_pax' => $pricePerPax,

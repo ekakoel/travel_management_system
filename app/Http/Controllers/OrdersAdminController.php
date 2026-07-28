@@ -71,6 +71,13 @@ use Google\Service\Dfareporting\Country;
 use App\Models\WeddingAdditionalServices;
 use App\Http\Requests\StoreactivitiesRequest;
 use App\Http\Requests\UpdateactivitiesRequest;
+use App\Rules\SafeReceiptUpload;
+use App\Services\AccommodationBookingGuardService;
+use App\Services\AccommodationFinancialFileService;
+use App\Services\AccommodationReservationService;
+use App\Services\ActivityReservationService;
+use App\Services\TransportAvailabilityService;
+use App\Services\TourReservationService;
 
 
 class OrdersAdminController extends Controller
@@ -79,6 +86,71 @@ class OrdersAdminController extends Controller
     {
         $this->middleware(['auth']);
         // $this->middleware(['auth','can:isAdmin']);
+    }
+
+    private const STANDARD_PAYMENT_ADMIN_POSITIONS = [
+        'developer',
+        'reservation',
+        'weddingRsv',
+    ];
+
+    private function ensureAdminCanMutateStandardPayment(Orders $order): void
+    {
+        $user = Auth::user();
+
+        abort_unless($user && in_array($user->position, self::STANDARD_PAYMENT_ADMIN_POSITIONS, true), 403);
+
+        if ($user->position !== 'developer' && $order->handled_by && (int) $order->handled_by !== (int) $user->id) {
+            abort(403);
+        }
+    }
+
+    private function receiptStoragePath(string $filename): string
+    {
+        return 'receipt/'.$filename;
+    }
+
+    private function receiptPath(string $filename): string
+    {
+        return Storage::disk('public')->path($this->receiptStoragePath($filename));
+    }
+
+    private function deleteStandardReceiptFile(?string $filename): void
+    {
+        if ($filename && (
+            Str::startsWith($filename, AccommodationFinancialFileService::PAYMENT_ROOT.'/')
+            || Str::startsWith($filename, AccommodationFinancialFileService::TRANSPORT_PAYMENT_ROOT.'/')
+            || Str::startsWith($filename, AccommodationFinancialFileService::TOUR_PAYMENT_ROOT.'/')
+            || Str::startsWith($filename, AccommodationFinancialFileService::ACTIVITY_PAYMENT_ROOT.'/')
+        )) {
+            Storage::disk(AccommodationFinancialFileService::DISK)->delete($filename);
+        } elseif ($filename) {
+            Storage::disk('public')->delete($this->receiptStoragePath($filename));
+        }
+    }
+
+    private function makeSafeReceiptFilename(InvoiceAdmin $invoice, $file): string
+    {
+        $invoiceNumber = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $invoice->inv_no) ?: 'invoice';
+        $extension = strtolower($file->extension() ?: $file->getClientOriginalExtension());
+
+        return $invoiceNumber.'_'.Carbon::now()->format('YmdHis').'_'.Str::random(16).'.'.$extension;
+    }
+
+    private function storeStandardReceiptFile($file, InvoiceAdmin $invoice, Orders $order): string
+    {
+        $receiptName = $this->makeSafeReceiptFilename($invoice, $file);
+
+        if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
+            $receiptPath = app(AccommodationFinancialFileService::class)->privateReceiptPath($order, $receiptName);
+            Storage::disk(AccommodationFinancialFileService::DISK)->putFileAs(dirname($receiptPath), $file, basename($receiptPath));
+
+            return $receiptPath;
+        }
+
+        Storage::disk('public')->putFileAs('receipt', $file, $receiptName);
+
+        return $receiptName;
     }
 
     private function buildExtraBedSummary($encodedExtraBedPrice, $duration): array
@@ -216,22 +288,35 @@ class OrdersAdminController extends Controller
     private function saveStandardInvoicePdfDocuments(Orders $order, InvoiceAdmin $invoice): void
     {
         $data = $this->buildStandardInvoicePdfPayload($order, $invoice);
-        $basePath = "storage/document/invoice-{$invoice->inv_no}-{$order->id}";
         [$englishView, $chineseView] = $order->service === 'Tour Package'
             ? ['emails.invoiceTourEn', 'emails.invoiceTourZh']
             : ['emails.orderContractEn', 'emails.orderContractZh'];
 
-        if (File::exists($basePath . '_en.pdf')) {
-            File::delete($basePath . '_en.pdf');
+        if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
+            $files = app(AccommodationFinancialFileService::class);
+
+            foreach (['en' => $englishView, 'zh' => $chineseView] as $locale => $view) {
+                $path = $files->privateInvoicePath($order, $invoice, $locale);
+                $absolutePath = Storage::disk(AccommodationFinancialFileService::DISK)->path($path);
+
+                File::ensureDirectoryExists(dirname($absolutePath));
+                PDF::loadView($view, $data)->save($absolutePath);
+            }
+
+            return;
         }
 
-        PDF::loadView($englishView, $data)->save($basePath . '_en.pdf');
+        $basePath = "storage/document/invoice-{$invoice->inv_no}-{$order->id}";
 
-        if (File::exists($basePath . '_zh.pdf')) {
-            File::delete($basePath . '_zh.pdf');
+        foreach (['en' => $englishView, 'zh' => $chineseView] as $locale => $view) {
+            $path = $basePath . "_{$locale}.pdf";
+
+            if (File::exists($path)) {
+                File::delete($path);
+            }
+
+            PDF::loadView($view, $data)->save($path);
         }
-
-        PDF::loadView($chineseView, $data)->save($basePath . '_zh.pdf');
     }
 
     private function canRegenerateStandardInvoice(?Orders $order, ?InvoiceAdmin $invoice): bool
@@ -2729,6 +2814,9 @@ class OrdersAdminController extends Controller
         $extra_bed_unit_price = $extraBedSummary['unit_price'];
     
         if ($order->service == "Tour Package"){
+            if (!$reservation) {
+                $reservation = app(TourReservationService::class)->ensurePendingReservationForOrder($order);
+            }
             $amount = $order->price_total;
             if($order->duration == "1D"){
                 $order_duration = 1;
@@ -2745,7 +2833,7 @@ class OrdersAdminController extends Controller
             }else{
                 $order_duration = 1;
             }
-        }elseif($order->servide == "Activity"){
+        }elseif($order->service == "Activity"){
             $amount = $order->price_total;
             $order_duration = $order->duration;
         }else{
@@ -2930,7 +3018,7 @@ class OrdersAdminController extends Controller
             }else{
                 $order_duration = 1;
             }
-        }elseif($order->servide == "Activity"){
+        }elseif($order->service == "Activity"){
             $amount = $order->price_total;
             $order_duration = $order->duration;
         }else{
@@ -3155,6 +3243,12 @@ class OrdersAdminController extends Controller
         $extra_beds = ExtraBed::all();
         $now = Carbon::now();
         $reservation = Reservation::where('id',$order->rsv_id)->first();
+        if (!$reservation && in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+            $reservation = app(AccommodationReservationService::class)->ensurePendingReservationForOrder($order);
+        }
+        if (!$reservation && $order->service === Orders::PUBLIC_ACTIVITY_SERVICE) {
+            $reservation = app(ActivityReservationService::class)->ensurePendingReservationForOrder($order);
+        }
         $orderno = $order->orderno;
         if ($order->service == "Wedding Package") {
             $status = "Active";
@@ -3190,7 +3284,7 @@ class OrdersAdminController extends Controller
             }else{
                 $order_duration = 1;
             }
-        }elseif($order->servise == "Activity"){
+        }elseif($order->service == "Activity"){
             $amount = $order->price_total;
             $order_duration = $order->duration;
         }else{
@@ -3264,6 +3358,26 @@ class OrdersAdminController extends Controller
         
         
         $airport_shuttles = AirportShuttle::where('order_id',$id)->get();
+        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+            app(AccommodationBookingGuardService::class)->ensureRoomCanBeBooked(
+                (int) $order->service_id,
+                (int) $order->subservice_id,
+                (string) $order->checkin,
+                (string) $order->checkout,
+                (int) $order->number_of_room,
+                (int) $order->id,
+                true
+            );
+        }
+        if ($order->service === Orders::PUBLIC_TRANSPORT_SERVICE) {
+            app(TransportAvailabilityService::class)->ensureCanBook(
+                (int) $order->service_id,
+                (string) $order->checkin,
+                (string) $order->checkout,
+                (int) $order->id,
+                true
+            );
+        }
         $order->update([
             "status"=>$status,
             "verified_by"=>Auth::user()->id,
@@ -3416,33 +3530,48 @@ class OrdersAdminController extends Controller
             'bride'=>$bride,
         ];
         
-        if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf")) {
-            File::delete("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
-        }
-        $pdf = PDF::loadView('emails.orderContractEn', $data);
-        $pdf->save("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
-
-        if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf")) {
-            File::delete("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
-        }
-        $pdf = PDF::loadView('emails.orderContractZh', $data);
-        $pdf->save("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
-
-        if (config('filesystems.default') == 'public'){
-            $contract_en_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
-            $contract_zh_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
+        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+            $this->saveStandardInvoicePdfDocuments($order, $invoice);
+            $fileService = app(AccommodationFinancialFileService::class);
+            $contractEnFile = $fileService->resolveInvoiceFile($order, $invoice, 'en');
+            $contractZhFile = $fileService->resolveInvoiceFile($order, $invoice, 'zh');
+            $contract_en_path = $contractEnFile['absolute_path'] ?? null;
+            $contract_zh_path = $contractZhFile['absolute_path'] ?? null;
         }else {
-            $contract_en_path = storage::url("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
-            $contract_zh_path = storage::url("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
+            if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf")) {
+                File::delete("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
+            }
+            $pdf = PDF::loadView('emails.orderContractEn', $data);
+            $pdf->save("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
+
+            if (File::exists("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf")) {
+                File::delete("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
+            }
+            $pdf = PDF::loadView('emails.orderContractZh', $data);
+            $pdf->save("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
+
+            if (config('filesystems.default') == 'public'){
+                $contract_en_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
+                $contract_zh_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
+            }else {
+                $contract_en_path = storage::url("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
+                $contract_zh_path = storage::url("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
+            }
         }
 
         
 
         Mail::send('emails.confirmationOrder', $data, function($message)use($data, $contract_en_path, $contract_zh_path) {
             $message->to($data["email"])
-                ->subject($data["title"])
-                ->attach($contract_en_path)
-                ->attach($contract_zh_path);
+                ->subject($data["title"]);
+
+            if ($contract_en_path) {
+                $message->attach($contract_en_path);
+            }
+
+            if ($contract_zh_path) {
+                $message->attach($contract_zh_path);
+            }
         });
         return redirect("/orders-admin-$id");
     }
@@ -3520,7 +3649,7 @@ class OrdersAdminController extends Controller
             }else{
                 $order_duration = 1;
             }
-        }elseif($order->servise == "Activity"){
+        }elseif($order->service == "Activity"){
             $amount = $order->price_total;
             $order_duration = $order->duration;
         }else{
@@ -3688,7 +3817,7 @@ class OrdersAdminController extends Controller
             }else{
                 $order_duration = 1;
             }
-        }elseif($order->servise == "Activity"){
+        }elseif($order->service == "Activity"){
             $amount = $order->price_total;
             $order_duration = $order->duration;
         }else{
@@ -3870,7 +3999,13 @@ class OrdersAdminController extends Controller
             'admin'=>$admin,
             'order_link'=>$order_link,
         ];
-        if (config('filesystems.default') == 'public'){
+        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+            $fileService = app(AccommodationFinancialFileService::class);
+            $contractEnFile = $fileService->resolveInvoiceFile($order, $inv, 'en');
+            $contractZhFile = $fileService->resolveInvoiceFile($order, $inv, 'zh');
+            $contract_en_path = $contractEnFile['absolute_path'] ?? null;
+            $contract_zh_path = $contractZhFile['absolute_path'] ?? null;
+        }elseif (config('filesystems.default') == 'public'){
             $contract_en_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
             $contract_zh_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
         }else {
@@ -3881,9 +4016,15 @@ class OrdersAdminController extends Controller
         set_time_limit(300);
         Mail::send('emails.confirmationOrder', $data, function($message)use($data, $contract_en_path, $contract_zh_path) {
             $message->to($data["email"])
-                ->subject($data["title"])
-                ->attach($contract_en_path)
-                ->attach($contract_zh_path);
+                ->subject($data["title"]);
+
+            if ($contract_en_path) {
+                $message->attach($contract_en_path);
+            }
+
+            if ($contract_zh_path) {
+                $message->attach($contract_zh_path);
+            }
         });
         
         return redirect()->back()->with('success','Confirmation email send successfuly');
@@ -3922,7 +4063,13 @@ class OrdersAdminController extends Controller
             'admin'=>$admin,
             'order_link'=>$order_link,
         ];
-        if (config('filesystems.default') == 'public'){
+        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+            $fileService = app(AccommodationFinancialFileService::class);
+            $contractEnFile = $fileService->resolveInvoiceFile($order, $inv, 'en');
+            $contractZhFile = $fileService->resolveInvoiceFile($order, $inv, 'zh');
+            $contract_en_path = $contractEnFile['absolute_path'] ?? null;
+            $contract_zh_path = $contractZhFile['absolute_path'] ?? null;
+        }elseif (config('filesystems.default') == 'public'){
             $contract_en_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_en.pdf");
             $contract_zh_path =realpath("storage/document/invoice-".$inv_no."-".$order->id."_zh.pdf");
         }else {
@@ -3933,9 +4080,15 @@ class OrdersAdminController extends Controller
         set_time_limit(300);
         Mail::send('emails.confirmationOrder', $data, function($message)use($data, $contract_en_path, $contract_zh_path) {
             $message->to($data["email"])
-                ->subject($data["title"])
-                ->attach($contract_en_path)
-                ->attach($contract_zh_path);
+                ->subject($data["title"]);
+
+            if ($contract_en_path) {
+                $message->attach($contract_en_path);
+            }
+
+            if ($contract_zh_path) {
+                $message->attach($contract_zh_path);
+            }
         });
         return redirect()->back()->with('success','Confirmation email send successfuly');
     }
@@ -4279,29 +4432,40 @@ class OrdersAdminController extends Controller
     // Admin Add Payment Receipt =============================================================================================================>
     public function admin_add_payment_confirmation(Request $request,$id)
     {
-        $now = Carbon::now();
+        $request->validate([
+            'receipt_name' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'mimetypes:image/jpeg,image/png,application/pdf', 'max:5120', new SafeReceiptUpload()],
+        ]);
+
         $order = Orders::findOrFail($id);
-        $reservation = Reservation::where('id',$order->rsv_id)->first();
-        $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
-        $status="Pending";
-        $file=$request->file("receipt_name");
-        $receipt_name=$invoice->inv_no.'_'.time().'_'.$file->getClientOriginalName();
-        $file->move("storage/receipt/",$receipt_name);
-        $receipt = new PaymentConfirmation([
-            "receipt_img"=>$receipt_name,
-            "inv_id"=>$invoice->id,
-            "status"=>$status,
-        ]);
-        $receipt->save();
-        $order_log = new OrderLog([
-            "order_id"=>$order->id,
-            "action"=>"Upload Receipt",
-            "url"=>$request->getClientIp(),
-            "method"=>"Upload",
-            "agent"=>$order->name,
-            "admin"=>Auth::user()->id,
-        ]);
-        $order_log->save();
+        $this->ensureAdminCanMutateStandardPayment($order);
+
+        $reservation = Reservation::where('id',$order->rsv_id)->firstOrFail();
+        $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->firstOrFail();
+        $receipt_name = $this->storeStandardReceiptFile($request->file('receipt_name'), $invoice, $order);
+
+        try {
+            DB::transaction(function () use ($request, $order, $invoice, $receipt_name) {
+                PaymentConfirmation::create([
+                    'receipt_img' => $receipt_name,
+                    'inv_id' => $invoice->id,
+                    'status' => 'Pending',
+                ]);
+
+                OrderLog::create([
+                    'order_id' => $order->id,
+                    'action' => 'Upload Receipt',
+                    'url' => $request->getClientIp(),
+                    'method' => 'Upload',
+                    'agent' => $order->name,
+                    'admin' => Auth::id(),
+                ]);
+            });
+        } catch (\Throwable $exception) {
+            $this->deleteStandardReceiptFile($receipt_name);
+
+            throw $exception;
+        }
+
         return redirect("/orders-admin-$order->id")->with('success','Payment proof has been updated.');
     }
     // Admin Add Payment Receipt to ORDER WEDDING =============================================================================================================>
@@ -4363,21 +4527,32 @@ class OrdersAdminController extends Controller
 // ===============================================================================================================================================================
      // Function Confirmation Payment =============================================================================================================>
     public function fconfirmation_payment(Request $request,$id){
+        $validated = $request->validate([
+            'status' => ['required', 'in:Pending,Valid,Invalid'],
+            'amount' => ['required', 'numeric', 'min:0'],
+            'kurs_id' => ['required', 'integer', 'min:1'],
+            'payment_date' => ['required', 'date'],
+            'note' => ['nullable', 'string', 'max:5000'],
+        ]);
+
         $usdrate = UsdRates::where('name','USD')->first();
         $twdrate = UsdRates::where('name','TWD')->first();
         $cnyrate = UsdRates::where('name','CNY')->first();
-        $receipt = PaymentConfirmation::find($id);
-        $invoice = InvoiceAdmin::find($receipt->inv_id);
-        $reservation = Reservation::find($invoice->rsv_id);
-        $order = Orders::where("rsv_id",$reservation->id)->first();
+        $receipt = PaymentConfirmation::findOrFail($id);
+        $invoice = InvoiceAdmin::findOrFail($receipt->inv_id);
+        $reservation = Reservation::findOrFail($invoice->rsv_id);
+        $order = Orders::where("rsv_id",$reservation->id)->firstOrFail();
+        $this->ensureAdminCanMutateStandardPayment($order);
         $agent = Auth::user()->where('id',$order->sales_agent)->first();
-        $payment_date = date('Y-m-d',strtotime($request->payment_date));
-        $status = $request->status;
-        if ($request->kurs_id == "1") {
+        $payment_date = date('Y-m-d',strtotime($validated['payment_date']));
+        $status = $validated['status'];
+        $amount = (float) $validated['amount'];
+        $kursId = $validated['kurs_id'];
+        if ($kursId == "1") {
             $kurs_rate = $usdrate->rate;
-        }elseif($request->kurs_id == "3") {
+        }elseif($kursId == "3") {
             $kurs_rate = $twdrate->rate;
-        }elseif($request->kurs_id == "2") {
+        }elseif($kursId == "2") {
             $kurs_rate = $cnyrate->rate;
         }else{
             $kurs_rate = 1;
@@ -4393,114 +4568,135 @@ class OrdersAdminController extends Controller
             $sell_cny = $invoice->sell_cny;
             $invoice_balance = $invoice->balance;
             if ($invoice->currency->name == "USD") {
-                if ($request->kurs_id == "1") {
-                    $payment_usd = $request->amount;
-                }elseif($request->kurs_id == "2"){
-                    $payment_amount_idr = $request->amount * $rate_cny;
+                if ($kursId == "1") {
+                    $payment_usd = $amount;
+                }elseif($kursId == "2"){
+                    $payment_amount_idr = $amount * $rate_cny;
                     $payment_usd = ceil($payment_amount_idr / $sell_usd);
-                }elseif($request->kurs_id == "3"){
-                    $payment_amount_idr = $request->amount * $rate_twd;
+                }elseif($kursId == "3"){
+                    $payment_amount_idr = $amount * $rate_twd;
                     $payment_usd = ceil($payment_amount_idr / $sell_usd);
                 }else{
-                    $payment_amount_idr = $request->amount;
+                    $payment_amount_idr = $amount;
                     $payment_usd = ceil($payment_amount_idr / $sell_usd);
                 }
                 $balance = $invoice_balance - $payment_usd;
                 $new_balance = $invoice_balance + $payment_usd;
             }elseif($invoice->currency->name == "CNY") {
-                if ($request->kurs_id == "1") {
-                    $payment_amount_idr = $request->amount * $rate_usd;
+                if ($kursId == "1") {
+                    $payment_amount_idr = $amount * $rate_usd;
                     $payment_cny = ceil($payment_amount_idr / $sell_cny);
-                }elseif($request->kurs_id == "2"){
-                    $payment_cny = $request->amount;
-                }elseif($request->kurs_id == "3"){
-                    $payment_amount_idr = $request->amount * $rate_twd;
+                }elseif($kursId == "2"){
+                    $payment_cny = $amount;
+                }elseif($kursId == "3"){
+                    $payment_amount_idr = $amount * $rate_twd;
                     $payment_cny = ceil($payment_amount_idr / $sell_cny);
                 }else{
-                    $payment_amount_idr = $request->amount;
+                    $payment_amount_idr = $amount;
                     $payment_cny = ceil($payment_amount_idr / $sell_cny);
                 }
                 $balance = $invoice_balance - $payment_cny;
                 $new_balance = $invoice_balance + $payment_cny;
             }elseif($invoice->currency->name == "TWD") {
-                if ($request->kurs_id == "1") {
-                    $payment_amount_idr = $request->amount * $rate_usd;
+                if ($kursId == "1") {
+                    $payment_amount_idr = $amount * $rate_usd;
                     $payment_twd = ceil($payment_amount_idr / $sell_twd);
-                }elseif($request->kurs_id == "2"){
-                    $payment_amount_idr = $request->amount * $rate_cny;
+                }elseif($kursId == "2"){
+                    $payment_amount_idr = $amount * $rate_cny;
                     $payment_twd = ceil($payment_amount_idr / $sell_twd);
-                }elseif($request->kurs_id == "3"){
-                    $payment_twd = $request->amount;
+                }elseif($kursId == "3"){
+                    $payment_twd = $amount;
                 }else{
-                    $payment_amount_idr = $request->amount;
+                    $payment_amount_idr = $amount;
                     $payment_twd = ceil($payment_amount_idr / $sell_twd);
                 }
                 $balance = $invoice_balance - $payment_twd;
                 $new_balance = $invoice_balance + $payment_twd;
             }elseif($invoice->currency->name == "IDR") {
-                if ($request->kurs_id == "1") {
-                    $payment_amount_idr = $request->amount * $rate_usd;
+                if ($kursId == "1") {
+                    $payment_amount_idr = $amount * $rate_usd;
                     $payment_idr = $payment_amount_idr;
-                }elseif($request->kurs_id == "2"){
-                    $payment_amount_idr = $request->amount * $rate_cny;
+                }elseif($kursId == "2"){
+                    $payment_amount_idr = $amount * $rate_cny;
                     $payment_idr = $payment_amount_idr;
-                }elseif($request->kurs_id == "3"){
-                    $payment_amount_idr = $request->amount * $rate_twd;
+                }elseif($kursId == "3"){
+                    $payment_amount_idr = $amount * $rate_twd;
                     $payment_idr = $payment_amount_idr;
                 }else{
-                    $payment_idr = $request->amount;
+                    $payment_idr = $amount;
                 }
                 $balance = $invoice_balance - $payment_idr;
                 $new_balance = $invoice_balance + $payment_idr;
             }
-        
-        if ($receipt->status == "Pending" && $request->status == "Valid") {
-            $invoice->update([
-                'balance'=>$balance,
-            ]);
-            if ($balance < 1) {
-                $order->update([
-                    'status'=>"Paid",
+
+        $kurs = UsdRates::findOrFail($kursId);
+
+        DB::transaction(function () use ($request, $receipt, $invoice, $order, $status, $amount, $payment_date, $kurs, $balance, $new_balance, $validated) {
+            if ($receipt->status == "Pending" && $status == "Valid") {
+                $invoice->update([
+                    'balance'=>$balance,
                 ]);
-            }
-        }elseif ($receipt->status == "Valid" && $request->status == "Invalid") {
-            $invoice->update([
-                'balance'=>$new_balance,
-            ]);
-            if ($new_balance < 1) {
-                $order->update([
-                    'status'=>"Paid",
+                if ($balance < 1) {
+                    $order->update([
+                        'status'=>"Paid",
+                    ]);
+                } elseif ($order->status === 'Paid') {
+                    $order->update([
+                        'status' => 'Approved',
+                    ]);
+                }
+            }elseif ($receipt->status == "Valid" && $status == "Invalid") {
+                if ($order->completed_at || $order->status === 'Completed') {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'status' => 'Completed accommodation orders cannot be reversed without an approved reopen or refund workflow.',
+                    ]);
+                }
+
+                $invoice->update([
+                    'balance'=>$new_balance,
                 ]);
-            }
-        }elseif ($receipt->status == "Invalid" && $request->status == "Valid") {
-            $invoice->update([
-                'balance'=>$balance,
-            ]);
-            if ($balance < 1) {
-                $order->update([
-                    'status'=>"Paid",
+                if ($new_balance < 1) {
+                    $order->update([
+                        'status'=>"Paid",
+                    ]);
+                } else {
+                    $order->update([
+                        'status'=>"Approved",
+                    ]);
+                }
+            }elseif ($receipt->status == "Invalid" && $status == "Valid") {
+                $invoice->update([
+                    'balance'=>$balance,
                 ]);
+                if ($balance < 1) {
+                    $order->update([
+                        'status'=>"Paid",
+                    ]);
+                } else {
+                    $order->update([
+                        'status'=>"Approved",
+                    ]);
+                }
             }
-        }
-       
-        $kurs = UsdRates::find($request->kurs_id);
-        // dd($receipt->status,$request->kurs_id, $status, $balance, $new_balance, $invoice->currency->name, $receipt, $invoice);
-        $receipt->update([
-            "status"=>$status,
-            "amount"=>$request->amount,
-            "note"=>$request->note,
-            "kurs_id"=>$kurs->id,
-            "payment_date"=>$payment_date,
-        ]);
-        $order_log =new OrderLog([
-            "order_wedding_id"=>$order->id,
-            "action"=>"Validate Payment Receipt",
-            "url"=>$request->getClientIp(),
-            "method"=>"Validate",
-            "agent"=>$order->name,
-            "admin"=>Auth::user()->id,
-        ]);
-        $order_log->save();
+
+            $receipt->update([
+                "status"=>$status,
+                "amount"=>$amount,
+                "note"=>strip_tags($validated['note'] ?? ''),
+                "kurs_id"=>$kurs->id,
+                "payment_date"=>$payment_date,
+            ]);
+
+            OrderLog::create([
+                "order_id"=>$order->id,
+                "action"=>"Validate Payment Receipt",
+                "url"=>$request->getClientIp(),
+                "method"=>"Validate",
+                "agent"=>$order->name,
+                "admin"=>Auth::id(),
+            ]);
+        });
+
         return redirect("/orders-admin-$order->id")->with('success','Payment receipt has been successfully validate!');
     }
      // Function Confirmation Payment ORDER WEDDING =============================================================================================================>

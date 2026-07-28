@@ -184,27 +184,6 @@
     background: rgba(255, 255, 255, 0.12);
 }
 
-.site-footer__submit {
-    min-height: 54px;
-    padding: 0.95rem 1.25rem;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
-    color: #fff;
-    font-weight: 700;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
-}
-
-.site-footer__submit:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 18px 30px rgba(20, 184, 166, 0.22);
-}
-
-.site-footer__submit:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
 .site-footer__alert {
     margin-top: 1rem;
     margin-bottom: 0;
@@ -281,10 +260,6 @@
 @media (max-width: 767.98px) {
     .site-footer__form {
         grid-template-columns: 1fr;
-    }
-
-    .site-footer__submit {
-        width: 100%;
     }
 }
 

@@ -288,7 +288,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
-    border-radius: var(--frontend-shell-radius-sm, 14px);
+    border-radius: var(--frontend-shell-radius-pill, 999px);
     font-weight: 700;
     line-height: 1.2;
     transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
@@ -305,7 +305,6 @@
     border-color: var(--frontend-shell-primary, #0f5fa8);
     background: linear-gradient(135deg, var(--frontend-shell-primary, #0f5fa8) 100%, var(--frontend-shell-secondary, #0d7b8f) 0%);
     color: #ffffff;
-    box-shadow: var(--frontend-shell-shadow-sm, 0 10px 24px rgba(15, 23, 42, 0.10));
 }
 
 .frontend-order-modal .btn-light {
@@ -319,20 +318,6 @@
     border-color: rgba(15, 95, 168, 0.28);
     background: #f8fbff;
     color: var(--frontend-order-modal-accent);
-}
-
-.frontend-order-modal .btn-cancel {
-    border-color: #dc2626;
-    background: #dc2626;
-    color: #ffffff;
-}
-
-.frontend-order-modal .btn-cancel:hover,
-.frontend-order-modal .btn-cancel:focus {
-    border-color: #b91c1c;
-    background: #b91c1c;
-    color: #ffffff;
-    box-shadow: 0 12px 26px rgba(220, 38, 38, 0.18);
 }
 
 .frontend-order-modal__actions {

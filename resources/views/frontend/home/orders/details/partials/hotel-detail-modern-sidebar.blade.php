@@ -53,7 +53,7 @@
             @include('frontend.home.orders.details.partials.invoice-action-buttons', ['variant' => 'modern'])
 
             @if ($invoice && $order->status !== 'Paid')
-                <button type="button" class="order-detail-btn order-detail-btn--primary" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
                     <i class="fa-solid fa-upload" aria-hidden="true"></i>
                     @lang('messages.Payment Confirmation')
                 </button>

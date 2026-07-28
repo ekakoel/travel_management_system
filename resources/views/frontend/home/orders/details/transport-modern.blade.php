@@ -452,7 +452,7 @@
                                                                 </button>
                                                             </div>
                                                             <div class="order-detail-modal__body">
-                                                                <img class="order-detail-receipt-image" src="{{ asset('storage/receipt/' . $receipt->receipt_img) }}" alt="@lang('messages.Payment Receipt')">
+                                                                <img class="order-detail-receipt-image" src="{{ route('orders.transport.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" alt="@lang('messages.Payment Receipt')">
                                                                 @if (trim((string) $receipt->note) !== '')
                                                                     <div class="order-detail-inline-alert order-detail-inline-alert--danger mt-3">
                                                                         <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>

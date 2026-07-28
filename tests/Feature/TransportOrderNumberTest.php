@@ -6,14 +6,67 @@ use App\Http\Controllers\OrderController;
 use App\Models\Orders;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use ReflectionMethod;
 use Tests\TestCase;
 
 class TransportOrderNumberTest extends TestCase
 {
     use DatabaseTransactions;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (config('database.default') === 'sqlite' && config('database.connections.sqlite.database') === ':memory:') {
+            $this->prepareSqliteSchema();
+        }
+    }
+
+    private function prepareSqliteSchema(): void
+    {
+        if (!Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
+                $table->id();
+                $table->string('username')->nullable();
+                $table->string('name')->nullable();
+                $table->string('type')->nullable();
+                $table->string('code')->nullable();
+                $table->string('email')->nullable();
+                $table->string('position')->nullable();
+                $table->string('phone')->nullable();
+                $table->string('office')->nullable();
+                $table->string('address')->nullable();
+                $table->string('country')->nullable();
+                $table->string('status')->nullable();
+                $table->boolean('is_approved')->default(false);
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password')->nullable();
+                $table->boolean('is_subscribed')->default(false);
+                $table->boolean('subscriber')->default(false);
+                $table->timestamps();
+            });
+        }
+
+        if (!Schema::hasTable('orders')) {
+            Schema::create('orders', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->unsignedBigInteger('sales_agent')->nullable();
+                $table->string('orderno')->nullable();
+                $table->string('name')->nullable();
+                $table->string('email')->nullable();
+                $table->string('servicename')->nullable();
+                $table->string('service')->nullable();
+                $table->string('status')->nullable();
+                $table->string('confirmation_order')->nullable();
+                $table->timestamps();
+            });
+        }
+    }
 
     private function makeAgent(string $code = 'ABC'): User
     {

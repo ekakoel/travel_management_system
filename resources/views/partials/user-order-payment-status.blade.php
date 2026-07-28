@@ -1,4 +1,15 @@
 @if ($invoice)
+    @php
+        $isProtectedPublicOrder = isset($order) && app(\App\Services\AccommodationFinancialFileService::class)->isProtectedPublicOrder($order);
+        $receiptRoute = match ($order->service ?? null) {
+            \App\Models\Orders::PUBLIC_TRANSPORT_SERVICE => 'orders.transport.payments.receipt',
+            \App\Models\Orders::PUBLIC_TOUR_SERVICE => 'orders.tour.payments.receipt',
+            \App\Models\Orders::PUBLIC_ACTIVITY_SERVICE => 'orders.activity.payments.receipt',
+            default => isset($order) && in_array($order->service, \App\Models\Orders::ACCOMMODATION_SERVICES, true)
+                ? 'orders.accommodation.payments.receipt'
+                : null,
+        };
+    @endphp
     @if ($order->status == "Paid")
         @if (count($receipts)>0)
             <div class="col-md-12">
@@ -34,7 +45,7 @@
                                                     <i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')
                                                 </div>
                                                 <div class="card-box-body text-center">
-                                                    <img src="{{ asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                                    <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
                                                 </div>
                                                 <div class="card-box-footer">
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
@@ -82,7 +93,7 @@
                                             <div class="card-box-title">
                                                 <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
                                             </div>
-                                            <img src="{{ asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                            <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
                                             <div class="card-box-footer">
                                                 <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                                             </div>
@@ -130,7 +141,7 @@
                                             <div class="card-box-title">
                                                 <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
                                             </div>
-                                            <img src="{{ asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                            <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
                                             <div class="notification-text" style="margin-top: 8px; color:rgb(143, 0, 0);">
                                                 {!! $receipt->note !!}
                                             </div>
@@ -167,7 +178,7 @@
                                             <div class="card-box-title">
                                                 <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
                                             </div>
-                                            <img src="{{ asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                            <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
                                             <div class="notification-text" style="margin-top: 8px; color:rgb(143, 0, 0);">
                                                 {!! $receipt->note !!}
                                             </div>

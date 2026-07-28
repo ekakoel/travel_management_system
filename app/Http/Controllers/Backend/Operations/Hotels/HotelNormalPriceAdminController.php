@@ -27,10 +27,12 @@ class HotelNormalPriceAdminController extends Controller
         }
 
         $hotels = Hotels::findOrFail($id);
+        $rooms = HotelRoom::where('hotels_id', $id)->orderBy('created_at', 'desc')->get();
         $usdrates = UsdRates::where('name', 'USD')->first();
 
         return view('backend.operations.hotels.forms.normal-price-create', [
             'hotels' => $hotels,
+            'rooms' => $rooms,
             'usdrates' => $usdrates,
         ]);
     }

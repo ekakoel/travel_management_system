@@ -18,5 +18,6 @@ if (csrfToken) {
 }
 
 require('./components/frontend-footer-subscribe');
+require('./components/frontend-pickers');
 require('./components/frontend-hotel-check-price');
 require('./components/frontend-loop-swiper');

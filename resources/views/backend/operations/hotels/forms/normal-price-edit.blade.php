@@ -95,22 +95,22 @@
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="start_date">Start Date <b>*</b></label>
+                                            <label for="start_date">Start Date</label>
                                             <input name="start_date" id="start_date" class="backend-form-control date-picker" placeholder="Select date" type="text" value="{{ old('start_date', dateFormat($price->start_date)) }}" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="end_date">End Date <b>*</b></label>
+                                            <label for="end_date">End Date</label>
                                             <input name="end_date" id="end_date" class="backend-form-control date-picker" placeholder="Select date" type="text" value="{{ old('end_date', dateFormat($price->end_date)) }}" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="contract_rate">Contract Rate <b>*</b></label>
+                                            <label for="contract_rate">Contract Rate</label>
                                             <input class="backend-form-control" type="number" id="contract_rate" name="contract_rate" value="{{ old('contract_rate', $price->contract_rate) }}" required>
                                         </div>
 
                                         <div class="backend-form-field">
-                                            <label for="markup">Markup <b>*</b></label>
+                                            <label for="markup">Markup</label>
                                             <input class="backend-form-control" type="number" id="markup" name="markup" value="{{ old('markup', $price->markup) }}" required>
                                         </div>
 
@@ -140,7 +140,6 @@
 
                     <aside class="hotel-form-sidebar">
                         @include('admin.usd-rate')
-
                         <section class="backend-panel hotel-form-panel">
                             <div class="backend-section-header hotel-form-panel__heading">
                                 <div>
@@ -155,8 +154,6 @@
                         </section>
                     </aside>
                 </div>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan

@@ -17,22 +17,22 @@
     </div>
 
     <div class="backend-form-field">
-        <label>Start Date <b>*</b></label>
+        <label>Start Date</label>
         <input class="backend-form-control" name="start_date[]" type="date" value="{{ old('start_date.0') }}" required>
     </div>
 
     <div class="backend-form-field">
-        <label>End Date <b>*</b></label>
+        <label>End Date</label>
         <input class="backend-form-control" name="end_date[]" type="date" value="{{ old('end_date.0') }}" required>
     </div>
 
     <div class="backend-form-field">
-        <label>Contract Rate <b>*</b></label>
+        <label>Contract Rate</label>
         <input class="backend-form-control" type="number" name="contract_rate[]" placeholder="Insert contract rate" value="{{ old('contract_rate.0') }}" required>
     </div>
 
     <div class="backend-form-field">
-        <label>Markup <b>*</b></label>
+        <label>Markup</label>
         <input class="backend-form-control" type="number" name="markup[]" placeholder="Insert markup" value="{{ old('markup.0', $markups->markup ?? 0) }}" required>
     </div>
 

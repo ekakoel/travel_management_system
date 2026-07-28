@@ -1,3 +1,4 @@
+@extends('layouts.head')
 @section('title', __('messages.Hotel Room'))
 @push('styles')
     <link rel="stylesheet" href="{{ mix('build/backend/css/operations/hotels/forms.css') }}">
@@ -8,7 +9,6 @@
 @endpush
 
 @section('content')
-    @extends('layouts.head')
     <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
         <div class="main-container hotel-form-page">
@@ -142,6 +142,15 @@
                                                     <label for="capacity_child" class="backend-form-label">Capacity Child</label>
                                                     <input type="number" id="capacity_child" name="capacity_child" class="backend-form-control @error('capacity_child') is-invalid @enderror" placeholder="Insert capacity for child" value="{{ $room->capacity_child }}">
                                                     @error('capacity_child')
+                                                        <div class="alert alert-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="backend-form-field">
+                                                    <label for="inventory" class="backend-form-label">Room Inventory</label>
+                                                    <input type="number" id="inventory" min="0" name="inventory" class="backend-form-control @error('inventory') is-invalid @enderror" placeholder="Available rooms" value="{{ old('inventory', $room->inventory ?? '') }}">
+                                                    @error('inventory')
                                                         <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>

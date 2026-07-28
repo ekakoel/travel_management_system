@@ -14,10 +14,21 @@ use App\Models\OptionalRateOrder;
 use App\Models\OrderHotelPromoDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Orders extends Model
 {
     use HasFactory;
+
+    public const ACCOMMODATION_SERVICES = [
+        'Hotel',
+        'Hotel Promo',
+        'Hotel Package',
+    ];
+
+    public const PUBLIC_TRANSPORT_SERVICE = 'Transport';
+    public const PUBLIC_TOUR_SERVICE = 'Tour Package';
+    public const PUBLIC_ACTIVITY_SERVICE = 'Activity';
 
     protected static function booted()
     {
@@ -122,6 +133,8 @@ class Orders extends Model
         'verified_by',
         'handled_by',
         'handled_date',
+        'completed_at',
+        'completed_by',
         'driver_id',
         'guide_id',
         'pickup_name',
@@ -167,5 +180,15 @@ class Orders extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function scopeAccommodationService(Builder $query): Builder
+    {
+        return $query->whereIn('service', self::ACCOMMODATION_SERVICES);
+    }
+
+    public function scopeOwnedBy(Builder $query, int $userId): Builder
+    {
+        return $query->where('sales_agent', $userId);
     }
 }

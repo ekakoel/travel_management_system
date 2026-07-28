@@ -87,6 +87,14 @@
     @enderror
 </label>
 
+<label class="backend-form-field">
+    <span>Public Inventory</span>
+    <input type="number" name="inventory" class="backend-form-control @error('inventory') is-invalid @enderror" placeholder="Fallback 1 when empty" value="{{ old('inventory', $transport?->inventory) }}" min="0">
+    @error('inventory')
+        <small class="backend-form-error">{{ $message }}</small>
+    @enderror
+</label>
+
 @if ($isCreate)
     <input type="hidden" name="status" value="Draft">
 @endif

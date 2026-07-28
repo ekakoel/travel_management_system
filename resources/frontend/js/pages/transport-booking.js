@@ -144,17 +144,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (typeof window.flatpickr === 'function') {
-        page.querySelectorAll('[data-booking-datetime]').forEach(function (input) {
+    page.querySelectorAll('[data-booking-datetime]').forEach(function (input) {
+        if (window.FrontendPickerSystem) {
+            input.dataset.uiPicker = input.dataset.uiPicker || 'datetime';
+            input.dataset.uiPickerFormat = input.dataset.uiPickerFormat || 'YYYY-MM-DD HH:mm';
+            window.FrontendPickerSystem.initPicker(input);
+            return;
+        }
+
+        if (typeof window.flatpickr === 'function') {
+            var tomorrow = new Date();
+            tomorrow.setHours(0, 0, 0, 0);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
             window.flatpickr(input, {
                 enableTime: true,
                 dateFormat: 'Y-m-d H:i',
                 time_24hr: true,
                 minuteIncrement: 5,
+                minDate: tomorrow,
                 allowInput: true
             });
-        });
-    }
+        }
+    });
 
     renderPricing();
     toggleAirportFields();

@@ -127,6 +127,15 @@
                                                     @enderror
                                                 </div>
                                             </div>
+                                            <div class="col-md-3">
+                                                <div class="backend-form-field">
+                                                    <label for="inventory" class="backend-form-label">Room Inventory</label>
+                                                    <input type="number" id="inventory" min="1" name="inventory" class="backend-form-control @error('inventory') is-invalid @enderror" placeholder="Available rooms" value="{{ old('inventory') }}">
+                                                    @error('inventory')
+                                                        <div class="alert alert-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
                                             <div class="col-md-6">
                                                 <div class="backend-form-field">
                                                     <label for="room_view" class="backend-form-label">Room View</label>
