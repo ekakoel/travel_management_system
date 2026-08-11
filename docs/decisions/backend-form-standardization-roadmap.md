@@ -16,6 +16,8 @@ Tracker ringkas untuk migrasi form backend ke shared form system.
 
 - [x] Shared form style tersedia.
 - [x] Token form height, radius, border, focus, danger ring, dan button tersedia.
+- [x] Marker required otomatis tersedia untuk input/select/textarea melalui
+  `initBackendRequiredMarkers` dan token `--backend-required`.
 - [x] Dokumentasi aturan ada di `docs/decisions/backend-ui-standards.md`.
 
 ## Phase BF-2 - Product Operations Forms
@@ -33,6 +35,8 @@ Tracker ringkas untuk migrasi form backend ke shared form system.
 ## Phase BF-4 - Remaining Operations
 
 - [x] Create Hotel Order cleanup memakai shared form helpers.
+- [x] Detail Orders Admin memakai kontrak required marker shared dan atribut
+  required yang selaras dengan validasi server aktif.
 - [ ] Audit wedding/reservation/order legacy forms yang masih berada di namespace admin/main.
 - [ ] Pindahkan override visual form page-specific ke shared form component bila dipakai ulang.
 

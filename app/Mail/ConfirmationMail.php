@@ -5,6 +5,9 @@ namespace App\Mail;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Orders;
+use App\Models\AirportShuttle;
+use App\Models\InvoiceAdmin;
+use App\Services\OrderConfirmationEmailDataService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Auth;
@@ -27,20 +30,25 @@ class ConfirmationMail extends Mailable
         $now = Carbon::now();
         $order = Orders::where('id', $this->id)->first();
         $agent = User::where('id', $order->user_id)->first();
-        $order_link = 'https://online.balikamitour.com/detail-order-'.$order->id;
         $admin = Auth::user()->where('id',$order->verified_by)->first();
         $invs = InvoiceAdmin::where('rsv_id',$order->rsv_id)->first();
         $invoice = public_path('storage/document/invoice-'.$order->id.'.pdf');
         $airport_shuttles = AirportShuttle::where('order_id', $order->id)->get();
-        return $this->view('emails.confirmationOrder',[
+        $confirmation = app(OrderConfirmationEmailDataService::class)->build(
+            $order,
+            $order->reservations,
+            $invs,
+            $admin
+        );
+        return $this->subject($confirmation['subject'])->view('emails.confirmationOrder',[
             'now'=>$now,
             'order'=>$order,
             'agent'=>$agent,
             'admin'=>$admin,
-            'order_link'=>$order_link,
             'invs'=>$invs,
             'invoice'=>$invoice,
             'airport_shuttles'=>$airport_shuttles,
+            'confirmation'=>$confirmation,
          ]);
     }
 }

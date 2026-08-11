@@ -33,7 +33,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('hotels-admin.index') }}">Hotel Manager</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.hotels.index') }}">Hotel Manager</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.hotels.show', $hotel->id) }}">{{ $hotel->name }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Add Promo Price</li>
                         </ol>
@@ -153,25 +153,64 @@
                                             <label for="quotes">Quote</label>
                                             <input class="backend-form-control" id="quotes" name="quotes" value="{{ old('quotes') }}" placeholder="Short promo quote" type="text">
                                         </div>
-
-                                        <div class="backend-form-field is-wide">
+                                        
+                                        
+                                    </div>
+                                    <div class="backend-form-field-2">
+                                        <div class="backend-form-field">
                                             <label for="benefits">Benefits</label>
                                             <textarea class="backend-form-control" id="benefits" name="benefits" data-backend-richtext="true" placeholder="Insert benefits">{{ old('benefits') }}</textarea>
                                         </div>
-
-                                        <div class="backend-form-field is-wide">
+                                        <div class="backend-form-field">
+                                            <label for="benefits_simplified">Benefits Simplified</label>
+                                            <textarea class="backend-form-control" id="benefits_simplified" name="benefits_simplified" data-backend-richtext="true" placeholder="Insert benefits simplified">{{ old('benefits_simplified') }}</textarea>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label for="benefits_simplified">Benefits Simplified</label>
+                                            <textarea class="backend-form-control" id="benefits_simplified" name="benefits_simplified" data-backend-richtext="true" placeholder="Insert benefits simplified">{{ old('benefits_simplified') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="backend-form-field-2">
+                                        <div class="backend-form-field">
                                             <label for="include">Inclusion</label>
                                             <textarea class="backend-form-control" id="include" name="include" data-backend-richtext="true" placeholder="Insert inclusion">{{ old('include') }}</textarea>
                                         </div>
-
-                                        <div class="backend-form-field is-wide">
+                                        <div class="backend-form-field">
+                                            <label for="include_traditional">Inclusion Traditional</label>
+                                            <textarea class="backend-form-control" id="include_traditional" name="include_traditional" data-backend-richtext="true" placeholder="Insert inclusion">{{ old('include_traditional') }}</textarea>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label for="include_simplified">Inclusion Simplified</label>
+                                            <textarea class="backend-form-control" id="include_simplified" name="include_simplified" data-backend-richtext="true" placeholder="Insert inclusion">{{ old('include_simplified') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="backend-form-field-2">
+                                        <div class="backend-form-field">
                                             <label for="additional_info">Additional Information</label>
                                             <textarea class="backend-form-control" id="additional_info" name="additional_info" data-backend-richtext="true" placeholder="Insert additional information">{{ old('additional_info') }}</textarea>
                                         </div>
+                                        <div class="backend-form-field">
+                                            <label for="additional_info_traditional">Additional Information Traditional</label>
+                                            <textarea class="backend-form-control" id="additional_info_traditional" name="additional_info_traditional" data-backend-richtext="true" placeholder="Insert additional information">{{ old('additional_info_traditional') }}</textarea>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label for="additional_info_simplified">Additional Information Simplified</label>
+                                            <textarea class="backend-form-control" id="additional_info_simplified" name="additional_info_simplified" data-backend-richtext="true" placeholder="Insert additional information">{{ old('additional_info_simplified') }}</textarea>
+                                        </div>
+                                    </div>
 
-                                        <div class="backend-form-field is-wide">
+                                    <div class="backend-form-field-2">
+                                        <div class="backend-form-field">
                                             <label for="cancellation_policy">Cancellation Policy</label>
                                             <textarea class="backend-form-control" id="cancellation_policy" name="cancellation_policy" data-backend-richtext="true" placeholder="Insert cancellation policy">{{ old('cancellation_policy') }}</textarea>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label for="cancellation_policy_traditional">Cancellation Policy Traditional</label>
+                                            <textarea class="backend-form-control" id="cancellation_policy_traditional" name="cancellation_policy_traditional" data-backend-richtext="true" placeholder="Insert cancellation policy">{{ old('cancellation_policy_traditional') }}</textarea>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label for="cancellation_policy_simplified">Cancellation Policy Simplified</label>
+                                            <textarea class="backend-form-control" id="cancellation_policy_simplified" name="cancellation_policy_simplified" data-backend-richtext="true" placeholder="Insert cancellation policy">{{ old('cancellation_policy_simplified') }}</textarea>
                                         </div>
                                     </div>
 

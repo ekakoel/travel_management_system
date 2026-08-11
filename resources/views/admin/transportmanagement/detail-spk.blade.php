@@ -92,7 +92,7 @@
                                                         <div class="modal-content">
                                                             <div class="card-box">
                                                                 <div class="card-box-title">
-                                                                    <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Guest</div>
+                                                                    <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update Guest</div>
                                                                 </div>
                                                                 <div class="card-box-body">
                                                                     <form id="updateGuest{{ $guest->id }}" action="{{ route('func.spk-guest.update',$guest->id) }}" method="POST" class="modal-content">
@@ -350,7 +350,7 @@
                                                     <div class="modal-content">
                                                         <div class="card-box">
                                                             <div class="card-box-title">
-                                                                <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Destinasi</div>
+                                                                <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Destinasi</div>
                                                             </div>
                                                             <div class="card-box-body">
                                                                 <form id="updateSpk{{ $dest->id }}" action="{{ route('func.spk-destinations.update',$dest->id) }}" method="POST" class="modal-content">
@@ -435,7 +435,7 @@
                                 <button class="backend-button backend-button-secondary" data-toggle="modal" data-target="#changeDate"><i class="fa fa-print"></i> Print</button>
                             </a>
 
-                            <button class="backend-button backend-button-primary" data-toggle="modal" data-target="#editSpkDetail"><i class="fa fa-pencil"></i> Edit SPK</button>
+                            <button class="backend-button backend-button-primary" data-toggle="modal" data-target="#editSpkDetail"><i class="fa fa-pencil-alt"></i> Edit SPK</button>
 
                             <a href="{{ route('view.transport-management.index') }}">
                                 <button class="backend-button backend-button-danger"><i class="icon-copy dw dw-left-arrow1"></i> Back</button>
@@ -447,7 +447,7 @@
                                 <div class="modal-content">
                                     <div class="card-box">
                                         <div class="card-box-title">
-                                            <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit SPK</div>
+                                            <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit SPK</div>
                                         </div>
                                         <div class="card-box-body">
                                             <form id="updateSpkDetail" action="{{ route('func.spk.update',$spk->id) }}" method="POST" class="modal-content">

@@ -501,10 +501,13 @@
 
     .accommodations-pagination {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         margin-top: 1.5rem;
         padding-top: 1.25rem;
         border-top: 1px solid var(--frontend-shell-border);
+        nav{
+            width: 100%;
+        }
     }
 
     .accommodations-pagination .pagination {

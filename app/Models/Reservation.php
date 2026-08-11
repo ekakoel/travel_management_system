@@ -44,6 +44,8 @@ class Reservation extends Model
         'orders',
         'additional_info',
         'status',
+        // Optional legacy compatibility only. Tour Package confirmation
+        // delivery is audited through order_logs, not this non-canonical field.
         'send',
     ];
     public function orders(){

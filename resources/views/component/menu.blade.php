@@ -92,8 +92,8 @@
                         
                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
                             <a class="dropdown-item" href="{{ language_switch_url('en') }}"><i class="fa fa-language" aria-hidden="true"></i>English</a>
-                    <a class="dropdown-item" href="{{ language_switch_url('zh') }}"><i class="fa fa-language" aria-hidden="true"></i> 繁體中文</a>
-                    <a class="dropdown-item" href="{{ language_switch_url('zh-CN') }}"><i class="fa fa-language" aria-hidden="true"></i> 简体中文</a>
+                            <a class="dropdown-item" href="{{ language_switch_url('zh') }}"><i class="fa fa-language" aria-hidden="true"></i> 繁體中文</a>
+                            <a class="dropdown-item" href="{{ language_switch_url('zh-CN') }}"><i class="fa fa-language" aria-hidden="true"></i> 简体中文</a>
                         </div>
                     </div>
                 </div>
@@ -263,19 +263,18 @@
                 </div>
             @endif
         @endcan
-        <div class="user-info-dropdown">
-            <div class="dropdown">
+        <section class="user-info-dropdown">
+            <div id="backEndNavbar" class="dropdown">
                 <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
                     <div class="user-icon">
                         @if (Auth::user()->profileimg == '')
-                            <img src="{{ asset('storage/user/profile/default_user_img.png') }}" alt=""
-                                class="avatar-photo">
+                            <img src="{{ asset('storage/user/profile/default_user_img.png') }}" alt="" class="avatar-photo">
                         @else
-                        <img src="{{ asset('storage/user/profile') .'/'. Auth::user()->profileimg }}" alt="{{ Auth::user()->name }}" >
+                            <img src="{{ asset('storage/user/profile') .'/'. Auth::user()->profileimg }}" alt="{{ Auth::user()->name }}" >
                         @endif
                     </div>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                <div class="dropdown-menu">
                     <a class="dropdown-item" href="{{ route('profile') }}"><i class="dw dw-user1"></i>{{ Auth::user()->name }}</a>
                     @if ($canAccessAdminDashboard)
                         <a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="ion-speedometer"></i> @lang('messages.Dashboard')</a>
@@ -288,10 +287,8 @@
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>
-                    
                 </div>
             </div>
-        </div>
-        
+        </section>
     </div>
 </div>

@@ -137,10 +137,9 @@
                     @lang('messages.Services')
                 </div>
                 <div class="dropdown-menu shadow-sm m-0">
-                    <a class="dropdown-item" href="{{ route('view.accommodation-service') }}"><i class="fas fa-hotel"></i> @lang('messages.Accommodations')</a>
-                    <a class="dropdown-item" href="{{ route('view.transport-service') }}"><i class="fas fa-car"></i> @lang('messages.Transports')</a>
-                    <a class="dropdown-item" href="{{ route('view.tour-package-services') }}"><i class="fas fa-suitcase-rolling"></i> @lang('messages.Tour Packages')</a>
-                    <a class="dropdown-item" href="{{ route('view.activity-services') }}"><i class="fas fa-hiking"></i> @lang('messages.Activities')</a>
+                    @foreach ($globalServices as $item)
+                        <a class="dropdown-item" href="{{ route("view.".$item->nicname."-service") }}"><i class="{{ $item->icon }}"></i> {{ __('messages.'.$item->name) }}</a>
+                    @endforeach
                 </div>
             </div>
 

@@ -242,7 +242,7 @@
 
                                     <div class="col-md-12 text-right">
 
-                                        <a href="/reservation-{{ $reservation->id }}"><button type="button" class="backend-button backend-button-secondary m-b-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
+                                        <a href="{{ route('view.reservation.detail', $reservation) }}" class="backend-button backend-button-secondary m-b-8"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</a>
                                     </div>
                                 </div>
                             </div>

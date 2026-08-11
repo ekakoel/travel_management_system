@@ -141,7 +141,7 @@
                                                 </a>
                                                 @canany(['posDev','posAuthor'])
                                                     <a href="{{ route('admin.tours.edit', $tour->id) }}" class="backend-icon-action" aria-label="Edit {{ $tour->name }}">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </a>
                                                     <form action="{{ route('admin.tours.destroy', $tour->id) }}" method="post">
                                                         @csrf

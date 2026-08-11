@@ -89,17 +89,17 @@ class FooterContentService
     ];
 
     private const FOOTER_LINK_LABEL_FALLBACKS = [
-        'view.accommodation-service' => [
+        'view.hotels-service' => [
             'en' => 'Accommodations',
             'zh' => '住宿安排',
             'zh-CN' => '住宿安排',
         ],
-        'view.transport-service' => [
+        'view.transports-service' => [
             'en' => 'Transports',
             'zh' => '交通',
             'zh-CN' => '交通',
         ],
-        'view.tour-package-services' => [
+        'view.tour-packages-service' => [
             'en' => 'Tour Packages',
             'zh' => '旅遊套餐',
             'zh-CN' => '旅游套餐',
@@ -301,7 +301,7 @@ class FooterContentService
 
         return Str::startsWith($path, ['http://', 'https://', '/'])
             ? $path
-            : asset('storage/logo/' . ltrim($path, '/'));
+            : asset('storage/public/logo/' . ltrim($path, '/'));
     }
 
     protected function socialLinks($businessProfile): array

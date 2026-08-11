@@ -1,3 +1,7 @@
+@php
+    $normalPriceRows = $hotelDetail->normalPriceRows();
+@endphp
+
 <section id="normalPrice" class="backend-panel hotel-detail-panel">
     <div class="backend-section-header hotel-detail-panel__heading">
         <div>
@@ -30,34 +34,42 @@
                 <tr>
                     <th>Room</th>
                     <th>Stay Period</th>
-                    <th>Kick Back</th>
                     <th>Published Rate</th>
+                    <th>Status</th>
                     @canany(['posDev','posAuthor'])
                         <th>Action</th>
                     @endcanany
                 </tr>
             </thead>
             <tbody>
-                @forelse ($hotelDetail->normalPriceRows() as $row)
+                @forelse ($normalPriceRows as $row)
                     @php
                         $price = $row['model'];
                     @endphp
                     <tr data-hotel-detail-row="price" data-hotel-detail-search="{{ $row['search'] }}">
                         <td data-label="Room"><strong>{{ $row['room_name'] }}</strong></td>
                         <td data-label="Stay Period">{{ $row['period'] }}</td>
-                        <td data-label="Kick Back">{!! $row['kick_back_label'] !!}</td>
-                        <td data-label="Published Rate"><span class="hotel-detail-rate">{!! currencyFormatUsd($row['published_rate']) !!}</span></td>
+                        <td data-label="Published Rate">
+                            <span class="hotel-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
+                            @if ($row['kick_back'] > 0)
+                                <span>Net after kickback: {{ currencyFormatUsd($row['net_rate']) }}</span>
+                            @endif
+                            <button type="button" class="hotel-price-calculation-action" data-toggle="modal" data-target="#hotelNormalPriceCalculation{{ $price->id }}">
+                                View calculation
+                            </button>
+                        </td>
+                        <td data-label="Status"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $row['status_label'] }}</span></td>
                         @canany(['posDev','posAuthor'])
                             <td data-label="Action">
                                 <div class="hotel-detail-actions">
                                     <a href="{{ route('admin.hotels.prices.edit', $price->id) }}" class="backend-icon-action" aria-label="Edit price">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-pencil-alt"></i>
                                     </a>
                                     <form action="{{ route('admin.hotels.normal-prices.destroy', $price->id) }}" method="post">
                                         @csrf
                                         @method('delete')
                                         <button type="submit" class="backend-icon-action is-danger" data-hotel-detail-delete="{{ $row['room_name'] ?: 'price row' }}" aria-label="Delete price">
-                                            <i class="fa fa-trash-o"></i>
+                                            <i class="fa fa-trash-alt"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -69,7 +81,7 @@
                         <td colspan="5">
                             <div class="backend-table-empty">
                                 <i class="fa fa-usd"></i>
-                                <strong>No active normal prices.</strong>
+                                <strong>No normal prices.</strong>
                                 <span>Add a normal price to make rooms sellable.</span>
                             </div>
                         </td>
@@ -79,3 +91,13 @@
         </table>
     </div>
 </section>
+
+@foreach ($normalPriceRows as $row)
+    @include('backend.operations.hotels.modals.price-calculation', [
+        'modalId' => 'hotelNormalPriceCalculation'.$row['model']->id,
+        'eyebrow' => 'Normal Price Calculation',
+        'title' => $row['room_name'],
+        'subtitle' => $row['period'],
+        'pricing' => $row['pricing'],
+    ])
+@endforeach

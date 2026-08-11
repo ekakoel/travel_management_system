@@ -90,29 +90,29 @@
                             <div class="table-action">
                                 @if (in_array($tourorder->status, ['Draft', 'Invalid']))
                                     <a href="{{ route('view.edit-order-tour',$tourorder->id) }}">
-                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
+                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                     </a>
                                     @if ($tourorder->status === 'Draft' || $tourorder->status === 'Invalid')
                                         <form class="display-content" action="/delete-order/{{ $tourorder->id }}" method="post">
                                             @csrf
                                             @method('delete')
                                             <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                            <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i></button>
+                                            <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash-alt"></i></button>
                                         </form>
                                     @endif
                                 @elseif ($tourorder->status == "Rejected")
                                     <a href="{{ route('view.detail-order-tour',$tourorder->id) }}">
-                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                     </a>
                                     <form class="display-content" action="/delete-order/{{ $tourorder->id }}" method="post">
                                         @csrf
                                         @method('delete')
                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                        <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i></button>
+                                        <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash-alt"></i></button>
                                     </form>
                                 @elseif ($tourorder->status == "Confirmed" and $rsv_tour->send == "yes")
                                     <a href="{{ route('view.detail-order-tour',$tourorder->id) }}">
-                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                     </a>
                                     <form id="approveOrder" class="hidden" action="/fapprove-order-{{ $tourorder->id }}"method="post" enctype="multipart/form-data">
                                         @csrf
@@ -121,7 +121,7 @@
                                     <button type="submit" form="approveOrder" class="btn-approve" data-toggle="tooltip" data-placement="top" title="@lang('messages.Approve Order')"><i class="icon-copy fa fa-check-circle" aria-hidden="true"></i></button>
                                 @else
                                     <a href="{{ route('view.detail-order-tour',$tourorder->id) }}">
-                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                     </a>
                                 @endif
                                 

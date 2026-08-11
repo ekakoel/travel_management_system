@@ -99,6 +99,6 @@ class BusinessProfileController extends Controller
 
         return Str::startsWith($logo, ['http://', 'https://', '/'])
             ? $logo
-            : asset('storage/logo/'.ltrim($logo, '/'));
+            : asset('storage/public/logo/'.ltrim($logo, '/'));
     }
 }

@@ -49,12 +49,12 @@
                 @canany(['posDev','weddingDvl','weddingAuthor'])
                     <div class="card-delete-btn">
                         <a href="#" data-toggle="modal" data-target="#edit-package-{{ $package_dinner_venue->id }}">
-                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button>
+                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil-alt"></i></button>
                         </a>
                         <form action="/fremove-vendor-package/{{ $package_dinner_venue->id }}" method="post" enctype="multipart/form-data">
                             @method('put')
                             {{ csrf_field() }}
-                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                         </form>
                     </div>
                 @endcanany
@@ -164,7 +164,7 @@
                     <div class="modal-content">
                         <div class="card-box">
                             <div class="card-box-title">
-                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Package {{ $package_dinner_venue->service }}</div>
+                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update Package {{ $package_dinner_venue->service }}</div>
                             </div>
                             <form id="update-package-{{ $package_dinner_venue->id }}" action="/fupdate-vendor-package/{{ $package_dinner_venue->id }}" method="post" enctype="multipart/form-data">
                                 @method('put')

@@ -367,9 +367,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 title.textContent = location.name;
                 meta.className = 'tour-route-map__popup-meta';
                 meta.textContent = [
-                    `${mapElement.dataset.dayLabel || 'Day'} ${location.day}`,
-                    `${mapElement.dataset.stopLabel || 'Stop'} ${location.visit_order}`,
-                    location.visit_time ? `${mapElement.dataset.timeLabel || 'Time'} ${location.visit_time}` : null,
+                    `${mapElement.dataset.dayLabel || ''} ${location.day}`,
+                    `${mapElement.dataset.stopLabel || ''} ${location.visit_order}`,
+                    location.visit_time ? `${mapElement.dataset.timeLabel || ''} ${location.visit_time}` : null,
                 ].filter(Boolean).join(' · ');
 
                 popup.appendChild(title);
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const meta = document.createElement('small');
 
                     title.textContent = location.name;
-                    meta.textContent = `${mapElement.dataset.dayLabel || 'Day'} ${location.day} - ${mapElement.dataset.stopLabel || 'Stop'} ${location.visit_order}`;
+                    meta.textContent = `${mapElement.dataset.dayLabel || ''} ${location.day} - ${mapElement.dataset.stopLabel || ''} ${location.visit_order}`;
 
                     avatar.classList.add('tour-route-map__pin--number');
                     avatar.style.setProperty('--tour-marker-color', location.color || '#0f766e');
@@ -504,9 +504,9 @@ document.addEventListener('DOMContentLoaded', () => {
             title.textContent = location.name;
             meta.className = 'tour-route-map__popup-meta';
             meta.textContent = [
-                `${mapElement.dataset.dayLabel || 'Day'} ${location.day}`,
-                `${mapElement.dataset.stopLabel || 'Stop'} ${location.visit_order}`,
-                location.visit_time ? `${mapElement.dataset.timeLabel || 'Time'} ${location.visit_time}` : null,
+                `${mapElement.dataset.dayLabel || ''} ${location.day}`,
+                `${mapElement.dataset.stopLabel || ''} ${location.visit_order}`,
+                location.visit_time ? `${mapElement.dataset.timeLabel || ''} ${location.visit_time}` : null,
             ].filter(Boolean).join(' - ');
 
             popup.appendChild(title);
@@ -554,15 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    let rates = [];
-
-    try {
-        rates = JSON.parse(orderForm.dataset.rates || '[]');
-    } catch (error) {
-        rates = [];
-    }
-
-    const guestInput = orderForm.querySelector('[data-tour-guests]');
+    const travelDateInput = orderForm.querySelector('[name="travel_date"]');
     const selectedPriceId = orderForm.querySelector('[data-tour-price-id]');
     const pricePerPax = orderForm.querySelector('[data-tour-price-per-pax]');
     const totalPrice = orderForm.querySelector('[data-tour-total-price]');
@@ -583,12 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
         phone: orderForm.querySelector('[data-tour-guest-field="phone"]'),
         age: orderForm.querySelector('[data-tour-guest-field="age"]'),
         sex: orderForm.querySelector('[data-tour-guest-field="sex"]'),
-        identification_type: orderForm.querySelector('[data-tour-guest-field="identification_type"]'),
-        identification_no: orderForm.querySelector('[data-tour-guest-field="identification_no"]'),
-        is_leader: orderForm.querySelector('[data-tour-guest-field="is_leader"]'),
     };
-    const leadGuestName = orderForm.querySelector('[data-tour-lead-name]');
-    const leadGuestPhone = orderForm.querySelector('[data-tour-lead-phone]');
     const reviewFields = [...orderForm.querySelectorAll('[data-tour-review-field]')];
     const reviewValues = [...orderForm.querySelectorAll('[data-tour-review-value]')];
     const wizardSteps = [...orderForm.querySelectorAll('[data-tour-wizard-step]')];
@@ -598,27 +585,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const wizardSubmitButtons = [...orderForm.querySelectorAll('[data-tour-wizard-submit]')];
     const wizardSubmitButton = wizardSubmitButtons[0] || null;
     const submitOverlay = orderForm.querySelector('[data-form-submit-overlay]');
-    const bookingDiscount = Number(orderForm.dataset.bookingDiscount || 0);
-    const promotionDiscount = Number(orderForm.dataset.promotionDiscount || 0);
+    const quoteUrl = orderForm.dataset.quoteUrl || '';
+    const csrfToken = orderForm.querySelector('[name="_token"]')?.value || '';
     const submissionGuard = createFormSubmissionGuard(orderForm, {
         storageKey: orderForm.dataset.submissionKey || `tour-order:${window.location.pathname}`,
     });
-    const leaderLabel = orderForm.dataset.leaderLabel || 'Leader';
-    const setLeaderLabel = orderForm.dataset.setLeaderLabel || 'Set leader';
-    const leaderPhoneRequiredLabel = orderForm.dataset.leaderPhoneRequiredLabel || 'Phone required';
-    const guestLabel = orderForm.dataset.guestLabel || 'Guest';
-    const adultLabel = orderForm.dataset.adultLabel || 'Adult';
-    const childLabel = orderForm.dataset.childLabel || 'Child';
-    const maleLabel = orderForm.dataset.maleLabel || 'Male';
-    const femaleLabel = orderForm.dataset.femaleLabel || 'Female';
-    const editLabel = orderForm.dataset.editLabel || 'Edit';
-    const removeLabel = orderForm.dataset.removeLabel || 'Remove';
-    const addGuestLabel = orderForm.dataset.addGuestLabel || 'Add';
-    const updateGuestLabel = orderForm.dataset.updateGuestLabel || 'Update';
-    const cancelEditLabel = orderForm.dataset.cancelEditLabel || 'Cancel';
-    const guestTableEmptyLabel = orderForm.dataset.guestTableEmptyLabel || 'No guest has been added yet.';
-    const guestProgressLabel = orderForm.dataset.guestProgressLabel || ':count guest details saved for this booking of :total pax';
-    const guestCountMismatchLabel = orderForm.dataset.guestCountMismatchLabel || 'Please add at least one guest detail.';
+    const guestLabel = orderForm.dataset.guestLabel || '';
+    const adultLabel = orderForm.dataset.adultLabel || '';
+    const childLabel = orderForm.dataset.childLabel || '';
+    const maleLabel = orderForm.dataset.maleLabel || '';
+    const femaleLabel = orderForm.dataset.femaleLabel || '';
+    const editLabel = orderForm.dataset.editLabel || '';
+    const removeLabel = orderForm.dataset.removeLabel || '';
+    const addGuestLabel = orderForm.dataset.addGuestLabel || '';
+    const updateGuestLabel = orderForm.dataset.updateGuestLabel || '';
+    const cancelEditLabel = orderForm.dataset.cancelEditLabel || '';
+    const guestTableEmptyLabel = orderForm.dataset.guestTableEmptyLabel || '';
+    const guestProgressLabel = orderForm.dataset.guestProgressLabel || '';
+    const guestSummaryLabel = orderForm.dataset.guestSummaryLabel || '';
+    const guestCountMismatchLabel = orderForm.dataset.guestCountMismatchLabel || '';
+    const priceUnavailableLabel = orderForm.dataset.priceUnavailableLabel || orderForm.dataset.noRateLabel || '';
+    const loadingPriceLabel = orderForm.dataset.loadingPriceLabel || '';
+    const minGuests = Number(orderForm.dataset.minGuests || 2);
+    const maxGuests = Number(orderForm.dataset.maxGuests || 200);
     let guests = [];
     let isSubmitting = false;
 
@@ -630,38 +619,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 phone: String(guest.phone || '').trim(),
                 age: String(guest.age || '').trim(),
                 sex: String(guest.sex || '').trim(),
-                identification_type: String(guest.identification_type || '').trim(),
-                identification_no: String(guest.identification_no || '').trim(),
-                is_leader: Boolean(Number(guest.is_leader || 0)),
             }));
     } catch (error) {
         guests = [];
     }
 
-    const normalizeLeaderEligibility = (guestList) => guestList.map((guest) => ({
-        ...guest,
-        is_leader: Boolean(guest.is_leader),
-    }));
-
-    const getRequestedGuestCount = ({ allowIncomplete = false } = {}) => {
-        const minGuests = Number(guestInput?.getAttribute('min') || 2);
-        const maxGuests = Number(guestInput?.getAttribute('max') || 200);
-        const rawGuestValue = String(guestInput?.value || '').trim();
-
-        if (allowIncomplete && rawGuestValue === '') {
-            return null;
-        }
-
-        const parsedGuests = Number(rawGuestValue || minGuests);
-
-        if (!Number.isFinite(parsedGuests)) {
-            return allowIncomplete ? null : minGuests;
-        }
-
-        return Math.min(Math.max(Math.trunc(parsedGuests), minGuests), maxGuests);
-    };
-
-    guests = normalizeLeaderEligibility(guests);
     let activeWizardStep = 0;
 
     const focusFirstInvalidField = (container) => {
@@ -679,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const setSubmittingState = (submitting) => {
-        const processingLabel = orderForm.dataset.processingLabel || 'Processing...';
+        const processingLabel = orderForm.dataset.processingLabel || '';
         isSubmitting = Boolean(submitting);
         orderForm.dataset.isSubmitting = isSubmitting ? 'true' : 'false';
         orderForm.setAttribute('aria-busy', isSubmitting ? 'true' : 'false');
@@ -807,6 +769,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (activeWizardStep === wizardSteps.length - 1) {
             updateReservationReview();
+            updatePricePreview();
         }
 
         wizardSteps[activeWizardStep]?.scrollIntoView({ block: 'start', behavior: 'smooth' });
@@ -867,18 +830,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
 
-    const syncLeadGuestFromLeader = () => {
-        const leader = guests.find((guest) => guest.is_leader);
-
-        if (leadGuestName) {
-            leadGuestName.value = leader?.name || '';
-        }
-
-        if (leadGuestPhone) {
-            leadGuestPhone.value = leader?.phone || '';
-        }
-    };
-
     const localizeGuestAge = (value) => value === 'Adult' ? adultLabel : (value === 'Child' ? childLabel : value);
     const localizeGuestSex = (value) => value === 'Male' ? maleLabel : (value === 'Female' ? femaleLabel : value);
     const getEditingIndex = () => {
@@ -895,12 +846,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const resetGuestForm = () => {
         clearGuestFormErrors();
-        Object.entries(guestFieldElements).forEach(([key, field]) => {
+        Object.values(guestFieldElements).forEach((field) => {
             if (!field) return;
-            if (key === 'is_leader') {
-                field.checked = false;
-                return;
-            }
             field.value = '';
         });
         setEditingIndex(null);
@@ -913,10 +860,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const fillGuestForm = (guest = {}) => {
         Object.entries(guestFieldElements).forEach(([key, field]) => {
             if (!field) return;
-            if (key === 'is_leader') {
-                field.checked = Boolean(guest.is_leader);
-                return;
-            }
             field.value = guest[key] || '';
         });
     };
@@ -925,13 +868,10 @@ document.addEventListener('DOMContentLoaded', () => {
         phone: String(guestFieldElements.phone?.value || '').trim(),
         age: String(guestFieldElements.age?.value || '').trim(),
         sex: String(guestFieldElements.sex?.value || '').trim(),
-        identification_type: String(guestFieldElements.identification_type?.value || '').trim(),
-        identification_no: String(guestFieldElements.identification_no?.value || '').trim(),
-        is_leader: Boolean(guestFieldElements.is_leader?.checked),
     });
     const validateGuestDraft = (focusInvalid = false) => {
         const draft = getGuestDraft();
-        const requiredFields = ['name', 'age', 'sex', 'identification_type', 'identification_no'];
+        const requiredFields = ['name', 'age', 'sex'];
         let firstInvalidField = null;
 
         clearGuestFormErrors();
@@ -941,10 +881,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 firstInvalidField = firstInvalidField || guestFieldElements[fieldName];
             }
         });
-        if (draft.is_leader && !draft.phone && guestFieldElements.phone) {
-            guestFieldElements.phone.classList.add('is-invalid');
-            firstInvalidField = firstInvalidField || guestFieldElements.phone;
-        }
         if (focusInvalid && firstInvalidField) firstInvalidField.focus();
         return !firstInvalidField;
     };
@@ -955,10 +891,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const renderGuestProgress = () => {
         if (!guestProgressTarget) return;
-        const requestedGuestCount = getRequestedGuestCount({ allowIncomplete: true }) ?? 0;
         guestProgressTarget.textContent = guestProgressLabel
             .replace(':count', String(guests.length))
-            .replace(':total', String(requestedGuestCount));
+            .replace(':min', String(minGuests));
     };
     const renderGuestHiddenInputs = () => {
         if (!guestInputsTarget) return;
@@ -967,11 +902,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <input type="hidden" name="guests[${index}][phone]" value="${escapeHtml(guest.phone)}">
             <input type="hidden" name="guests[${index}][age]" value="${escapeHtml(guest.age)}">
             <input type="hidden" name="guests[${index}][sex]" value="${escapeHtml(guest.sex)}">
-            <input type="hidden" name="guests[${index}][identification_type]" value="${escapeHtml(guest.identification_type)}">
-            <input type="hidden" name="guests[${index}][identification_no]" value="${escapeHtml(guest.identification_no)}">
-            <input type="hidden" name="guests[${index}][is_leader]" value="${guest.is_leader ? '1' : '0'}">
         `).join('');
-        syncLeadGuestFromLeader();
     };
     const renderGuestTable = () => {
         if (!guestTableBody) return;
@@ -985,12 +916,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${escapeHtml(localizeGuestAge(guest.age) || '-')}</td>
                 <td>${escapeHtml(localizeGuestSex(guest.sex) || '-')}</td>
                 <td>${escapeHtml(guest.phone || '-')}</td>
-                <td>${escapeHtml(guest.identification_type || '-')}</td>
-                <td>${escapeHtml(guest.identification_no || '-')}</td>
-                <td>${guest.is_leader ? escapeHtml(leaderLabel) : '-'}</td>
                 <td><div class="tour-guest-table__actions">
                     <button type="button" class="tour-guest-table__action" data-tour-guest-edit="${index}"><i class="fa fa-edit" aria-hidden="true"></i><span>${escapeHtml(editLabel)}</span></button>
-                    <button type="button" class="tour-guest-table__action tour-guest-table__action--danger" data-tour-guest-remove="${index}"><i class="fa fa-trash" aria-hidden="true"></i><span>${escapeHtml(removeLabel)}</span></button>
+                    <button type="button" class="tour-guest-table__action tour-guest-table__action--danger" data-tour-guest-remove="${index}"><i class="fa fa-trash-alt" aria-hidden="true"></i><span>${escapeHtml(removeLabel)}</span></button>
                 </div></td>
             `;
             guestTableBody.appendChild(row);
@@ -1015,9 +943,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${escapeHtml(localizeGuestAge(guest.age) || '-')}</td>
                 <td>${escapeHtml(localizeGuestSex(guest.sex) || '-')}</td>
                 <td>${escapeHtml(guest.phone || '-')}</td>
-                <td>${escapeHtml(guest.identification_type || '-')}</td>
-                <td>${escapeHtml(guest.identification_no || '-')}</td>
-                <td>${guest.is_leader ? escapeHtml(leaderLabel) : '-'}</td>
             `;
             reviewGuestTableBody.appendChild(row);
         });
@@ -1050,10 +975,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ].join(':');
     };
     const validateGuestManifest = (showMessage = false) => {
-        const leader = guests.find((guest) => guest.is_leader && guest.phone);
-        const isValid = guests.length > 0 && Boolean(leader);
-        const message = guests.length > 0 ? leaderPhoneRequiredLabel : guestCountMismatchLabel;
-        setGuestErrorMessage(message, showMessage && !isValid);
+        const isValid = guests.length >= minGuests && guests.length <= maxGuests;
+        setGuestErrorMessage(guestCountMismatchLabel, showMessage && !isValid);
         return isValid;
     };
     const updateReservationReview = () => {
@@ -1063,10 +986,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 : (field.value || '-');
             return values;
         }, {});
-        const leader = guests.find((guest) => guest.is_leader);
-
-        valueMap.leader = leader ? `${leader.name}${leader.phone ? ` (${leader.phone})` : ''}` : '-';
-        valueMap.guestManifest = guests.length ? `${guests.length} guest${guests.length > 1 ? 's' : ''}` : '-';
+        valueMap.guestCount = String(guests.length);
+        valueMap.guestManifest = guests.length
+            ? guestSummaryLabel.replace(':count', String(guests.length))
+            : '-';
 
         reviewValues.forEach((target) => {
             target.textContent = valueMap[target.dataset.tourReviewValue] || '-';
@@ -1079,13 +1002,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!validateGuestDraft(true)) return;
         const editingIndex = getEditingIndex();
         const draft = getGuestDraft();
-        if (draft.is_leader) guests = guests.map((guest) => ({ ...guest, is_leader: false }));
         if (editingIndex !== null && guests[editingIndex]) guests[editingIndex] = draft;
         else guests.push(draft);
         resetGuestForm();
         setGuestErrorMessage('', false);
         renderGuestTable();
         updateReservationReview();
+        updatePricePreview();
     };
 
     guestSaveButton?.addEventListener('click', persistGuestDraft);
@@ -1111,6 +1034,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderGuestTable();
             updateReservationReview();
             validateGuestManifest(false);
+            updatePricePreview();
         }
     });
 
@@ -1126,51 +1050,83 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const getHighestRate = () => [...rates].sort((a, b) => Number(b.max_qty) - Number(a.max_qty))[0];
-    const updatePricePreview = () => {
-        const guests = Number(guestInput?.value || 0);
-        const normalizedGuests = Number.isFinite(guests) ? Math.trunc(guests) : 0;
-        let matchedRate = rates.find((rate) => {
-            return normalizedGuests >= Number(rate.min_qty) && normalizedGuests <= Number(rate.max_qty);
-        });
-        const isFallbackRate = !matchedRate && normalizedGuests >= 2 && normalizedGuests <= 200;
+    let quoteRequestController = null;
+    let quoteRequestTimer = null;
 
-        if (isFallbackRate) {
-            matchedRate = getHighestRate();
+    const renderUnavailablePrice = (message = '') => {
+        if (pricePerPax) pricePerPax.textContent = '-';
+        if (totalPrice) totalPrice.textContent = '-';
+        if (priceNote) {
+            priceNote.textContent = message
+                || priceUnavailableLabel;
         }
+        if (selectedPriceId) selectedPriceId.value = '';
+        if (submitButton) submitButton.disabled = true;
+    };
 
-        if (!matchedRate || normalizedGuests < 2 || normalizedGuests > 200) {
-            if (pricePerPax) pricePerPax.textContent = '-';
-            if (totalPrice) totalPrice.textContent = '-';
-            if (priceNote) priceNote.textContent = orderForm.dataset.noRateLabel || 'No matching active rate for this guest count yet.';
-            if (selectedPriceId) selectedPriceId.value = '';
-            if (submitButton) submitButton.disabled = true;
+    const requestPricePreview = async () => {
+        const guestCount = guests.length;
+        const travelDate = String(travelDateInput?.value || '').trim();
+
+        if (!quoteUrl || guestCount < minGuests || guestCount > maxGuests || !travelDate) {
+            renderUnavailablePrice(guestCount < minGuests ? guestCountMismatchLabel : '');
             return;
         }
 
-        const unitPrice = Number(matchedRate.price || 0);
-        const grossTotal = unitPrice * normalizedGuests;
-        const finalTotal = Math.max(grossTotal - bookingDiscount - promotionDiscount, 0);
+        quoteRequestController?.abort();
+        quoteRequestController = new AbortController();
+        renderUnavailablePrice(loadingPriceLabel);
 
-        if (selectedPriceId) selectedPriceId.value = matchedRate.id || '';
-        if (pricePerPax) pricePerPax.textContent = formatCurrency(unitPrice);
-        if (totalPrice) totalPrice.textContent = formatCurrency(finalTotal);
-        if (priceNote) priceNote.textContent = '';
-        if (submitButton) submitButton.disabled = false;
+        const requestBody = new URLSearchParams({
+            number_of_guests: String(guestCount),
+            travel_date: travelDate,
+        });
+        const bookingCode = orderForm.querySelector('[name="booking_code"]')?.value;
+        const promotionId = orderForm.querySelector('[name="promotion_id"]')?.value;
+
+        if (bookingCode) requestBody.set('booking_code', bookingCode);
+        if (promotionId) requestBody.set('promotion_id', promotionId);
+
+        try {
+            const response = await fetch(quoteUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: requestBody.toString(),
+                signal: quoteRequestController.signal,
+            });
+            const responsePayload = await response.json();
+            // Accept the previous Laravel Resource wrapper while cached assets/responses expire.
+            const payload = responsePayload?.data || responsePayload;
+
+            if (!response.ok || payload.price_available !== true || !payload.quote || !payload.display) {
+                renderUnavailablePrice(payload.message || priceUnavailableLabel);
+                return;
+            }
+
+            if (selectedPriceId) selectedPriceId.value = payload.quote.price_id || '';
+            if (pricePerPax) pricePerPax.textContent = `USD ${payload.display.unit_price_usd}`;
+            if (totalPrice) totalPrice.textContent = `USD ${payload.display.final_total_usd}`;
+            if (priceNote) priceNote.textContent = '';
+            if (submitButton) submitButton.disabled = false;
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                renderUnavailablePrice(priceUnavailableLabel);
+            }
+        }
     };
 
-    guestInput?.addEventListener('input', () => {
-        updatePricePreview();
-        renderGuestProgress();
-        updateReservationReview();
-        validateGuestManifest(false);
-    });
-    guestInput?.addEventListener('change', () => {
-        updatePricePreview();
-        renderGuestProgress();
-        updateReservationReview();
-        validateGuestManifest(false);
-    });
+    const updatePricePreview = () => {
+        window.clearTimeout(quoteRequestTimer);
+        quoteRequestTimer = window.setTimeout(requestPricePreview, 250);
+    };
+
+    travelDateInput?.addEventListener('input', updatePricePreview);
+    travelDateInput?.addEventListener('change', updatePricePreview);
     updatePricePreview();
     renderGuestTable();
     updateReservationReview();

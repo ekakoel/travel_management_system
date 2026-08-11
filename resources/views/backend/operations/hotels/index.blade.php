@@ -154,9 +154,20 @@
                                         <td data-label="Location">{{ $hotel->region ?: '-' }}</td>
                                         <td data-label="Services">
                                             <div class="hotels-admin-service">
-                                                <span class="{{ $normalPrice ? 'is-active' : '' }}" title="{{ $normalPrice ? date('d M y', strtotime($normalPrice->end_date)) : 'Normal Price' }}">NP</span>
-                                                <span class="{{ $promo ? 'is-active' : '' }}" title="{{ $promo ? date('d M y', strtotime($promo->book_periode_end)) : 'Promo Price' }}">PR</span>
-                                                <span class="{{ $package ? 'is-active' : '' }}" title="{{ $package ? date('d M y', strtotime($package->stay_period_end)) : 'Package Price' }}">PA</span>
+                                                @if ($normalPrice || $promo || $package)
+                                                    
+                                                    @if ($normalPrice)
+                                                        <span class="{{ $normalPrice ? 'price-normal is-active' : '' }}" title="{{ $normalPrice ? date('d M y', strtotime($normalPrice->end_date)) : 'Normal Price' }}">NP</span>
+                                                    @endif
+                                                    @if ($promo)
+                                                        <span class="{{ $promo ? 'is-active' : '' }}" title="{{ $promo ? date('d M y', strtotime($promo->book_periode_end)) : 'Promo Price' }}">PR</span>
+                                                    @endif
+                                                    @if ($package)
+                                                        <span class="{{ $package ? 'is-active' : '' }}" title="{{ $package ? date('d M y', strtotime($package->stay_period_end)) : 'Package Price' }}">PA</span>
+                                                    @endif
+                                                @else
+                                                    <i>No price available</i>
+                                                @endif
                                             </div>
                                         </td>
                                         <td data-label="Rooms">
@@ -171,18 +182,18 @@
                                         <td data-label="Action">
                                             <div class="backend-table-actions hotels-admin-actions">
                                                 <a href="{{ route('admin.hotels.show', $hotel->id) }}" class="backend-icon-action" aria-label="View {{ $hotel->name }}">
-                                                    <i class="dw dw-eye"></i>
+                                                    <i class="fas fa-eye"></i>
                                                 </a>
                                                 @canany(['posDev','posAuthor'])
                                                     <a href="{{ route('admin.hotels.edit', $hotel->id) }}" class="backend-icon-action" aria-label="Edit {{ $hotel->name }}">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fas fa-pencil-alt"></i>
                                                     </a>
                                                     <form action="{{ route('admin.hotels.destroy', $hotel->id) }}" method="post">
                                                         @csrf
                                                         @method('delete')
                                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                         <button type="submit" class="backend-icon-action is-danger" data-hotel-delete="{{ $hotel->name }}" aria-label="Delete {{ $hotel->name }}">
-                                                            <i class="fa fa-trash-o"></i>
+                                                            <i class="far fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 @endcanany
@@ -230,11 +241,11 @@
                                 </dl>
                                 <div class="backend-table-actions hotels-admin-card__actions">
                                     <a href="{{ route('admin.hotels.show', $hotel->id) }}" class="backend-icon-action" aria-label="View {{ $hotel->name }}">
-                                        <i class="dw dw-eye"></i>
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                     @canany(['posDev','posAuthor'])
                                         <a href="{{ route('admin.hotels.edit', $hotel->id) }}" class="backend-icon-action" aria-label="Edit {{ $hotel->name }}">
-                                            <i class="fa fa-pencil"></i>
+                                            <i class="fa fa-pencil-alt"></i>
                                         </a>
                                         <form action="{{ route('admin.hotels.destroy', $hotel->id) }}" method="post">
                                             @csrf
@@ -293,7 +304,7 @@
                                             <td data-label="Action">
                                                 <div class="backend-table-actions hotels-admin-actions">
                                                     <a href="{{ route('admin.hotels.show', $hotel->id) }}" class="backend-icon-action" aria-label="View {{ $hotel->name }}">
-                                                        <i class="dw dw-eye"></i>
+                                                        <i class="fas fa-eye"></i>
                                                     </a>
                                                 </div>
                                             </td>

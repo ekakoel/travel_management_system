@@ -5,22 +5,31 @@ namespace App\Services\Hotels;
 use App\Models\HotelPackage;
 use App\Models\HotelPromo;
 use App\Models\Hotels;
+use Carbon\Carbon;
 use Carbon\CarbonInterface;
 
 class HotelStatusService
 {
     public function expirePromosForHotel(int $hotelId, CarbonInterface|string $date): int
     {
+        $today = $date instanceof CarbonInterface
+            ? $date->toDateString()
+            : Carbon::parse($date)->toDateString();
+
         return HotelPromo::where('hotels_id', $hotelId)
-            ->where('book_periode_end', '<', $date)
+            ->whereDate('book_periode_end', '<', $today)
             ->where('status', '!=', 'Expired')
             ->update(['status' => 'Expired']);
     }
 
     public function expirePackagesForHotel(int $hotelId, CarbonInterface|string $date): int
     {
+        $today = $date instanceof CarbonInterface
+            ? $date->toDateString()
+            : Carbon::parse($date)->toDateString();
+
         return HotelPackage::where('hotels_id', $hotelId)
-            ->where('stay_period_end', '<', $date)
+            ->whereDate('stay_period_end', '<', $today)
             ->where('status', '!=', 'Expired')
             ->update(['status' => 'Expired']);
     }

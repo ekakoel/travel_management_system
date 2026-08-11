@@ -94,7 +94,7 @@
                             @if ($order->status != "Paid")
                                 <div class="view-receipt">
                                     <a href="#" data-toggle="modal" data-target="#{{ $device }}-receipt-{{ $desktop_receipt->id }}">
-                                        <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                                        <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             @endif

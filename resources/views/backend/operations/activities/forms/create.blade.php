@@ -21,7 +21,7 @@
                     description="Create a new activity product with partner ownership, operational capacity, pricing, validity, and publishing details."
                 >
                     <x-slot name="action">
-                        <a href="{{ route('activities-admin.index') }}" class="backend-page-primary-action">
+                        <a href="{{ route('admin.activities.index') }}" class="backend-page-primary-action">
                             <i class="fa fa-arrow-left"></i>
                             Back to Activities
                         </a>
@@ -32,7 +32,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('activities-admin.index') }}">Activities</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.index') }}">Activities</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Add Activity</li>
                         </ol>
                     </nav>
@@ -283,7 +283,7 @@
 
                         <div class="backend-page-toolbar backend-form-actions">
                             <div class="backend-page-toolbar__actions">
-                                <a href="{{ route('activities-admin.index') }}" class="backend-button backend-button-secondary">Cancel</a>
+                                <a href="{{ route('admin.activities.index') }}" class="backend-button backend-button-secondary">Cancel</a>
                                 <button type="submit" class="backend-button backend-button-primary">
                                     <i class="fa fa-check"></i>
                                     Add Activity

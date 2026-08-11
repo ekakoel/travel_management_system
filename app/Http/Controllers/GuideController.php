@@ -68,7 +68,7 @@ class GuideController extends Controller
             "address"=>$request->address,
             "country"=>$request->country,
         ]);
-        return redirect()->route('guides-admin.index')->with('success','Guide has been updated');
+        return redirect()->route('admin.guides.index')->with('success','Guide has been updated');
     }
     
     public function destroy(Request $request,$id)
@@ -78,7 +78,7 @@ class GuideController extends Controller
             $guide->delete();
             return back()->with('success','Guide has been deleted');
         }else{
-            return redirect()->route('guides-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.guides.index')->with('error','Akses ditolak');
         }
     }
 }

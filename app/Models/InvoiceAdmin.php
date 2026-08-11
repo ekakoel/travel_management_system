@@ -38,7 +38,7 @@ class InvoiceAdmin extends Model
     ];
 
     public function reservations(){
-        return $this->belongsTo(Reservation::class,'inv_id');
+        return $this->belongsTo(Reservation::class, 'rsv_id');
     }
     public function additionalinv(){
         return $this->hasMany(AdditionalInvoice::class,'inv_id'); //good

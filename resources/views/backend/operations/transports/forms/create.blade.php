@@ -21,7 +21,7 @@
                     description="Create a transport inventory item using the standardized backend form layout."
                 >
                     <x-slot name="action">
-                        <a href="{{ route('transports-admin.index') }}" class="backend-page-primary-action">
+                        <a href="{{ route('admin.transports.index') }}" class="backend-page-primary-action">
                             <i class="fa fa-arrow-left"></i>
                             Back to Transports
                         </a>
@@ -32,7 +32,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('transports-admin.index') }}">Transportation</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.transports.index') }}">Transportation</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Add Transport</li>
                         </ol>
                     </nav>
@@ -66,7 +66,7 @@
 
                         <div class="backend-page-toolbar backend-form-actions">
                             <div class="backend-page-toolbar__actions">
-                                <a href="{{ route('transports-admin.index') }}" class="backend-button backend-button-secondary">Cancel</a>
+                                <a href="{{ route('admin.transports.index') }}" class="backend-button backend-button-secondary">Cancel</a>
                                 <button type="submit" class="backend-button backend-button-primary">
                                     <i class="fa fa-check"></i>
                                     Add Transportation

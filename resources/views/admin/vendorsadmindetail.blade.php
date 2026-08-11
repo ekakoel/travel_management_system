@@ -148,7 +148,7 @@
                                     </div>
                                     @canany(['posDev','weddingDvl','weddingAuthor'])
                                         <div class="card-box-footer">
-                                            <a href="#" data-toggle="modal" data-target="#edit-vendor"><button class="backend-button backend-button-primary"><i class="fa fa-pencil"></i> Edit Vendor</button></a>
+                                            <a href="#" data-toggle="modal" data-target="#edit-vendor"><button class="backend-button backend-button-primary"><i class="fa fa-pencil-alt"></i> Edit Vendor</button></a>
                                         </div>
                                         {{-- MODAL EDIT VENDOR --------------------------------------------------------------------------------------------------------------- --}}
                                         <div class="modal fade" id="edit-vendor" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -156,7 +156,7 @@
                                                 <div class="modal-content">
                                                     <div class="card-box">
                                                         <div class="card-box-title">
-                                                            <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Vendor</div>
+                                                            <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Vendor</div>
                                                         </div>
                                                         <form id="update-vendor" action="/fupdate-vendor/{{ $vendor->id }}" method="post" enctype="multipart/form-data">
                                                             @method('put')

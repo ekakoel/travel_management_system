@@ -4,6 +4,12 @@ Status: Active
 Updated: 2026-07-27
 Scope: Roadmap and discovery only for Accommodation, Transports, Tour Packages, and Activities. No business logic, database, migration, or payment behavior changes are included in this document.
 
+Lifecycle authority: `docs/status-contract.md` is the active final contract.
+Any roadmap item or historical wording that proposes `orders.status =
+Completed`, date-only completion, or an unresolved global completion design is
+superseded by that contract. Other roadmap areas remain active until completed
+or separately superseded.
+
 ## 1. Purpose
 
 Dokumen ini menjadi roadmap audit end-to-end untuk seluruh service booking flow pada project Balikami Tour.
@@ -208,7 +214,7 @@ Admin/reservation routes related to order handling:
 Primary controllers found:
 
 - `FrontEndController`
-  - `accommodation_service`
+  - `hotels_service`
   - `accommodation_detail`
 - `HotelsController`
   - `checkPriceEntry`
@@ -425,7 +431,9 @@ Exit criteria:
 
 - One definitive Accommodation flow diagram exists.
 - One status lifecycle table exists.
-- Canonical Accommodation status contract is approved and active in `docs/decisions/accommodation-status-contract.md`.
+- The former Accommodation-only status contract in
+  `docs/decisions/accommodation-status-contract.md` is `superseded`.
+- The active final cross-service contract is `docs/status-contract.md`.
 - One pricing rule table exists.
 - One validation and authorization matrix exists.
 - Implementation tickets can be created with clear blast radius.

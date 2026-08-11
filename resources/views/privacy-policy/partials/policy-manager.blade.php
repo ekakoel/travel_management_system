@@ -60,14 +60,14 @@
                                                 </div>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="btn btn-sm btn-outline-primary mr-2" data-toggle="modal" data-target="#edit-policy-{{ $policy->id }}">
-                                                        <i class="fa fa-pencil" aria-hidden="true"></i> Edit
+                                                        <i class="fa fa-pencil-alt" aria-hidden="true"></i> Edit
                                                     </a>
                                                     <form action="{{ url('fdestroy-policy/'.$policy->id) }}" method="POST">
                                                         @csrf
                                                         @method('delete')
                                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                         <button type="submit" onclick="return confirm('Are you sure?');" class="btn btn-sm btn-outline-danger">
-                                                            <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                                                            <i class="fa fa-trash-alt" aria-hidden="true"></i> Delete
                                                         </button>
                                                     </form>
                                                 </div>

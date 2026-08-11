@@ -14,56 +14,29 @@ use Illuminate\Http\Request;
 use App\Models\PaymentConfirmation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Http\Requests\StorePaymentConfirmationRequest;
 use App\Http\Requests\UpdatePaymentConfirmationRequest;
 use App\Services\AccommodationFinancialFileService;
+use App\Services\Orders\PublicPaymentConfirmationService;
+use App\Services\Orders\OrderPaymentDeadlineService;
+use Illuminate\Validation\ValidationException;
 
 class PaymentConfirmationController extends Controller
 {
-    private const CUSTOMER_PAYMENT_ALLOWED_STATUS = 'Approved';
     private const EDITABLE_CUSTOMER_RECEIPT_STATUS = 'Pending';
+
+    public function __construct(
+        private PublicPaymentConfirmationService $paymentConfirmationService,
+        private OrderPaymentDeadlineService $paymentDeadlines
+    ) {}
 
     private function resolveOrderDetailRedirect(Orders $order): string
     {
-        if ($order->service == "Hotel" || $order->service == "Hotel Promo" || $order->service == "Hotel Package") {
-            return "/detail-order-hotel/$order->id";
-        }
-
-        if ($order->service == "Private Villa") {
-            return "/detail-order-villa/$order->id";
-        }
-
-        if ($order->service == "Transport") {
-            return "/detail-order-transport/$order->id";
-        }
-
-        if ($order->service == "Activity") {
-            return "/detail-order-hotel/$order->id";
-        }
-
-        return "/detail-order-tour/$order->id";
-    }
-
-    private function getInvoicePaymentDeadline(?InvoiceAdmin $invoice): ?Carbon
-    {
-        if (!$invoice || !$invoice->due_date) {
-            return null;
-        }
-
-        return Carbon::parse($invoice->due_date);
-    }
-
-    private function hasPaymentSubmission(?InvoiceAdmin $invoice): bool
-    {
-        if (!$invoice) {
-            return false;
-        }
-
-        return $invoice->payment()->whereIn('status', ['Pending', 'Valid', 'Paid'])->exists();
+        return $this->paymentConfirmationService->detailUrl($order);
     }
 
     private function findOwnedPublicPaymentOrder(int $id): Orders
@@ -81,26 +54,12 @@ class PaymentConfirmationController extends Controller
 
     private function resolveInvoiceForOrder(Orders $order): ?InvoiceAdmin
     {
-        $reservation = $order->reservations;
-
-        if (!$reservation || (int) $reservation->id !== (int) $order->rsv_id) {
-            return null;
-        }
-
-        $invoice = $reservation->invoice;
-
-        if (!$invoice || (int) $invoice->rsv_id !== (int) $reservation->id) {
-            return null;
-        }
-
-        return $invoice;
+        return $this->paymentConfirmationService->resolveInvoice($order);
     }
 
     private function orderIsEligibleForCustomerPayment(Orders $order, ?InvoiceAdmin $invoice): bool
     {
-        return $order->status === self::CUSTOMER_PAYMENT_ALLOWED_STATUS
-            && $invoice
-            && (float) $invoice->balance > 0;
+        return $this->paymentConfirmationService->isPayable($order, $invoice);
     }
 
     private function receiptPath(string $path): string
@@ -139,40 +98,12 @@ class PaymentConfirmationController extends Controller
 
     private function autoCancelExpiredOrder(Orders $order, ?InvoiceAdmin $invoice, Request $request): Orders
     {
-        $deadline = $this->getInvoicePaymentDeadline($invoice);
-
-        if (
-            $order->status !== 'Approved'
-            || !$deadline
-            || !$deadline->isPast()
-            || $this->hasPaymentSubmission($invoice)
-        ) {
-            return $order;
-        }
-
-        $order->update([
-            'status' => 'Canceled',
-            'msg' => 'Automatically canceled because no payment confirmation was submitted within 48 hours after approval.',
-        ]);
-
-        if ($order->rsv_id) {
-            Reservation::where('id', $order->rsv_id)->update([
-                'status' => 'Canceled',
-            ]);
-        }
-
-        OrderLog::create([
-            'order_id' => $order->id,
-            'action' => 'Auto Cancel Payment Deadline',
+        $this->paymentDeadlines->cancelIfExpired($order, null, [
             'url' => $request->getClientIp(),
-            'method' => 'Update',
-            'agent' => $order->name,
-            'admin' => Auth::id(),
+            'admin' => Auth::id() ?? 0,
         ]);
 
-        $order->status = 'Canceled';
-
-        return $order;
+        return $order->fresh() ?? $order;
     }
 
     public function payment_confirmation(StorePaymentConfirmationRequest $request,$id)
@@ -186,17 +117,47 @@ class PaymentConfirmationController extends Controller
         $invoice = $this->resolveInvoiceForOrder($order);
 
         if (!$this->orderIsEligibleForCustomerPayment($order, $invoice)) {
-            return redirect($this->resolveOrderDetailRedirect($order))->with('error', 'This order is no longer available for payment confirmation.');
+            return redirect($this->resolveOrderDetailRedirect($order))->with('error', __('messages.This order is no longer available for payment confirmation.'));
         }
 
-        $receiptName = $this->storeReceiptFile($request->file('receipt_name'), $invoice, $order);
+        $receiptName = null;
+        $paymentConfirmation = null;
 
         try {
-            DB::transaction(function () use ($request, $order, $invoice, $receiptName) {
-                PaymentConfirmation::create([
-                    'kurs_id' => $invoice->currency_id ?: 1,
+            DB::transaction(function () use ($request, $order, $invoice, &$receiptName, &$paymentConfirmation) {
+                $lockedOrder = Orders::whereKey($order->id)->lockForUpdate()->firstOrFail();
+                $lockedInvoice = InvoiceAdmin::whereKey($invoice->id)->lockForUpdate()->firstOrFail();
+
+                if (!$this->orderIsEligibleForCustomerPayment($lockedOrder, $lockedInvoice)) {
+                    throw ValidationException::withMessages([
+                        'receipt_file' => __('messages.This order is no longer available for payment confirmation.'),
+                    ]);
+                }
+
+                if ($lockedInvoice->payment()->where('status', self::EDITABLE_CUSTOMER_RECEIPT_STATUS)->exists()) {
+                    throw ValidationException::withMessages([
+                        'receipt_file' => __('messages.A payment confirmation is already under review.'),
+                    ]);
+                }
+
+                $claimedAmount = $request->filled('amount_paid')
+                    ? (float) $request->input('amount_paid')
+                    : (float) $lockedInvoice->balance;
+
+                if ($claimedAmount > (float) $lockedInvoice->balance) {
+                    throw ValidationException::withMessages([
+                        'amount_paid' => __('messages.The payment amount cannot exceed the outstanding balance.'),
+                    ]);
+                }
+
+                $receiptFile = $request->file('receipt_file') ?: $request->file('receipt_name');
+                $receiptName = $this->storeReceiptFile($receiptFile, $lockedInvoice, $lockedOrder);
+                $paymentConfirmation = PaymentConfirmation::create([
+                    'kurs_id' => $lockedInvoice->currency_id ?: 1,
                     'receipt_img' => $receiptName,
-                    'inv_id' => $invoice->id,
+                    'inv_id' => $lockedInvoice->id,
+                    'payment_date' => $request->input('payment_date', Carbon::today()->toDateString()),
+                    'amount' => $claimedAmount,
                     'status' => 'Pending',
                 ]);
 
@@ -215,25 +176,35 @@ class PaymentConfirmationController extends Controller
             throw $exception;
         }
 
-        $agent = User::where('id',$order->user_id)->first();
+        $agent = User::find($order->sales_agent ?: $order->user_id);
         $reservation = $order->reservations;
         $title = "Payment Confirmation ".$reservation->rsv_no;
-        $order_link = 'https://online.balikamitour.com/orders-admin-'.$order->id;
+        $order_link = url('/orders-admin-'.$order->id);
         $data = [
             'now'=>$now,
             'agent'=>$agent,
             'title'=>$title,
             'order'=>$order,
             'order_link'=>$order_link,
+            'paymentConfirmation' => $paymentConfirmation,
+            'invoice' => $invoice,
         ];
         $receipt = $this->receiptPath($receiptName);
-        Mail::send('emails.paymentConfirmation', $data, function($message)use($data, $receipt) {
-            $message->to(config('app.reservation_mail'))
-                ->subject($data["title"])
-                ->attach($receipt);
-        });
+        try {
+            Mail::send('emails.paymentConfirmation', $data, function($message)use($data, $receipt) {
+                $message->to(config('app.reservation_mail'))
+                    ->subject($data["title"])
+                    ->attach($receipt);
+            });
+        } catch (\Throwable $exception) {
+            Log::warning('Payment confirmation stored but notification email failed.', [
+                'order_id' => $order->id,
+                'payment_confirmation_id' => optional($paymentConfirmation)->id,
+                'exception' => $exception->getMessage(),
+            ]);
+        }
 
-        return redirect($this->resolveOrderDetailRedirect($order))->with('success','Payment proof has been sent.');
+        return redirect($this->resolveOrderDetailRedirect($order))->with('success', __('messages.Payment proof has been submitted for verification.'));
     }
     // WEDDING
     public function wedding_payment_confirmation(Request $request,$id)
@@ -311,7 +282,10 @@ class PaymentConfirmationController extends Controller
         }
 
         $oldReceiptName = $receipt->receipt_img;
-        $receiptName = $this->storeReceiptFile($request->file('activity_receipt_name'), $invoice, $order);
+        $receiptFile = $request->file('receipt_file')
+            ?: $request->file('activity_receipt_name')
+            ?: $request->file('receipt_name');
+        $receiptName = $this->storeReceiptFile($receiptFile, $invoice, $order);
 
         try {
             DB::transaction(function () use ($request, $order, $receipt, $receiptName) {

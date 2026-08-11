@@ -21,7 +21,7 @@
                         description="Create a hotel profile using the shared backend form standard."
                     >
                         <x-slot name="action">
-                            <a href="{{ route('hotels-admin.index') }}" class="backend-page-primary-action">
+                            <a href="{{ route('admin.hotels.index') }}" class="backend-page-primary-action">
                                 <i class="fa fa-arrow-left"></i>
                                 Back to Hotels
                             </a>
@@ -31,7 +31,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('hotels-admin.index') }}">Hotel Manager</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.hotels.index') }}">Hotel Manager</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Add Hotel</li>
                             </ol>
                         </nav>
@@ -94,7 +94,7 @@
                                         </div>
                                         <div class="col-12 col-sm-6 col-md-6">
                                             <div class="backend-form-field">
-                                                <label for="cover" class="backend-form-label">Cover Image <span> *</span></label><br>
+                                                <label for="cover" class="backend-form-label">Cover Image <span> *</span></label>
                                                 <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
                                                 @error('cover')
                                                     <div class="backend-form-error">{{ $message }}</div>
@@ -343,7 +343,7 @@
                                     </div>
                                 </form>
                                 <div class="backend-form-actions">
-                                    <a href="{{ route('hotels-admin.index') }}" class="backend-button backend-button-secondary"><i class="fa fa-times"></i> Cancel</a>
+                                    <a href="{{ route('admin.hotels.index') }}" class="backend-button backend-button-secondary"><i class="fa fa-times"></i> Cancel</a>
                                     <button type="submit" form="add-hotel" class="backend-button backend-button-primary"><i class="fa fa-check" aria-hidden="true"></i> Add Hotel</button>
                                 </div>
                             </div>

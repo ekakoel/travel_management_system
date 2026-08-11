@@ -136,12 +136,13 @@
                             <div class="currency-rate-card__footer">
                                 <span>
                                     <i class="fa fa-clock-o"></i>
-                                    {{ $rate['updated_at'] ? $rate['updated_at']->format('d M Y H:i') : 'Not configured' }}
+                                    {{ $rate['retrieved_at'] ? $rate['retrieved_at']->format('d M Y H:i') : 'Retrieval time unavailable' }}
+                                    · {{ $rate['retrieval_source'] ?: 'source unavailable' }}
                                 </span>
                                 @canany(['posDev','posAuthor'])
                                     @if ($rate['id'])
                                         <button type="button" class="backend-button backend-button-secondary" data-toggle="modal" data-target="#edit-rate-{{ $code }}">
-                                            <i class="fa fa-pencil"></i>
+                                            <i class="fa fa-pencil-alt"></i>
                                             Update
                                         </button>
                                     @endif
@@ -174,11 +175,11 @@
                                                     <div class="backend-form-grid currency-admin-form-grid">
                                                         <label>
                                                             <span>Sell Rate <b>*</b></span>
-                                                            <input class="backend-form-control" name="sell" type="number" step="0.01" min="0" value="{{ old('sell', $rate['sell']) }}" required>
+                                                            <input class="backend-form-control" name="sell" type="number" step="0.01" min="0" value="{{ old('sell', $rate['sell']) }}" data-backend-money-unit="IDR" required>
                                                         </label>
                                                         <label>
                                                             <span>Spread / Difference <b>*</b></span>
-                                                            <input class="backend-form-control" name="difference" type="number" step="0.01" min="0" value="{{ old('difference', $rate['difference']) }}" required>
+                                                            <input class="backend-form-control" name="difference" type="number" step="0.01" min="0" value="{{ old('difference', $rate['difference']) }}" data-backend-money-unit="IDR" required>
                                                         </label>
                                                     </div>
                                                     <p class="currency-admin-help">Buy rate is calculated automatically from sell rate minus spread.</p>
@@ -209,7 +210,7 @@
                         @canany(['posDev','posAuthor'])
                             @if ($tax)
                                 <button type="button" class="backend-button backend-button-secondary" data-toggle="modal" data-target="#edit-tax">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fa fa-pencil-alt"></i>
                                     Update Tax
                                 </button>
                             @endif
@@ -252,13 +253,13 @@
                                 @canany(['posDev','posAuthor'])
                                     <div class="currency-bank-card__actions">
                                         <button type="button" data-toggle="modal" data-target="#edit-bank-account-{{ $bank->id }}" title="Edit bank account">
-                                            <i class="fa fa-pencil"></i>
+                                            <i class="fa fa-pencil-alt"></i>
                                         </button>
                                         <form action="/delete-bank-account/{{ $bank->id }}" method="post" data-confirm-delete="Delete {{ $bank->bank }} account?">
                                             @csrf
                                             @method('delete')
                                             <button type="submit" title="Delete bank account">
-                                                <i class="fa fa-trash"></i>
+                                                <i class="fa fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -340,7 +341,6 @@
                                     <span>Tax Percentage <b>*</b></span>
                                     <input class="backend-form-control" name="tax" type="number" step="0.01" min="0" value="{{ old('tax', $tax->tax) }}" required>
                                 </label>
-                                <input name="author" value="{{ Auth::id() }}" type="hidden">
                             </div>
                             <div class="backend-modal__footer currency-admin-modal__footer">
                                 <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Cancel</button>

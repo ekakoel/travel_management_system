@@ -87,7 +87,7 @@
                                 <a href="#" data-toggle="modal"
                                     data-target="#update-order-wedding-accommodation-{{ $wedding_accommodation->id }}">
                                     <button class="btn-edit" data-toggle="tooltip" data-placement="top"
-                                        title="@lang('messages.Edit Accommodation')"><i class="icon-copy fa fa-pencil"></i></button>
+                                        title="@lang('messages.Edit Accommodation')"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                 </a>
                                 <form
                                     action="/fdelete-order-wedding-accommodation/{{ $wedding_accommodation->id }}"
@@ -96,7 +96,7 @@
                                     @method('DELETE')
                                     <button class="btn-delete" onclick="return confirm('Are you sure?');"
                                         type="submit" data-toggle="tooltip" data-placement="top"
-                                        title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                        title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                 </form>
                             </div>
                         </td>
@@ -255,7 +255,7 @@
                                     <div class="card-box-footer">
                                         <button type="submit"
                                             form="updateWeddingAccommodation-{{ $wedding_accommodation->id }}"
-                                            class="btn btn-primary"><i class="icon-copy fa fa-pencil"
+                                            class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt"
                                                 aria-hidden="true"></i> @lang('messages.Update')</button>
                                         <button type="button" class="btn btn-danger" data-dismiss="modal"><i
                                                 class="icon-copy fa fa-close" aria-hidden="true"></i>

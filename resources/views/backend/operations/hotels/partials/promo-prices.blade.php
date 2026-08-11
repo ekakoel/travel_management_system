@@ -1,3 +1,7 @@
+@php
+    $promoPriceRows = $hotelDetail->promoRows();
+@endphp
+
 <section id="promo" class="backend-panel hotel-detail-panel">
     <div class="backend-section-header hotel-detail-panel__heading">
         <div>
@@ -39,7 +43,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($hotelDetail->promoRows() as $row)
+                @forelse ($promoPriceRows as $row)
                     @php
                         $promo = $row['model'];
                     @endphp
@@ -47,13 +51,18 @@
                         <td data-label="Name"><strong>{{ $promo->name }}</strong><span>{{ $row['room_name'] }}</span></td>
                         <td data-label="Booking Period">{{ $row['booking_period'] }}</td>
                         <td data-label="Stay Period">{{ $row['stay_period'] }}</td>
-                        <td data-label="Published Rate"><span class="hotel-detail-rate">{!! currencyFormatUsd($row['published_rate']) !!}</span></td>
+                        <td data-label="Published Rate">
+                            <span class="hotel-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
+                            <button type="button" class="hotel-price-calculation-action" data-toggle="modal" data-target="#hotelPromoPriceCalculation{{ $promo->id }}">
+                                View calculation
+                            </button>
+                        </td>
                         <td data-label="Status"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $promo->status }}</span></td>
                         @canany(['posDev','posAuthor'])
                             <td data-label="Action">
                                 <div class="hotel-detail-actions">
                                     <a href="{{ route('admin.hotels.promos.edit', $promo->id) }}" class="backend-icon-action" aria-label="Edit {{ $promo->name }}">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-pencil-alt"></i>
                                     </a>
                                     <form action="{{ route('admin.hotels.promos.destroy', $promo->id) }}" method="post">
                                         @csrf
@@ -61,7 +70,7 @@
                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                         <input type="hidden" name="hotels_id" value="{{ $hotel->id }}">
                                         <button type="submit" class="backend-icon-action is-danger" data-hotel-detail-delete="{{ $promo->name }}" aria-label="Delete {{ $promo->name }}">
-                                            <i class="fa fa-trash-o"></i>
+                                            <i class="fa fa-trash-alt"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -73,7 +82,7 @@
                         <td colspan="6">
                             <div class="backend-table-empty">
                                 <i class="fa fa-percent"></i>
-                                <strong>No active promos.</strong>
+                                <strong>No promotion prices.</strong>
                                 <span>Promotion prices are not configured for this hotel yet.</span>
                             </div>
                         </td>
@@ -83,3 +92,13 @@
         </table>
     </div>
 </section>
+
+@foreach ($promoPriceRows as $row)
+    @include('backend.operations.hotels.modals.price-calculation', [
+        'modalId' => 'hotelPromoPriceCalculation'.$row['model']->id,
+        'eyebrow' => 'Promotion Price Calculation',
+        'title' => $row['model']->name,
+        'subtitle' => $row['room_name'].' | '.$row['stay_period'],
+        'pricing' => $row['pricing'],
+    ])
+@endforeach

@@ -129,6 +129,62 @@
   white-space: nowrap;
 }
 
+.hotel-detail-table td .hotel-detail-rate {
+  color: var(--backend-brand-strong);
+}
+
+.hotel-price-calculation-action {
+  background: transparent;
+  border: 0;
+  color: var(--backend-brand-strong);
+  cursor: pointer;
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 5px;
+  padding: 0;
+  text-align: left;
+}
+
+.hotel-price-calculation {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hotel-price-calculation > div {
+  background: #f8fafc;
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  padding: 9px;
+}
+
+.hotel-price-calculation span,
+.hotel-price-calculation small {
+  color: var(--backend-muted);
+  display: block;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.hotel-price-calculation strong {
+  color: var(--backend-ink);
+  display: block;
+  font-size: 12px;
+  margin: 3px 0;
+  overflow-wrap: anywhere;
+}
+
+.hotel-price-calculation__warning {
+  margin: 8px 0 0;
+}
+
+.hotel-price-calculation-modal .backend-modal__header p {
+  color: var(--backend-muted);
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
 .hotel-detail-room-list,
 .hotel-detail-contract-list {
   display: grid;
@@ -272,6 +328,10 @@
 
 @media (max-width: 480px) {
   .hotel-detail-stay-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hotel-price-calculation {
     grid-template-columns: 1fr;
   }
 }

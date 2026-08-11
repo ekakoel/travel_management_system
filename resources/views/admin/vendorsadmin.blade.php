@@ -130,14 +130,14 @@
                                                     <td class="text-right">
                                                         <div class="table-action">
                                                             <a href="/detail-vendor-{{ $vendor->id }}">
-                                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                                             </a>
                                                             @canany(['posDev','weddingDvl','weddingAuthor'])
                                                                 <form class="display-content" action="/fremove-vendor/{{ $vendor->id }}" method="post" enctype="multipart/form-data">
                                                                     @csrf
                                                                     @method('put')
                                                                     <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                 </form>
                                                             @endcanany
                                                         </div>

@@ -21,7 +21,7 @@
                     <ol class="breadcrumb frontend-breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">@lang('messages.Home')</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('services') }}">@lang('messages.Services')</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('view.activity-services') }}">@lang('messages.Activities')</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('view.activities-service') }}">@lang('messages.Activities')</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $activity->name }}</li>
                     </ol>
                 </nav>
@@ -60,7 +60,6 @@
         </section>
 
         <div class="container frontend-content-section">
-            @include('partials.alerts')
 
             <section class="activity-hero accommodation-hero frontend-surface-card">
                 <div class="activity-hero__media accommodation-hero__media">
@@ -362,6 +361,7 @@
                                             autocomplete="off"
                                             data-ui-picker="datetime"
                                             data-ui-picker-min="{{ $activityOrderForm['minimum_travel_date'] }}"
+                                            data-ui-picker-allow-today="true"
                                             data-ui-picker-format="YYYY-MM-DD HH:mm"
                                             data-ui-picker-parent="body"
                                             data-ui-picker-opens="center"

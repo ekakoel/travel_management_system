@@ -15,7 +15,7 @@ class ActivitiesImages extends Model
         'activities_id',
     ];
 
-    public function activities(){
+    public function activity(){
         return $this->belongsTo(Activities::class,'activities_id');
     }
 }

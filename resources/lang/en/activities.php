@@ -38,7 +38,7 @@ return [
         'of' => 'of',
         'activities_suffix' => 'activities',
         'duration' => 'Duration',
-        'minimum_pax' => 'Minimum pax',
+        'minimum_pax' => 'Minimum',
     ],
     'empty' => [
         'title' => 'No active activity is available right now',

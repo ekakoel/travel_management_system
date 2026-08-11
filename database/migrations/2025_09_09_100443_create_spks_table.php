@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->tinyInteger('send_report')->nullable();
             $table->integer('number_of_guests')->nullable();
             $table->date('spk_date')->nullable();
-            $table->enum('status', ['Pending', 'In_progress', 'Completed'])->default('Pending');
+            $table->enum('status', ['Pending', 'In_progress', 'Completed','Expired'])->default('Pending');
             $table->timestamps();
         });
 

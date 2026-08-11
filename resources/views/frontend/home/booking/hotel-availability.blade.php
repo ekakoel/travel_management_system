@@ -21,8 +21,8 @@
                 <nav aria-label="breadcrumb" class="frontend-breadcrumb-wrap">
                     <ol class="breadcrumb frontend-breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">@lang('messages.Home')</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('view.accommodation-service') }}">@lang('messages.Accommodation')</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('view.accommodation-detail', $hotel->code) }}">{{ $hotel->name }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('view.hotels-service') }}">@lang('messages.Accommodation')</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('view.hotel-detail', $hotel->code) }}">{{ $hotel->name }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">@lang('messages.Check Price')</li>
                     </ol>
                 </nav>

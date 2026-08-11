@@ -56,6 +56,7 @@ class HotelPackageAdminController extends Controller
             return $this->redirectToHotelsIndexWithError();
         }
 
+        $validated = $request->validated();
         $package = HotelPackage::create([
             'rooms_id' => $request->rooms_id,
             'hotels_id' => $request->hotels_id,
@@ -75,6 +76,9 @@ class HotelPackageAdminController extends Controller
             'additional_info' => $request->additional_info,
             'additional_info_traditional' => $request->additional_info_traditional,
             'additional_info_simplified' => $request->additional_info_simplified,
+            'cancellation_policy' => $validated['cancellation_policy'] ?? null,
+            'cancellation_policy_traditional' => $validated['cancellation_policy_traditional'] ?? null,
+            'cancellation_policy_simplified' => $validated['cancellation_policy_simplified'] ?? null,
             'author' => auth()->id(),
             'status' => 'Draft',
         ]);
@@ -99,6 +103,7 @@ class HotelPackageAdminController extends Controller
             return $this->redirectToHotelsIndexWithError();
         }
 
+        $validated = $request->validated();
         $package = HotelPackage::findOrFail($id);
         $hotelId = $request->hotels_id;
 
@@ -121,6 +126,9 @@ class HotelPackageAdminController extends Controller
             'additional_info' => $request->additional_info,
             'additional_info_traditional' => $request->additional_info_traditional,
             'additional_info_simplified' => $request->additional_info_simplified,
+            'cancellation_policy' => $validated['cancellation_policy'] ?? null,
+            'cancellation_policy_traditional' => $validated['cancellation_policy_traditional'] ?? null,
+            'cancellation_policy_simplified' => $validated['cancellation_policy_simplified'] ?? null,
             'author' => auth()->id(),
             'status' => $request->status,
         ]);
@@ -171,7 +179,7 @@ class HotelPackageAdminController extends Controller
 
     private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
     {
-        return redirect()->route('hotels-admin.index')->with('error', $message);
+        return redirect()->route('admin.hotels.index')->with('error', $message);
     }
 
     private function redirectToHotelDetail($hotelId, ?string $anchor = null)

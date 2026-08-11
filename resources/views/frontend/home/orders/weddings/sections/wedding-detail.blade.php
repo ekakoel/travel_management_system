@@ -18,7 +18,7 @@
         @endif
         <span>
             <a href="#" data-toggle="modal" data-target="#update-wedding-order-wedding-{{ $orderWedding->id }}">
-                <i class="fa fa-pencil"></i>
+                <i class="fa fa-pencil-alt"></i>
             </a>
         </span>
     </div>
@@ -52,7 +52,7 @@
                     <div class="card-box">
                         <div class="card-box-title">
                             <div class="title">
-                                <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                                <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>
                                 @if ($orderWedding->service == "Ceremony Venue")
                                     @if ($orderWedding->reception_venue_id)
                                         @lang('messages.Wedding') & @lang('messages.Reception')

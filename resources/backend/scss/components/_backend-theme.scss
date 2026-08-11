@@ -7,8 +7,8 @@ body.sidebar-light {
   --backend-line-soft: #e4ebf5;
   --backend-muted-link: #40516a;
   --backend-line: #d9e3f0;
-  --backend-brand: #14b8a6;
-  --backend-brand-strong: #007c6e;
+  --backend-brand: #20a4f3;
+  --backend-brand-strong: #1f74e3;
   --backend-brand-soft: #eaf3ff;
   --backend-accent: #d80000;
   --backend-required: #d90606;
@@ -625,9 +625,9 @@ body.sidebar-light .backend-danger-icon-action:focus {
 body.sidebar-light .modal button[data-dismiss="modal"]:not(.close),
 body.sidebar-light .backend-danger-action {
   align-items: center;
-  background: var(--backend-danger);
+  background: linear-gradient(135deg, #ff6767, #c90000);
   border: 1px solid var(--backend-danger);
-  border-radius: var(--backend-radius-sm);
+  border-radius: 80px;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
@@ -642,7 +642,7 @@ body.sidebar-light .modal button[data-dismiss="modal"]:not(.close):hover,
 body.sidebar-light .modal button[data-dismiss="modal"]:not(.close):focus,
 body.sidebar-light .backend-danger-action:hover,
 body.sidebar-light .backend-danger-action:focus {
-  background: var(--backend-danger-strong);
+  background: linear-gradient(330deg, #ff6767, #c90000);
   border-color: var(--backend-danger-strong);
   color: #ffffff;
   outline: none;

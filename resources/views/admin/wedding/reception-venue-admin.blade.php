@@ -48,7 +48,7 @@
                         <div class="card-btn-container">
                             @if ($reception_venue->status == "Draft")
                                 <a href="/update-reception-venue-{{ $reception_venue->id }}">
-                                    <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button><br>
+                                    <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil-alt"></i></button><br>
                                 </a>
                             @endif
                             <form action="/fdelete-wedding-reception-venue/{{ $reception_venue->id }}" method="post">
@@ -56,7 +56,7 @@
                                 @method('delete')
                                 <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
                                 <input id="hotels_id" name="hotels_id" value="{{ $hotel->id }}" type="hidden">
-                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                             </form>
                         </div>
                     @endcanany
@@ -152,10 +152,10 @@
                                     @if ($reception_venue->status == "Draft")
                                         <button type="submit" form="activate-reception-venue-{{ $reception_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
                                         <a href="/update-reception-venue-{{ $reception_venue->id }}">
-                                            <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                            <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
                                         </a>
                                     @else
-                                        <button type="submit" form="deactivate-reception-venue-{{ $reception_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Save as Draft</button>
+                                        <button type="submit" form="deactivate-reception-venue-{{ $reception_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Save as Draft</button>
                                     @endif
                                     <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Close</button>
                                 </div>

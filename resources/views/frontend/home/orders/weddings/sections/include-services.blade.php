@@ -133,7 +133,7 @@
             <span>
                 <a href="#" data-toggle="modal" data-target="#add-additional-service-{{ $orderWedding->id }}"> 
                     @if ($addser_ids)
-                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                     @else
                         <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                     @endif
@@ -228,7 +228,7 @@
                     <div class="card-box">
                         <div class="card-box-title">
                             @if ($addser_ids)
-                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
+                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
                             @else
                                 <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
                             @endif
@@ -383,7 +383,7 @@
                         </form>
                         <div class="card-box-footer">
                             @if ($addser_ids)
-                                <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt"></i> @lang('messages.Change')</button>
                             @else
                                 <button type="submit" form="addAdditionalService" class="btn btn-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
                             @endif

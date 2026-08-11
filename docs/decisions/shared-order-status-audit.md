@@ -1,10 +1,15 @@
 # Shared Order Status Audit
 
-Status: Active
+Status: historical
 Task: `ACC-STATUS-003`
 Date: 2026-07-27
 Scope: read-only audit of shared order status values across service booking flows.
 Scope correction: owner decision on 2026-07-27 limits the service booking roadmap to Accommodation, Transports, Tour Packages, and Activities. Transport Management/SPK, Wedding, DOKU, and Private Villa are out of scope unless a future instruction explicitly includes them.
+
+This document is a point-in-time implementation audit. The active final
+commercial status and fulfillment contract is `docs/status-contract.md`.
+Historical observations and legacy values below must not be treated as
+approved write behavior.
 
 This audit records current implementation behavior only. It does not introduce a new status, migration, database write, query change, controller change, payment change, scheduler change, authorization change, or Blade change.
 

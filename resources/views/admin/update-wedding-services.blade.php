@@ -43,7 +43,7 @@
                     <div class="col-md-12">
                         <div class="card-box">
                             <div class="card-box-title">
-                                <div class="subtitle"><i class="fa fa-pencil"></i>Services</div>
+                                <div class="subtitle"><i class="fa fa-pencil-alt"></i>Services</div>
                             </div>
                             <div class="row">
                                 {{-- ORDER WEDDING VENUE --}}
@@ -56,7 +56,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_venue_id !== "null" and $wedding_order->wedding_venue_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-venue">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Venue" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Venue" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-venue">
@@ -211,7 +211,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_room_id !== "null" and $wedding_order->wedding_room_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-room">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Room" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Room" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-room">
@@ -225,7 +225,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Suites and Villas</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Suites and Villas</div>
                                                                     </div>
                                                                     <form id="addRooms" action="/fupdate-order-wedding-room/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')
@@ -383,7 +383,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_makeup_id !== "null" and $wedding_order->wedding_makeup_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-makeup">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Makeup" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Makeup" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-makeup">
@@ -397,7 +397,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Update Wedding Make-up</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Update Wedding Make-up</div>
                                                                     </div>
                                                                     <form id="addweddingmakeup" action="/fupdate-order-wedding-makeup/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')
@@ -533,7 +533,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_decoration_id !== "null" and $wedding_order->wedding_decoration_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-decoration">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Decoration" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Decoration" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-decoration">
@@ -547,7 +547,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Update Wedding Decoration</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Update Wedding Decoration</div>
                                                                     </div>
                                                                     <form id="addweddingdecoration" action="/fupdate-order-wedding-decoration/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')
@@ -684,7 +684,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_dinner_venue_id !== "null" and $wedding_order->wedding_dinner_venue_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-dinner_venue">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Decoration" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Decoration" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-dinner_venue">
@@ -698,7 +698,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Update Wedding Dinner Venue</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Update Wedding Dinner Venue</div>
                                                                     </div>
                                                                     <form id="addweddingdinner_venue" action="/fupdate-order-wedding-dinner_venue/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')
@@ -835,7 +835,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_entertainment_id !== "null" and $wedding_order->wedding_entertainment_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-entertainment">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Entertainment" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Entertainment" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-entertainment">
@@ -849,7 +849,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Update Wedding Entertainment</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Update Wedding Entertainment</div>
                                                                     </div>
                                                                     <form id="addweddingentertainment" action="/fupdate-order-wedding-entertainment/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')
@@ -986,7 +986,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_documentation_id !== "null" and $wedding_order->wedding_documentation_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-documentation">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Documentation" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Documentation" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-documentation">
@@ -1000,7 +1000,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Add Wedding Documentation</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Add Wedding Documentation</div>
                                                                     </div>
                                                                     <form id="addweddingdocumentation" action="/fupdate-order-wedding-documentation/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')
@@ -1137,7 +1137,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_transport_id !== "null" and $wedding_order->wedding_transport_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-transport">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Transport" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Transport" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-transport">
@@ -1151,7 +1151,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Add Wedding Transport</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Add Wedding Transport</div>
                                                                     </div>
                                                                     <form id="addweddingtransport" action="/fupdate-order-wedding-transport/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')
@@ -1302,7 +1302,7 @@
                                                     <span>
                                                         @if ($wedding_order->wedding_other_id !== "null" and $wedding_order->wedding_other_id)
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-other">
-                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Wedding Entertainment" aria-hidden="true"></i>
+                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Wedding Entertainment" aria-hidden="true"></i>
                                                             </a>
                                                         @else
                                                             <a href="#" data-toggle="modal" data-target="#add-wedding-other">
@@ -1316,7 +1316,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i> Update Wedding Other Service</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i> Update Wedding Other Service</div>
                                                                     </div>
                                                                     <form id="addweddingother" action="/fupdate-order-wedding-other/{{ $wedding_order->id }}" method="post" enctype="multipart/form-data">
                                                                         @method('put')

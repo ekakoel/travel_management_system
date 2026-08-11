@@ -1,5 +1,5 @@
 <div class="swiper-slide">
-    <a class="home-promo-card" href="{{ route('view.accommodation-detail', $promo->hotels?->code) }}" aria-label="{{ ($promo->hotels?->name ?? __('home.promo.default_hotel')) . ' ' . __('home.promo.card_aria_suffix', ['index' => $swiperIndex + 1]) }}">
+    <a class="home-promo-card" href="{{ route('view.hotel-detail', $promo->hotels?->code) }}" aria-label="{{ ($promo->hotels?->name ?? __('home.promo.default_hotel')) . ' ' . __('home.promo.card_aria_suffix', ['index' => $swiperIndex + 1]) }}">
         <div class="home-promo-card__media">
             <img src="{{ getThumbnail('hotels/hotels-cover/' . $promo->hotels->cover, 600, 900) }}" alt="{{ ($promo->hotels?->name ?? __('home.promo.default_hotel')) . ' ' . __('home.promo.image_suffix') }}">
             <span class="home-promo-card__badge">{{ $promo->promotion_type ?: __('home.promo.default_badge') }}</span>

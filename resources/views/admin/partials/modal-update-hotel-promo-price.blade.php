@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="card-box">
                 <div class="card-box-title">
-                    <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>Update Promo Price
+                    <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>Update Promo Price
                 </div>
                 <div class="card-box-body">
                     <form id="update-promo-{{ $promo->id }}" action="{{ route('admin.hotels.promos.update',$promo->id) }}" method="post" enctype="multipart/form-data">

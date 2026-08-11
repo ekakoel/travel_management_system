@@ -1,3 +1,7 @@
+@php
+    $additionalChargeRows = $hotelDetail->additionalChargeRows();
+@endphp
+
 <section id="additional-charge" class="backend-panel hotel-detail-panel">
     <div class="backend-section-header hotel-detail-panel__heading">
         <div>
@@ -27,7 +31,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($hotelDetail->additionalChargeRows() as $row)
+                @forelse ($additionalChargeRows as $row)
                     @php
                         $additionalCharge = $row['model'];
                     @endphp
@@ -35,18 +39,23 @@
                         <td data-label="Type">{{ $additionalCharge->type }}</td>
                         <td data-label="Name"><strong>{{ $additionalCharge->name }}</strong></td>
                         <td data-label="Mandatory">{{ $row['mandatory_label'] }}</td>
-                        <td data-label="Published Rate"><span class="hotel-detail-rate">{!! currencyFormatUsd($row['published_rate']) !!}</span></td>
+                        <td data-label="Published Rate">
+                            <span class="hotel-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
+                            <button type="button" class="hotel-price-calculation-action" data-toggle="modal" data-target="#hotelAdditionalChargeCalculation{{ $additionalCharge->id }}">
+                                View calculation
+                            </button>
+                        </td>
                         @canany(['posDev','posAuthor'])
                             <td data-label="Action">
                                 <div class="hotel-detail-actions">
                                     <a href="{{ route('admin.hotels.additional-charges.edit', $additionalCharge->id) }}" class="backend-icon-action" aria-label="Edit {{ $additionalCharge->name }}">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-pencil-alt"></i>
                                     </a>
                                     <form action="{{ route('admin.hotels.additional-charges.destroy', $additionalCharge->id) }}" method="post">
                                         @csrf
                                         @method('delete')
                                         <button type="submit" class="backend-icon-action is-danger" data-hotel-detail-delete="{{ $additionalCharge->name }}" aria-label="Delete {{ $additionalCharge->name }}">
-                                            <i class="fa fa-trash-o"></i>
+                                            <i class="fa fa-trash-alt"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -68,3 +77,13 @@
         </table>
     </div>
 </section>
+
+@foreach ($additionalChargeRows as $row)
+    @include('backend.operations.hotels.modals.price-calculation', [
+        'modalId' => 'hotelAdditionalChargeCalculation'.$row['model']->id,
+        'eyebrow' => 'Additional Charge Calculation',
+        'title' => $row['model']->name,
+        'subtitle' => $row['model']->type,
+        'pricing' => $row['pricing'],
+    ])
+@endforeach

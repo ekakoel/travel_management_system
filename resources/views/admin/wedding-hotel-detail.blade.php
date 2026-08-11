@@ -158,10 +158,10 @@
                                                     </a>
                                                     @canany(['posDev','posAuthor'])
                                                         <a class="action-btn" href="#" data-toggle="modal" data-target="#edit-wedding-contract-{{ $contract->id }}">
-                                                            <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                                                            <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>
                                                         </a>
                                                         <a class="action-btn" href="#" data-toggle="modal" data-target="#delete-wedding-contract-{{ $contract->id }}">
-                                                            <i class="icon-copy fa fa-trash" aria-hidden="true"></i>
+                                                            <i class="icon-copy fa fa-trash-alt" aria-hidden="true"></i>
                                                         </a>
                                                     @endcanany
                                                 </div>
@@ -182,7 +182,7 @@
                                                             <div class="modal-content">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Delete Wedding Contract</div>
+                                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Delete Wedding Contract</div>
                                                                     </div>
                                                                     <div class="row">
                                                                         <div class="col-md-3">
@@ -209,7 +209,7 @@
                                                                             <input type="hidden" name="file_name" value="{{ $contract->file_name }}">
                                                                             <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                                             <input type="hidden" name="hotels_id" value="{{ $hotel->id }}">
-                                                                            <button class="backend-button backend-button-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i> Delete</button>
+                                                                            <button class="backend-button backend-button-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i> Delete</button>
                                                                             <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                         </form>
                                                                     </div>
@@ -223,7 +223,7 @@
                                                             <div class="modal-content">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Contract</div>
+                                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Contract</div>
                                                                     </div>
 
                                                                     <form id="update-wedding-contract-{{ $contract->id }}" action="/fupdate-wedding-contract/{{ $contract->id }}" method="post" enctype="multipart/form-data">
@@ -381,7 +381,7 @@
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#update-entrance-fee-{{ $hotel->id }}">
                                             @if ($hotel->entrance_fee)
-                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
                                             @else
                                                 <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                             @endif
@@ -392,7 +392,7 @@
                                             <div class="modal-content">
                                                 <div class="card-box">
                                                     <div class="card-box-title">
-                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Entrance Fee</div>
+                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Entrance Fee</div>
                                                     </div>
                                                     <form id="edit-entrance-fee-{{ $hotel->id }}" action="/fupdate-entrance-fee/{{ $hotel->id }}" method="post" enctype="multipart/form-data" >
                                                         @csrf
@@ -429,7 +429,7 @@
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#update-cancellation-policy-{{ $hotel->id }}">
                                             @if ($hotel->wedding_cancellation_policy)
-                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
                                             @else
                                                 <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                             @endif
@@ -440,7 +440,7 @@
                                             <div class="modal-content">
                                                 <div class="card-box">
                                                     <div class="card-box-title">
-                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i>Edit Cancellation Policy</div>
+                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>Edit Cancellation Policy</div>
                                                     </div>
                                                     <form id="edit-cancellation-policy-{{ $hotel->id }}" action="/fupdate-cancellation-policy/{{ $hotel->id }}" method="post" enctype="multipart/form-data" >
                                                         @csrf
@@ -477,7 +477,7 @@
                                     <div class="card-box-footer">
                                         <a href="#" data-toggle="modal" data-target="#update-other-information-{{ $hotel->id }}">
                                             @if ($hotel->wedding_info)
-                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
                                             @else
                                                 <button type="button" class="backend-button backend-button-primary btn-sm"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                             @endif
@@ -488,7 +488,7 @@
                                             <div class="modal-content">
                                                 <div class="card-box">
                                                     <div class="card-box-title">
-                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</div>
+                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</div>
                                                     </div>
                                                     <form id="edit-other-information-{{ $hotel->id }}" action="/fupdate-wedding-info/{{ $hotel->id }}" method="post" enctype="multipart/form-data" >
                                                         @csrf

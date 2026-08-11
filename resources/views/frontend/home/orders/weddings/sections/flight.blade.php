@@ -57,12 +57,12 @@
                                     <td class="pd-2-8 text-right">
                                         <div class="table-action">
                                             <a href="#" data-toggle="modal" data-target="#update-order-wedding-flight-{{ $order_wedding_flight->id }}"> 
-                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Update Flight')" aria-hidden="true"></i>
+                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Update Flight')" aria-hidden="true"></i>
                                             </a>
                                             <form action="/fdelete-order-wedding-flight/{{ $order_wedding_flight->id }}" method="post" enctype="multipart/form-data">
                                                 @csrf
                                                 @method('delete')
-                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                             </form>
                                         </div>
                                     </td>

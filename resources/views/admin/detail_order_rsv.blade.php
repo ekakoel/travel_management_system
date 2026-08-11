@@ -223,7 +223,7 @@
                                                 {{-- END ACTION LOG ----------------------------------------------------}}
                                                 <div class="col-sm-12 col-md-12 text-right">
                                                     <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                    <a href="/reservation-{{ $reservation->id }}"><button type="button"class="backend-button backend-button-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i>Cancel</button></a>
+                                                    <a href="{{ route('view.reservation.detail', $reservation) }}" class="backend-button backend-button-danger"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</a>
                                                 </div>
                                             </div>
                                         </form>

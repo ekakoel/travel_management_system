@@ -1,7 +1,7 @@
 <div class="col-md-8">
     <div class="card-box">
         <div class="card-box-title">
-            <div class="subtitle"><i class="fa fa-pencil"></i> @lang('messages.Edit Order')</div>
+            <div class="subtitle"><i class="fa fa-pencil-alt"></i> @lang('messages.Edit Order')</div>
         </div>
         <div class="row">
             <div class="col-6 col-md-6">

@@ -8,7 +8,7 @@
         @lang("messages.Bride's")
         <span>
             <a href="#" data-toggle="modal" data-target="#edit-wedding-bride-{{ $bride->id }}"> 
-                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
             </a>
         </span>
     </div>
@@ -81,7 +81,7 @@
             <div class="modal-content">
                 <div class="card-box">
                     <div class="card-box-title">
-                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i>@lang('messages.Bride')</div>
+                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>@lang('messages.Bride')</div>
                     </div>
                     <form id="updateWeddingOrderBride" action="/fupdate-wedding-order-bride/{{ $bride->id }}" method="post" enctype="multipart/form-data">
                         @csrf

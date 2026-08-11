@@ -1,3 +1,7 @@
+@php
+    $packagePriceRows = $hotelDetail->packageRows();
+@endphp
+
 <section id="package" class="backend-panel hotel-detail-panel">
     <div class="backend-section-header hotel-detail-panel__heading">
         <div>
@@ -29,7 +33,7 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Room</th>
+                    {{-- <th>Room</th> --}}
                     <th>Duration</th>
                     <th>Stay Period</th>
                     <th>Published Rate</th>
@@ -40,22 +44,33 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($hotelDetail->packageRows() as $row)
+                @forelse ($packagePriceRows as $row)
                     @php
                         $package = $row['model'];
                     @endphp
                     <tr data-hotel-detail-row="package" data-hotel-detail-search="{{ $row['search'] }}">
-                        <td data-label="Name"><strong>{{ $package->name }}</strong><span>{{ $package->booking_code ?: '-' }}</span></td>
-                        <td data-label="Room">{{ $row['room_name'] }}</td>
-                        <td data-label="Duration">{{ $package->duration }} Night</td>
+                        <td data-label="Name"><strong>{{ $package->name }}</strong>
+                            <span>{{ $row['room_name'] }}</span>
+                        </td>
+                        {{-- <td data-label="Room">{{ $row['room_name'] }}</td> --}}
+                        <td data-label="Duration">
+                            <span>{{ $package->booking_code ?: '-' }}</span>
+                            {{ $package->duration }} Night
+                        </td>
                         <td data-label="Stay Period">{{ $row['stay_period'] }}</td>
-                        <td data-label="Published Rate"><span class="hotel-detail-rate">{!! currencyFormatUsd($row['published_rate']) !!}</span></td>
+                        <td data-label="Published Rate">
+                            <span class="hotel-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
+                            <span>{{ $package->duration }}-night package total</span>
+                            <button type="button" class="hotel-price-calculation-action" data-toggle="modal" data-target="#hotelPackagePriceCalculation{{ $package->id }}">
+                                View calculation
+                            </button>
+                        </td>
                         <td data-label="Status"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $package->status }}</span></td>
                         @canany(['posDev','posAuthor'])
                             <td data-label="Action">
                                 <div class="hotel-detail-actions">
                                     <a href="{{ route('admin.hotels.packages.edit', $package->id) }}" class="backend-icon-action" aria-label="Edit {{ $package->name }}">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-pencil-alt"></i>
                                     </a>
                                     <form action="{{ route('admin.hotels.packages.destroy', $package->id) }}" method="post">
                                         @csrf
@@ -63,7 +78,7 @@
                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                         <input type="hidden" name="hotels_id" value="{{ $hotel->id }}">
                                         <button type="submit" class="backend-icon-action is-danger" data-hotel-detail-delete="{{ $package->name }}" aria-label="Delete {{ $package->name }}">
-                                            <i class="fa fa-trash-o"></i>
+                                            <i class="fa fa-trash-alt"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -75,7 +90,7 @@
                         <td colspan="7">
                             <div class="backend-table-empty">
                                 <i class="fa fa-cubes"></i>
-                                <strong>No active packages.</strong>
+                                <strong>No package prices.</strong>
                                 <span>Package prices are not configured for this hotel yet.</span>
                             </div>
                         </td>
@@ -85,3 +100,13 @@
         </table>
     </div>
 </section>
+
+@foreach ($packagePriceRows as $row)
+    @include('backend.operations.hotels.modals.price-calculation', [
+        'modalId' => 'hotelPackagePriceCalculation'.$row['model']->id,
+        'eyebrow' => 'Package Price Calculation',
+        'title' => $row['model']->name,
+        'subtitle' => $row['room_name'].' | '.$row['model']->duration.' nights',
+        'pricing' => $row['pricing'],
+    ])
+@endforeach

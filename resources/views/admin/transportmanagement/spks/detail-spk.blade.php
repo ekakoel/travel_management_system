@@ -110,7 +110,7 @@
                             @lang('transport-management.detail.actions.print')
                         </a>
                         <button class="backend-button backend-button-primary" type="button" data-toggle="modal" data-target="#editSpkDetail">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                             @lang('transport-management.detail.actions.edit_spk')
                         </button>
                         <a class="backend-button backend-button-danger" href="{{ route('view.transport-management.index') }}">
@@ -257,13 +257,13 @@
                                                         <td class="text-right">
                                                             <div class="backend-table-actions">
                                                                 <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editAirportShuttle{{ $airportShuttle->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
-                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                                 </button>
                                                                 <form action="{{ route('func.spk-airport-shuttle.delete', $airportShuttle->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_airport_delete') }}">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
-                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                        <i class="fa fa-trash-alt" aria-hidden="true"></i>
                                                                     </button>
                                                                 </form>
                                                             </div>
@@ -307,13 +307,13 @@
                                                         <dd>
                                                             <div class="backend-table-actions">
                                                                 <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editAirportShuttle{{ $airportShuttle->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
-                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                                 </button>
                                                                 <form action="{{ route('func.spk-airport-shuttle.delete', $airportShuttle->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_airport_delete') }}">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
-                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                        <i class="fa fa-trash-alt" aria-hidden="true"></i>
                                                                     </button>
                                                                 </form>
                                                             </div>
@@ -371,13 +371,13 @@
                                                     <td class="text-right">
                                                         <div class="backend-table-actions">
                                                             <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editGuest{{ $guest->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
-                                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                             </button>
                                                             <form action="{{ route('func.spk-guest.delete', $guest->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_guest_delete') }}">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
-                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                    <i class="fa fa-trash-alt" aria-hidden="true"></i>
                                                                 </button>
                                                             </form>
                                                         </div>
@@ -421,13 +421,13 @@
                                                     <dd>
                                                         <div class="backend-table-actions">
                                                             <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#editGuest{{ $guest->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
-                                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                             </button>
                                                             <form action="{{ route('func.spk-guest.delete', $guest->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_guest_delete') }}">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
-                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                    <i class="fa fa-trash-alt" aria-hidden="true"></i>
                                                                 </button>
                                                             </form>
                                                         </div>
@@ -507,13 +507,13 @@
                                                         @if ($destination->status !== 'Visited')
                                                             <div class="backend-table-actions">
                                                                 <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#updateSpkDestination{{ $destination->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
-                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                                 </button>
                                                                 <form action="{{ route('func.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
-                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                        <i class="fa fa-trash-alt" aria-hidden="true"></i>
                                                                     </button>
                                                                 </form>
                                                             </div>
@@ -566,13 +566,13 @@
                                                         @if ($destination->status !== 'Visited')
                                                             <div class="backend-table-actions">
                                                                 <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#updateSpkDestination{{ $destination->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
-                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                                 </button>
                                                                 <form action="{{ route('func.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
-                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                        <i class="fa fa-trash-alt" aria-hidden="true"></i>
                                                                     </button>
                                                                 </form>
                                                             </div>

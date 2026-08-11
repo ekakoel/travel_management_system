@@ -42,7 +42,7 @@
     min-height: var(--frontend-shell-form-height);
     border: 1px solid #d6dfeb;
     border-radius: var(--frontend-shell-radius-sm);
-    background: #fff;
+    background: var(--ui-surface, #fff);
     color: var(--frontend-shell-text);
     box-shadow: none;
 }
@@ -55,7 +55,7 @@
 .frontend-page-shell .custom-select:focus,
 .frontend-page-shell textarea:focus {
     border-color: var(--frontend-shell-primary);
-    box-shadow: 0 0 0 4px rgba(15, 95, 168, 0.10);
+    box-shadow: 0 0 0 4px var(--ui-form-focus-ring, rgba(15, 95, 168, 0.10));
 }
 
 .frontend-page-shell label {

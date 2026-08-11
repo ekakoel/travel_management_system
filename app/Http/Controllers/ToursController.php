@@ -4,12 +4,8 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Http\Controllers\Concerns\BuildsTourLocationItinerary;
-use App\Models\Tax;
-use App\Models\User;
 use App\Models\Tours;
 use App\Models\Orders;
-use App\Models\TourType;
-use App\Models\UsdRates;
 use App\Models\Promotion;
 use App\Models\TourPrices;
 use App\Models\BookingCode;
@@ -17,6 +13,9 @@ use App\Models\ToursImages;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\BusinessProfile;
+use App\Services\Tours\TourPackagePricingService;
+use App\Support\MoneyFormatter;
+use App\ValueObjects\Money;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
@@ -33,27 +32,8 @@ class ToursController extends Controller
         $this->middleware(['auth','verified'])->except(['view_tour_detail']);
     }
     public function index()
-    {   
-        $tours=Tours::where('status','Active')->paginate(12)->withQueryString();
-        $promotions = Promotion::where('status',"Active")->get();
-        // $toursType = TourType::all();
-        $toursType = TourType::whereHas('tours')->get();
-        $typeField = match (config('app.locale')) {
-            'zh' => 'type_traditional',
-            'zh-CN' => 'type_simplified',
-            default => 'type',
-        };
-        $tourNameField = match (config('app.locale')) {
-            'zh' => 'name_traditional',
-            'zh-CN' => 'name_simplified',
-            default => 'name',
-        };
-        return view('frontend.tours.index', compact('tours'),[
-            "promotions" => $promotions,
-            "toursType" => $toursType,
-            "typeField" => $typeField,
-            "tourNameField" => $tourNameField,
-        ]);
+    {
+        return redirect()->route('view.tour-packages-service');
     }
     public function loadMore(Request $request)
     {
@@ -88,62 +68,10 @@ class ToursController extends Controller
     }
     // Search Tours =========================================================================================>
     public function search_tour(Request $request){
-        $now = Carbon::now();
-        $user_id = Auth::user()->id;
-        $taxes = Tax::where('id',1)->first();
-        $usdrates = UsdRates::where('id',1)->first();
-        $tour_location = $request->tour_location;
-        $tour_type = $request->tour_type;
-        $type=TourType::all();
-        $orders = Orders::where('user_id', $user_id)->get();
-        $bcode = $request->bookingcode;
-        $tours = Tours::where('status', '=','Active')
-            ->where('location','LIKE','%'.$tour_location.'%')
-            ->where('type_id','LIKE', '%'.$tour_type.'%')
-            ->paginate(12)->withQueryString();
-        $promotions = Promotion::where('status', 'Active')->get();
-        $promotion_price = $promotions->sum('discounts');
-        $bcode = $request->bookingcode;
-        if (isset($bcode)) {
-            try {
-                $bk_code = BookingCode::where('code', $bcode)
-                    ->where('status', 'Active')
-                    ->firstOrFail();
-                if ($bk_code->used < $bk_code->amount) {
-                    $usedcode = $orders->where('bookingcode', $bk_code->code)->first();
-                    if (isset($usedcode)) {
-                        $bookingcode_status = "Used";
-                        $bookingcode = "";
-                    } elseif ($bk_code->expired_date >= $now) {
-                        $bookingcode_status = "Valid";
-                        $bookingcode = $bk_code;
-                    } else {
-                        $bookingcode_status = "Expired";
-                        $bookingcode = "";
-                    }
-                } else {
-                    $bookingcode_status = "Expired";
-                    $bookingcode = "";
-                }
-            } catch (ModelNotFoundException $e) {
-                $bookingcode_status = 'Invalid';
-                $bookingcode = "";
-            }
-        }else{
-            $bookingcode_status = "";
-            $bookingcode = "";
-        }
-        return view('main.toursearch', compact('tours'),[
-            'tour_location'=>$tour_location,
-            'tour_type'=>$tour_type,
-            'type'=>$type,
-            'promotion_price'=>$promotion_price,
-            'bookingcode'=>$bookingcode,
-            'bookingcode_status'=>$bookingcode_status,
-            'usdrates'=>$usdrates,
-            'taxes'=>$taxes,
-            'promotions'=>$promotions,
-        ]);
+        return redirect()->route('view.tour-packages-service', array_filter([
+            'search_area' => $request->input('tour_location'),
+            'search_type' => $request->input('tour_type'),
+        ], fn ($value) => filled($value)));
     }
     public function view_tour_detail($slug)
     {
@@ -151,61 +79,79 @@ class ToursController extends Controller
         $canViewTourRates = $this->canViewTourRates($user);
         $tourRateAccess = $this->tourRateAccessState($user);
         $now = Carbon::now();
-        $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
-        $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
+        $defaultTravelDate = $now->copy()->addDay()->setTime(9, 0)->format('Y-m-d\TH:i');
+        $prefillTravelDate = old('travel_date');
+
+        if (filled($prefillTravelDate)) {
+            try {
+                $prefillTravelDate = Carbon::parse($prefillTravelDate)->format('Y-m-d\TH:i');
+            } catch (\Throwable $exception) {
+                $prefillTravelDate = $defaultTravelDate;
+            }
+        } else {
+            $prefillTravelDate = $defaultTravelDate;
+        }
+
+        $selectedServiceDate = Carbon::parse($prefillTravelDate);
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
 
-        $tour = Tours::with(['images','prices','activeLocations'])
+        $tour = Tours::with(['images','activeLocations'])
             ->where('slug', $slug)
             ->where('status', 'Active')
             ->firstOrFail();
         $prices = collect();
+        $priceUnavailable = false;
+        $pricingAvailability = null;
+        $bookingcode = session('bookingcode');
+        $bookingcode_disc = session('bookingcode.disc', 0);
+        $bookingCodeValue = is_object($bookingcode)
+            ? ($bookingcode->code ?? null)
+            : (is_array($bookingcode) ? ($bookingcode['code'] ?? null) : null);
 
         if ($canViewTourRates) {
-            $tour->prices->transform(function ($price) use ($usdrates, $tax) {
-                $price->calculated_price = $price->calculatePrice($usdrates, $tax);
-                return $price;
-            });
-            $prices = $tour->prices()->where('status', 'Active')->get()->map(function ($p) use ($usdrates, $tax) {
+            $pricingService = app(TourPackagePricingService::class);
+            $formatter = app(MoneyFormatter::class);
+            $tierReport = $pricingService->quoteEachTierReport(
+                $tour,
+                $selectedServiceDate,
+                null,
+                $bookingCodeValue,
+                $user?->id
+            );
+            $tierQuotes = $tierReport['quotes'];
+            $prices = $tierQuotes->map(function (array $tier) use ($formatter) {
+                $price = $tier['price'];
+                $quote = $tier['quote'];
+
                 return [
-                    'id' => $p->id,
-                    'min_qty' => $p->min_qty,
-                    'max_qty' => $p->max_qty,
-                    'price' => $p->calculatePrice($usdrates, $tax),
+                    'id' => $price->id,
+                    'min_qty' => $price->min_qty,
+                    'max_qty' => $price->max_qty,
+                    'valid_from' => optional($price->valid_from)->toDateString(),
+                    'valid_until' => optional($price->valid_until)->toDateString(),
+                    'unit_price_usd_minor' => $quote->unitPriceUsdMinor(),
+                    'unit_price_usd' => $formatter->decimal(Money::usdCents($quote->unitPriceUsdMinor())),
                 ];
             });
-        } else {
-            $tour->setRelation('prices', collect());
+            $priceUnavailable = $prices->isEmpty();
+            $pricingAvailability = $this->tourPricingAvailability(
+                $tierReport,
+                $selectedServiceDate,
+            );
         }
 
-        $ordernotours = Orders::count() + 1;
-        $agents = $canViewTourRates ? User::where('status','Active')->get() : collect();
         $neartours = Tours::where('status',"Active")
         ->where('slug','!=',$slug)
         ->where('type_id',$tour->type_id)
         ->take(4)
         ->get();
 
-        $promotions = Promotion::where('status',"Active")->get();
-        if (isset($promotions)){
-            $pr = count($promotions);
-            $promotion_price = 0;
-            $count_promotions = count($promotions);
-            for ($i=0; $i < $pr; $i++) { 
-                $promotion_price = $promotion_price + $promotions[$i]->discounts;
-            }
-            $promotion_price = $promotion_price;
-        }else{
-            $promotion_price = 0;
-            $count_promotions = 0;
-        }
-        if (session('bookingcode')) {
-            $bookingcode = session('bookingcode');
-            $bookingcode_disc = session('bookingcode.disc');
-        }else{
-            $bookingcode = null;
-            $bookingcode_disc = 0;
-        }
+        $promotions = Promotion::where('status', 'Active')
+            ->where('pricing_data_status', 'ready')
+            ->where('service_scope', 'Tour Package')
+            ->get();
+        $promotion_price = 0;
+        $count_promotions = $promotions->count();
         $langType = match (config('app.locale')) {
             'zh' => 'type_traditional',
             'zh-CN' => 'type_simplified',
@@ -261,19 +207,6 @@ class ToursController extends Controller
             $tour,
             trim((string) ($tour->$langItinerary ?: $tour->itinerary))
         );
-        $defaultTravelDate = $now->copy()->addDay()->setTime(9, 0)->format('Y-m-d\TH:i');
-        $prefillTravelDate = old('travel_date');
-
-        if (filled($prefillTravelDate)) {
-            try {
-                $prefillTravelDate = Carbon::parse($prefillTravelDate)->format('Y-m-d\TH:i');
-            } catch (\Throwable $exception) {
-                $prefillTravelDate = $defaultTravelDate;
-            }
-        } else {
-            $prefillTravelDate = $defaultTravelDate;
-        }
-
         $tourOrderForm = [
             'default_travel_date' => $defaultTravelDate,
             'minimum_travel_date' => $now->copy()->startOfDay()->format('Y-m-d\TH:i'),
@@ -283,10 +216,6 @@ class ToursController extends Controller
         ];
 
         return view('frontend.landing-page.tours.detail',[
-            'tax'=>$tax,
-            'usdrates'=>$usdrates,
-            'agents'=>$agents,
-            'ordernotours' => $ordernotours,
             'tour'=>$tour,
             'neartours'=>$neartours,
             'now'=>$now,
@@ -312,6 +241,8 @@ class ToursController extends Controller
             'canViewTourRates'=>$canViewTourRates,
             'tourRateAccess'=>$tourRateAccess,
             'tourOrderForm'=>$tourOrderForm,
+            'priceUnavailable'=>$priceUnavailable,
+            'pricingAvailability'=>$pricingAvailability,
 
 
         ]);
@@ -365,6 +296,94 @@ class ToursController extends Controller
             'button' => __('tour-detail.complete_profile'),
             'url' => route('profile'),
         ];
+    }
+
+    private function tourPricingAvailability(array $tierReport, Carbon $serviceDate): array
+    {
+        $eligiblePrices = collect($tierReport['eligible_prices'] ?? []);
+        $failureCodes = collect($tierReport['failure_codes'] ?? []);
+        $quotes = collect($tierReport['quotes'] ?? []);
+        $rateCode = $failureCodes->first(
+            fn (string $code) => str_starts_with($code, 'PRICING_RATE_')
+        );
+        $taxCode = $failureCodes->first(
+            fn (string $code) => str_starts_with($code, 'PRICING_TAX_')
+        );
+        $quoteCode = $failureCodes->first(
+            fn (string $code) => ! str_starts_with($code, 'PRICING_RATE_')
+                && ! str_starts_with($code, 'PRICING_TAX_')
+        );
+        $tierLabels = $eligiblePrices->map(function (TourPrices $price) {
+            return __('tour-detail.pricing_tier_label', [
+                'min' => $price->min_qty,
+                'max' => $price->max_qty,
+                'from' => optional($price->valid_from)->toDateString(),
+                'until' => optional($price->valid_until)->toDateString(),
+            ]);
+        })->values();
+
+        return [
+            'service_date' => $serviceDate->toDateString(),
+            'tier_labels' => $tierLabels,
+            'ready' => $quotes->isNotEmpty(),
+            'requirements' => [
+                [
+                    'ready' => $eligiblePrices->isNotEmpty(),
+                    'label' => __('tour-detail.pricing_requirement_tier'),
+                    'detail' => $eligiblePrices->isNotEmpty()
+                        ? trans_choice(
+                            'tour-detail.pricing_tiers_ready',
+                            $eligiblePrices->count(),
+                            ['count' => $eligiblePrices->count()]
+                        )
+                        : __('tour-detail.pricing_tiers_missing', [
+                            'date' => $serviceDate->toDateString(),
+                        ]),
+                ],
+                [
+                    'ready' => $rateCode === null,
+                    'label' => __('tour-detail.pricing_requirement_rate'),
+                    'detail' => $this->tourPricingFailureMessage($rateCode, 'rate'),
+                ],
+                [
+                    'ready' => $taxCode === null,
+                    'label' => __('tour-detail.pricing_requirement_tax'),
+                    'detail' => $this->tourPricingFailureMessage($taxCode, 'tax'),
+                ],
+                [
+                    'ready' => $quotes->isNotEmpty(),
+                    'label' => __('tour-detail.pricing_requirement_quote'),
+                    'detail' => $quotes->isNotEmpty()
+                        ? __('tour-detail.pricing_quote_ready')
+                        : $this->tourPricingFailureMessage($quoteCode, 'quote'),
+                ],
+            ],
+        ];
+    }
+
+    private function tourPricingFailureMessage(?string $code, string $group): string
+    {
+        if ($code === null) {
+            return match ($group) {
+                'rate' => __('tour-detail.pricing_rate_ready'),
+                'tax' => __('tour-detail.pricing_tax_ready'),
+                default => __('tour-detail.pricing_quote_waiting'),
+            };
+        }
+
+        return match ($code) {
+            'PRICING_RATE_STALE' => __('tour-detail.pricing_rate_stale'),
+            'PRICING_RATE_MISSING' => __('tour-detail.pricing_rate_missing'),
+            'PRICING_RATE_AMBIGUOUS' => __('tour-detail.pricing_rate_ambiguous'),
+            'PRICING_RATE_INVALID' => __('tour-detail.pricing_rate_invalid'),
+            'PRICING_TAX_MISSING' => __('tour-detail.pricing_tax_missing'),
+            'PRICING_TAX_AMBIGUOUS' => __('tour-detail.pricing_tax_ambiguous'),
+            'PRICING_TAX_INVALID' => __('tour-detail.pricing_tax_invalid'),
+            'PRICING_BOOKING_CODE_INVALID' => __('tour-detail.pricing_booking_code_invalid'),
+            'PRICING_PROMOTION_INVALID' => __('tour-detail.pricing_promotion_invalid'),
+            'PRICING_PAX_TIER_AMBIGUOUS' => __('tour-detail.pricing_tier_ambiguous'),
+            default => __('tour-detail.pricing_quote_unavailable'),
+        };
     }
 
     private function formatTourMapLocations(Tours $tour): array
@@ -421,22 +440,22 @@ class ToursController extends Controller
             'Activity' => [
                 'icon' => 'fa-route',
                 'color' => '#f97316',
-                'label' => 'Activity',
+                'label' => __('tour-map.location_type_activity'),
             ],
             'F&B' => [
                 'icon' => 'fa-utensils',
                 'color' => '#dc2626',
-                'label' => 'F&B',
+                'label' => __('tour-map.location_type_food_beverage'),
             ],
             'Pickup/Dropoff' => [
                 'icon' => 'fa-hotel',
                 'color' => '#2563eb',
-                'label' => 'Pickup/Dropoff Location',
+                'label' => __('tour-map.location_type_pickup_dropoff'),
             ],
             default => [
                 'icon' => 'fa-landmark',
                 'color' => '#0f766e',
-                'label' => 'Attraction',
+                'label' => __('tour-map.location_type_attraction'),
             ],
         };
     }
@@ -496,128 +515,31 @@ class ToursController extends Controller
             $bookingcode = null;
         }
         if (isset($bookingcode)) {
-            return redirect("/tour-$tour->code-$bookingcode->code");
+            return redirect()
+                ->route('view.tour-detail', ['slug' => $tour->slug])
+                ->with('bookingcode', $bookingcode);
         }else{
-            return redirect("/tour-$tour->code")->with('danger', $bookingcode_status.' Code');
+            return redirect()
+                ->route('view.tour-detail', ['slug' => $tour->slug])
+                ->with('danger', __('tour-detail.booking_code_status', [
+                    'status' => __('tour-detail.booking_code_statuses.'.strtolower($bookingcode_status)),
+                ]));
         }
     }
 
     public function view_tour_detail_bookingcode($code,$bcode)
     {
-        $business = BusinessProfile::where('id','=',1)->first();
-        $taxes = Tax::where('id',1)->first();
-        $now = Carbon::now();
-        $tour = Tours::where('code',$code)->first();
-        $orders = Orders::all();
-        $ordernotours = count($orders) + 1;
-        $usdrates = UsdRates::where('name','USD')->first();
-        $agents = Auth::user()->where('status','Active')->get();
-        $neartours = Tours::where('status',"Active")
-        ->where('code','!=',$code)
-        ->get();
-        $tour_prices = TourPrices::where('tour_id',$tour->id)
-        ->where('status',"Active")->get();
-        $promotions = Promotion::where('status',"Active")->get();
-        if (isset($promotions)) {
-            $count_promotions = count($promotions);
-        }else{
-            $count_promotions = 0;
-        }
-        if (isset($bcode)) {
-            $user_id = Auth::user()->id;
-            $orders = Orders::where('user_id', $user_id)->get();
-            $bk_code = BookingCode::where('code', $bcode)->where('status', 'Active')->first();
-            if (isset($bk_code)) {
-                if ($bk_code->used < $bk_code->amount) {
-                    if (isset($orders)) {
-                        $usedcode = $orders->where('bookingcode', $bk_code->code)->first();
-                        if (isset($usedcode)) {
-                            $bookingcode_status = "Used";
-                            $bookingcode = null;
-                        }else{
-                            if ($bk_code->expired_date >= $now) {
-                                $bookingcode_status = "Valid";
-                                $bookingcode = $bk_code;
-                            }else{
-                                $bookingcode_status = "Expired";
-                                $bookingcode = null ;
-                            }
-                        }
-                    }else{
-                        if ($bk_code->expired_date >= $now) {
-                            $bookingcode_status = "Valid";
-                            $bookingcode = $bk_code;
-                        }else{
-                            $bookingcode_status = "Expired";
-                            $bookingcode = null ;
-                        }
-                    }
-                }else{
-                    $bookingcode_status = "Expired";
-                    $bookingcode = null ;
-                }
-            }else{
-                $bookingcode_status = 'Invalid';
-                $bookingcode = null;
-            }
-        }else{
-            $bookingcode_status = null;
-            $bookingcode = null;
-        }
+        $tour = Tours::query()->where('status', 'Active')->where('code', $code)->firstOrFail();
+        $bookingCode = BookingCode::query()
+            ->where('code', $bcode)
+            ->where('status', 'Active')
+            ->first();
 
-        if (isset($promotions)){
-            $pr = count($promotions);
-            $promotion_price = 0;
-            for ($i=0; $i < $pr; $i++) { 
-                $promotion_price = $promotion_price + $promotions[$i]->discounts;
-            }
-        }else{
-            $promotion_price = 0;
-        }
+        $redirect = redirect()->route('view.tour-detail', ['slug' => $tour->slug]);
 
-        $price_non_tax = (ceil($tour->contract_rate / $usdrates->rate))+$tour->markup;
-        $tax = ceil(($taxes->tax/100) * $price_non_tax);
-        $normal_price = ($price_non_tax + $tax);
-        $qty = TourPrices::max('max_qty');
-        if (isset($bookingcode->code) or isset($promotions)) {
-            if (isset($bookingcode->code)) {
-                $price_per_pax = $normal_price;
-                
-                if (isset($promotions)) {
-                    $final_price = $normal_price - $bookingcode->discounts - $promotion_price;
-                }else{
-                    $final_price = $normal_price - $bookingcode->discounts;
-                }
-            }else{
-                $price_per_pax = $normal_price ;
-                $final_price = $normal_price  - $promotion_price;
-            }
-        }else {
-            $price_per_pax = $normal_price;
-            $final_price = $normal_price;
-        }
-        if (isset($bookingcode)) {
-            return view('main.tourdetail',[
-                'taxes'=>$taxes,
-                'usdrates'=>$usdrates,
-                'agents'=>$agents,
-                'ordernotours' => $ordernotours,
-                'tour'=>$tour,
-                'neartours'=>$neartours,
-                'now'=>$now,
-                'business'=>$business,
-                'bookingcode'=>$bookingcode,
-                'bookingcode_status'=>$bookingcode_status,
-                'promotions'=>$promotions,
-                'promotion_price'=>$promotion_price,
-                'count_promotions'=>$count_promotions,
-                'tour_prices'=>$tour_prices,
-                'qty'=>$qty,
-                'fprice'=>$final_price,
-            ]);
-        }else{
-            return redirect("/tour-$code")->with('danger','The booking code that you entered has been used!');
-        }
+        return $bookingCode !== null
+            ? $redirect->with('bookingcode', $bookingCode)
+            : $redirect->with('danger', __('tour-detail.booking_code_invalid'));
     }
 
     

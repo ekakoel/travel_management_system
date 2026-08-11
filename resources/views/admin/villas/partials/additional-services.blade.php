@@ -45,7 +45,7 @@
                                                 @method('delete')
                                                 <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                 <input type="hidden" name="villas_id" value="{{ $villa->id }}">
-                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                             </form>
                                         </div>
                                     </td>
@@ -58,7 +58,7 @@
                                         <div class="modal-content">
                                             <div class="card-box">
                                                 <div class="card-box-title">
-                                                    <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Additional Service</div>
+                                                    <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update Additional Service</div>
                                                 </div>
                                                 <form id="edit-additional-service-{{ $additional_service->id }}" action="{{ route('func.villa-additional-service.update',$additional_service->id) }}" method="post" enctype="multipart/form-data">
                                                     @method('put')
@@ -147,7 +147,7 @@
                                                     </div>
                                                 </form>
                                                 <div class="card-box-footer">
-                                                    <button type="submit" form="edit-additional-service-{{ $additional_service->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                    <button type="submit" form="edit-additional-service-{{ $additional_service->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                                     <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                 </div>
                                             </div>

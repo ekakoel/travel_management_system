@@ -17,7 +17,7 @@
                 'brand' => [
                     'title' => 'Brand & Trust',
                     'description' => 'Logo accessibility text and trust badge wording shown on the left side of the footer.',
-                    'icon' => 'fa fa-shield',
+                    'icon' => 'fa fa-certificate',
                     'keys' => ['logo_aria', 'highlights_aria', 'highlight_worldwide_agents', 'highlight_indonesia_supply', 'highlight_global_access'],
                 ],
                 'contact_newsletter' => [
@@ -229,14 +229,14 @@
                                                     </div>
                                                     <div class="footer-link-item__actions">
                                                         <button type="button" class="footer-manager-text-action" data-toggle="modal" data-target="#editFooterLinkModal{{ $link->id }}">
-                                                            <i class="fa fa-pencil"></i>
+                                                            <i class="fa fa-pencil-square"></i>
                                                             Edit
                                                         </button>
                                                         <form action="{{ route('admin.footer-manager.links.destroy', $link) }}" method="post" data-footer-delete-form>
                                                             @csrf
                                                             @method('delete')
-                                                            <button type="submit" class="footer-manager-text-action is-danger">
-                                                                <i class="fa fa-trash"></i>
+                                                            <button type="submit" class="backend-button-delete-text footer-manager-text-action">
+                                                                <i class="fa fa-trash-alt"></i>
                                                                 Delete
                                                             </button>
                                                         </form>

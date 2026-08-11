@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use App\Models\Hotels;
 use App\Models\HotelRoom;
 use App\Services\Hotels\HotelPricingService;
@@ -37,6 +38,13 @@ class HotelPrice extends Model
         return $query->whereNotNull('end_date')
                  ->where('end_date', '!=', '')
                  ->where('end_date','>',$now);
+    }
+
+    public function scopeNotExpired($query, CarbonInterface|string $date)
+    {
+        $today = $date instanceof CarbonInterface ? $date->toDateString() : $date;
+
+        return $query->whereDate('end_date', '>=', $today);
     }
 
     public function taxRate($usdrates, $tax)

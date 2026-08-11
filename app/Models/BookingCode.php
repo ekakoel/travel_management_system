@@ -17,5 +17,18 @@ class BookingCode extends Model
         'author',
         'expired_date',
         'status',
+        'discount_type',
+        'discount_value',
+        'discount_currency',
+        'service_scope',
+        'valid_from',
+        'valid_until',
+        'pricing_data_status',
+    ];
+
+    protected $casts = [
+        'discount_value' => 'decimal:6',
+        'valid_from' => 'immutable_datetime',
+        'valid_until' => 'immutable_datetime',
     ];
 }

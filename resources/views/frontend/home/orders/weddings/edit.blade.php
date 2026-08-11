@@ -40,7 +40,7 @@
                 <div class="col-md-8">
                     <div class="card-box">
                         <div class="card-box-title">
-                            <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i>@lang('messages.Edit Order')</div>
+                            <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>@lang('messages.Edit Order')</div>
                         </div>
                         <div class="row">
                             <div class="col-6 col-md-6">
@@ -153,12 +153,12 @@
                                             <form id="deleteOrderWeddingRemark" action="/fdelete-order-wedding-remark/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                 @csrf
                                                 @method('put')
-                                                <button class="icon-btn-remove" form="deleteOrderWeddingRemark" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                <button class="icon-btn-remove" form="deleteOrderWeddingRemark" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                             </form>
                                         </span>
                                         <span>
                                             <a href="#" data-toggle="modal" data-target="#add-order-wedding-remark-{{ $orderWedding->id }}">
-                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                             </a>
                                         </span>
                                     @else
@@ -181,7 +181,7 @@
                                             <div class="card-box">
                                                 <div class="card-box-title">
                                                     @if ($orderWedding->remark)
-                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Remark')</div>
+                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Remark')</div>
                                                     @else
                                                         <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Remark')</div>
                                                     @endif
@@ -204,7 +204,7 @@
                                                 </form>
                                                 <div class="card-box-footer">
                                                     @if ($orderWedding->remark)
-                                                        <button type="submit" form="addOrderWeddingRemark" class="btn btn-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                        <button type="submit" form="addOrderWeddingRemark" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt"></i> @lang('messages.Change')</button>
                                                     @else
                                                         <button type="submit" form="addOrderWeddingRemark" class="btn btn-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Create')</button>
                                                     @endif

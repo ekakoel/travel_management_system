@@ -123,11 +123,10 @@
                                                     <td>
                                                         @php
                                                             $activity = $partner->activity->where('partners_id', $partner->id);
-                                                            $tour = $partner->tours->where('partners_id', $partner->id);
                                                             $jml_activity = count($activity);
-                                                            $jml_tour = count($tour);
+                                                            
                                                         @endphp
-                                                        <p>{{ $jml_activity." A, ".$jml_tour." T" }}</p>
+                                                        <p>{{ $jml_activity." A" }}</p>
                                                     </td>
                                                     <td>
                                                         @if ($partner->status == "Active")
@@ -140,14 +139,14 @@
                                                     <td class="text-right">
                                                         <div class="table-action">
                                                             <a href="/detail-partner-{{ $partner->id }}">
-                                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                                             </a>
                                                             @canany(['posDev','posAuthor'])
                                                                 <form class="display-content" action="/fremove-partner/{{ $partner->id }}" method="post" enctype="multipart/form-data">
                                                                     @csrf
                                                                     @method('put')
                                                                     <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                 </form>
                                                             @endcanany
                                                         </div>

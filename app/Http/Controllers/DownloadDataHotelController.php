@@ -18,6 +18,10 @@ use App\Models\DownloadDataHotel;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreDownloadDataHotelRequest;
 use App\Http\Requests\UpdateDownloadDataHotelRequest;
+use App\Services\Tours\TourPackagePricingService;
+use App\Support\MoneyFormatter;
+use App\ValueObjects\Money;
+use Carbon\CarbonImmutable;
 // use Barryvdh\DomPDF\Facade as PDF;
 
 class DownloadDataHotelController extends Controller
@@ -135,21 +139,40 @@ class DownloadDataHotelController extends Controller
             "hotels" => $hotels,
         ]);
     }
-    public function down_data_tour()
+    public function down_data_tour(
+        TourPackagePricingService $pricing,
+        MoneyFormatter $formatter,
+    )
     {
         $now = Carbon::now();
-        $data_tours=Tours::where('status','Active')->get();
-        $usdrates = UsdRates::where('name','USD')->first();
-        $tax = Tax::where('id',1)->first();
-        return view('backend.reports.downloads.tour', compact('data_tours'),[
-            "now"=>$now,
-            "tax" => $tax,
-            "usdrates" =>$usdrates,
-            "data_tours" => $data_tours,
-            // "data_hotel_normal" => $data_hotel_normal,
-            // "data_hotel_promo" => $data_hotel_promo,
-            // "data_hotel_package" => $data_hotel_package,
+        $serviceDate = CarbonImmutable::instance($now);
+        $dataTours = Tours::with(['prices', 'type'])->where('status', 'Active')->get();
+        $tourPriceRows = $dataTours->flatMap(function (Tours $tour) use ($pricing, $formatter, $serviceDate) {
+            $quotes = $pricing->quoteEachTier($tour, $serviceDate)
+                ->keyBy(fn (array $tier) => $tier['price']->id);
 
+            return $tour->prices->map(function ($price) use ($tour, $quotes, $formatter) {
+                $quote = $quotes->get($price->id)['quote'] ?? null;
+
+                return [
+                    'tour_name' => $tour->name,
+                    'type' => optional($tour->type)->type ?: $tour->type,
+                    'duration' => trim(
+                        ($tour->duration_days ? $tour->duration_days.'D' : '')
+                        .($tour->duration_nights ? '/'.$tour->duration_nights.'N' : '')
+                    ) ?: $tour->duration,
+                    'capacity' => $price->min_qty.'-'.$price->max_qty,
+                    'price' => $quote
+                        ? $formatter->decimal(Money::usdCents($quote->unitPriceUsdMinor()))
+                        : null,
+                    'status' => $quote ? 'Ready' : 'Unavailable',
+                ];
+            });
+        })->values();
+
+        return view('backend.reports.downloads.tour', [
+            "now"=>$now,
+            "tourPriceRows" => $tourPriceRows,
         ]);
     }
     

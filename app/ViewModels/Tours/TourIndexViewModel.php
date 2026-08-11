@@ -2,7 +2,10 @@
 
 namespace App\ViewModels\Tours;
 
-use App\Services\Tours\TourPricingService;
+use App\Services\Tours\TourPackagePricingService;
+use App\Support\MoneyFormatter;
+use App\ValueObjects\Money;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 
 class TourIndexViewModel
@@ -11,9 +14,9 @@ class TourIndexViewModel
         public readonly Collection $activeTours,
         public readonly Collection $draftTours,
         public readonly Collection $archivedTours,
-        public readonly object|null $usdRate,
-        public readonly object|null $tax,
-        private readonly TourPricingService $pricingService,
+        private readonly TourPackagePricingService $pricingService,
+        private readonly MoneyFormatter $formatter,
+        private readonly CarbonInterface $serviceDate,
     ) {
     }
 
@@ -44,7 +47,7 @@ class TourIndexViewModel
             'type_name' => $tour->type?->type ?: '-',
             'duration' => $this->duration($tour),
             'price_count' => $tour->prices->count(),
-            'lowest_rate' => $this->lowestPublishedRate($tour->prices),
+            'lowest_rate' => $this->lowestPublishedRate($tour),
             'status_tone' => $this->statusTone($tour->status),
         ]);
     }
@@ -63,11 +66,14 @@ class TourIndexViewModel
         return trim(($tour->duration_days ? $tour->duration_days . 'D' : '') . ($tour->duration_nights ? '/' . $tour->duration_nights . 'N' : '')) ?: '-';
     }
 
-    private function lowestPublishedRate(Collection $prices): int
+    private function lowestPublishedRate($tour): ?string
     {
-        return (int) $prices
-            ->map(fn ($price) => $this->pricingService->publishedRate($price->contract_rate, $price->markup, $this->usdRate, $this->tax))
-            ->filter()
+        $minor = $this->pricingService->quoteEachTier($tour, $this->serviceDate)
+            ->map(fn (array $tier) => $tier['quote']->unitPriceUsdMinor())
             ->min();
+
+        return $minor === null
+            ? null
+            : $this->formatter->decimal(Money::usdCents((int) $minor));
     }
 }

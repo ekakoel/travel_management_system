@@ -69,7 +69,7 @@
 
                 <section class="backend-kpi-grid backend-kpi-grid--4" aria-label="Policy summary">
                     <article class="backend-kpi-card backend-kpi-card--teal">
-                        <div class="backend-kpi-card__icon"><i class="fa fa-file-text-o"></i></div>
+                        <div class="backend-kpi-card__icon"><i class="fa fa-file-text"></i></div>
                         <div>
                             <span>Total Policies</span>
                             <strong>{{ number_format($summary['total']) }}</strong>
@@ -85,7 +85,7 @@
                         </div>
                     </article>
                     <article class="backend-kpi-card backend-kpi-card--amber">
-                        <div class="backend-kpi-card__icon"><i class="fa fa-pencil-square-o"></i></div>
+                        <div class="backend-kpi-card__icon"><i class="fas fa-edit"></i></div>
                         <div>
                             <span>Draft</span>
                             <strong>{{ number_format($summary['draft']) }}</strong>
@@ -148,13 +148,13 @@
                                             </div>
                                             <div class="terms-admin-policy-card__actions">
                                                 <button type="button" class="terms-admin-icon-action" data-toggle="modal" data-target="#edit-policy-{{ $policy->id }}" aria-label="Edit {{ $policy->name_en }}">
-                                                    <i class="fa fa-pencil"></i>
+                                                    <i class="fas fa-edit"></i>
                                                 </button>
                                                 <form action="{{ route('term-and-condition.policy.destroy', $policy->id) }}" method="POST" data-terms-delete-form>
                                                     @csrf
                                                     @method('delete')
                                                     <button type="submit" class="terms-admin-icon-action is-danger" aria-label="Delete {{ $policy->name_en }}">
-                                                        <i class="fa fa-trash"></i>
+                                                        <i class="fa fa-trash-alt"></i>
                                                     </button>
                                                 </form>
                                             </div>

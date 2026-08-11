@@ -27,7 +27,7 @@ class TransportAdminController extends Controller
     public function create(TransportInventoryService $inventory)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         return view('backend.operations.transports.forms.create', $inventory->formOptions());
@@ -36,7 +36,7 @@ class TransportAdminController extends Controller
     public function edit($id, TransportInventoryService $inventory)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         return view('backend.operations.transports.forms.edit', $inventory->editData((int) $id));
@@ -50,7 +50,7 @@ class TransportAdminController extends Controller
     public function store(StoreTransportAdminRequest $request, TransportAssetService $assets, TransportAuditService $audit)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         $validated = $request->validated();
@@ -78,7 +78,7 @@ class TransportAdminController extends Controller
     public function update(UpdateTransportAdminRequest $request, $id, TransportAssetService $assets, TransportAuditService $audit)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         $validated = $request->validated();
@@ -116,7 +116,7 @@ class TransportAdminController extends Controller
     public function destroy($id, TransportAuditService $audit)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         Transports::findOrFail($id)->update([

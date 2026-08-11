@@ -25,6 +25,9 @@ class StoreHotelPackageRequest extends FormRequest
             'contract_rate' => ['required', 'numeric', 'min:0'],
             'markup' => ['required', 'numeric', 'min:0'],
             'booking_code' => ['nullable', 'string', 'max:255'],
+            'cancellation_policy' => ['nullable', 'string'],
+            'cancellation_policy_traditional' => ['nullable', 'string'],
+            'cancellation_policy_simplified' => ['nullable', 'string'],
         ];
     }
 

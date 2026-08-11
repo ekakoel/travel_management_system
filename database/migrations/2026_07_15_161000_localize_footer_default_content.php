@@ -32,9 +32,9 @@ return new class extends Migration
     ];
 
     private array $links = [
-        'view.accommodation-service' => ['zh' => '住宿安排', 'zh-CN' => '住宿安排'],
-        'view.transport-service' => ['zh' => '交通', 'zh-CN' => '交通'],
-        'view.tour-package-services' => ['zh' => '旅遊套餐', 'zh-CN' => '旅游套餐'],
+        'view.hotels-service' => ['zh' => '住宿安排', 'zh-CN' => '住宿安排'],
+        'view.transports-service' => ['zh' => '交通', 'zh-CN' => '交通'],
+        'view.tour-packages-service' => ['zh' => '旅遊套餐', 'zh-CN' => '旅游套餐'],
         'about-us' => ['zh' => '關於我們', 'zh-CN' => '关于我们'],
         'contact-us' => ['zh' => '聯絡我們', 'zh-CN' => '联系我们'],
         'services' => ['zh' => '我們的服務', 'zh-CN' => '我们的服务'],

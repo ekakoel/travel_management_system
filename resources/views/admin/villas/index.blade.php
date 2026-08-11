@@ -152,11 +152,11 @@
                                                     <td class="text-right">
                                                         <div class="table-action">
                                                             <a href="{{ route('admin.villa.show',$villa->id) }}">
-                                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                                             </a>
                                                             @canany(['posDev','posAuthor'])
                                                                 <a href="{{ route('admin.villa.edit',$villa->id) }}">
-                                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
+                                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                                                 </a>
                                                             @endcanany
                                                         </div>
@@ -271,7 +271,7 @@
                                                     </td>
                                                     <td>
                                                         <a href="/detail-villa-{{ $villa['id'] }}" data-toggle="tooltip" data-placement="top" title="View">
-                                                            <button class="btn-view"><i class="dw dw-eye"></i></button>
+                                                            <button class="btn-view"><i class="fas fa-eye"></i></button>
                                                         </a>
                                                     </td>
                                                 </tr>

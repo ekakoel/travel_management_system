@@ -268,25 +268,37 @@
                                             <div class="modal-body">
                                                 <input type="hidden" name="author" value="{{ $userId }}">
                                                 <div class="admin-panel-form-grid">
-                                                    <label>
-                                                        Service Name
-                                                        <input type="text" name="name" value="{{ $service['name'] }}" required>
+                                                    <label class="backend-form-field">
+                                                        <span>Service Name <b>*</b></span>
+                                                        <input type="text" name="name" class="backend-form-control @error('name') is-invalid @enderror" value="{{ $service['name'] }}" required>
+                                                        @error('name')
+                                                            <small class="backend-form-error">{{ $message }}</small>
+                                                        @enderror
                                                     </label>
-                                                    <label>
-                                                        Service Slug
-                                                        <input type="text" name="nicname" value="{{ $service['nicname'] }}" required>
+                                                    <label class="backend-form-field">
+                                                        <span>Service Slug <b>*</b></span>
+                                                        <input type="text" name="nicname" class="backend-form-control @error('nicname') is-invalid @enderror" value="{{ $service['nicname'] }}" required>
+                                                        @error('nicname')
+                                                            <small class="backend-form-error">{{ $message }}</small>
+                                                        @enderror
                                                     </label>
-                                                    <label>
-                                                        Icon Class
-                                                        <input type="text" name="icon" value="{{ $service['icon'] }}" required>
+                                                    <label class="backend-form-field">
+                                                        <span>Icon Class <b>*</b></span>
+                                                        <input type="text" name="icon" class="backend-form-control @error('icon') is-invalid @enderror" value="{{ $service['icon'] }}" required>
+                                                        @error('icon')
+                                                            <small class="backend-form-error">{{ $message }}</small>
+                                                        @enderror
                                                     </label>
-                                                    <label>
-                                                        Status
-                                                        <select name="status" required>
+                                                    <div class="backend-form-field">
+                                                        <label for="status" class="backend-form-label"><span>Status <b>*</b></span></label>
+                                                        <select id="status" name="status" class="backend-form-control @error('status') is-invalid @enderror" required>
                                                             <option value="Active" {{ $service['status'] === 'Active' ? 'selected' : '' }}>Active</option>
                                                             <option value="Draft" {{ $service['status'] !== 'Active' ? 'selected' : '' }}>Draft</option>
                                                         </select>
-                                                    </label>
+                                                        @error('status')
+                                                            <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -359,17 +371,26 @@
                     <div class="modal-body">
                         <input type="hidden" name="author" value="{{ $userId }}">
                         <div class="admin-panel-form-grid">
-                            <label>
-                                Service Name
-                                <input type="text" name="name" placeholder="Hotels" required>
+                            <label class="backend-form-field">
+                                <span>Service Name <b>*</b></span>
+                                <input type="text" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Service Name" required>
+                                @error('name')
+                                    <small class="backend-form-error">{{ $message }}</small>
+                                @enderror
                             </label>
-                            <label>
-                                Service Slug
-                                <input type="text" name="nicname" placeholder="hotels" required>
+                            <label class="backend-form-field">
+                                <span>Service Slug <b>*</b></span>
+                                <input type="text" name="nicname" class="backend-form-control @error('nicname') is-invalid @enderror" placeholder="Slug" required>
+                                @error('nicname')
+                                    <small class="backend-form-error">{{ $message }}</small>
+                                @enderror
                             </label>
-                            <label class="admin-panel-form-grid__wide">
-                                Icon Class
-                                <input type="text" name="icon" placeholder="fa fa-hotel" required>
+                            <label class="backend-form-field">
+                                <span>Service Icon <b>*</b></span>
+                                <input type="text" name="icon" class="backend-form-control @error('icon') is-invalid @enderror" placeholder="Service Icon"  required>
+                                @error('icon')
+                                    <small class="backend-form-error">{{ $message }}</small>
+                                @enderror
                             </label>
                         </div>
                     </div>

@@ -100,7 +100,7 @@ class PublicActivityFlowTest extends TestCase
             'validity' => '2026-12-31',
         ]);
 
-        $this->get(route('view.activity-services'))
+        $this->get(route('view.activities-service'))
             ->assertOk()
             ->assertSee('Test Activity')
             ->assertDontSee('Inactive Activity');

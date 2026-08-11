@@ -45,12 +45,12 @@
                                             <i class="icon-copy fa fa-eye" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                         </a>
                                         <a href="#" data-toggle="modal" data-target="#update-wedding-ceremonial-venue-{{ $ceremony_venue->id }}">
-                                            <i class="icon-copy fa fa-pencil" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                                            <i class="icon-copy fa fa-pencil-alt" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                         </a>
                                         <form action="/fdelete-wedding-planner-ceremonial-venue/{{ $wedding_planner->id }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             @method('put')
-                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                         </form>
                                     </div>
                                 </td>
@@ -90,7 +90,7 @@
                                         <div class="modal-content text-left">
                                             <div class="card-box">
                                                 <div class="card-box-title">
-                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Ceremony Venue')</div>
+                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Ceremony Venue')</div>
                                                 </div>
                                                 <form id="updateWeddingPlannerCeremonialVenue-{{ $ceremony_venue }}" action="/fupdate-wedding-planner-ceremonial-venue/{{ $wedding_planner->id }}" method="post" enctype="multipart/form-data">
                                                     @csrf
@@ -170,7 +170,7 @@
                                                     </div>
                                                 </form>
                                                 <div class="card-box-footer">
-                                                    <button type="submit" form="updateWeddingPlannerCeremonialVenue-{{ $ceremony_venue }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Update')</button>
+                                                    <button type="submit" form="updateWeddingPlannerCeremonialVenue-{{ $ceremony_venue }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Update')</button>
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                 </div>
                                             </div>
@@ -207,12 +207,12 @@
                                             <i class="icon-copy fa fa-eye" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                         </a>
                                         <a href="#" data-toggle="modal" data-target="#update-wedding-reception-venue-{{ $reception_venue->id }}">
-                                            <i class="icon-copy fa fa-pencil" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                                            <i class="icon-copy fa fa-pencil-alt" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                         </a>
                                         <form action="/fdelete-wedding-planner-reception-venue/{{ $wedding_planner->id }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             @method('put')
-                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                         </form>
                                     </div>
                                 </td>
@@ -252,7 +252,7 @@
                                         <div class="modal-content text-left">
                                             <div class="card-box">
                                                 <div class="card-box-title">
-                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
+                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
                                                 </div>
                                                 <form id="updateReceptionVenue" action="/fupdate-wedding-planner-reception-venue/{{ $wedding_planner->id }}" method="post" enctype="multipart/form-data">
                                                     @csrf
@@ -352,7 +352,7 @@
                                                     </div>
                                                 </form>
                                                 <div class="card-box-footer">
-                                                    <button type="submit" form="updateReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Update')</button>
+                                                    <button type="submit" form="updateReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Update')</button>
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                 </div>
                                             </div>

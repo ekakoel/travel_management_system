@@ -254,14 +254,14 @@
                                                 </span>
                                                 <span>
                                                     <a href="#" data-toggle="modal" data-target="#edit-wedding-order-accommodation-invitation-{{ $accommodation_inv->id }}">
-                                                        <i class="fa fa-pencil" data-toggle="tooltip" title="Change Room"></i>
+                                                        <i class="fa fa-pencil-alt" data-toggle="tooltip" title="Change Room"></i>
                                                     </a>
                                                 </span>
                                                 <span>
                                                     <form id="deleteAccommodationOrder{{ $accommodation_inv->id }}" action="/admin-func-delete-order-wedding-accommodation/{{ $accommodation_inv->id }}" method="post" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('delete')
-                                                        <button form="deleteAccommodationOrder{{ $accommodation_inv->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                        <button form="deleteAccommodationOrder{{ $accommodation_inv->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                     </form>
                                                 </span>
                                             </div>
@@ -334,7 +334,7 @@
                                                     <div class="card-box-footer">
                                                         <button type="submit"
                                                             form="update_price_accommodation-{{ $accommodation_inv->id }}"
-                                                            class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"
+                                                            class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt"
                                                                 aria-hidden="true"></i> @lang('messages.Update')</button>
                                                         <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i
                                                                 class="icon-copy fa fa-close" aria-hidden="true"></i>
@@ -496,7 +496,7 @@
                                                     <div class="card-box-footer">
                                                         <button type="submit"
                                                             form="updateWeddingAccommodation-{{ $accommodation_inv->id }}"
-                                                            class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"
+                                                            class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt"
                                                                 aria-hidden="true"></i> @lang('messages.Update')</button>
                                                         <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i
                                                                 class="icon-copy fa fa-close" aria-hidden="true"></i>

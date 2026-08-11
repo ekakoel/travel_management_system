@@ -64,6 +64,7 @@
                             data-label-quote-review="@lang('messages.This order will be handled as a quote request because it contains more than 8 rooms.')"
                         >
                             @csrf
+                            <input type="hidden" name="hotel_booking_version" value="2">
                             @include('partials.form-submission-token')
                             @canany(['posDev','posAuthor','posRsv'])
                                 <div class="row">
@@ -74,8 +75,8 @@
                             <div class="booking-wizard" data-booking-wizard>
                                 @include('partials.hotel-booking-wizard-nav', [
                                     'wizardSteps' => [
-                                        ['title' => __('messages.Stay and guests'), 'description' => __('messages.Standard selection')],
-                                        ['title' => __('messages.Airport Shuttle'), 'description' => __('messages.Optional arrival support')],
+                                        ['title' => __('messages.Stay and rooms'), 'description' => __('messages.Room occupancy')],
+                                        ['title' => __('messages.Guests and transfers'), 'description' => __('messages.Guest manifest and optional transfer')],
                                         ['title' => __('messages.Review and submit'), 'description' => __('messages.Standard total')],
                                     ],
                                 ])
@@ -84,9 +85,9 @@
                                     <div class="booking-wizard__heading">
                                         <div>
                                             <div class="booking-wizard__eyebrow">@lang('messages.Step 1')</div>
-                                            <h2 class="booking-wizard__title">@lang('messages.Standard stay and guest details')</h2>
+                                            <h2 class="booking-wizard__title">@lang('messages.Stay and room details')</h2>
                                         </div>
-                                        <p class="booking-wizard__text">@lang('messages.Review the selected contract offer and fill in the guest information for the requested rooms.')</p>
+                                        <p class="booking-wizard__text">@lang('messages.Set the adults, children, child ages, and room requirements for every room.')</p>
                                     </div>
 
                                     <section class="frontend-detail-block">
@@ -119,7 +120,7 @@
                                     <section>
                                         <div class="frontend-detail-block__header p-t-18">
                                             <div>
-                                                <h3 class="frontend-detail-block__title">@lang('messages.Guest and room details')</h3>
+                                                <h3 class="frontend-detail-block__title">@lang('messages.Room occupancy details')</h3>
                                             </div>
                                             <div class="frontend-detail-block__meta">@lang('messages.Up to 8 rooms')</div>
                                         </div>
@@ -139,13 +140,13 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4 text-right">
-                                                <button id="add" type="button" class="btn btn-primary hotel-booking-page__add-room"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Add More Room')</button>
+                                                <button id="add" type="button" class="ui-btn ui-btn--primary hotel-booking-page__add-room"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Add More Room')</button>
                                             </div>
                                         </div>
                                     </section>
 
                                     <div class="booking-wizard__actions">
-                                        <button type="button" class="btn btn-primary" data-wizard-next>@lang('messages.Continue to transfers')</button>
+                                        <button type="button" class="ui-btn ui-btn--primary" data-wizard-next>@lang('messages.Continue to guest details')</button>
                                     </div>
                                 </section>
 
@@ -153,16 +154,17 @@
                                     <div class="booking-wizard__heading">
                                         <div>
                                             <div class="booking-wizard__eyebrow">@lang('messages.Step 2')</div>
-                                            <h2 class="booking-wizard__title">@lang('messages.Airport shuttle')</h2>
+                                            <h2 class="booking-wizard__title">@lang('messages.Guests and transfers')</h2>
                                         </div>
-                                        <p class="booking-wizard__text">@lang('messages.Only add arrival and departure transfer details if needed for this booking request.')</p>
+                                        <p class="booking-wizard__text">@lang('messages.Complete the guest manifest, then add arrival and departure transfer details only when needed.')</p>
                                     </div>
 
+                                    @include('partials.hotel-booking-guest-manifest')
                                     @include('partials.hotel-booking-transfer-fields')
 
                                     <div class="booking-wizard__actions">
-                                        <button type="button" class="btn btn-danger" data-wizard-prev>@lang('messages.Back')</button>
-                                        <button type="button" class="btn btn-primary" data-wizard-next>@lang('messages.Continue to review')</button>
+                                        <button type="button" class="ui-btn ui-btn--secondary" data-wizard-prev>@lang('messages.Back')</button>
+                                        <button type="button" class="ui-btn ui-btn--primary" data-wizard-next>@lang('messages.Continue to review')</button>
                                     </div>
                                 </section>
 
@@ -259,15 +261,15 @@
                                         'id' => 'hotelNormalTermsAccepted',
                                     ])
                                     <div class="booking-wizard__actions">
-                                        <button type="button" class="btn btn-danger" data-wizard-prev>@lang('messages.Back')</button>
+                                        <button type="button" class="ui-btn ui-btn--secondary" data-wizard-prev>@lang('messages.Back')</button>
                                         <button
                                             type="submit"
                                             form="create-order"
                                             id="normal-reserve"
-                                            class="btn btn-primary"
+                                            class="ui-btn ui-btn--primary"
                                             data-processing-label="@lang('messages.Processing')..."
                                         ><i class="icon-copy fa fa-shopping-basket" aria-hidden="true"></i> @lang('messages.Order')</button>
-                                        <button type="button" onclick="goBack()" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
+                                        <button type="button" onclick="goBack()" class="ui-btn ui-btn--danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                     </div>
                                 </section>
                             </div>

@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    var createFormSubmissionGuard = require('../../components/form-submission-guard').createFormSubmissionGuard;
+
     var pageRoot = document.querySelector('.order-detail-page');
     var countdownExpiredText = pageRoot ? (pageRoot.getAttribute('data-countdown-expired') || 'Payment window expired') : 'Payment window expired';
     var countdownRemainingTemplate = pageRoot ? (pageRoot.getAttribute('data-countdown-remaining-template') || ':days d :hours h :minutes m remaining') : ':days d :hours h :minutes m remaining';
@@ -157,9 +159,76 @@
         });
     }
 
+    function initProtectedActions() {
+        document.querySelectorAll('[data-payment-confirmation-form], form[data-confirm-message]').forEach(function (form) {
+            var formId = form.getAttribute('id');
+            var submitButtons = Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"]'));
+
+            if (formId) {
+                document.querySelectorAll('[type="submit"][form="' + formId + '"]').forEach(function (button) {
+                    if (submitButtons.indexOf(button) === -1) {
+                        submitButtons.push(button);
+                    }
+                });
+            }
+
+            var isSubmitting = false;
+            var guard = createFormSubmissionGuard(form, {
+                storageKey: 'order-detail-action:' + window.location.pathname + ':' + (form.getAttribute('action') || ''),
+                reloadOnHistoryRestore: false,
+            });
+
+            function reset() {
+                isSubmitting = false;
+                form.removeAttribute('aria-busy');
+                submitButtons.forEach(function (button) {
+                    button.disabled = false;
+                    button.classList.remove('is-processing');
+
+                    if (button.dataset.originalHtml) {
+                        button.innerHTML = button.dataset.originalHtml;
+                    }
+                });
+            }
+
+            form.addEventListener('submit', function (event) {
+                if (isSubmitting) {
+                    event.preventDefault();
+                    return;
+                }
+
+                var confirmation = form.getAttribute('data-confirm-message');
+                if (confirmation && !window.confirm(confirmation)) {
+                    event.preventDefault();
+                    return;
+                }
+
+                if (!form.checkValidity()) {
+                    return;
+                }
+
+                isSubmitting = true;
+                form.setAttribute('aria-busy', 'true');
+                guard.markSubmitted();
+
+                submitButtons.forEach(function (button) {
+                    button.dataset.originalHtml = button.dataset.originalHtml || button.innerHTML;
+                    button.disabled = true;
+                    button.classList.add('is-processing');
+                    button.innerHTML = '<span class="booking-submit-button__spinner" aria-hidden="true"></span><span>'
+                        + (button.getAttribute('data-processing-label') || 'Processing...')
+                        + '</span>';
+                });
+            });
+
+            guard.bindHistoryRestore(reset);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         initReceiptPreview();
         initPaymentCountdown();
         initInvoicePreviewModal();
+        initProtectedActions();
     });
 }());

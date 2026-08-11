@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\HotelRoom;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreHotelNormalPriceRequest extends FormRequest
 {
@@ -30,6 +31,20 @@ class StoreHotelNormalPriceRequest extends FormRequest
             'kick_back' => ['nullable', 'array'],
             'kick_back.*' => ['nullable', 'numeric', 'min:0'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $fields = ['start_date', 'end_date', 'contract_rate', 'markup'];
+            $expected = count((array) $this->input('rooms_id', []));
+
+            foreach ($fields as $field) {
+                if (count((array) $this->input($field, [])) !== $expected) {
+                    $validator->errors()->add($field, 'Every room price row must contain a complete pricing value.');
+                }
+            }
+        });
     }
 
     private function roomBelongsToHotelRule(): \Closure

@@ -85,31 +85,31 @@
                             <div class="table-action">
                                 @if ($villa_order->status == "Draft" || $villa_order->status == "Invalid")
                                     <a href="{{ route('view.edit-order-villa',$villa_order->id) }}">
-                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
+                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                     </a>
                                     <form class="display-content" action="/delete-order/{{ $villa_order->id }}" method="post">
                                         @csrf
                                         @method('delete')
                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                        <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i></button>
+                                        <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash-alt"></i></button>
                                     </form>
                                 @elseif ($villa_order->status == "Rejected")
                                     <a href="{{ route('view.detail-order-villa',$villa_order->id) }}">
-                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                     </a>
                                     <form class="display-content" action="/delete-order/{{ $villa_order->id }}" method="post">
                                         @csrf
                                         @method('delete')
                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                        <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i></button>
+                                        <button class="btn-delete" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash-alt"></i></button>
                                     </form>
                                 @elseif ($villa_order->status == "Confirmed")
                                     <a href="{{ route('view.detail-order-villa',$villa_order->id) }}">
-                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                     </a>
                                 @else
                                     <a href="{{ route('view.detail-order-villa',$villa_order->id) }}">
-                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                        <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                     </a>
                                 @endif
                                 

@@ -31,6 +31,18 @@ body.sidebar-light .backend-form-grid--compact {
   gap: 10px;
 }
 
+body.sidebar-light .backend-form-field-2 {
+  display: grid;
+  flex-direction: row;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 16px;
+  min-width: 0;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 body.sidebar-light .backend-form-field,
 body.sidebar-light .form-group {
   display: flex;
@@ -43,6 +55,14 @@ body.sidebar-light .form-group {
 body.sidebar-light .backend-form-field.is-wide,
 body.sidebar-light .backend-form-grid > .is-wide {
   grid-column: 1 / -1;
+}
+body.sidebar-light .backend-form-field.is-half,
+body.sidebar-light .backend-form-grid > .is-half {
+  grid-column: 2 / -1;
+}
+body.sidebar-light .backend-form-field-2.is-half,
+body.sidebar-light .backend-form-grid > .is-half {
+  max-width: 50%;
 }
 
 body.sidebar-light .backend-form-label,
@@ -68,12 +88,65 @@ body.sidebar-light label > span > b {
   color: var(--backend-required);
 }
 
+body.sidebar-light .main-container label:not(.user-manager-check-field) > span.backend-required-marker,
+body.sidebar-light .modal label:not(.user-manager-check-field) > span.backend-required-marker,
+body.sidebar-light .main-container .form-label > span.backend-required-marker,
+body.sidebar-light .modal .form-label > span.backend-required-marker,
+body.sidebar-light .backend-required-marker {
+  color: var(--backend-required) !important;
+  display: inline !important;
+  font: inherit;
+  font-weight: 900;
+  margin-left: 2px;
+}
+
 body.sidebar-light .backend-form-help,
 body.sidebar-light .backend-form-field small,
 body.sidebar-light .form-group small {
   color: var(--backend-muted);
   font-size: 11px;
   line-height: 1.45;
+}
+
+body.sidebar-light .backend-money-control {
+  align-items: stretch;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+}
+
+body.sidebar-light .backend-money-control__unit {
+  align-items: center;
+  background: var(--backend-form-bg-soft);
+  border: 1px solid var(--backend-form-border);
+  border-radius: var(--backend-form-radius) 0 0 var(--backend-form-radius);
+  color: var(--backend-muted-link);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  min-width: 54px;
+  padding: 0 10px;
+}
+
+body.sidebar-light .backend-money-control > .backend-form-control,
+body.sidebar-light .backend-money-control > input:not([type="checkbox"]):not([type="radio"]) {
+  border-bottom-left-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+body.sidebar-light .backend-money-control:focus-within .backend-money-control__unit {
+  border-color: var(--backend-form-focus-border);
+  color: var(--backend-brand-strong);
+}
+
+body.sidebar-light .backend-money-help {
+  display: block;
+  margin-top: 2px;
 }
 
 body.sidebar-light .backend-form-control,
@@ -244,7 +317,7 @@ body.sidebar-light button.backend-button,
 body.sidebar-light a.backend-button {
   align-items: center;
   border: 1px solid transparent;
-  border-radius: var(--backend-radius-sm);
+  border-radius: var(--backend-radius-md);
   cursor: pointer;
   display: inline-flex;
   font-size: 13px;
@@ -281,7 +354,6 @@ body.sidebar-light button[type="submit"]:not(.note-btn):not(.btn-delete):not(.ba
   background: linear-gradient(135deg, var(--backend-brand), var(--backend-brand-strong));
   border-color: transparent;
   color: #ffffff;
-  // box-shadow: 0 10px 22px rgba(20, 184, 166, 0.22);
 }
 
 body.sidebar-light .backend-button-secondary,
@@ -321,7 +393,6 @@ body.sidebar-light .backend-toolbar-action:hover,
 body.sidebar-light .backend-toolbar-action:focus,
 body.sidebar-light .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete):hover,
 body.sidebar-light .btn:not(.note-btn):not(.close):not(.btn-view):not(.btn-edit):not(.btn-delete):focus {
-  // box-shadow: var(--backend-button-hover-shadow);
   color: #ffffff;
   text-decoration: none;
   transform: var(--backend-button-hover-transform);
@@ -400,6 +471,11 @@ body.sidebar-light button:disabled {
   transform: none;
 }
 
+.backend-button-delete-text {
+  background: none !important;
+  color: #ff5454 !important;
+}
+
 body.sidebar-light .backend-radio,
 body.sidebar-light .backend-check {
   align-items: center;
@@ -412,6 +488,7 @@ body.sidebar-light .backend-check {
 
 body.sidebar-light .main-container input[type="checkbox"],
 body.sidebar-light .modal input[type="checkbox"] {
+  display: none !important;
   -webkit-appearance: none;
   appearance: none;
   background: #cbd5e1;
@@ -439,6 +516,7 @@ body.sidebar-light .modal input[type="checkbox"] {
 
 body.sidebar-light .main-container input[type="checkbox"]:checked,
 body.sidebar-light .modal input[type="checkbox"]:checked {
+  display: none;
   background-color: var(--backend-brand);
   background-position: 21px 50%;
   border-color: var(--backend-brand-strong);
@@ -480,6 +558,50 @@ body.sidebar-light .modal input[type="radio"] {
   cursor: pointer;
   height: 18px;
   width: 18px;
+}
+
+body.sidebar-light button.is-submitting,
+body.sidebar-light input[type="submit"].is-submitting,
+body.sidebar-light .backend-button.is-submitting,
+body.sidebar-light .backend-page-primary-action.is-submitting,
+body.sidebar-light .backend-toolbar-action.is-submitting {
+  cursor: wait;
+  opacity: 0.76;
+  pointer-events: none;
+}
+
+body.sidebar-light .note-editor.note-frame {
+    width: 100%;
+}
+
+.backend-action-spinner {
+  animation: backend-action-spin 700ms linear infinite;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 14px;
+  margin-right: 8px;
+  vertical-align: -2px;
+  width: 14px;
+}
+.footer-setting-input-grid label, .footer-link-modal label {
+    display: flex !important;
+    margin: 0;
+    min-width: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+}
+.footer-toggle__text, .footer-toggle__track {
+    margin: 0 !important;
+}
+@keyframes backend-action-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 767px) {

@@ -144,7 +144,7 @@
                             <img src="{{ $avatarUrl }}" alt="{{ $user->name ?: $user->username }}">
                             @if ($user->status !== 'Block')
                                 <button type="button" class="profile-avatar__edit" data-bs-toggle="modal" data-bs-target="#profilePictureModal" aria-label="@lang('messages.Change Profile Picture')">
-                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                 </button>
                             @endif
                         </div>

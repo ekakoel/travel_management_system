@@ -200,7 +200,7 @@
 <div class="col-md-8">
     <div class="card-box">
         <div class="card-box-title">
-            <div class="subtitle"><i class="fa fa-pencil"></i> @lang('messages.Edit Order')</div>
+            <div class="subtitle"><i class="fa fa-pencil-alt"></i> @lang('messages.Edit Order')</div>
         </div>
         <div class="row">
             <div class="col-6 col-md-6">
@@ -527,7 +527,7 @@
                     @method('delete')
                     <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                 </form>
-                <button type="submit" form="deleteOrder" class="btn btn-dark" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i> Delete Order</button>
+                <button type="submit" form="deleteOrder" class="btn btn-dark" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash-alt"></i> Delete Order</button>
                 @elseif($order->status == "Approved" or $order->status == "Paid")
                 @if ($status_contract == 1)
                     @if ($receipt == "")

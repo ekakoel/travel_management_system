@@ -87,12 +87,12 @@
                                                         <td class="text-center">
                                                             <div class="table-action">
                                                                 <a href="/edit-wedding-planner-{{ $wedding_planner->id }}">
-                                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
+                                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                                                 </a>
                                                                 <form class="display-content" action="/fdelete-wedding-planner/{{ $wedding_planner->id }}" method="post">
                                                                     @csrf
                                                                     @method('delete')
-                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                 </form>
                                                             </div>
                                                         </td>

@@ -28,7 +28,7 @@ class UpdateHotelPromoRequest extends FormRequest
             'minimum_stay' => ['required', 'integer', 'min:1'],
             'contract_rate' => ['required', 'numeric', 'min:0'],
             'markup' => ['required', 'numeric', 'min:0'],
-            'status' => ['nullable', 'string', 'max:50'],
+            'status' => ['required', Rule::in(['Active', 'Draft'])],
         ];
     }
 

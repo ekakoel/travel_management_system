@@ -2992,6 +2992,11 @@ input[type=button].btn-block {
 
 .dropdown-menu.show {
   display: block;
+  position: absolute;
+  transform: translate3d(-143px, 43px, 0px);
+  top: 0px;
+  left: 0px;
+  will-change: transform;
 }
 
 .dropdown-header {

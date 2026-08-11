@@ -25,7 +25,10 @@ class UpdateHotelPackageRequest extends FormRequest
             'contract_rate' => ['required', 'numeric', 'min:0'],
             'markup' => ['required', 'numeric', 'min:0'],
             'booking_code' => ['nullable', 'string', 'max:255'],
-            'status' => ['nullable', 'string', 'max:50'],
+            'cancellation_policy' => ['nullable', 'string'],
+            'cancellation_policy_traditional' => ['nullable', 'string'],
+            'cancellation_policy_simplified' => ['nullable', 'string'],
+            'status' => ['required', Rule::in(['Active', 'Draft'])],
         ];
     }
 

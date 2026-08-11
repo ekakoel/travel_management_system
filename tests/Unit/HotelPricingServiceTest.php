@@ -6,8 +6,12 @@ use App\Models\BookingCode;
 use App\Models\HotelPackage;
 use App\Models\HotelPrice;
 use App\Models\HotelPromo;
+use App\Models\HotelRoom;
+use App\Models\Hotels;
 use App\Models\Orders;
 use App\Services\Hotels\HotelPricingService;
+use App\Services\Hotels\HotelNormalPriceOverlapValidator;
+use App\ViewModels\Hotels\HotelDetailViewModel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -123,6 +127,103 @@ class HotelPricingServiceTest extends TestCase
         $this->assertSame($pricing['grand_total'], $pricing['price_total']);
     }
 
+    public function test_rate_breakdown_matches_frontend_contract_for_package_and_kickback(): void
+    {
+        $breakdown = app(HotelPricingService::class)->rateBreakdown(
+            1500000,
+            20,
+            (object) ['rate' => 15000],
+            (object) ['tax' => 10],
+            2,
+            10
+        );
+
+        $this->assertSame(3000000.0, $breakdown['effective_contract_rate_idr']);
+        $this->assertSame(200, $breakdown['contract_rate_usd']);
+        $this->assertSame(20, $breakdown['markup_usd']);
+        $this->assertSame(220, $breakdown['subtotal_usd']);
+        $this->assertSame(22, $breakdown['tax_usd']);
+        $this->assertSame(242, $breakdown['published_rate']);
+        $this->assertSame(232, $breakdown['net_rate']);
+    }
+
+    public function test_normal_price_overlap_is_rejected_at_crud_boundary(): void
+    {
+        HotelPrice::create([
+            'hotels_id' => 1,
+            'rooms_id' => 1,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-10',
+            'contract_rate' => 1500000,
+            'markup' => 20,
+            'kick_back' => 0,
+            'author' => 1,
+        ]);
+
+        $this->expectException(ValidationException::class);
+
+        DB::transaction(fn () => app(HotelNormalPriceOverlapValidator::class)->ensureAvailable(
+            1,
+            1,
+            '2026-08-10',
+            '2026-08-15'
+        ));
+    }
+
+    public function test_backend_price_rows_show_published_net_and_legacy_conflict_consistently(): void
+    {
+        $room = new HotelRoom(['hotels_id' => 1, 'rooms' => 'Suite']);
+        $room->id = 1;
+        $prices = collect([
+            new HotelPrice([
+                'hotels_id' => 1,
+                'rooms_id' => 1,
+                'start_date' => '2026-08-01',
+                'end_date' => '2026-08-10',
+                'contract_rate' => 1500000,
+                'markup' => 20,
+                'kick_back' => 10,
+            ]),
+            new HotelPrice([
+                'hotels_id' => 1,
+                'rooms_id' => 1,
+                'start_date' => '2026-08-10',
+                'end_date' => '2026-08-20',
+                'contract_rate' => 1500000,
+                'markup' => 20,
+                'kick_back' => 10,
+            ]),
+        ]);
+
+        foreach ($prices as $index => $price) {
+            $price->id = $index + 1;
+            $price->setRelation('rooms', $room);
+        }
+
+        $viewModel = new HotelDetailViewModel(
+            hotel: new Hotels(['name' => 'Hotel One', 'status' => 'Active']),
+            rooms: collect([$room]),
+            normalPrices: $prices,
+            promos: collect(),
+            packages: collect(),
+            additionalCharges: collect(),
+            contracts: collect(),
+            usdRate: (object) ['rate' => 15000],
+            tax: (object) ['tax' => 10],
+            now: '2026-08-05',
+            latestPrice: null,
+            author: null,
+            pricingService: app(HotelPricingService::class),
+        );
+
+        $rows = $viewModel->normalPriceRows();
+
+        $this->assertSame([132, 132], $rows->pluck('published_rate')->all());
+        $this->assertSame([122, 122], $rows->pluck('net_rate')->all());
+        $this->assertSame(['Conflict', 'Conflict'], $rows->pluck('status_label')->all());
+        $this->assertSame(['danger', 'danger'], $rows->pluck('status_tone')->all());
+    }
+
     public function test_normal_rate_rejects_missing_nightly_rate(): void
     {
         HotelPrice::create([
@@ -143,6 +244,22 @@ class HotelPricingServiceTest extends TestCase
             'room_id' => 1,
             'checkin' => '2026-08-01',
             'checkout' => '2026-08-03',
+            'rooms' => 1,
+            'user_id' => 10,
+        ]);
+    }
+
+    public function test_order_pricing_fails_closed_when_usd_rate_is_invalid(): void
+    {
+        DB::table('usd_rates')->where('id', 1)->update(['rate' => 0]);
+
+        $this->expectException(ValidationException::class);
+
+        app(HotelPricingService::class)->calculateNormalRate([
+            'hotel_id' => 1,
+            'room_id' => 1,
+            'checkin' => '2026-08-01',
+            'checkout' => '2026-08-02',
             'rooms' => 1,
             'user_id' => 10,
         ]);

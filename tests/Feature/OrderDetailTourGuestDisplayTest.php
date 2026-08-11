@@ -17,26 +17,36 @@ class OrderDetailTourGuestDisplayTest extends TestCase
         );
     }
 
-    public function test_modern_tour_order_detail_uses_guest_records_before_legacy_guest_detail_html(): void
+    public function test_modern_tour_order_detail_only_displays_current_tour_guest_contract(): void
     {
         $template = file_get_contents(resource_path('views/frontend/home/orders/details/tour-modern.blade.php'));
 
         $this->assertStringContainsString("\$order->guests()->get()", $template);
         $this->assertStringContainsString("\$guestRows->isNotEmpty()", $template);
-        $this->assertStringContainsString("\$guest->identification_type", $template);
-        $this->assertStringContainsString("\$guest->identification_no", $template);
+        $this->assertStringContainsString("\$guest->name", $template);
+        $this->assertStringContainsString("\$guest->phone", $template);
+        $this->assertStringContainsString("\$guest->age", $template);
+        $this->assertStringContainsString("\$guest->sex", $template);
+        $this->assertStringNotContainsString("\$guest->identification_type", $template);
+        $this->assertStringNotContainsString("\$guest->identification_no", $template);
+        $this->assertStringNotContainsString("@lang('messages.Leader')", $template);
         $this->assertStringContainsString("\$order->guest_detail", $template);
         $this->assertNotSame('', trim(Blade::compileString($template)));
     }
 
-    public function test_legacy_tour_order_detail_uses_guest_records_before_legacy_guest_detail_html(): void
+    public function test_legacy_tour_order_detail_only_displays_current_tour_guest_contract(): void
     {
         $template = file_get_contents(resource_path('views/frontend/home/orders/details/tour-legacy.blade.php'));
 
         $this->assertStringContainsString("\$order->guests()->get()", $template);
         $this->assertStringContainsString("\$tourOrderGuestRows->isNotEmpty()", $template);
-        $this->assertStringContainsString("\$guest->identification_type", $template);
-        $this->assertStringContainsString("\$guest->identification_no", $template);
+        $this->assertStringContainsString("\$guest->name", $template);
+        $this->assertStringContainsString("\$guest->phone", $template);
+        $this->assertStringContainsString("\$guest->age", $template);
+        $this->assertStringContainsString("\$guest->sex", $template);
+        $this->assertStringNotContainsString("\$guest->identification_type", $template);
+        $this->assertStringNotContainsString("\$guest->identification_no", $template);
+        $this->assertStringNotContainsString("@lang('messages.Leader')", $template);
         $this->assertStringContainsString("{!! \$order->guest_detail !!}", $template);
         $this->assertNotSame('', trim(Blade::compileString($template)));
     }

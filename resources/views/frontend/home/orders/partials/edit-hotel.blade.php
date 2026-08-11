@@ -22,11 +22,18 @@
         ]];
     }
 @endphp
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+@once
+    @push('styles')
+        <link rel="stylesheet" href="{{ mix('build/frontend/css/components/frontend-pickers.css') }}">
+    @endpush
+    @push('scripts')
+        <script src="{{ mix('build/frontend/js/components/frontend-pickers.js') }}" defer></script>
+    @endpush
+@endonce
 <div class="col-md-8">
     <div class="card-box">
         <div class="card-box-title">
-            <div class="subtitle"><i class="fa fa-pencil"></i> @lang('messages.Edit Order')</div>
+            <div class="subtitle"><i class="fa fa-pencil-alt"></i> @lang('messages.Edit Order')</div>
         </div>
         <div class="row">
             <div class="col-6 col-md-6">
@@ -377,6 +384,11 @@
                                             class="form-control booking-datetime-input"
                                             placeholder="@lang('messages.Select date and time')"
                                             value="{{ $transferRow['flight_time'] }}"
+                                            data-ui-picker="datetime"
+                                            data-ui-picker-format="YYYY-MM-DD HH:mm"
+                                            data-ui-picker-minute-step="5"
+                                            data-ui-picker-show-buttons="true"
+                                            data-ui-picker-prefill="true"
                                         >
                                     </div>
                                 </div>
@@ -592,7 +604,6 @@
 
 @include('partials.loading-form', ['id' => 'submitOrder'])
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const formatCurrency = amount => `$${Number(amount || 0).toLocaleString('de-DE', {
@@ -615,29 +626,6 @@
         const priceSuitesAndVillas = document.querySelector("#totalPriceSuitesAndVillas");
         const pricePromotionDiscounts = document.querySelector("#promotionDiscountsTotal");
         const inputFinalPrice = document.querySelector("#inputFinalPrice");
-
-        function initDatePickers(scope) {
-            if (typeof flatpickr !== "function") {
-                return;
-            }
-
-            scope.querySelectorAll(".booking-datetime-input").forEach(function (input) {
-                if (input._flatpickr) {
-                    input._flatpickr.destroy();
-                }
-
-                flatpickr(input, {
-                    enableTime: true,
-                    dateFormat: "Y-m-d H:i",
-                    minuteIncrement: 5,
-                    minDate: new Date().fp_incr(1),
-                    defaultDate: input.value || new Date().fp_incr(1),
-                    allowInput: false,
-                    clickOpens: true,
-                    disableMobile: true,
-                });
-            });
-        }
 
         function getRows() {
             return Array.from(rowContainer.querySelectorAll("[data-transfer-row]"));
@@ -677,7 +665,7 @@
                 <div class="col-xl-3 col-lg-3 col-md-6">
                     <div class="form-group">
                         <label>@lang('messages.Date and time')</label>
-                        <input readonly type="text" name="flight_time[]" class="form-control booking-datetime-input" placeholder="@lang('messages.Select date and time')">
+                        <input readonly type="text" name="flight_time[]" class="form-control booking-datetime-input" placeholder="@lang('messages.Select date and time')" data-ui-picker="datetime" data-ui-picker-format="YYYY-MM-DD HH:mm" data-ui-picker-minute-step="5" data-ui-picker-show-buttons="true" data-ui-picker-prefill="true">
                     </div>
                 </div>
                 <div class="col-xl-4 col-lg-8 col-md-6">
@@ -701,7 +689,6 @@
             `;
 
             rowContainer.appendChild(row);
-            initDatePickers(row);
             updateRemoveButtons();
             updateTotalPrice();
         }
@@ -821,7 +808,6 @@
             createRow();
         });
 
-        initDatePickers(document);
         updateRemoveButtons();
         updateTotalPrice();
     });

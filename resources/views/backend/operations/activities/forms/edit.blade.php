@@ -36,7 +36,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('activities-admin.index') }}">Activities</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.index') }}">Activities</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.activities.show', $activities->id) }}">{{ $activities->name }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Edit</li>
                         </ol>
@@ -259,45 +259,120 @@
                                 <h2>Customer-Facing Copy</h2>
                             </div>
                         </div>
-
-                        <div class="backend-form-field">
-                            <label for="description" class="backend-form-label">Description <span>*</span></label>
-                            <textarea id="description" name="description" class="textarea_editor backend-form-control border-radius-0 @error('description') is-invalid @enderror" data-backend-richtext="true" required>{!! old('description', $activities->description) !!}</textarea>
-                            @error('description')
-                                <span class="invalid-feedback d-block">{{ $message }}</span>
-                            @enderror
+                        <div class="form-input-grid-2">
+                            <div class="backend-form-field">
+                                <label for="description" class="backend-form-label">Description <span>*</span></label>
+                                <textarea id="description" name="description" class="textarea_editor backend-form-control border-radius-0 @error('description') is-invalid @enderror" data-backend-richtext="true" required>{!! old('description', $activities->description) !!}</textarea>
+                                @error('description')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="description_traditional" class="backend-form-label">Description Traditional<span>*</span></label>
+                                <textarea id="description_traditional" name="description_traditional" class="textarea_editor backend-form-control border-radius-0 @error('description_traditional') is-invalid @enderror" data-backend-richtext="true" required>{!! old('description_traditional', $activities->description_traditional) !!}</textarea>
+                                @error('description_traditional')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="description_simplified" class="backend-form-label">Description Simplified<span>*</span></label>
+                                <textarea id="description_simplified" name="description_simplified" class="textarea_editor backend-form-control border-radius-0 @error('description_simplified') is-invalid @enderror" data-backend-richtext="true" required>{!! old('description_simplified', $activities->description_simplified) !!}</textarea>
+                                @error('description_simplified')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
-
-                        <div class="backend-form-field">
-                            <label for="itinerary" class="backend-form-label">Itinerary</label>
-                            <textarea id="itinerary" name="itinerary" class="textarea_editor backend-form-control border-radius-0 @error('itinerary') is-invalid @enderror" data-backend-richtext="true">{!! old('itinerary', $activities->itinerary) !!}</textarea>
-                            @error('itinerary')
-                                <span class="invalid-feedback d-block">{{ $message }}</span>
-                            @enderror
+                        <div class="form-input-grid-2">
+                            <div class="backend-form-field">
+                                <label for="itinerary" class="backend-form-label">Itinerary</label>
+                                <textarea id="itinerary" name="itinerary" class="textarea_editor backend-form-control border-radius-0 @error('itinerary') is-invalid @enderror" data-backend-richtext="true">{!! old('itinerary', $activities->itinerary) !!}</textarea>
+                                @error('itinerary')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="itinerary_traditional" class="backend-form-label">Itinerary Traditional</label>
+                                <textarea id="itinerary_traditional" name="itinerary_traditional" class="textarea_editor backend-form-control border-radius-0 @error('itinerary_traditional') is-invalid @enderror" data-backend-richtext="true">{!! old('itinerary_traditional', $activities->itinerary_traditional) !!}</textarea>
+                                @error('itinerary_traditional')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="itinerary_simplified" class="backend-form-label">Itinerary Simplified</label>
+                                <textarea id="itinerary_simplified" name="itinerary_simplified" class="textarea_editor backend-form-control border-radius-0 @error('itinerary_simplified') is-invalid @enderror" data-backend-richtext="true">{!! old('itinerary_simplified', $activities->itinerary_simplified) !!}</textarea>
+                                @error('itinerary_simplified')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
-
-                        <div class="backend-form-field">
-                            <label for="include" class="backend-form-label">Include</label>
-                            <textarea id="include" name="include" class="textarea_editor backend-form-control border-radius-0 @error('include') is-invalid @enderror" data-backend-richtext="true">{!! old('include', $activities->include) !!}</textarea>
-                            @error('include')
-                                <span class="invalid-feedback d-block">{{ $message }}</span>
-                            @enderror
+                        <div class="form-input-grid-2">
+                            <div class="backend-form-field">
+                                <label for="include" class="backend-form-label">Include</label>
+                                <textarea id="include" name="include" class="textarea_editor backend-form-control border-radius-0 @error('include') is-invalid @enderror" data-backend-richtext="true">{!! old('include', $activities->include) !!}</textarea>
+                                @error('include')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="include_traditional" class="backend-form-label">Include Traditional</label>
+                                <textarea id="include_traditional" name="include_traditional" class="textarea_editor backend-form-control border-radius-0 @error('include_traditional') is-invalid @enderror" data-backend-richtext="true">{!! old('include_traditional', $activities->include_traditional) !!}</textarea>
+                                @error('include_traditional')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="include_simplified" class="backend-form-label">Include Simplified</label>
+                                <textarea id="include_simplified" name="include_simplified" class="textarea_editor backend-form-control border-radius-0 @error('include_simplified') is-invalid @enderror" data-backend-richtext="true">{!! old('include_simplified', $activities->include_simplified) !!}</textarea>
+                                @error('include_simplified')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
-
-                        <div class="backend-form-field">
-                            <label for="cancellation_policy" class="backend-form-label">Cancellation Policy</label>
-                            <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor backend-form-control border-radius-0 @error('cancellation_policy') is-invalid @enderror" data-backend-richtext="true">{!! old('cancellation_policy', $activities->cancellation_policy) !!}</textarea>
-                            @error('cancellation_policy')
-                                <span class="invalid-feedback d-block">{{ $message }}</span>
-                            @enderror
+                        <div class="form-input-grid-2">
+                            <div class="backend-form-field">
+                                <label for="cancellation_policy" class="backend-form-label">Cancellation Policy</label>
+                                <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor backend-form-control border-radius-0 @error('cancellation_policy') is-invalid @enderror" data-backend-richtext="true">{!! old('cancellation_policy', $activities->cancellation_policy) !!}</textarea>
+                                @error('cancellation_policy')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="cancellation_policy_traditional" class="backend-form-label">Cancellation Policy Traditional</label>
+                                <textarea id="cancellation_policy_traditional" name="cancellation_policy_traditional" class="textarea_editor backend-form-control border-radius-0 @error('cancellation_policy_traditional') is-invalid @enderror" data-backend-richtext="true">{!! old('cancellation_policy_traditional', $activities->cancellation_policy_traditional) !!}</textarea>
+                                @error('cancellation_policy_traditional')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="cancellation_policy_simplified" class="backend-form-label">Cancellation Policy Simplified</label>
+                                <textarea id="cancellation_policy_simplified" name="cancellation_policy_simplified" class="textarea_editor backend-form-control border-radius-0 @error('cancellation_policy_simplified') is-invalid @enderror" data-backend-richtext="true">{!! old('cancellation_policy_simplified', $activities->cancellation_policy_simplified) !!}</textarea>
+                                @error('cancellation_policy_simplified')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
-
-                        <div class="backend-form-field">
-                            <label for="additional_info" class="backend-form-label">Additional Information</label>
-                            <textarea id="additional_info" name="additional_info" class="textarea_editor backend-form-control border-radius-0 @error('additional_info') is-invalid @enderror" data-backend-richtext="true">{!! old('additional_info', $activities->additional_info) !!}</textarea>
-                            @error('additional_info')
-                                <span class="invalid-feedback d-block">{{ $message }}</span>
-                            @enderror
+                        <div class="form-input-grid-2">
+                            <div class="backend-form-field">
+                                <label for="additional_info" class="backend-form-label">Additional Information</label>
+                                <textarea id="additional_info" name="additional_info" class="textarea_editor backend-form-control border-radius-0 @error('additional_info') is-invalid @enderror" data-backend-richtext="true">{!! old('additional_info', $activities->additional_info) !!}</textarea>
+                                @error('additional_info')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="additional_info_traditional" class="backend-form-label">Additional Information Traditional</label>
+                                <textarea id="additional_info_traditional" name="additional_info_traditional" class="textarea_editor backend-form-control border-radius-0 @error('additional_info_traditional') is-invalid @enderror" data-backend-richtext="true">{!! old('additional_info_traditional', $activities->additional_info_traditional) !!}</textarea>
+                                @error('additional_info_traditional')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="backend-form-field">
+                                <label for="additional_info_simplified" class="backend-form-label">Additional Information Simplified</label>
+                                <textarea id="additional_info_simplified" name="additional_info_simplified" class="textarea_editor backend-form-control border-radius-0 @error('additional_info_simplified') is-invalid @enderror" data-backend-richtext="true">{!! old('additional_info_simplified', $activities->additional_info_simplified) !!}</textarea>
+                                @error('additional_info_simplified')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
 
                         <input class="backend-form-control" id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">

@@ -175,7 +175,7 @@
                                                     </td>
                                                     <td>
                                                         <a href="/{{ $service->nicname }}-admin-{{ $wedding['id'] }}" data-toggle="tooltip" data-placement="top" title="View">
-                                                            <button class="btn-view"><i class="dw dw-eye"></i></button>
+                                                            <button class="btn-view"><i class="fas fa-eye"></i></button>
                                                         </a>
                                                         @canany(['posDev','posAuthor'])
                                                             @if ($wedding->status !== "Active")
@@ -185,7 +185,7 @@
                                                                 <form class="display-content" action="/f{{ $service->nicname }}-remove/{{ $wedding['id'] }}" method="post">
                                                                     <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                                     <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete">
-                                                                        <i class="icon-copy fa fa-trash"></i></button>
+                                                                        <i class="icon-copy fa fa-trash-alt"></i></button>
                                                                     @csrf
                                                                     @method('delete')
                                                                 </form>

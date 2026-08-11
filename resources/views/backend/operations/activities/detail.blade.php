@@ -9,6 +9,11 @@
 @push('scripts')
     <script src="{{ mix('build/backend/js/operations/activities/index.js') }}" defer></script>
 @endpush
+@php
+    $galleryImages = $activity->images ?? collect();
+    $featuredImage = $galleryImages->first();
+    $previewImages = $galleryImages->skip(1)->take(4);
+@endphp
 
 @section('content')
     @can('isAdmin')
@@ -23,7 +28,7 @@
                     @canany(['posDev','posAuthor'])
                         <x-slot name="action">
                             <a href="{{ route('admin.activities.edit', $activity->id) }}" class="backend-page-primary-action">
-                                <i class="fa fa-pencil"></i>
+                                <i class="fa fa-pencil-alt"></i>
                                 Edit Activity
                             </a>
                         </x-slot>
@@ -34,7 +39,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('activities-admin.index') }}">Activities</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.index') }}">Activities</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $activity->name }}</li>
                         </ol>
                     </nav>
@@ -93,6 +98,7 @@
                                     <h2>Detail Information</h2>
                                 </div>
                             </div>
+                            
                             <div class="activity-detail-summary">
                                 <figure class="backend-table-card activity-detail-cover">
                                     <img
@@ -124,6 +130,37 @@
                                         <div><dt>Status</dt><dd><span class="backend-status-badge backend-status-badge--{{ $activityDetail->statusTone() }}">{{ $activityDetail->status() }}</span></dd></div>
                                     </dl>
                                 </article>
+
+                                @if ($activity->images->count())
+                                        <article class="backend-table-card activity-detail-content-block">
+                                            <div class="backend-table-card__header">
+                                                <div>
+                                                    <span class="backend-table-card__label">Gallery</span>
+                                                    <strong>Explore {{ $activity->name }}</strong>
+                                                </div>
+                                            </div>
+                                            <div class="activity-gallery__grid">
+    
+                                                @foreach($activity->images as $image)
+    
+                                                    <a
+                                                        href="{{ asset('storage/'.$image->image) }}"
+                                                        class="activity-gallery__item"
+                                                        target="_blank"
+                                                    >
+                                                        <img
+                                                            src="{{ asset('storage/'.$image->image) }}"
+                                                            alt="{{ $activity->name }}"
+                                                            loading="lazy"
+                                                        >
+                                                    </a>
+    
+                                                @endforeach
+    
+                                            </div>
+                                        </article>
+                                        
+                                @endif
 
                                 @foreach ($activityDetail->contentBlocks() as $label => $content)
                                     @if (filled($content))
@@ -176,7 +213,7 @@
                             @canany(['posDev','posAuthor'])
                                 <div class="backend-detail-side-actions">
                                     <a href="{{ route('admin.activities.edit', $activity->id) }}" class="backend-page-primary-action">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-pencil-alt"></i>
                                         Edit Activity
                                     </a>
                                     <a href="{{ route('admin.activities.gallery.edit', $activity->id) }}" class="backend-toolbar-action">
@@ -192,5 +229,6 @@
                 @include('layouts.footer')
             </div>
         </main>
+        
     @endcan
 @endsection

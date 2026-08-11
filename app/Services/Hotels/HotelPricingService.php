@@ -51,26 +51,67 @@ class HotelPricingService
 
     public function rateComponents(float|int|null $contractRateIdr, float|int|null $markup, object|null $usdRate, object|null $tax, int $multiplier = 1): array
     {
-        $contractRateUsd = $this->contractRateUsd(((float) $contractRateIdr) * max($multiplier, 1), $usdRate);
+        $breakdown = $this->rateBreakdown($contractRateIdr, $markup, $usdRate, $tax, $multiplier);
+
+        return [
+            'contract_rate_usd' => $breakdown['contract_rate_usd'],
+            'markup_usd' => $breakdown['markup_usd'],
+            'tax_usd' => $breakdown['tax_usd'],
+            'published_rate' => $breakdown['published_rate'],
+        ];
+    }
+
+    public function rateBreakdown(
+        float|int|null $contractRateIdr,
+        float|int|null $markup,
+        object|null $usdRate,
+        object|null $tax,
+        int $multiplier = 1,
+        float|int|null $kickBack = 0
+    ): array {
+        $effectiveMultiplier = max($multiplier, 1);
+        $exchangeRate = (float) ($usdRate->rate ?? 0);
+        $effectiveContractRateIdr = (float) $contractRateIdr * $effectiveMultiplier;
+        $contractRateUsd = $this->contractRateUsd($effectiveContractRateIdr, $usdRate);
         $markupUsd = (int) ceil((float) $markup);
         $subtotalUsd = $contractRateUsd + $markupUsd;
         $taxPercent = (float) ($tax->tax ?? 0);
-        $taxAmount = (int) ceil($subtotalUsd * ($taxPercent / 100));
+        $taxUsd = (int) ceil($subtotalUsd * ($taxPercent / 100));
+        $publishedRate = $subtotalUsd + $taxUsd;
+        $kickBackUsd = max((int) ceil((float) $kickBack), 0);
 
         return [
+            'contract_rate_idr' => (float) $contractRateIdr,
+            'multiplier' => $effectiveMultiplier,
+            'effective_contract_rate_idr' => $effectiveContractRateIdr,
+            'exchange_rate_idr' => $exchangeRate,
+            'exchange_rate_valid' => $exchangeRate > 0,
             'contract_rate_usd' => $contractRateUsd,
             'markup_usd' => $markupUsd,
-            'tax_usd' => $taxAmount,
-            'published_rate' => $subtotalUsd + $taxAmount,
+            'subtotal_usd' => $subtotalUsd,
+            'tax_percent' => $taxPercent,
+            'tax_usd' => $taxUsd,
+            'published_rate' => $publishedRate,
+            'kick_back_usd' => $kickBackUsd,
+            'net_rate' => max($publishedRate - $kickBackUsd, 0),
         ];
     }
 
     public function normalPricePublishedRate(object $price, object|null $usdRate, object|null $tax): int
     {
-        return max(
-            $this->publishedRate($price->contract_rate, $price->markup, $usdRate, $tax) - (int) ($price->kick_back ?? 0),
-            0
-        );
+        return $this->publishedRate($price->contract_rate, $price->markup, $usdRate, $tax);
+    }
+
+    public function normalPriceNetRate(object $price, object|null $usdRate, object|null $tax): int
+    {
+        return $this->rateBreakdown(
+            $price->contract_rate,
+            $price->markup,
+            $usdRate,
+            $tax,
+            1,
+            $price->kick_back ?? 0
+        )['net_rate'];
     }
 
     public function packagePublishedRate(object $package, object|null $usdRate, object|null $tax): int
@@ -92,6 +133,7 @@ class HotelPricingService
         $rooms = max((int) ($input['rooms'] ?? 1), 1);
         $usdRate = $input['usd_rate'] ?? UsdRates::where('name', 'USD')->first();
         $tax = $input['tax'] ?? Tax::find(1);
+        $this->ensureValidUsdRate($usdRate);
 
         $nightly = [];
         $stayTotal = 0;
@@ -155,6 +197,7 @@ class HotelPricingService
         $rooms = max((int) ($input['rooms'] ?? 1), 1);
         $usdRate = $input['usd_rate'] ?? UsdRates::where('name', 'USD')->first();
         $tax = $input['tax'] ?? Tax::find(1);
+        $this->ensureValidUsdRate($usdRate);
         $now = $this->dateString($input['now'] ?? Carbon::now());
         $promoIds = collect($input['promo_ids'] ?? [])->filter()->map(fn ($id) => (int) $id)->unique()->values();
 
@@ -261,6 +304,7 @@ class HotelPricingService
         $rooms = max((int) ($input['rooms'] ?? 1), 1);
         $usdRate = $input['usd_rate'] ?? UsdRates::where('name', 'USD')->first();
         $tax = $input['tax'] ?? Tax::find(1);
+        $this->ensureValidUsdRate($usdRate);
 
         $package = HotelPackage::where('id', $packageId)
             ->where('hotels_id', $hotelId)
@@ -354,6 +398,15 @@ class HotelPricingService
         }
 
         return [$bookingCode, min((int) $bookingCode->discounts, max($subtotal, 0))];
+    }
+
+    private function ensureValidUsdRate(object|null $usdRate): void
+    {
+        if ((float) ($usdRate->rate ?? 0) <= 0) {
+            throw ValidationException::withMessages([
+                'currency' => 'A valid positive USD conversion rate is required before Hotel pricing can be calculated.',
+            ]);
+        }
     }
 
     private function pricingResult(array $data): array

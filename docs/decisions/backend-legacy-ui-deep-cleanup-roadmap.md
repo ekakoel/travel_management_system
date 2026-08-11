@@ -20,8 +20,23 @@ Tracker ringkas cleanup UI backend legacy.
 
 ## Phase LUI-2 - Reservation Detail Cleanup
 
+- [x] Audit section dan modal terbesar di `resources/views/admin/reservation_detail.blade.php`.
+- [x] Petakan section besar: Reservation, Flight, Agent, Guest, Guide, Driver, Accommodation, Activity/Tour, Transport, Restaurant, Include, Exclude, Remark, Sidebar Attention/Notes.
 - [x] Pindahkan confirm delete ke JS backend operations reservations detail.
-- [ ] Audit table/card/detail responsive saat halaman disentuh lagi.
+- [x] Pindahkan confirm/delete behavior ke asset backend domain.
+- [x] Standardisasi `/reservation` sebagai assigned operational queue dengan
+  hero, breadcrumb toolbar, KPI, filter, multi-display table/card, empty state,
+  modal, form, status badge, dan action shared backend.
+- [x] Pindahkan filter, modal restore, dan delete confirmation index ke asset
+  `resources/backend/js/operations/reservations/index.js`.
+- [x] Pindahkan query/eager loading, summary, manual number generation, dan
+  guard delete Draft ke `ReservationAdminService`.
+- [x] Ganti link detail legacy `/reservation-{id}` pada flow Reservation dengan
+  named route canonical `view.reservation.detail` (`/reservation/{id}`).
+- [x] Audit keseluruhan markup detail reservation legacy dan pecah menjadi
+  partial responsive pada namespace `backend.operations.reservations`.
+- [x] Pindahkan section detail ke partial domain responsive dan retire Blade legacy.
+- [x] Pindahkan section navigation/print behavior ke asset backend domain.
 
 ## Phase LUI-3 - Wedding Order Detail Cleanup
 

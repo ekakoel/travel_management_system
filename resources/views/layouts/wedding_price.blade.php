@@ -153,7 +153,7 @@
             @endif
             <a href="#" data-toggle="modal" data-target="#add-wedding-price">
                 @if ($weddings->decorations_id != 'null')
-                    <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Markup</button>
+                    <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Markup</button>
                 @else
                     <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                 @endif

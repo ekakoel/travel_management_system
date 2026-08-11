@@ -169,9 +169,9 @@ class HomeController extends Controller
         ));
     }
 
-    public function accommodation_service(Request $request)
+    public function hotels_service(Request $request)
     {
-        return app(FrontEndController::class)->accommodation_service($request);
+        return app(FrontEndController::class)->hotels_service($request);
     }
 
     public function services(Request $request)
@@ -185,13 +185,13 @@ class HomeController extends Controller
                 'icon' => 'fas fa-hotel',
                 'title' => __('messages.Accommodations'),
                 'description' => __('messages.Curated hotels, villas, and premium stays for professional travel programs.'),
-                'href' => route('view.accommodation-service'),
+                'href' => route('view.accommodation-services'),
             ],
             [
                 'icon' => 'fas fa-car-side',
                 'title' => __('messages.Transports'),
                 'description' => __('messages.Airport shuttle and daily rent transport options for seamless guest mobility.'),
-                'href' => route('view.transport-service'),
+                'href' => route('view.transport-services'),
             ],
             [
                 'icon' => 'fas fa-map-marked-alt',
@@ -203,7 +203,7 @@ class HomeController extends Controller
                 'icon' => 'fas fa-hiking',
                 'title' => __('messages.Activities'),
                 'description' => __('messages.Experiences, excursions, and add-on activity options for more complete client itineraries.'),
-                'href' => route('view.activity-services'),
+                'href' => route('view.activities-service'),
             ],
         ];
 
@@ -219,7 +219,7 @@ class HomeController extends Controller
                         'title' => $hotel->name,
                         'meta' => $hotel->region ?: __('messages.Accommodation'),
                         'image' => $hotel->cover ? getThumbnail('/hotels/hotels-cover/' . $hotel->cover, 520, 340) : getThumbnail('/images/default.webp', 520, 340),
-                        'href' => route('view.accommodation-detail', $hotel->code),
+                        'href' => route('view.hotel-detail', $hotel->code),
                     ];
                 }),
             'transports' => Transports::query()
@@ -271,16 +271,11 @@ class HomeController extends Controller
         return view('frontend.landing-page.services.index', compact('serviceCards', 'servicePreviews'));
     }
 
-    public function tour_package_service(Request $request)
-    {
-        return app(FrontEndController::class)->tour_package_services($request);
-    }
-
     public function show($id)
     {
         $hotel = Hotels::findOrFail($id);
 
-        return redirect()->route('view.accommodation-detail', ['code' => $hotel->code]);
+        return redirect()->route('view.hotel-detail', ['code' => $hotel->code]);
     }
     public function show_transport($id, TransportOrderNumberService $transportOrderNumberService)
     {

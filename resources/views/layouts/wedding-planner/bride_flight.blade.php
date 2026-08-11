@@ -5,7 +5,7 @@
             <div class="page-subtitle m-b-8">@lang('messages.Flight Schedule') (@lang("messages.Bride"))
                 <span>
                     <a href="#" data-toggle="modal" data-target="#update-flight-bride-{{ $wedding_planner->id }}"> 
-                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Update Flight')" aria-hidden="true"></i>
+                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Update Flight')" aria-hidden="true"></i>
                     </a>
                 </span>
             </div>
@@ -241,7 +241,7 @@
                             <input type="hidden" name="wedding_planner_id" value="{{ $wedding_planner->id }}">
                         </form>
                         <div class="card-box-footer">
-                            <button type="submit" form="updateBridesFlight" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                            <button type="submit" form="updateBridesFlight" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 
 <a href="#" data-toggle="modal" data-target="#promo-price-include-{{ $tour->id }}">
-    <i class="dw dw-eye"></i>
+    <i class="fas fa-eye"></i>
 </a>
 <div class="modal fade" id="promo-price-include-{{ $tour->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">

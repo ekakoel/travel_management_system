@@ -18,8 +18,24 @@ Referensi lifecycle dan keamanan:
 - `docs/security-rules.md`
 - `docs/database.md`
 - `docs/testing.md`
-- `docs/decisions/shared-order-status-audit.md`
+- `docs/decisions/shared-order-status-audit.md` (`historical`)
 - `docs/decisions/service-booking-flow-audit-roadmap.md`
+
+## Commercial Status dan Fulfillment
+
+- Commercial order mengikuti
+  `Draft -> Pending -> Approved -> Paid`, dengan terminal
+  `Canceled`, `Rejected`, `Invalid`, atau `Deleted`.
+- Public Transport yang selesai tetap memiliki `orders.status = Paid`.
+- Completion mengisi `orders.completed_at` dan actor manual pada
+  `orders.completed_by`; `Completed` tidak ditulis ke `orders.status`.
+- Reservation mengikuti `Pending -> Active -> Completed`, dengan cabang
+  `Canceled`.
+- Current adalah order non-terminal dengan `completed_at = null`.
+- Completed History memerlukan `completed_at != null`; Closed History memakai
+  terminal commercial state.
+- Completion harus atomic dan idempotent.
+- Status SPK/Transport Management bukan fulfillment marker public Transport.
 
 Standar nomor order berikut menjaga identitas order dan SPK mudah dilacak.
 

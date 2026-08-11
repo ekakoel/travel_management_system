@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="card-box">
                 <div class="card-box-title">
-                    <i class="dw dw-eye"></i> Package
+                    <i class="fas fa-eye"></i> Package
                     <div class="status-card m-t-8">
                         @include('partials.status-icon', ['status' => $package->status])
                     </div>

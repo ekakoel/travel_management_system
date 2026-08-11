@@ -146,12 +146,12 @@
                                             <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                         </a>
                                         <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $guest->id }}"> 
-                                            <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                                            <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                         </a>
                                         <form id="deleteInvitationOrder{{ $guest->id }}" action="/func-delete-invitation-order-wedding/{{ $guest->id }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             @method('delete')
-                                            <button form="deleteInvitationOrder{{ $guest->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                            <button form="deleteInvitationOrder{{ $guest->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                         </form>
                                     </div>
                                 @endif
@@ -202,7 +202,7 @@
                                 <div class="modal-content text-left">
                                     <div class="card-box">
                                         <div class="card-box-title">
-                                            <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Invitation')</div>
+                                            <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Invitation')</div>
                                         </div>
                                         <form id="editInvitationOrderWedding-{{ $guest->id }}" action="/fupdate-invitation-order-wedding/{{ $guest->id }}" method="post" enctype="multipart/form-data">
                                             @csrf
@@ -297,7 +297,7 @@
                                             </div>
                                         </form>
                                         <div class="card-box-footer">
-                                            <button type="submit" form="editInvitationOrderWedding-{{ $guest->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                            <button type="submit" form="editInvitationOrderWedding-{{ $guest->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                             <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                         </div>
                                     </div>

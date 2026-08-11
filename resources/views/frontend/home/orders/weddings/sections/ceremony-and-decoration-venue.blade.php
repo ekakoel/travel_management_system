@@ -21,15 +21,15 @@
                                 @method('put')
                             </form>
                             <button form="deleteCeremonyVenue" class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove">
-                                <i class="icon-copy fa fa-trash"></i>
+                                <i class="icon-copy fa fa-trash-alt"></i>
                             </button>
                             <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-wedding-order-ceremony-venue-{{ $orderWedding->id }}">
-                                <i class="icon-copy fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                <i class="icon-copy fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                             </button>
                         @endif
                     @else
                         <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-wedding-order-ceremony-venue-{{ $orderWedding->id }}">
-                            <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                            <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                         </button>
                     @endif
                 @endif
@@ -108,7 +108,7 @@
                     <div class="modal-content text-left">
                         <div class="card-box">
                             <div class="card-box-title">
-                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Ceremony Venue')</div>
+                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Ceremony Venue')</div>
                             </div>
                             <form id="updateWeddingOrderCeremonyVenue" action="/fupdate-wedding-order-ceremony-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                 @csrf
@@ -221,7 +221,7 @@
                                 <input type="hidden" name="arrangement_price" id="arrangement_price">
                             </form>
                             <div class="card-box-footer">
-                                <button type="submit" form="updateWeddingOrderCeremonyVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                <button type="submit" form="updateWeddingOrderCeremonyVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                             </div>
                         </div>
@@ -251,16 +251,16 @@
                             </button>
                             @if ($orderWedding->service != "Wedding Package")
                                 <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-ceremony-venue-{{ $orderWedding->id }}">
-                                    <i class="icon-copy fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                    <i class="icon-copy fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                 </button>
                                 <button type="submit" class="btn-icon" form="deleteDecorationCeremony" onclick="return confirm('Are you sure?');"  data-toggle="tooltip" data-placement="top" title="Remove">
-                                    <i class="icon-copy fa fa-trash"></i>
+                                    <i class="icon-copy fa fa-trash-alt"></i>
                                 </button>
                             @endif
                         @else
                             @if ($orderWedding->service != "Wedding Package")
                                 <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-ceremony-venue-{{ $orderWedding->id }}">
-                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                 </button>
                             @endif
                         @endif
@@ -345,7 +345,7 @@
                     <div class="modal-content text-left">
                         <div class="card-box">
                             <div class="card-box-title">
-                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Decoration')</div>
+                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Decoration')</div>
                             </div>
                             <form id="updateDecorationCeremonyVenue" action="/fupdate-decoration-ceremony-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                 @csrf
@@ -398,7 +398,7 @@
                                 <input type="hidden" name="arrangement_price" id="arrangement_price">
                             </form>
                             <div class="card-box-footer">
-                                <button type="submit" form="updateDecorationCeremonyVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Change')</button>
+                                <button type="submit" form="updateDecorationCeremonyVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Change')</button>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                             </div>
                         </div>

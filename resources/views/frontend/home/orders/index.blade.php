@@ -37,7 +37,7 @@
             $detailUrl = route('view.detail-order', ['id' => $order->id]);
             $editUrl = null;
 
-            if (in_array($order->service, ['Hotel', 'Hotel Promo', 'Hotel Package', 'Activity'], true)) {
+            if (in_array($order->service, ['Hotel', 'Hotel Promo', 'Hotel Package'], true)) {
                 $detailUrl = route('view.detail-order-hotel', ['id' => $order->id]);
                 $editUrl = route('view.edit-order-hotel', ['id' => $order->id]);
             } elseif ($order->service === 'Private Villa') {
@@ -49,6 +49,9 @@
             } elseif ($order->service === 'Transport') {
                 $detailUrl = route('view.detail-order-transport', ['id' => $order->id]);
                 $editUrl = route('view.edit-order-transport', ['id' => $order->id]);
+            } elseif ($order->service === 'Activity') {
+                $detailUrl = route('view.detail-order-activity', ['id' => $order->id]);
+                $editUrl = route('view.edit-order-activity', ['id' => $order->id]);
             }
 
             return [$detailUrl, $editUrl];

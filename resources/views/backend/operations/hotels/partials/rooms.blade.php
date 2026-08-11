@@ -40,7 +40,7 @@
                         </button>
                         @canany(['posDev','posAuthor'])
                             <a href="{{ route('admin.hotels.rooms.edit', $room->id) }}" class="backend-icon-action" aria-label="Edit {{ $room->rooms }}">
-                                <i class="fa fa-pencil"></i>
+                                <i class="fa fa-pencil-alt"></i>
                             </a>
                             <form action="{{ route('func.room.delete', $room->id) }}" method="post">
                                 @csrf
@@ -48,7 +48,7 @@
                                 <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                 <input type="hidden" name="hotels_id" value="{{ $hotel->id }}">
                                 <button type="submit" class="backend-icon-action is-danger" data-hotel-detail-delete="{{ $room->rooms }}" aria-label="Delete {{ $room->rooms }}">
-                                    <i class="fa fa-trash-o"></i>
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         @endcanany

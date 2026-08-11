@@ -59,7 +59,7 @@
                                             @if ($reservation->status != "Active")
                                                 <span>
                                                     <a href="#" data-toggle="modal" data-target="#update-reservation-{{ $reservation->id }}">
-                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Reservation" aria-hidden="true"></i>
+                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="Edit Reservation" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
                                             @endif

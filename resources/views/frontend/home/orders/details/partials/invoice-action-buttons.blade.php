@@ -1,6 +1,6 @@
 @php
     $invoiceActionVariant = $variant ?? 'modern';
-    $canShowInvoiceActions = isset($invoice, $order) && $invoice && $order->status === 'Approved';
+    $canShowInvoiceActions = isset($invoice, $order) && $invoice && in_array($order->status, ['Approved', 'Paid'], true);
     $isProtectedPublicInvoice = isset($order) && app(\App\Services\AccommodationFinancialFileService::class)->isProtectedPublicOrder($order);
     $invoicePreviewRoute = $isProtectedPublicInvoice
         ? route('orders.accommodation.invoice.preview', ['order' => $order->id, 'locale' => 'en'])
@@ -18,17 +18,17 @@
             <div class="order-detail-invoice-actions__label">@lang('messages.Invoice')</div>
             <div class="order-detail-action-list order-detail-action-list--tight">
                 @if ($invoicePreviewModalId)
-                    <button type="button" class="order-detail-btn order-detail-btn--soft" data-invoice-preview-trigger data-invoice-preview-target="#{{ $invoicePreviewModalId }}">
+                    <button type="button" class="ui-btn ui-btn--secondary ui-btn--block" data-invoice-preview-trigger data-invoice-preview-target="#{{ $invoicePreviewModalId }}">
                         <i class="fa-solid fa-file-invoice" aria-hidden="true"></i>
                         @lang('messages.Preview Invoice')
                     </button>
                 @else
-                    <a href="{{ $invoicePreviewRoute }}" target="_blank" rel="noopener" class="order-detail-btn order-detail-btn--soft">
+                    <a href="{{ $invoicePreviewRoute }}" target="_blank" rel="noopener" class="ui-btn ui-btn--secondary ui-btn--block">
                         <i class="fa-solid fa-file-invoice" aria-hidden="true"></i>
                         @lang('messages.Preview Invoice')
                     </a>
                 @endif
-                <a href="{{ $invoiceDownloadRoute }}" class="order-detail-btn order-detail-btn--primary">
+                <a href="{{ $invoiceDownloadRoute }}" class="ui-btn ui-btn--secondary ui-btn--block">
                     <i class="fa-solid fa-download" aria-hidden="true"></i>
                     @lang('messages.Download PDF')
                 </a>

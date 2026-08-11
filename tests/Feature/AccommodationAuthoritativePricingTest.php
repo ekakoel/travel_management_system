@@ -11,6 +11,7 @@ use App\Models\HotelPackage;
 use App\Models\HotelPrice;
 use App\Models\HotelPromo;
 use App\Models\InvoiceAdmin;
+use App\Models\Guests;
 use App\Models\Orders;
 use App\Models\Reservation;
 use App\Models\User;
@@ -105,6 +106,45 @@ class AccommodationAuthoritativePricingTest extends TestCase
         $this->assertSame('430', (string) $order->final_price);
         $this->assertSame(1, (int) DB::table('booking_codes')->where('code', 'SAVE30')->value('used'));
         Mail::assertSent(ReservationMail::class, 1);
+    }
+
+    public function test_structured_hotel_manifest_creates_guests_and_legacy_room_snapshot(): void
+    {
+        $user = $this->actingUser(10, 'developer');
+        $this->seedNormalRates('2026-08-01', '2026-08-02', 1500000, 20, 5);
+
+        $response = $this->actingAs($user)
+            ->withSession([
+                'booking_dates' => [
+                    'checkin' => '2026-08-01',
+                    'checkout' => '2026-08-03',
+                ],
+            ])
+            ->post(route('func.create.order-hotel-normal'), $this->normalHotelPayload([
+                'hotel_booking_version' => 2,
+                'room_adults' => [2],
+                'room_children' => [1],
+                'room_child_ages' => [[8]],
+                'guest_name' => ['Adult One', 'Adult Two', 'Child One'],
+                'guest_room' => [1, 1, 1],
+                'guest_category' => ['Adult', 'Adult', 'Child'],
+                'guest_phone' => ['', '+62 812 0000', ''],
+                'guest_sex' => ['Male', 'Female', 'Female'],
+            ]));
+
+        $response->assertRedirect(route('view.detail-order-admin', ['id' => 1]));
+
+        $order = DB::table('orders')->where('orderno', 'HTL-PRICE-001')->first();
+        $this->assertSame(3, (int) $order->number_of_guests);
+        $this->assertSame([3], json_decode($order->number_of_guests_room, true));
+        $this->assertStringContainsString('Child One', $order->guest_detail);
+        $this->assertStringContainsString('8 years old', $order->guest_detail);
+
+        $guests = DB::table('guests')->where('order_id', $order->id)->orderBy('id')->get();
+        $this->assertCount(3, $guests);
+        $this->assertSame(['Adult', 'Adult', 'Child'], $guests->pluck('age')->all());
+        $this->assertSame([$order->rsv_id], $guests->pluck('rsv_id')->unique()->values()->all());
+        $this->assertSame($order->rsv_id, Guests::query()->firstOrFail()->reservation->id);
     }
 
     public function test_normal_hotel_order_rejects_missing_authoritative_rate(): void
@@ -981,6 +1021,9 @@ class AccommodationAuthoritativePricingTest extends TestCase
             'markup' => 30,
             'benefits' => 'Spa credit',
             'include' => 'Breakfast and dinner',
+            'cancellation_policy' => 'Package cancellation policy',
+            'cancellation_policy_traditional' => 'Package cancellation policy traditional',
+            'cancellation_policy_simplified' => 'Package cancellation policy simplified',
         ]);
 
         $response = $this->actingAs($user)
@@ -1006,7 +1049,9 @@ class AccommodationAuthoritativePricingTest extends TestCase
         $this->assertSame('860', (string) $order->final_price);
         $this->assertSame('2', (string) $order->duration);
         $this->assertSame('Spa credit', $order->benefits);
-        $this->assertSame('Safe cancellation policy', $order->cancellation_policy);
+        $this->assertSame('Package cancellation policy', $order->cancellation_policy);
+        $this->assertSame('Package cancellation policy traditional', $order->cancellation_policy_traditional);
+        $this->assertSame('Package cancellation policy simplified', $order->cancellation_policy_simplified);
     }
 
     public function test_package_hotel_order_rejects_wrong_duration_and_expired_package(): void
@@ -1121,6 +1166,7 @@ class AccommodationAuthoritativePricingTest extends TestCase
         $this->assertSame('430', (string) $invoice->total_usd);
         $this->assertSame('430', (string) $invoice->balance);
         $this->assertSame('6450000', (string) $invoice->total_idr);
+        $this->assertTrue($invoice->reservations->is($reservation));
     }
 
     private function normalHotelPayload(array $overrides = []): array
@@ -1404,6 +1450,8 @@ class AccommodationAuthoritativePricingTest extends TestCase
             $table->integer('airport_duration')->nullable();
             $table->integer('airport_distance')->nullable();
             $table->longText('cancellation_policy')->nullable();
+            $table->longText('cancellation_policy_traditional')->nullable();
+            $table->longText('cancellation_policy_simplified')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
         });
@@ -1475,6 +1523,9 @@ class AccommodationAuthoritativePricingTest extends TestCase
             $table->longText('benefits')->nullable();
             $table->longText('include')->nullable();
             $table->longText('additional_info')->nullable();
+            $table->longText('cancellation_policy')->nullable();
+            $table->longText('cancellation_policy_traditional')->nullable();
+            $table->longText('cancellation_policy_simplified')->nullable();
             $table->string('status');
             $table->integer('author');
             $table->timestamps();
@@ -1579,6 +1630,8 @@ class AccommodationAuthoritativePricingTest extends TestCase
             $table->text('airport_shuttle_out')->nullable();
             $table->text('note')->nullable();
             $table->longText('cancellation_policy')->nullable();
+            $table->longText('cancellation_policy_traditional')->nullable();
+            $table->longText('cancellation_policy_simplified')->nullable();
             $table->timestamps();
         });
 
@@ -1725,6 +1778,9 @@ class AccommodationAuthoritativePricingTest extends TestCase
             $table->unsignedBigInteger('rsv_id')->nullable();
             $table->unsignedBigInteger('order_id')->nullable();
             $table->string('name')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('age')->nullable();
+            $table->string('sex')->nullable();
             $table->timestamps();
         });
 

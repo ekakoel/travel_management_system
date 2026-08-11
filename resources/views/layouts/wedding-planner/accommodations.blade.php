@@ -42,12 +42,12 @@
                         <td class="pd-2-8 text-right">
                             <div class="table-action">
                                 <a href="#" data-toggle="modal" data-target="#update-wedding-planner-bride-accommodation-{{ $bride_wedding_accommodation->id }}">
-                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Accommodation')"><i class="icon-copy fa fa-pencil"></i></button>
+                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Accommodation')"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                 </a>
                                 <form action="/fdelete-wedding-planner-bride-accommodation/{{ $bride_wedding_accommodation->id }}" method="post" enctype="multipart/form-data">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                 </form>
                             </div>
                             {{-- MODAL UPDATE WEDDING PLANNER BRIDE ACCOMMODATION --}}
@@ -97,7 +97,7 @@
                                                 
                                             </form>
                                             <div class="card-box-footer">
-                                                <button type="submit" form="updateWeddingPlannerBrideAccommodation-{{ $bride_wedding_accommodation->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Update')</button>
+                                                <button type="submit" form="updateWeddingPlannerBrideAccommodation-{{ $bride_wedding_accommodation->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Update')</button>
                                                 <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                             </div>
                                         </div>
@@ -135,12 +135,12 @@
                                 <td class="pd-2-8 text-right">
                                     <div class="table-action">
                                         <a href="#" data-toggle="modal" data-target="#update-wedding-planner-invitations-accommodation-{{ $inv_suite_villa->id }}">
-                                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Accommodation')"><i class="icon-copy fa fa-pencil"></i></button>
+                                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Accommodation')"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                         </a>
                                         <form action="/fdelete-wedding-planner-bride-accommodation/{{ $inv_suite_villa->id }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                         </form>
                                     </div>
                                 </td>
@@ -246,7 +246,7 @@
                                                 
                                             </form>
                                             <div class="card-box-footer">
-                                                <button type="submit" form="updateWeddingPlannerInvitationsAccommodation-{{ $inv_suite_villa->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Update')</button>
+                                                <button type="submit" form="updateWeddingPlannerInvitationsAccommodation-{{ $inv_suite_villa->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Update')</button>
                                                 <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                             </div>
                                         </div>

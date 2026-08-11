@@ -604,6 +604,87 @@ class AccommodationPaymentAuthorizationTest extends TestCase
         ]);
     }
 
+    public function test_canonical_payment_submission_stores_reported_date_amount_and_invoice_currency(): void
+    {
+        $this->fakeFinancialStorage();
+        Mail::fake();
+        $fixture = $this->createAccommodationOrder(41, ['balance' => 100]);
+
+        $response = $this->actingAs($this->actingUser(41))->post(
+            route('upload.payment-confirmation', ['id' => $fixture['order_id']]),
+            [
+                'payment_standard_version' => '1',
+                'payment_date' => '2026-08-02',
+                'amount_paid' => '40.50',
+                'receipt_file' => $this->validUpload('canonical.pdf'),
+            ]
+        );
+
+        $response->assertRedirect('/detail-order-hotel/'.$fixture['order_id']);
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('payment_confirmations', [
+            'inv_id' => $fixture['invoice_id'],
+            'kurs_id' => 1,
+            'payment_date' => '2026-08-02',
+            'amount' => '40.5',
+            'status' => 'Pending',
+        ]);
+        $this->assertEquals(100, DB::table('invoice_admins')->where('id', $fixture['invoice_id'])->value('balance'));
+    }
+
+    public function test_customer_cannot_create_a_second_pending_payment_confirmation(): void
+    {
+        $this->fakeFinancialStorage();
+        Mail::fake();
+        $fixture = $this->createAccommodationOrder(42, ['balance' => 100]);
+        $this->createReceipt($fixture['invoice_id'], 'Pending', 'existing.jpg');
+
+        $response = $this->actingAs($this->actingUser(42))
+            ->from('/detail-order-hotel/'.$fixture['order_id'])
+            ->post(route('upload.payment-confirmation', ['id' => $fixture['order_id']]), [
+                'payment_standard_version' => '1',
+                'payment_date' => '2026-08-02',
+                'amount_paid' => '100',
+                'receipt_file' => $this->validUpload('duplicate.jpg'),
+            ]);
+
+        $response->assertRedirect('/detail-order-hotel/'.$fixture['order_id']);
+        $response->assertSessionHasErrors('receipt_file');
+        $this->assertSame(1, DB::table('payment_confirmations')->where('inv_id', $fixture['invoice_id'])->count());
+        $this->assertSame([], Storage::disk('private')->allFiles(AccommodationFinancialFileService::PAYMENT_ROOT));
+    }
+
+    public function test_canonical_payment_submission_rejects_future_date_and_amount_above_balance(): void
+    {
+        $this->fakeFinancialStorage();
+        $fixture = $this->createAccommodationOrder(43, ['balance' => 100]);
+
+        $response = $this->actingAs($this->actingUser(43))
+            ->from('/detail-order-hotel/'.$fixture['order_id'])
+            ->post(route('upload.payment-confirmation', ['id' => $fixture['order_id']]), [
+                'payment_standard_version' => '1',
+                'payment_date' => now()->addDay()->toDateString(),
+                'amount_paid' => '101',
+                'receipt_file' => $this->validUpload('invalid-claim.jpg'),
+            ]);
+
+        $response->assertRedirect('/detail-order-hotel/'.$fixture['order_id']);
+        $response->assertSessionHasErrors('payment_date');
+
+        $amountResponse = $this->actingAs($this->actingUser(43))
+            ->from('/detail-order-hotel/'.$fixture['order_id'])
+            ->post(route('upload.payment-confirmation', ['id' => $fixture['order_id']]), [
+                'payment_standard_version' => '1',
+                'payment_date' => now()->toDateString(),
+                'amount_paid' => '101',
+                'receipt_file' => $this->validUpload('amount-above-balance.jpg'),
+            ]);
+
+        $amountResponse->assertRedirect('/detail-order-hotel/'.$fixture['order_id']);
+        $amountResponse->assertSessionHasErrors('amount_paid');
+        $this->assertSame(0, DB::table('payment_confirmations')->count());
+    }
+
     public function test_customer_upload_status_matrix_only_allows_approved_with_outstanding_balance(): void
     {
         $this->fakeFinancialStorage();

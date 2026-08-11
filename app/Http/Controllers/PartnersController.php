@@ -40,7 +40,7 @@ class PartnersController extends Controller
     }
 
 // View Detail Partner =========================================================================================>
-    public function view_partner_detail($id){
+    public function view_vendors_detail($id){
         $now = Carbon::now();
         $tax = Tax::where('id',1)->first();
         $partner = Partners::find($id);
@@ -56,7 +56,7 @@ class PartnersController extends Controller
         
 
         if ($partner->status == "Removed") {
-            return redirect("/partners")->with('invalid','Sorry, the partner you are looking for is not available!');
+            return redirect("/vendors")->with('invalid','Sorry, the partner you are looking for is not available!');
         }else{
             return view('admin.partner-detail',[
                 'partner'=>$partner,

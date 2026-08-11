@@ -17,15 +17,15 @@
                                     @method('put')
                                 </form>
                                 <button type="submit" form="deleteReceptionVenue" class="icon-btn-remove" onclick="return confirm('Are you sure?');" data-toggle="tooltip" data-placement="top" title="Remove">
-                                    <i class="icon-copy fa fa-trash"></i>
+                                    <i class="icon-copy fa fa-trash-alt"></i>
                                 </button>
                                 <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}">
-                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                 </button>
                             @endif
                         @else
                             <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}">
-                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                             </button>
                         @endif
                         {{-- MODAL DETAIL RECEPTION VENUE --}}
@@ -117,7 +117,7 @@
                         <div class="card-box">
                             <div class="card-box-title">
                                 @if ($receptionVenue)
-                                    <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
+                                    <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
                                 @else
                                     <div class="subtitle"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
                                 @endif
@@ -223,7 +223,7 @@
                             </form>
                             <div class="card-box-footer">
                                 @if ($receptionVenue)
-                                    <button type="submit" form="updateReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                    <button type="submit" form="updateReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                 @else
                                     <button type="submit" form="updateReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                 @endif
@@ -256,16 +256,16 @@
                         </button>
                         @if ($orderWedding->service != "Wedding Package")
                             <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}">
-                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                             </button>
                             <button type="submit" form="deleteDecorationReceptionVenue" class="icon-btn-remove" onclick="return confirm('Are you sure?');" data-toggle="tooltip" data-placement="top" title="Remove">
-                                <i class="icon-copy fa fa-trash"></i>
+                                <i class="icon-copy fa fa-trash-alt"></i>
                             </button>
                         @endif
                     @else
                         @if ($orderWedding->service != "Wedding Package")
                             <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}">
-                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                             </button>
                         @endif
                     @endif
@@ -346,7 +346,7 @@
                         <div class="card-box">
                             <div class="card-box-title">
                                 @if ($decorationReceptionVenue)
-                                    <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Reception Venue Decoration')</div>
+                                    <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Reception Venue Decoration')</div>
                                 @else
                                     <div class="subtitle"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Decoration')</div>
                                 @endif
@@ -403,7 +403,7 @@
                             </form>
                             <div class="card-box-footer">
                                 @if ($decorationReceptionVenue)
-                                    <button type="submit" form="updateDecorationReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                    <button type="submit" form="updateDecorationReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt"></i> @lang('messages.Change')</button>
                                 @else
                                     <button type="submit" form="updateDecorationReceptionVenue" class="btn btn-primary"><i class="icon-copy fa fa-Plus-circle"></i> @lang('messages.Add')</button>
                                 @endif

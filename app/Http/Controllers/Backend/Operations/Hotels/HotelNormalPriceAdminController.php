@@ -10,6 +10,8 @@ use App\Models\HotelRoom;
 use App\Models\Hotels;
 use App\Models\UserLog;
 use App\Models\UsdRates;
+use App\Services\Hotels\HotelNormalPriceOverlapValidator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -56,50 +58,71 @@ class HotelNormalPriceAdminController extends Controller
         ]);
     }
 
-    public function store(StoreHotelNormalPriceRequest $request)
+    public function store(StoreHotelNormalPriceRequest $request, HotelNormalPriceOverlapValidator $overlapValidator)
     {
         if (! $this->canManage()) {
             return $this->redirectToHotelsIndexWithError();
         }
 
-        $rowCount = count($request->rooms_id);
+        $validated = $request->validated();
+        $hotelId = (int) $validated['hotels_id'];
 
-        for ($i = 0; $i < $rowCount; $i++) {
-            HotelPrice::create([
-                'hotels_id' => $request->hotels_id,
-                'rooms_id' => $request->rooms_id[$i],
-                'start_date' => date('Y-m-d', strtotime($request->start_date[$i])),
-                'end_date' => date('Y-m-d', strtotime($request->end_date[$i])),
-                'contract_rate' => $request->contract_rate[$i],
-                'markup' => $request->markup[$i],
-                'kick_back' => $request->kick_back[$i],
-                'author' => auth()->id(),
-            ]);
-        }
+        DB::transaction(function () use ($validated, $hotelId, $overlapValidator): void {
+            foreach ($validated['rooms_id'] as $index => $roomId) {
+                $startDate = date('Y-m-d', strtotime($validated['start_date'][$index]));
+                $endDate = date('Y-m-d', strtotime($validated['end_date'][$index]));
 
-        return $this->redirectToHotelDetail($request->hotels_id, 'normalPrice')->with('success', 'Price added successfully');
+                $overlapValidator->ensureAvailable($hotelId, (int) $roomId, $startDate, $endDate);
+
+                HotelPrice::create([
+                    'hotels_id' => $hotelId,
+                    'rooms_id' => $roomId,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'contract_rate' => $validated['contract_rate'][$index],
+                    'markup' => $validated['markup'][$index],
+                    'kick_back' => $validated['kick_back'][$index] ?? 0,
+                    'author' => auth()->id(),
+                ]);
+            }
+        }, 3);
+
+        return $this->redirectToHotelDetail($hotelId, 'normalPrice')->with('success', 'Price added successfully');
     }
 
-    public function update(UpdateHotelNormalPriceRequest $request, $id)
+    public function update(UpdateHotelNormalPriceRequest $request, $id, HotelNormalPriceOverlapValidator $overlapValidator)
     {
         if (! $this->canManage()) {
             return $this->redirectToHotelsIndexWithError();
         }
 
+        $validated = $request->validated();
         $price = HotelPrice::findOrFail($id);
-        $hotelId = $request->hotels_id;
-        $startDate = date('Y-m-d', strtotime($request->start_date));
-        $endDate = date('Y-m-d', strtotime($request->end_date));
+        $hotelId = (int) $price->hotels_id;
+        $startDate = date('Y-m-d', strtotime($validated['start_date']));
+        $endDate = date('Y-m-d', strtotime($validated['end_date']));
 
-        $price->update([
-            'hotels_id' => $request->hotels_id,
-            'rooms_id' => $request->rooms_id,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'markup' => $request->markup,
-            'kick_back' => $request->kick_back,
-            'contract_rate' => $request->contract_rate,
-        ]);
+        abort_unless((int) $validated['hotels_id'] === $hotelId, 404);
+
+        DB::transaction(function () use ($price, $validated, $hotelId, $startDate, $endDate, $overlapValidator): void {
+            $lockedPrice = HotelPrice::query()->lockForUpdate()->findOrFail($price->id);
+            $overlapValidator->ensureAvailable(
+                $hotelId,
+                (int) $validated['rooms_id'],
+                $startDate,
+                $endDate,
+                (int) $lockedPrice->id
+            );
+
+            $lockedPrice->update([
+                'rooms_id' => $validated['rooms_id'],
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'markup' => $validated['markup'],
+                'kick_back' => $validated['kick_back'] ?? 0,
+                'contract_rate' => $validated['contract_rate'],
+            ]);
+        }, 3);
 
         UserLog::create([
             'action' => 'Update Normal Price',
@@ -109,7 +132,7 @@ class HotelNormalPriceAdminController extends Controller
             'page' => 'detail-hotel#normal-price',
             'user_id' => auth()->id(),
             'user_ip' => $request->getClientIp(),
-            'note' => 'Update normal price to Hotel id : '.$request->hotels_id.', Room id : '.$request->rooms_id.', Start date : '.$startDate.', End date : '.$endDate.', Markup : '.$request->markup.', Contract rate : '.$request->contract_rate,
+            'note' => 'Update normal price to Hotel id : '.$hotelId.', Room id : '.$validated['rooms_id'].', Start date : '.$startDate.', End date : '.$endDate.', Markup : '.$validated['markup'].', Contract rate : '.$validated['contract_rate'],
         ]);
 
         return $this->redirectToHotelDetail($hotelId, 'normalPrice')->with('success', 'The Price has been updated!');
@@ -148,7 +171,7 @@ class HotelNormalPriceAdminController extends Controller
 
     private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
     {
-        return redirect()->route('hotels-admin.index')->with('error', $message);
+        return redirect()->route('admin.hotels.index')->with('error', $message);
     }
 
     private function redirectToHotelDetail($hotelId, ?string $anchor = null)

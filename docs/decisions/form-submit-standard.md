@@ -21,6 +21,9 @@ Standar ini berlaku untuk form create/update penting seperti order, booking, res
 - Hidden token partial: `resources/views/partials/form-submission-token.blade.php`.
 - Backend helper trait: `app/Http/Controllers/Concerns/InteractsWithFormSubmissions.php`.
 - Frontend guard: `resources/frontend/js/components/form-submission-guard.js`.
+- Backend shared guard: `resources/backend/js/app.js`; form mutasi otomatis
+  mendapat spinner sejak klik, sedangkan action non-form memakai
+  `data-backend-action-loading` dan `window.setBackendActionLoading`.
 
 ## Checklist Implementasi
 

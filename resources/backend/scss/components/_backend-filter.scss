@@ -88,7 +88,8 @@ body.sidebar-light .backend-filter-field > span {
 body.sidebar-light .backend-filter-control,
 body.sidebar-light .backend-filter-field input,
 body.sidebar-light .backend-filter-field select {
-  background: var(--backend-panel);
+  height: 42px;
+  // background: var(--backend-panel);
   border: 1px solid var(--backend-line);
   border-radius: var(--backend-radius-sm);
   color: var(--backend-ink);
@@ -105,6 +106,21 @@ body.sidebar-light .backend-filter-field select:focus {
   border-color: var(--backend-brand);
   box-shadow: var(--backend-button-focus-ring);
   outline: none;
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px 14px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #dcdfe6;
+    border-radius: 8px;
+    outline: none;
+}
+
+.form-select option {
+    color: #333;
+    background-color: #fff;
 }
 
 body.sidebar-light .backend-filter-search {

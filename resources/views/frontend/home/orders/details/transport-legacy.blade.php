@@ -621,7 +621,7 @@
                     @method('delete')
                     <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                 </form>
-                <button type="submit" form="deleteOrder" class="btn btn-dark" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash"></i> Delete Order</button>
+                <button type="submit" form="deleteOrder" class="btn btn-dark" onclick="return confirm('@lang('messages.Are you sure?')');" type="submit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Delete')"><i class="icon-copy fa fa-trash-alt"></i> Delete Order</button>
             @elseif($order->status == "Approved" || $order->status == "Paid")
                 @if ($order->status == "Approved")
                     <a href="#" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}">

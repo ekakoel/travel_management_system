@@ -27,9 +27,13 @@
     $statusTone = $statusToneMap[$order->status] ?? 'default';
     $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
     $serviceLabel = __('messages.' . $order->service) !== 'messages.' . $order->service ? __('messages.' . $order->service) : $order->service;
-    $packageName = trim((string) ($tour->$langName ?? $order->servicename ?? $order->subservice));
-    $packageType = trim((string) ($tour->type?->$langType ?? ''));
-    $durationLabel = trim((string) (($tour->duration_days ? $tour->duration_days . 'D' : '') . ($tour->duration_nights > 0 ? ' / ' . $tour->duration_nights . 'N' : '')));
+    $packageName = trim((string) (($tour->$langName ?: $tour->name) ?: ($order->servicename ?: $order->subservice)));
+    $packageType = trim((string) ($tour->type?->$langType ?: $tour->type?->type));
+    $durationLabel = $tour->duration_days
+        ? ($tour->duration_nights > 0
+            ? __('tour-detail.duration_days_nights', ['days' => $tour->duration_days, 'nights' => $tour->duration_nights])
+            : __('tour-detail.duration_days', ['days' => $tour->duration_days]))
+        : '';
     $profileIncomplete = Auth::user()->email == '';
     $isEditable = in_array($order->status, ['Draft', 'Invalid'], true);
     $canDelete = in_array($order->status, ['Draft', 'Invalid', 'Rejected'], true);
@@ -40,18 +44,14 @@
                 $guest->phone,
                 $guest->age,
                 $guest->sex,
-                $guest->identification_type,
-                $guest->identification_no,
             ])->contains(fn ($value) => trim((string) $value) !== '');
         })
         ->values();
-    $guestLeaderPhone = trim((string) $order->pickup_phone);
-    $guestLeaderName = trim((string) $order->pickup_name);
-    $itineraryContent = trim((string) ($order->itinerary ?: ($generatedTourItinerary ?? '')));
+    $itineraryContent = trim((string) ($packageOverviewItinerary ?? $order->itinerary ?: ($generatedTourItinerary ?? '')));
     $destinationsContent = trim((string) ($order->destinations ?: data_get($tour, $langPackageHighlights) ?: $tour->package_highlights));
     $includeContent = trim((string) (data_get($order, $langInclude) ?: $order->include ?: data_get($tour, $langInclude) ?: $tour->include));
     $excludeContent = trim((string) (data_get($order, $langExclude) ?: $order->exclude ?: data_get($tour, $langExclude) ?: $tour->exclude));
-    $additionalInfoContent = trim((string) ($order->additional_info ?: data_get($tour, $langAdditionalInfo) ?: $tour->additional_info));
+    $additionalInfoContent = trim((string) ($packageOverviewAdditionalInfo ?? $order->additional_info ?: data_get($tour, $langAdditionalInfo) ?: $tour->additional_info));
     $cancellationPolicyContent = trim((string) ($order->cancellation_policy ?: data_get($tour, $langCancellationPolicy) ?: $tour->cancellation_policy));
     $orderNotice = match ($order->status) {
         'Pending' => __('messages.We have received your order, we will contact you as soon as possible to validate the order!'),
@@ -61,8 +61,10 @@
     $summaryCards = [
         ['label' => __('messages.Service'), 'value' => $serviceLabel],
         ['label' => __('messages.Travel Date'), 'value' => $order->travel_date ? dateTimeFormat($order->travel_date) : dateFormat($order->checkin)],
-        ['label' => __('messages.Number of Guests'), 'value' => ($order->number_of_guests ?: 0) . ' pax'],
-        ['label' => __('messages.Total Price'), 'value' => $order->request_quotation === 'Yes' ? __('messages.To be advised') : currencyFormatUsd($order->final_price)],
+        ['label' => __('messages.Number of Guests'), 'value' => __('tour-detail.pax_count', ['count' => $order->number_of_guests ?: 0])],
+        ['label' => __('messages.Total Price'), 'value' => $order->request_quotation === 'Yes'
+            ? __('messages.To be advised')
+            : currencyFormatUsd($tourPricing['total_usd'])],
     ];
     $bookingInfo = [
         ['label' => __('messages.Order No'), 'value' => $order->orderno],
@@ -96,20 +98,18 @@
     $invoicePreviewModalId = $invoice ? 'invoice-preview-' . $order->id : null;
     $invoiceIssueAt = $invoice?->inv_date ? Carbon::parse($invoice->inv_date) : null;
     $paymentDeadlineAt = $paymentDeadline ?? ($invoice?->due_date ? Carbon::parse($invoice->due_date) : null);
-    $latestReceipt = ($receipts && count($receipts) > 0) ? collect($receipts)->sortByDesc('created_at')->first() : null;
-    $hasPaymentSubmission = $paymentSubmissionExists ?? false;
-    $paymentExpired = $order->status === 'Canceled'
-        || ($order->status === 'Approved' && $paymentDeadlineAt && $paymentDeadlineAt->isPast() && !$hasPaymentSubmission);
-    $canSubmitPayment = $invoice
-        && $order->status === 'Approved'
-        && !$paymentExpired
-        && (!$latestReceipt || $latestReceipt->status === 'Invalid');
+    $latestReceipt = data_get($paymentState ?? [], 'latest_receipt')
+        ?: (($receipts && count($receipts) > 0) ? collect($receipts)->sortByDesc('id')->first() : null);
+    $hasPaymentSubmission = data_get($paymentState ?? [], 'has_submission', $paymentSubmissionExists ?? false);
+    $paymentExpired = data_get($paymentState ?? [], 'expired', false);
+    $canSubmitPayment = data_get($paymentState ?? [], 'can_submit', false);
+    $paymentUnderReview = data_get($paymentState ?? [], 'has_open_review', false);
     $invoiceCurrencyCode = optional($invoice?->currency)->name ?: 'USD';
     $invoiceGrandTotal = match ($invoiceCurrencyCode) {
         'CNY' => '¥ ' . number_format((float) $invoice?->total_cny, 0),
         'TWD' => 'NT$ ' . number_format((float) $invoice?->total_twd, 0),
         'IDR' => 'Rp ' . number_format((float) $invoice?->total_idr, 0),
-        default => currencyFormatUsd($invoice?->total_usd ?: $order->final_price),
+        default => currencyFormatUsd($tourPricing['total_usd']),
     };
     $paymentStateLabel = match (true) {
         $order->status === 'Paid' => __('messages.Paid'),
@@ -250,39 +250,33 @@
                                         <table class="order-detail-table order-detail-table--compact">
                                             <thead>
                                                 <tr>
-                                                    <th>No</th>
+                                                    <th>@lang('messages.No')</th>
                                                     <th>@lang('messages.Name')</th>
                                                     <th>@lang('messages.Phone')</th>
                                                     <th>@lang('messages.Age')</th>
                                                     <th>@lang('messages.Gender')</th>
-                                                    <th>@lang('messages.ID')</th>
-                                                    <th>@lang('messages.Leader')</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($guestRows as $index => $guest)
                                                     @php
-                                                        $isLeader = ($guestLeaderPhone !== '' && trim((string) $guest->phone) === $guestLeaderPhone)
-                                                            || ($guestLeaderPhone === '' && $guestLeaderName !== '' && trim((string) $guest->name) === $guestLeaderName);
-                                                        $guestIdLabel = collect([
-                                                            trim((string) $guest->identification_type),
-                                                            trim((string) $guest->identification_no),
-                                                        ])->filter()->implode(': ');
+                                                        $guestAgeLabel = match ($guest->age) {
+                                                            'Adult' => __('tour-detail.age_adult'),
+                                                            'Child' => __('tour-detail.age_child'),
+                                                            default => $guest->age ?: '-',
+                                                        };
+                                                        $guestSexLabel = match ($guest->sex) {
+                                                            'Male' => __('tour-detail.sex_male'),
+                                                            'Female' => __('tour-detail.sex_female'),
+                                                            default => $guest->sex ?: '-',
+                                                        };
                                                     @endphp
                                                     <tr>
                                                         <td>{{ $index + 1 }}</td>
                                                         <td>{{ $guest->name ?: '-' }}</td>
                                                         <td>{{ $guest->phone ?: '-' }}</td>
-                                                        <td>{{ $guest->age ?: '-' }}</td>
-                                                        <td>{{ $guest->sex ?: '-' }}</td>
-                                                        <td>{{ $guestIdLabel ?: '-' }}</td>
-                                                        <td>
-                                                            @if ($isLeader)
-                                                                <span class="order-detail-badge order-detail-badge--active">@lang('messages.Leader')</span>
-                                                            @else
-                                                                <span class="order-detail-table-muted">-</span>
-                                                            @endif
-                                                        </td>
+                                                        <td>{{ $guestAgeLabel }}</td>
+                                                        <td>{{ $guestSexLabel }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -354,8 +348,13 @@
                             <div class="order-detail-section__body">
                                 <div class="order-detail-price-list">
                                     <div class="order-detail-price-row">
-                                        <span>@lang('messages.Price') {{ $order->number_of_guests }} @lang('messages.guest')</span>
-                                        <strong>{{ currencyFormatUsd($order->price_total) }}</strong>
+                                        <span>@lang('messages.Price/pax')</span>
+                                        <strong>{{ currencyFormatUsd($tourPricing['unit_price_usd']) }}</strong>
+                                    </div>
+
+                                    <div class="order-detail-price-row">
+                                        <span>@lang('tour-detail.price_for_guests', ['count' => $order->number_of_guests])</span>
+                                        <strong>{{ currencyFormatUsd($tourPricing['gross_total_usd']) }}</strong>
                                     </div>
 
                                     @if ($order->additional_service_total_price > 0)
@@ -376,7 +375,13 @@
 
                                     <div class="order-detail-price-row order-detail-price-row--grand">
                                         <span>@lang('messages.Total Price')</span>
-                                        <strong>{{ $order->request_quotation === 'Yes' ? __('messages.To be advised') : currencyFormatUsd($order->final_price) }}</strong>
+                                        <strong>
+                                            @if ($order->request_quotation === 'Yes')
+                                                @lang('messages.To be advised')
+                                            @else
+                                                {{ currencyFormatUsd($tourPricing['total_usd']) }}
+                                            @endif
+                                        </strong>
                                     </div>
                                 </div>
 
@@ -487,12 +492,12 @@
                                                     <i class="fa-solid fa-receipt" aria-hidden="true"></i>
                                                 </div>
                                                 <div>
-                                                    <p class="order-detail-receipt__title">{{ $receipt->status }}</p>
+                                                    <p class="order-detail-receipt__title">{{ __('messages.'.$receipt->status) }}</p>
                                                     <p class="order-detail-receipt__meta">
                                                         {{ $receipt->payment_date ? dateFormat($receipt->payment_date) : __('messages.On Review') }}
                                                     </p>
                                                 </div>
-                                                <button type="button" class="order-detail-badge order-detail-badge--{{ $receiptTone }}" data-toggle="modal" data-target="#receipt-preview-{{ $receipt->id }}" data-bs-toggle="modal" data-bs-target="#receipt-preview-{{ $receipt->id }}">
+                                                <button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-toggle="modal" data-target="#receipt-preview-{{ $receipt->id }}" data-bs-toggle="modal" data-bs-target="#receipt-preview-{{ $receipt->id }}">
                                                     @lang('messages.View')
                                                 </button>
                                             </div>
@@ -502,18 +507,25 @@
                                                     <div class="modal-content order-detail-modal">
                                                         <div class="order-detail-modal__header">
                                                             <h3>@lang('messages.Payment Receipt')</h3>
-                                                            <button type="button" class="order-detail-modal__close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="@lang('messages.Close')">
+                                                            <button type="button" class="order-detail-modal__close ui-btn ui-btn--icon" data-dismiss="modal" data-bs-dismiss="modal" aria-label="@lang('messages.Close')">
                                                                 <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                                                             </button>
                                                         </div>
                                                         <div class="order-detail-modal__body">
-                                                            <img class="order-detail-receipt-image" src="{{ route('orders.tour.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" alt="@lang('messages.Payment Receipt')">
+                                                            @if (strtolower(pathinfo((string) $receipt->receipt_img, PATHINFO_EXTENSION)) === 'pdf')
+                                                                <a class="ui-btn ui-btn--secondary ui-btn--block" href="{{ route('orders.tour.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" target="_blank" rel="noopener">
+                                                                    <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+                                                                    @lang('messages.Open Payment Proof')
+                                                                </a>
+                                                            @else
+                                                                <img class="order-detail-receipt-image" src="{{ route('orders.tour.payments.receipt', ['order' => $order->id, 'payment' => $receipt->id]) }}" alt="@lang('messages.Payment Receipt')">
+                                                            @endif
                                                             @if (trim((string) $receipt->note) !== '')
                                                                 <div class="order-detail-inline-alert order-detail-inline-alert--danger mt-3">
                                                                     <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
                                                                     <div>
-                                                                        <strong>{{ $receipt->status }}</strong>
-                                                                        <p>{!! $receipt->note !!}</p>
+                                                                        <strong>{{ __('messages.'.$receipt->status) }}</strong>
+                                                                        <p>{!! nl2br(e($receipt->note)) !!}</p>
                                                                     </div>
                                                                 </div>
                                                             @endif
@@ -549,31 +561,36 @@
                                     @include('frontend.home.orders.details.partials.invoice-action-buttons', ['variant' => 'modern', 'invoicePreviewModalId' => $invoicePreviewModalId])
 
                                     @if ($isEditable)
-                                        <a href="{{ route('view.edit-order-tour', ['id' => $order->id]) }}" class="order-detail-btn order-detail-btn--primary">
+                                        <a href="{{ route('view.edit-order-tour', ['id' => $order->id]) }}" class="ui-btn ui-btn--primary ui-btn--block">
                                             <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
                                             @lang('messages.Edit Order')
                                         </a>
                                     @endif
 
                                     @if ($canSubmitPayment)
-                                        <button type="button" class="order-detail-btn order-detail-btn--soft" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
+                                        <button type="button" class="ui-btn ui-btn--primary ui-btn--block" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
                                             <i class="fa-solid fa-upload" aria-hidden="true"></i>
                                             @lang('messages.Payment Confirmation')
                                         </button>
                                     @endif
 
-                                    <a href="{{ route('view.orders') }}#orderTour" class="order-detail-btn order-detail-btn--soft">
+                                    @if ($paymentUnderReview)
+                                        <div class="order-detail-alert">
+                                            @lang('messages.Your payment proof is under review. A new submission is available after the current review is completed.')
+                                        </div>
+                                    @endif
+
+                                    <a href="{{ route('view.orders') }}#orderTour" class="ui-btn ui-btn--secondary ui-btn--block">
                                         <i class="fa-solid fa-list" aria-hidden="true"></i>
                                         @lang('messages.Orders')
                                     </a>
 
                                     @if ($canDelete)
-                                        <form action="{{ route('func.delete-order', $order->id) }}" method="POST">
+                                        <form action="{{ route('func.delete-order', $order->id) }}" method="POST" data-confirm-message="@lang('messages.Are you sure?')">
                                             @csrf
                                             @method('DELETE')
-                                            <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                            <button type="submit" class="order-detail-btn order-detail-btn--danger" onclick="return confirm('@lang('messages.Are you sure?')');">
-                                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                            <button type="submit" class="ui-btn ui-btn--danger ui-btn--block" data-processing-label="@lang('messages.Processing...')">
+                                                <i class="fa-solid fa-trash-alt" aria-hidden="true"></i>
                                                 @lang('messages.Delete')
                                             </button>
                                         </form>
@@ -592,14 +609,13 @@
                     <div class="modal-content order-detail-modal">
                         <div class="order-detail-modal__header">
                             <h3>@lang('messages.Payment Confirmation')</h3>
-                            <button type="button" class="order-detail-modal__close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="@lang('messages.Close')">
+                            <button type="button" class="order-detail-modal__close ui-btn ui-btn--icon" data-dismiss="modal" data-bs-dismiss="modal" aria-label="@lang('messages.Close')">
                                 <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                             </button>
                         </div>
                         <div class="order-detail-modal__body">
-                            <form id="payment-confirm-{{ $order->id }}" action="/fpayment-confirmation-{{ $order->id }}" method="POST" enctype="multipart/form-data" class="order-detail-upload-form">
+                            <form id="payment-confirm-{{ $order->id }}" action="{{ route('upload.payment-confirmation', ['id' => $order->id]) }}" method="POST" enctype="multipart/form-data" class="order-detail-upload-form" data-payment-confirmation-form>
                                 @csrf
-                                <input type="hidden" name="order_id" value="{{ $order->id }}">
 
                                 <div class="order-detail-grid">
                                     <div class="order-detail-info">
@@ -628,25 +644,15 @@
                                     @lang('messages.Complete payment and upload the proof within 2 x 24 hours after approval to keep this booking active.')
                                 </div>
 
-                                <div class="order-detail-upload mt-3">
-                                    <label for="receipt_name" class="form-label">@lang('messages.Select Receipt')</label>
-                                    <input type="file" name="receipt_name" id="receipt_name" class="form-control @error('receipt_name') is-invalid @enderror" data-receipt-input="#tour-receipt-preview-{{ $order->id }}" data-receipt-empty="@lang('messages.No preview available')" required>
-                                    @error('receipt_name')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="order-detail-payment-preview mt-3" id="tour-receipt-preview-{{ $order->id }}">
-                                    <span>@lang('messages.No preview available')</span>
-                                </div>
+                                @include('frontend.home.orders.details.partials.payment-confirmation-fields')
                             </form>
                         </div>
                         <div class="order-detail-modal__footer">
-                            <button type="submit" form="payment-confirm-{{ $order->id }}" class="order-detail-btn order-detail-btn--primary order-detail-btn--auto">
+                            <button type="submit" form="payment-confirm-{{ $order->id }}" class="ui-btn ui-btn--primary" data-processing-label="@lang('messages.Submitting...')">
                                 <i class="fa-solid fa-upload" aria-hidden="true"></i>
                                 @lang('messages.Send')
                             </button>
-                            <button type="button" class="order-detail-btn order-detail-btn--soft order-detail-btn--auto" data-dismiss="modal" data-bs-dismiss="modal">
+                            <button type="button" class="ui-btn ui-btn--secondary" data-dismiss="modal" data-bs-dismiss="modal">
                                 <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                                 @lang('messages.Close')
                             </button>

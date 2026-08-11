@@ -59,8 +59,8 @@
                         <div class="card-btn-container">
                             @if ($ceremony_venue->status == "Draft")
                                 <a href="/edit-wedding-venue-{{ $ceremony_venue->id }}">
-                                    <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button><br>
-                                    {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                    <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil-alt"></i></button><br>
+                                    {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i></button> --}}
                                 </a>
                             @endif
                             <form action="/fdelete-wedding-venue/{{ $ceremony_venue->id }}" method="post">
@@ -68,7 +68,7 @@
                                 @method('delete')
                                 <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
                                 <input id="hotels_id" name="hotels_id" value="{{ $hotel->id }}" type="hidden">
-                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                             </form>
                         </div>
                     @endcanany
@@ -203,8 +203,8 @@
                                         @if ($ceremony_venue->status == "Draft")
                                             <button type="submit" form="activateCeremonyVenue-{{ $ceremony_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Activate</button>
                                             <a href="/edit-wedding-venue-{{ $ceremony_venue->id }}">
-                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
-                                                {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
+                                                {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i></button> --}}
                                             </a>
                                         @elseif ($ceremony_venue->status == "Active")
                                             <button type="submit" form="deactivateCeremonyVenue-{{ $ceremony_venue->id }}" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Save to Draft</button>

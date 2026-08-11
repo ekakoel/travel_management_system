@@ -156,7 +156,7 @@
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="tour-reviews-action is-ghost-danger" data-confirm="Delete this review permanently?">
-                    <i class="fa fa-trash"></i>
+                    <i class="fa fa-trash-alt"></i>
                     Delete
                 </button>
             </form>

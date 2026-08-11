@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Hotels;
 use App\Models\HotelRoom;
 use App\Services\Hotels\HotelPricingService;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -73,6 +74,15 @@ class HotelPromo extends Model
     {
         return $query->where('periode_start', '<=', $checkin)
                     ->where('periode_end', '>=', $checkin);
+    }
+
+    public function scopeNotExpired($query, CarbonInterface|string $date)
+    {
+        $today = $date instanceof CarbonInterface ? $date->toDateString() : $date;
+
+        return $query
+            ->whereDate('book_periode_end', '>=', $today)
+            ->whereDate('periode_end', '>=', $today);
     }
     public function calculatePrice($usdrates, $tax)
     {

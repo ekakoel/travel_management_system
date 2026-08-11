@@ -161,7 +161,7 @@
                                     </label>
                                     <label class="backend-filter-field">
                                         <span>Group</span>
-                                        <select class="backend-form-control" name="position">
+                                        <select class="backend-form-control form-select" name="position">
                                             <option value="">All groups</option>
                                             @foreach ($positions as $value => $label)
                                                 <option value="{{ $value }}" @selected($selectedPosition === $value)>{{ $label }}</option>
@@ -170,7 +170,7 @@
                                     </label>
                                     <label class="backend-filter-field">
                                         <span>Status</span>
-                                        <select class="backend-form-control" name="status">
+                                        <select class="backend-form-control form-select" name="status">
                                             <option value="">All statuses</option>
                                             @foreach ($statuses as $value => $label)
                                                 <option value="{{ $value }}" @selected($selectedStatus === $value)>{{ $label }}</option>
@@ -179,7 +179,7 @@
                                     </label>
                                     <label class="backend-filter-field">
                                         <span>Approval</span>
-                                        <select class="backend-form-control" name="approval">
+                                        <select class="backend-form-control form-select" name="approval">
                                             <option value="">All approvals</option>
                                             <option value="approved" @selected($selectedApproval === 'approved')>Approved</option>
                                             <option value="pending" @selected($selectedApproval === 'pending')>Pending</option>
@@ -252,7 +252,7 @@
                                                                 </form>
                                                             @endif
                                                             <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-view-{{ $user->id }}" title="View user">
-                                                                <i class="dw dw-eye"></i>
+                                                                <i class="fas fa-eye"></i>
                                                             </button>
                                                             <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-edit-{{ $user->id }}" title="Edit user">
                                                                 <i class="fa fa-edit"></i>
@@ -261,7 +261,7 @@
                                                                 @csrf
                                                                 @method('delete')
                                                                 <button type="submit" class="user-manager-icon-action is-danger" title="Remove user">
-                                                                    <i class="fa fa-trash"></i>
+                                                                    <i class="fa fa-trash-alt"></i>
                                                                 </button>
                                                             </form>
                                                         </div>
@@ -334,7 +334,7 @@
                                                         </form>
                                                     @endif
                                                     <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-view-{{ $user->id }}" title="View user">
-                                                        <i class="dw dw-eye"></i>
+                                                        <i class="fas fa-eye"></i>
                                                     </button>
                                                     <button type="button" class="user-manager-icon-action" data-toggle="modal" data-target="#user-edit-{{ $user->id }}" title="Edit user">
                                                         <i class="fa fa-edit"></i>
@@ -343,7 +343,7 @@
                                                         @csrf
                                                         @method('delete')
                                                         <button type="submit" class="user-manager-icon-action is-danger" title="Remove user">
-                                                            <i class="fa fa-trash"></i>
+                                                            <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 </div>

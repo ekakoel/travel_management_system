@@ -8,7 +8,7 @@
                 <div class="min-height-200px">
                     <x-backend.page-hero>
                         <x-slot name="heading">
-                            <i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Dinner Venue
+                            <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Dinner Venue
                         </x-slot>
                     </x-backend.page-hero>
                     <div class="product-wrap">

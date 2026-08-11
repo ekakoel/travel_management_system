@@ -1,9 +1,13 @@
 # Accommodation Status Lifecycle Audit
 
-Status: Completed
+Status: historical
 Updated: 2026-07-27
 Task: ACC-STATUS-001
 Scope: Read-only audit and documentation. No code, database, migration, configuration, route, model behavior, Blade behavior, or payment behavior was changed.
+
+This document records point-in-time behavior from 2026-07-27. The active final
+contract is `docs/status-contract.md`. Date-driven history behavior and legacy
+status observations below are retained as audit evidence, not canonical rules.
 
 ## 1. Executive Summary
 
@@ -211,7 +215,7 @@ No payment webhook that directly updates standard Accommodation order status was
 
 | ID | Page/Process | Entity | Included Status | Excluded Status | File | Method/View | Risk |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| R01 | Accommodation listing | Hotel | `Active` | all others | `app/Http/Controllers/FrontEndController.php` | `accommodation_service` | Draft/Removed hotels are hidden as expected. |
+| R01 | Accommodation listing | Hotel | `Active` | all others | `app/Http/Controllers/FrontEndController.php` | `hotels_service` | Draft/Removed hotels are hidden as expected. |
 | R02 | Accommodation detail | Hotel, room, promo, package | `Active`; package/promo date-valid | all others | `app/Http/Controllers/FrontEndController.php` | `accommodation_detail` | Product status and product expiry affect customer entry. |
 | R03 | Price page | Hotel room, promo, package, promotion, booking code | room `Active`, promo `Active`, package `Active`, promotion `Active`, booking code `Active` | all others | `app/Http/Controllers/HotelsController.php` | `renderHotelPricePage`, `processPromo` | Shows booking code discount in rate cards, but create storage is not consistently proven for hotel flows. |
 | R04 | Customer current orders | Order | all service orders with `checkin >= now` | `Removed`, `Archive` | `app/Http/Controllers/OrderController.php` | `index` | Uses date and excludes statuses not in `orders.status` enum. |

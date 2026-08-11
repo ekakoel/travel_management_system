@@ -186,7 +186,7 @@
                                         <td data-label="Action">
                                             <div class="backend-table-actions drivers-admin-actions">
                                                 <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#driverDetail{{ $driver->id }}" aria-label="View {{ $driver->name }}">
-                                                    <i class="dw dw-eye"></i>
+                                                    <i class="fas fa-eye"></i>
                                                 </button>
                                                 @canany(['posDev','posAuthor'])
                                                     <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#driverEdit{{ $driver->id }}" aria-label="Edit {{ $driver->name }}">

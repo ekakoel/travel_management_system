@@ -89,7 +89,7 @@
                                         @elseif ($order_wedding->status == "Pending")
                                             <div class="status-waiting inline-left p-r-8"><span class="icon-copy ti-alarm-clock"></span></div>
                                         @elseif ($order_wedding->status == "Draft")
-                                            <div class="status-draft inline-left p-r-8"><span class="icon-copy fa fa-pencil"></span></div>
+                                            <div class="status-draft inline-left p-r-8"><span class="icon-copy fa fa-pencil-alt"></span></div>
                                         @endif
                                     </td>
                                     <td>

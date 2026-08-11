@@ -9,7 +9,7 @@
 
             <div class="home-promo-section__summary">
                 <span class="home-promo-section__count">{{ trans_choice('home.promo.active_offers', $promos->count(), ['count' => $promos->count()]) }}</span>
-                <a class="home-promo-section__link" href="{{ route('view.accommodation-service') }}">
+                <a class="home-promo-section__link" href="{{ route('view.hotels-service') }}">
                     {{ __('home.promo.explore_all') }}
                     <i class="fas fa-arrow-right" aria-hidden="true"></i>
                 </a>

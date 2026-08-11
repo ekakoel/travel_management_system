@@ -32,27 +32,27 @@
                                                 <th style="width: 10%; font-size:13px;">Tour Package</th>
                                                 <th style="width: 10%; font-size:13px;">Type</th>
                                                 <th style="width: 15%; font-size:13px;">Duration</th>
+                                                <th style="width: 10%; font-size:13px;">Guests</th>
                                                 <th style="width: 10%; font-size:13px">Price</th>
+                                                <th style="width: 10%; font-size:13px">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($data_tours as $no=>$tour)
-                                                @php
-                                                    $usd_crate = ceil($tour->contract_rate / $usdrates->rate);
-                                                    $usd_crate_mark = $usd_crate + $tour->markup;
-                                                    $taxs = ceil(($usd_crate_mark * $tax->tax)/100);
-                                                    $usd_prate = $usd_crate_mark + $taxs;
-                                                @endphp
-
-                                                        <tr>
-                                                           <td>{{ ++$no }}</td>
-                                                           <td>{{ $tour->name }}</td>
-                                                           <td>{{ $tour->type }}</td>
-                                                           <td>{{ $tour->duration }}</td>
-                                                           <td>{{ "$ ".$usd_prate }}</td>
-
-                                                        </tr>
-                                                  @endforeach
+                                            @forelse ($tourPriceRows as $no => $row)
+                                                <tr>
+                                                    <td>{{ $no + 1 }}</td>
+                                                    <td>{{ $row['tour_name'] }}</td>
+                                                    <td>{{ $row['type'] }}</td>
+                                                    <td>{{ $row['duration'] }}</td>
+                                                    <td>{{ $row['capacity'] }}</td>
+                                                    <td>{{ $row['price'] !== null ? currencyFormatUsd($row['price']) : '-' }}</td>
+                                                    <td>{{ $row['status'] }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="7">No Tour Package pricing rows are available.</td>
+                                                </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </div>

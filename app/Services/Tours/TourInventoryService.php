@@ -4,26 +4,24 @@ namespace App\Services\Tours;
 
 use App\Models\ActionLog;
 use App\Models\Partners;
-use App\Models\Tax;
 use App\Models\TourType;
 use App\Models\Tours;
-use App\Models\UsdRates;
+use App\Support\MoneyFormatter;
 use App\ViewModels\Tours\TourDetailViewModel;
 use App\ViewModels\Tours\TourIndexViewModel;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 class TourInventoryService
 {
     public function __construct(
-        private readonly TourPricingService $pricingService,
+        private readonly TourPackagePricingService $pricingService,
+        private readonly MoneyFormatter $formatter,
     ) {
     }
 
     public function indexData(): array
     {
-        $tax = $this->tax();
-        $usdRate = $this->usdRate();
+        $serviceDate = Carbon::now();
         $activeTours = Tours::with(['images', 'prices', 'type'])->where('status', 'Active')->get();
         $archivedTours = Tours::with(['prices', 'type'])->where('status', 'Archived')->get();
         $draftTours = Tours::with(['prices', 'type'])->where('status', 'Draft')->get();
@@ -31,14 +29,14 @@ class TourInventoryService
             activeTours: $activeTours,
             draftTours: $draftTours,
             archivedTours: $archivedTours,
-            usdRate: $usdRate,
-            tax: $tax,
             pricingService: $this->pricingService,
+            formatter: $this->formatter,
+            serviceDate: $serviceDate,
         );
 
         return [
-            'tax' => $tax,
-            'usdrates' => $usdRate,
+            'tax' => null,
+            'usdrates' => null,
             'activetours' => $activeTours,
             'archivetours' => $archivedTours,
             'drafttours' => $draftTours,
@@ -51,28 +49,26 @@ class TourInventoryService
     public function detailData(int $tourId): array
     {
         $now = Carbon::now();
-        $tax = $this->tax();
-        $usdRate = $this->usdRate();
         $tour = Tours::with([
             'images',
             'type',
-            'prices' => fn ($query) => $query->where('expired_date', '>=', $now),
+            'prices' => fn ($query) => $query->with('verifier')->orderBy('min_qty')->orderBy('valid_from'),
         ])->findOrFail($tourId);
         $actionLogs = ActionLog::where('service', 'Tour Package')->where('service_id', $tourId)->get();
         $viewModel = new TourDetailViewModel(
             tour: $tour,
-            usdRate: $usdRate,
-            tax: $tax,
             actionLogs: $actionLogs,
             pricingService: $this->pricingService,
+            formatter: $this->formatter,
+            serviceDate: $now,
         );
 
         return [
-            'usdrates' => $usdRate,
+            'usdrates' => null,
             'tour' => $tour,
             'action_log' => $actionLogs,
             'user' => auth()->user(),
-            'tax' => $tax,
+            'tax' => null,
             'tourDetail' => $viewModel,
             'viewModel' => $viewModel,
         ];
@@ -91,17 +87,7 @@ class TourInventoryService
     {
         return array_merge($this->formOptions(), [
             'tour' => Tours::with(['locations' => fn ($query) => $query->ordered()])->findOrFail($tourId),
-            'usdrates' => $this->usdRate(),
+            'usdrates' => null,
         ]);
-    }
-
-    private function usdRate(): object|null
-    {
-        return Cache::remember('usd_rates', 3600, fn () => UsdRates::select('name', 'rate')->where('name', 'USD')->first());
-    }
-
-    private function tax(): object|null
-    {
-        return Cache::remember('tax', 3600, fn () => Tax::select('name', 'tax')->where('name', 'tax')->first());
     }
 }

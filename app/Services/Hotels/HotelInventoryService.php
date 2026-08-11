@@ -3,17 +3,12 @@
 namespace App\Services\Hotels;
 
 use App\Models\ActionLog;
-use App\Models\Contract;
-use App\Models\ExtraBed;
 use App\Models\HotelPrice;
-use App\Models\HotelPromo;
 use App\Models\Hotels;
 use App\Models\Markup;
 use App\Models\Tax;
 use App\Models\UsdRates;
 use App\Models\User;
-use App\Models\WeddingVenues;
-use App\Services\Hotels\HotelPricingService;
 use App\ViewModels\Hotels\HotelDetailViewModel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -44,22 +39,23 @@ class HotelInventoryService
 
         $hotel = Hotels::with([
             'rooms',
-            'rooms.prices' => fn ($query) => $query->active($now),
-            'rooms.promos' => fn ($query) => $query->where('book_periode_end', '>=', $now),
-            'rooms.packages' => fn ($query) => $query->active($now),
-            'promos' => fn ($query) => $query->where('book_periode_end', '>=', $now),
+            'prices' => fn ($query) => $query->notExpired($now)->orderByDesc('end_date'),
+            'prices.rooms',
+            'promos' => fn ($query) => $query->notExpired($now)->orderByDesc('book_periode_end'),
             'promos.rooms',
-            'packages' => fn ($query) => $query->active($now),
+            'packages' => fn ($query) => $query->notExpired($now)->orderByDesc('stay_period_end'),
             'packages.room',
-            'optionalrates',
+            'optionalrates' => fn ($query) => $query->notExpired($now),
             'contracts' => fn ($query) => $query->where('period_end', '>', $now),
             'extrabeds',
             'wedding_venue',
         ])->findOrFail($hotelId);
 
-        $latestPrice = Hotels::withMax(['prices as date'], 'end_date')->findOrFail($hotelId);
+        $latestPrice = Hotels::withMax([
+            'prices as date' => fn ($query) => $query->notExpired($now),
+        ], 'end_date')->findOrFail($hotelId);
         $author = $hotel->author_id ? User::find($hotel->author_id) : null;
-        $normalPrices = $hotel->rooms->flatMap(fn ($room) => $room->prices)->values();
+        $normalPrices = $hotel->prices->values();
         $promos = $hotel->promos->values();
         $packages = $hotel->packages->values();
         $additionalCharges = $hotel->optionalrates->values();
@@ -89,7 +85,7 @@ class HotelInventoryService
             'markup' => Markup::where('service', 'Hotel')->where('service_id', $hotelId)->first() ?: '',
             'action_log' => ActionLog::where('service', 'Hotel')->get(),
             'packages' => $packages,
-            'priceokt' => HotelPrice::where('hotels_id', $hotelId)->where('rooms_id', 1)->orderBy('start_date', 'DESC')->get(),
+            'priceokt' => HotelPrice::where('hotels_id', $hotelId)->where('rooms_id', 1)->notExpired($now)->orderBy('start_date', 'DESC')->get(),
             'moonnow' => date('m', strtotime($now)),
             'hotel' => $hotel,
             'rooms' => $hotel->rooms,

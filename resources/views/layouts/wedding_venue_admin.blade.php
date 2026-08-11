@@ -8,7 +8,7 @@
         <span>
             <a href="#" data-toggle="modal" data-target="#add-wedding-venue">
                 @if ($weddings->wedding_venue_id != 'null' and $weddings->wedding_venue_id)
-                    <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                    <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>
                 @else
                     <i class="icon-copy fa fa-plus" aria-hidden="true"></i>
                 @endif

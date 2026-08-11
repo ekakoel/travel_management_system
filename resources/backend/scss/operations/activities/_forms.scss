@@ -49,11 +49,22 @@
   margin-top: 8px;
 }
 
+.form-input-grid-2{
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 @media (max-width: 767px) {
   .activity-form-actions .backend-page-toolbar__actions,
   .activity-gallery-actions .backend-page-toolbar__actions {
     align-items: stretch;
     flex-direction: column;
     width: 100%;
+  }
+  .form-input-grid-2{
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 }

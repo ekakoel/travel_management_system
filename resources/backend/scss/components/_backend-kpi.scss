@@ -34,6 +34,7 @@
 
 .backend-kpi-card__icon {
   align-items: center;
+  background: #475569;
   border-radius: 12px;
   color: #ffffff;
   display: inline-flex;
@@ -42,6 +43,18 @@
   height: 46px;
   justify-content: center;
   width: 46px;
+}
+
+// The backend ships Font Awesome 4 locally. Keep KPI glyphs independent from
+// later CDN Font Awesome declarations and make their rendering deterministic.
+.backend-kpi-card__icon > .fa {
+  align-items: center;
+  display: inline-flex;
+  font-family: FontAwesome !important;
+  font-style: normal;
+  font-weight: normal !important;
+  justify-content: center;
+  line-height: 1;
 }
 
 .backend-kpi-card--teal .backend-kpi-card__icon {
@@ -58,6 +71,14 @@
 
 .backend-kpi-card--amber .backend-kpi-card__icon {
   background: #d97706;
+}
+
+.backend-kpi-card--red .backend-kpi-card__icon {
+  background: #dc2626;
+}
+
+.backend-kpi-card--slate .backend-kpi-card__icon {
+  background: #475569;
 }
 
 .backend-kpi-card span,

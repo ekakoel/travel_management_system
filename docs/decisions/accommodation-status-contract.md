@@ -1,8 +1,9 @@
 ---
 title: Accommodation Status Contract
-status: active
-updated_at: 2026-07-27
+status: superseded
+updated_at: 2026-07-28
 approved_at: 2026-07-27
+superseded_by: docs/status-contract.md
 applies_to:
   - accommodation
   - orders
@@ -13,11 +14,21 @@ applies_to:
 
 # Accommodation Status Contract
 
+> Status: `superseded` pada 2026-07-28 oleh
+> `docs/status-contract.md`. Isi di bawah dipertahankan sebagai audit trail
+> keputusan Accommodation sebelumnya. Bagian yang menetapkan
+> `orders.status = Completed` tidak lagi aktif. Kontrak final mempertahankan
+> order sukses sebagai `Paid`, memakai `orders.completed_at` /
+> `orders.completed_by` untuk fulfillment, dan tetap mengizinkan reservation
+> `Completed`.
+
 ## 1. Purpose
 
 Dokumen ini mendefinisikan kontrak status canonical untuk lifecycle Accommodation sebelum ada perubahan code, schema, query, data, scheduler, authorization, atau payment behavior.
 
-Status dokumen ini adalah `active`. Kontrak ini telah disetujui oleh pemilik project pada 2026-07-27 sebagai target status lifecycle Accommodation.
+Status dokumen ini adalah `superseded`. Kontrak ini disetujui pada 2026-07-27,
+kemudian bagian commercial completion-nya digantikan oleh kontrak lintas
+public service pada 2026-07-28.
 
 Tujuan kontrak:
 
@@ -336,7 +347,7 @@ Approved contract:
 | Invoice | No invoice status exists. Keep invoice record; do not delete. Optional derived state remains unpaid/partial. |
 | Notification | Recommended: send customer and reservation/admin notification once. |
 | Inventory | Recommended: release room/availability holds if implementation introduces inventory locking. |
-| Scheduler | Add idempotent scheduler in future task; do not depend on customer opening a page. |
+| Scheduler | Active: `orders:auto-cancel-expired-payments`; do not depend on customer opening a page. |
 | Frequency | Every 15 minutes as approved initial target. |
 | Audit log | Required order log with reason, due date, actor `system`, and idempotency key. |
 
@@ -345,6 +356,8 @@ Idempotency:
 - Scheduler must skip orders not `Approved`.
 - Scheduler must skip orders with `Pending`, `Valid`, or settlement-equivalent payment.
 - Scheduler must not send duplicate notifications for an already canceled order.
+- Payment window aktif adalah tepat 48 jam sejak approval/invoice, tanpa grace period.
+- Implementasi lintas service mengikuti `docs/decisions/order-payment-deadline-standard.md`.
 
 ## 13. Payment Reversal Rules
 

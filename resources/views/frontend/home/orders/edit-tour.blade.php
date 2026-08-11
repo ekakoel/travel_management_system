@@ -28,6 +28,9 @@
             : ($order->checkin ? \Carbon\Carbon::parse($order->checkin)->format('Y-m-d') : '')
     );
     $guestCountValue = old('number_of_guests', $order->number_of_guests);
+    $tourDisplayName = trim((string) ($tour->$langName ?: $tour->name));
+    $tourDisplayType = trim((string) ($tour->type?->$langType ?: $tour->type?->type));
+    $tourDisplayArea = trim((string) ($tour->$langArea ?: $tour->area));
     $includeContent = trim((string) (data_get($order, $langInclude) ?: $order->include ?: data_get($tour, $langInclude) ?: $tour->include));
     $excludeContent = trim((string) (data_get($order, $langExclude) ?: $order->exclude ?: data_get($tour, $langExclude) ?: $tour->exclude));
     $additionalInfoContent = trim((string) ($order->additional_info ?: data_get($tour, $langAdditionalInfo) ?: $tour->additional_info));
@@ -60,7 +63,7 @@
                         </div>
                         <h1 class="order-detail-title">{{ $order->orderno }}</h1>
                         <p class="order-detail-text">
-                            {{ $tour->$langName }}. @lang('messages.Please make sure all the data is correct before you submit the order!')
+                            {{ $tourDisplayName }}. @lang('messages.Please make sure all the data is correct before you submit the order!')
                         </p>
                     </div>
 
@@ -114,19 +117,21 @@
                                     </div>
                                     <div class="order-detail-info">
                                         <span>@lang('messages.Tour Package')</span>
-                                        <strong>{{ $tour->$langName }}</strong>
+                                        <strong>{{ $tourDisplayName }}</strong>
                                     </div>
                                     <div class="order-detail-info">
                                         <span>@lang('messages.Type')</span>
-                                        <strong>{{ $tour->type?->$langType ?: '-' }}</strong>
+                                        <strong>{{ $tourDisplayType ?: '-' }}</strong>
                                     </div>
                                     <div class="order-detail-info">
                                         <span>@lang('messages.Tour Area')</span>
-                                        <strong>{{ $tour->$langArea ?: '-' }}</strong>
+                                        <strong>{{ $tourDisplayArea ?: '-' }}</strong>
                                     </div>
                                     <div class="order-detail-info">
                                         <span>@lang('messages.Duration')</span>
-                                        <strong>{{ $tour->duration_days . 'D' }}{{ $tour->duration_nights > 0 ? ' / ' . $tour->duration_nights . 'N' : '' }}</strong>
+                                        <strong>{{ $tour->duration_nights > 0
+                                            ? __('tour-detail.duration_days_nights', ['days' => $tour->duration_days, 'nights' => $tour->duration_nights])
+                                            : __('tour-detail.duration_days', ['days' => $tour->duration_days]) }}</strong>
                                     </div>
                                 </div>
 

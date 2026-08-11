@@ -1,210 +1,55 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Order Confirmation {{ $order->orderno }}</title>
-	<meta charset="utf-8">
-	<style>
-        body{
-            width: 100%;
-            padding:0;
-            margin: 0;
-            font-family: sans-serif; 
-        }
-        .card-box{
-            padding: 18px;
-        }
-        .heading{
-            width: 100%;
-        }
-        .heading .heading-right .contract-date{
-            background-color: #bb0000;
-            text-align-last: right;
-            font-size: 1rem;
-            padding: 8px 18px;
-        }
-        .heading .heading-left,.heading-right{
-            align-self: self-end;
-        }
-        .contract-date{
-            background-color: #bb0000;
-            text-align-last: right;
-            font-size: 1rem;
-            font-weight: 600;
-            padding: 8px 18px;
-            color: white;
-        }
-        .card-box .heading .title{
-            width: 100%;
-            display: grid;
-            font-size: 2rem;
-            font-family: sans-serif;
-            font-weight: 700;
-            text-transform: capitalize;
-        }
-        .card-box .confirm-box{
-            display: flex;
-            padding: 8px;
-            background-color: red;
-            width: max-content;
-            align-items: center;
-        }
-        .card-box .confirm-by{
-            max-width: fit-content;
-            padding-right: 170px;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        .business-name{
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-        .business-sub{
-            font-style: italic;
-        }
-        .table-container{
-            display: flex;
-        }
-        table {
-            margin: 18px 0;
-            border-collapse: collapse;
-            border: none;
-        }
-        table .tb-heading{
-            background-color: #bb0000;
-            font-size: 1rem;
-            font-weight: 600;
-            padding: 8px 18px;
-            color: white;
-        }
-        .tb-heading td{
-            padding: 8px 18px;
-        }
-
-        .table-order th {
-            border:1PX solid black;
-            background-color: #696969;
-            text-align: left;
-            padding: 8px 8px;
-            color: white;
-        }
-
-        .table-order td {
-            padding: 4px 8px;
-            border: 1PX solid black;
-            text-align: left;
-        }
-
-        .table-order tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .content{
-            font-size: 0.8rem;
-            padding: 8px 0;
-        }
-        .content .notification-text{
-            font-style: italic;
-        }
-        .subtitle{
-            font-size: 0.9rem;
-            font-weight: 800;
-            padding-bottom: 8px;
-            padding-top: 15px;
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ $title }}</title>
 </head>
-<body>
-    <div class="container">
-    <div class="card-box">
-        <div class="heading">
-            <div class="title">PAYMENT CONFIRMATION</div>
-            <div class="confirm-box">
-                <div class="confirm-by">{{ $agent->name." (".$agent->code.")" }}</div>
-                <div class="order-date" style="text-align: right">{{ date('D, d M y',strtotime($now)) }}</div>
-            </div>
-        </div>
-        <div class="content">
-            <h2 style="padding: 0 !important; margin: 0 !important;">{{ 'Order no:  '.$order->orderno }}</h2>
-            <table class="table-order tb-list">
+<body style="margin:0;background:#f3f6fa;color:#172033;font-family:Arial,Helvetica,sans-serif;">
+@php
+    $currencyCode = optional($invoice->currency)->name ?: 'USD';
+    $amount = (float) optional($paymentConfirmation)->amount;
+    $amountLabel = $currencyCode . ' ' . number_format($amount, in_array($currencyCode, ['USD'], true) ? 2 : 0, '.', ',');
+@endphp
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f6fa;padding:32px 12px;">
+    <tr>
+        <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;background:#ffffff;border:1px solid #dce5ef;border-radius:16px;overflow:hidden;">
                 <tr>
-                    <th colspan="2">Order</th>
-                </tr>
-                <tr>
-                    <td style="width: 30%">
-                        Payment Dateline
-                    </td>
-                    <td style="width: 70%">
-                        {{ dateFormat($order->reservations->invoice->due_date) }}<br>
+                    <td style="padding:26px 30px;background:#0f5fa8;color:#ffffff;">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;">Bali Kami Tour</div>
+                        <h1 style="margin:8px 0 0;font-size:25px;line-height:1.3;">Payment confirmation received</h1>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 30%">
-                        Service
-                    </td>
-                    <td style="width: 70%">
-                        {{ $order->service }}<br>
-                    </td>
-                </tr>
-                @if ($order->service == "Tour Package")
-                    <tr>
-                        <td style="width: 30%">
-                            Tour Package
-                        </td>
-                        <td style="width: 70%">
-                            {{ $order->subservice }}
-                        </td>
-                    </tr>
-                @elseif($order->service == "Hotel")
-                    <tr>
-                        <td style="width: 30%">
-                           Hotel
-                        </td>
-                        <td style="width: 70%">
-                            {{ $order->servicename }}
-                        </td>
-                    </tr>
-                @elseif($order->service == "Activity")
-                    <tr>
-                        <td style="width: 30%">
-                           Hotel
-                        </td>
-                        <td style="width: 70%">
-                            {{ $order->subservice }}
-                        </td>
-                    </tr>
-                @elseif($order->service == "Transport")
-                    <tr>
-                        <td style="width: 30%">
-                           Transport
-                        </td>
-                        <td style="width: 70%">
-                            {{ $order->servicename }}
-                        </td>
-                    </tr>
-                @endif
-                <tr>
-                    <td style="width: 30%">
-                        Number of Guests
-                    </td>
-                    <td style="width: 70%">
-                        {{ $order->number_of_guests." guests" }}
+                    <td style="padding:28px 30px;">
+                        <p style="margin:0 0 18px;font-size:15px;line-height:1.65;">
+                            {{ $agent?->name ?: 'An agent' }} submitted payment proof for verification. This submission is <strong>not a final payment approval</strong>; the finance team must match it to the invoice and bank transaction.
+                        </p>
+
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:1px solid #dce5ef;border-radius:10px;overflow:hidden;">
+                            <tr><td style="padding:11px 14px;background:#f7f9fc;color:#5d6b82;width:42%;">Order number</td><td style="padding:11px 14px;font-weight:700;">{{ $order->orderno }}</td></tr>
+                            <tr><td style="padding:11px 14px;background:#f7f9fc;color:#5d6b82;">Reservation number</td><td style="padding:11px 14px;font-weight:700;">{{ optional($order->reservations)->rsv_no ?: '-' }}</td></tr>
+                            <tr><td style="padding:11px 14px;background:#f7f9fc;color:#5d6b82;">Invoice number</td><td style="padding:11px 14px;font-weight:700;">{{ $invoice->inv_no }}</td></tr>
+                            <tr><td style="padding:11px 14px;background:#f7f9fc;color:#5d6b82;">Reported payment date</td><td style="padding:11px 14px;font-weight:700;">{{ optional($paymentConfirmation)->payment_date ? dateFormat($paymentConfirmation->payment_date) : '-' }}</td></tr>
+                            <tr><td style="padding:11px 14px;background:#f7f9fc;color:#5d6b82;">Reported amount</td><td style="padding:11px 14px;font-weight:700;">{{ $amountLabel }}</td></tr>
+                            <tr><td style="padding:11px 14px;background:#f7f9fc;color:#5d6b82;">Review status</td><td style="padding:11px 14px;font-weight:700;color:#9a6700;">Pending verification</td></tr>
+                        </table>
+
+                        <p style="margin:22px 0 8px;font-size:14px;line-height:1.6;color:#5d6b82;">
+                            Verify the beneficiary account, amount, currency, value date, and transaction identity before marking this payment as valid.
+                        </p>
+                        <a href="{{ $order_link }}" style="display:inline-block;margin-top:8px;padding:13px 22px;border-radius:999px;background:#0f5fa8;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">Review order and payment</a>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 30%">
-                        Amount
-                    </td>
-                    <td style="width: 70%">
-                        {{ currencyFormatUsd($order->final_price) }}
+                    <td style="padding:18px 30px;border-top:1px solid #e5ebf2;color:#748197;font-size:12px;line-height:1.55;">
+                        Automated operational notification from {{ config('app.name') }}. Please do not reply to this message.
                     </td>
                 </tr>
             </table>
-            <div class="notification-text">
-                Agent {{ $agent->name }} has confirmed the payment for their order.<br>
-                Carefully inspect the payment proof and match it with the placed order before finalizing the transaction.<br>
-                Please proceed with the payment validation process by using the following link! <a href="{{ $order_link }}">Detail Order</a><br>
-                This email is sent automatically by the online system at https://online.balikamitour.com. Please do not reply to this email.
-            </div>
-        </div>
-    </div>
-    
+        </td>
+    </tr>
+</table>
+</body>
+</html>

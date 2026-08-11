@@ -767,9 +767,14 @@
 }
 
 .admin-panel-modal .modal-header {
+    display: flex;
     background: linear-gradient(135deg, #f8fbfb, #edf7f4);
     border-bottom: 1px solid #e5edf2;
     padding: 26px 30px;
+    flex-direction: column;
+    align-content: space-around;
+    justify-content: center;
+    align-items: center;
 }
 
 .admin-panel-modal .modal-title {

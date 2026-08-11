@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Schema;
 
 class AccommodationOrderLifecycleService
 {
-    public const CURRENT_STATUSES = ['Draft', 'Pending', 'Approved'];
+    public const CURRENT_STATUSES = ['Draft', 'Pending', 'Approved', 'Paid'];
     public const PAID_STATUS = 'Paid';
     public const COMPLETED_STATUS = 'Completed';
-    public const CLOSED_STATUSES = ['Completed', 'Canceled', 'Rejected', 'Deleted'];
-    public const ATTENTION_STATUSES = ['Invalid'];
+    public const CLOSED_STATUSES = ['Canceled', 'Rejected', 'Invalid', 'Deleted'];
 
     public function isAccommodation(Orders $order): bool
     {
@@ -30,14 +29,17 @@ class AccommodationOrderLifecycleService
 
         return $query->whereIn('service', Orders::ACCOMMODATION_SERVICES)
             ->where(function (Builder $builder) use ($hasCompletionSource) {
+                $builder->whereIn('status', self::CLOSED_STATUSES);
+
                 if ($hasCompletionSource) {
-                    $builder->whereNotNull('completed_at');
-                } else {
-                    $builder->whereRaw('1 = 0');
+                    $builder->orWhere(function (Builder $completed) {
+                        $completed->where('status', self::PAID_STATUS)
+                            ->whereNotNull('completed_at');
+                    });
                 }
 
-                $builder->orWhereIn('status', ['Canceled', 'Rejected', 'Deleted'])
-                    ->orWhere('status', self::COMPLETED_STATUS);
+                // Read compatibility only; new fulfillment writes keep the order Paid.
+                $builder->orWhere('status', self::COMPLETED_STATUS);
             });
     }
 
@@ -49,12 +51,7 @@ class AccommodationOrderLifecycleService
             $query->whereNull('completed_at');
         }
 
-        return $query->where(function (Builder $builder) {
-                $builder->whereIn('status', array_merge(self::CURRENT_STATUSES, self::ATTENTION_STATUSES))
-                    ->orWhere(function (Builder $paidNotCompleted) {
-                        $paidNotCompleted->where('status', self::PAID_STATUS);
-                    });
-            });
+        return $query->whereIn('status', self::CURRENT_STATUSES);
     }
 
     public function displayGroup(Orders $order, ?Carbon $now = null): string
@@ -65,16 +62,21 @@ class AccommodationOrderLifecycleService
             return 'standard';
         }
 
+        if (in_array($order->status, self::CLOSED_STATUSES, true)
+            || $order->status === self::COMPLETED_STATUS) {
+            return 'history';
+        }
+
+        if ($order->completed_at) {
+            return $order->status === self::PAID_STATUS ? 'history' : 'standard';
+        }
+
         if ($order->status === 'Draft') {
             return 'draft';
         }
 
-        if (in_array($order->status, self::ATTENTION_STATUSES, true)) {
-            return 'attention';
-        }
-
-        if ($order->completed_at || in_array($order->status, self::CLOSED_STATUSES, true)) {
-            return 'history';
+        if (!in_array($order->status, self::CURRENT_STATUSES, true)) {
+            return 'standard';
         }
 
         if ($order->status !== self::PAID_STATUS) {

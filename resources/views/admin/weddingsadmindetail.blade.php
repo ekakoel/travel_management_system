@@ -257,7 +257,7 @@
                                         </div>
                                         @if ($wedding->status !== "Active")
                                             <div class="card-box-footer">
-                                                <a href="/{{ $service->nicname }}-edit-{{ $wedding['id'] }}"><button class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
+                                                <a href="/{{ $service->nicname }}-edit-{{ $wedding['id'] }}"><button class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button></a>
                                             </div>
                                         @endif
                                     </div>

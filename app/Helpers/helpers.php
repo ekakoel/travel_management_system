@@ -38,7 +38,7 @@ if (!function_exists('canonical_frontend_url')) {
             }
         }
 
-        if (in_array($routeName, ['view.hotel-detail', 'view.hotel-detail-flyer', 'view.accommodation-detail', 'view.hotel-check-price', 'view.accommodation-check-price'], true)) {
+        if (in_array($routeName, ['view.hotel-detail', 'view.hotel-detail-flyer', 'view.hotel-detail', 'view.hotel-check-price', 'view.accommodation-check-price'], true)) {
             $code = $route->parameter('code');
 
             if ($code) {
@@ -50,7 +50,7 @@ if (!function_exists('canonical_frontend_url')) {
 
                 $targetRoute = match ($routeName) {
                     'view.hotel-detail',
-                    'view.hotel-detail-flyer' => 'view.accommodation-detail',
+                    'view.hotel-detail-flyer' => 'view.hotel-detail',
                     'view.hotel-check-price' => 'view.accommodation-check-price',
                     default => $routeName,
                 };
@@ -76,7 +76,7 @@ if (!function_exists('canonical_frontend_url')) {
                 }
 
                 if ($hotel) {
-                    return route('view.accommodation-detail', ['code' => $hotel->code]);
+                    return route('view.hotel-detail', ['code' => $hotel->code]);
                 }
             }
         }

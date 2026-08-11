@@ -183,7 +183,7 @@
                                         <td data-label="Action">
                                             <div class="backend-table-actions guides-admin-actions">
                                                 <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#guideDetail{{ $guide->id }}" aria-label="View {{ $guide->name }}">
-                                                    <i class="dw dw-eye"></i>
+                                                    <i class="fas fa-eye"></i>
                                                 </button>
                                                 @canany(['posDev','posAuthor'])
                                                     <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#guideEdit{{ $guide->id }}" aria-label="Edit {{ $guide->name }}">

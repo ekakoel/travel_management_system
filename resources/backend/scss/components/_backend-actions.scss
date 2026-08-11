@@ -85,7 +85,7 @@ body.sidebar-light .btn-view:focus {
 }
 
 body.sidebar-light .backend-icon-action--edit,
-body.sidebar-light .backend-icon-action:has(.fa-pencil),
+body.sidebar-light .backend-icon-action:has(.fa-pencil-alt),
 body.sidebar-light .backend-icon-action:has(.fa-edit),
 body.sidebar-light .user-manager-icon-action,
 body.sidebar-light .terms-admin-icon-action:not(.is-danger),
@@ -97,8 +97,8 @@ body.sidebar-light .btn-edit {
 
 body.sidebar-light .backend-icon-action--edit:hover,
 body.sidebar-light .backend-icon-action--edit:focus,
-body.sidebar-light .backend-icon-action:has(.fa-pencil):hover,
-body.sidebar-light .backend-icon-action:has(.fa-pencil):focus,
+body.sidebar-light .backend-icon-action:has(.fa-pencil-alt):hover,
+body.sidebar-light .backend-icon-action:has(.fa-pencil-alt):focus,
 body.sidebar-light .backend-icon-action:has(.fa-edit):hover,
 body.sidebar-light .backend-icon-action:has(.fa-edit):focus,
 body.sidebar-light .user-manager-icon-action:hover,
@@ -116,7 +116,7 @@ body.sidebar-light .backend-icon-action--delete,
 body.sidebar-light .backend-icon-action.is-danger,
 body.sidebar-light .backend-danger-icon-action,
 body.sidebar-light .backend-icon-action:has(.fa-trash),
-body.sidebar-light .backend-icon-action:has(.fa-trash-o),
+body.sidebar-light .backend-icon-action:has(.fa-trash-alt),
 body.sidebar-light .user-manager-icon-action.is-danger,
 body.sidebar-light .terms-admin-icon-action.is-danger,
 body.sidebar-light .btn-delete {
@@ -133,8 +133,8 @@ body.sidebar-light .backend-danger-icon-action:hover,
 body.sidebar-light .backend-danger-icon-action:focus,
 body.sidebar-light .backend-icon-action:has(.fa-trash):hover,
 body.sidebar-light .backend-icon-action:has(.fa-trash):focus,
-body.sidebar-light .backend-icon-action:has(.fa-trash-o):hover,
-body.sidebar-light .backend-icon-action:has(.fa-trash-o):focus,
+body.sidebar-light .backend-icon-action:has(.fa-trash-alt):hover,
+body.sidebar-light .backend-icon-action:has(.fa-trash-alt):focus,
 body.sidebar-light .user-manager-icon-action.is-danger:hover,
 body.sidebar-light .user-manager-icon-action.is-danger:focus,
 body.sidebar-light .terms-admin-icon-action.is-danger:hover,
@@ -150,4 +150,8 @@ body.sidebar-light .backend-icon-action--wide {
   min-width: 96px;
   padding: 0 12px;
   width: auto;
+}
+
+.btn-group, .btn-group-vertical {
+    gap: 12px;
 }

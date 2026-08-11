@@ -68,8 +68,8 @@
                                 <div class="card-btn-container">
                                     @if ($wedding_package->status == "Draft")
                                         <a href="/edit-wedding-package-{{ $wedding_package->id }}">
-                                            <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button><br>
-                                            {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                            <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil-alt"></i></button><br>
+                                            {{-- <button type="button" class="backend-table-action backend-table-action-edit"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i></button> --}}
                                         </a>
                                     @endif
                                     <form action="/fdelete-wedding-package/{{ $wedding_package->id }}" method="post">
@@ -77,7 +77,7 @@
                                         @method('delete')
                                         <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
                                         <input id="hotels_id" name="hotels_id" value="{{ $hotel->id }}" type="hidden">
-                                        <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                        <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                     </form>
                                 </div>
                             @endcanany
@@ -338,7 +338,7 @@
                                             @if ($wedding_package->status == "Draft")
                                                 @canany(['posDev','posAuthor'])
                                                     <a href="/edit-wedding-package-{{ $wedding_package->id }}">
-                                                        <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                        <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
                                                     </a>
                                                 @endcanany
                                             @elseif ($wedding_package->status == "Active")

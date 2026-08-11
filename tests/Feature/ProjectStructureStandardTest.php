@@ -192,10 +192,10 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('backend-sidebar', $sidebar);
         $this->assertStringContainsString('backend-sidebar__profile', $sidebar);
         $this->assertStringContainsString('backend-sidebar__section-label', $sidebar);
-        $this->assertStringContainsString("route('view.accommodation-service')", $sidebar);
+        $this->assertStringContainsString("route('view.accommodation-services')", $sidebar);
         $this->assertStringContainsString("route('view.tour-package-services')", $sidebar);
-        $this->assertStringContainsString("route('view.activity-services')", $sidebar);
-        $this->assertStringContainsString("route('view.transport-service')", $sidebar);
+        $this->assertStringContainsString("route('view.activities-service')", $sidebar);
+        $this->assertStringContainsString("route('view.transport-services')", $sidebar);
         $this->assertStringNotContainsString('route(\'view.\'.$menuitem->nicname)', $sidebar);
         $this->assertStringContainsString("@import 'components/backend-theme';", $backendScss);
         $this->assertStringContainsString("@import 'components/backend-hero';", $backendScss);
@@ -459,6 +459,89 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         $this->assertStringNotContainsString('body:not(.sidebar-light)', $formScss);
+    }
+
+    public function test_backend_monetary_inputs_have_a_shared_currency_unit_contract(): void
+    {
+        $backendJs = file_get_contents(resource_path('backend/js/app.js'));
+        $formScss = file_get_contents(resource_path('backend/scss/components/_backend-form.scss'));
+        $layout = file_get_contents(resource_path('views/layouts/head.blade.php'));
+        $tourPriceFields = file_get_contents(resource_path('views/backend/operations/tours/partials/price-fields.blade.php'));
+        $currencyAdmin = file_get_contents(resource_path('views/backend/developer/currency.blade.php'));
+        $mappedFields = [
+            'additional_guest_rate' => 'USD',
+            'additional_service_price' => 'USD',
+            'agent_rate' => 'USD',
+            'arrangement_price' => 'USD',
+            'basic_price' => 'USD',
+            'contract_rate' => 'IDR',
+            'contract_rate_idr' => 'IDR',
+            'fee' => 'USD',
+            'holiday_price' => 'USD',
+            'kick_back' => 'USD',
+            'markup' => 'USD',
+            'price' => 'USD',
+            'public_rate' => 'USD',
+            'publish_rate' => 'USD',
+            'rate' => 'USD',
+            'tax' => '%',
+            'week_day_price' => 'USD',
+        ];
+
+        foreach ($mappedFields as $field => $unit) {
+            $this->assertStringContainsString("{$field}: '{$unit}'", $backendJs);
+        }
+
+        $this->assertStringContainsString('function initBackendMoneyInputs(', $backendJs);
+        $this->assertStringContainsString('window.initBackendMoneyInputs = initBackendMoneyInputs', $backendJs);
+        $this->assertStringContainsString('.backend-money-control', $formScss);
+        $this->assertStringContainsString('.backend-money-control__unit', $formScss);
+        $this->assertStringContainsString('data-backend-money-hint=', $layout);
+        $this->assertStringContainsString('data-backend-money-label=', $layout);
+        $this->assertStringContainsString('formatBackendMoneyInput', $backendJs);
+        $this->assertStringContainsString("unit === 'IDR' ? '.' : ','", $backendJs);
+        $this->assertStringContainsString("document.addEventListener('formdata'", $backendJs);
+        $this->assertStringContainsString('controls.forEach(restoreBackendMoneyInput)', $backendJs);
+        $this->assertStringContainsString('data-backend-money-unit-source="[data-tour-markup-type]"', $tourPriceFields);
+        $this->assertStringContainsString('data-backend-money-unit-map="percentage:%|usd:USD|idr:IDR"', $tourPriceFields);
+        $this->assertStringContainsString('data-backend-money-unit-source-target', $tourPriceFields);
+        $this->assertSame(2, substr_count($currencyAdmin, 'data-backend-money-unit="IDR"'));
+
+        foreach (['en', 'zh', 'zh-CN'] as $locale) {
+            $messages = file_get_contents(resource_path("lang/{$locale}/messages.php"));
+            $this->assertStringContainsString("'Backend monetary input hint'", $messages);
+            $this->assertStringContainsString("'Monetary input unit'", $messages);
+        }
+
+        $moneyNamePattern = '/(?:price|rate|cost|amount|markup|tax|discount|fee|charge|kick.?back|deposit|total)/i';
+        $views = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(resource_path('views/backend'), \FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($views as $view) {
+            if (!$view->isFile() || $view->getExtension() !== 'php') {
+                continue;
+            }
+
+            $contents = file_get_contents($view->getPathname());
+            preg_match_all('/<input\b[^>]*\bname="([^"]+)"[^>]*>/is', $contents, $inputs, PREG_SET_ORDER);
+
+            foreach ($inputs as $input) {
+                if (str_contains(strtolower($input[0]), 'type="hidden"')) {
+                    continue;
+                }
+
+                $field = preg_replace('/\[[^\]]*\].*$/', '', $input[1]);
+                if (!preg_match($moneyNamePattern, $field)) {
+                    continue;
+                }
+
+                $covered = array_key_exists($field, $mappedFields)
+                    || str_contains($input[0], 'data-backend-money-unit');
+
+                $this->assertTrue($covered, "Missing backend monetary unit contract for {$field} in {$view->getPathname()}");
+            }
+        }
     }
 
     public function test_product_operation_forms_use_backend_form_standard(): void
@@ -1259,7 +1342,7 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_transport_directory_route_renders_landing_page_view(): void
     {
-        $response = $this->get(route('view.transport-service'));
+        $response = $this->get(route('view.transport-services'));
 
         $response->assertOk();
         $response->assertViewIs('frontend.landing-page.transports.index');
@@ -1352,7 +1435,7 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_activity_directory_route_renders_landing_page_view(): void
     {
-        $response = $this->get(route('view.activity-services'));
+        $response = $this->get(route('view.activities-service'));
 
         $response->assertOk();
         $response->assertViewIs('frontend.landing-page.activities.index');
@@ -1534,7 +1617,7 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_accommodation_directory_route_renders_landing_page_view(): void
     {
-        $response = $this->get(route('view.accommodation-service'));
+        $response = $this->get(route('view.accommodation-services'));
 
         $response->assertOk();
         $response->assertViewIs('frontend.landing-page.accommodations.index');
@@ -1579,7 +1662,7 @@ class ProjectStructureStandardTest extends TestCase
             'cancellation_policy' => 'Route test cancellation policy.',
         ]);
 
-        $response = $this->get(route('view.accommodation-detail', $hotel->code));
+        $response = $this->get(route('view.hotel-detail', $hotel->code));
 
         $response->assertOk();
         $response->assertViewIs('frontend.landing-page.accommodations.detail');
@@ -3150,7 +3233,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('backend-alert backend-alert--', $formContent);
         $this->assertStringContainsString('backend-status-badge backend-status-badge--', $formContent);
         $this->assertStringContainsString("route('view.admin-panel-main')", $formContent);
-        $this->assertStringContainsString("route('hotels-admin.index')", $formContent);
+        $this->assertStringContainsString("route('admin.hotels.index')", $formContent);
         $this->assertStringContainsString("route('admin.hotels.show'", $formContent);
         $this->assertStringContainsString("route('func.hotel.add')", $formContent);
         $this->assertStringContainsString("route('func.hotel.edit'", $formContent);
@@ -3258,6 +3341,37 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("view('backend.operations.hotels.forms.package-edit'", $controller);
         $this->assertStringContainsString('redirectToHotelDetail', $controller);
         $this->assertStringContainsString('redirectToHotelsIndexWithError', $controller);
+    }
+
+    public function test_hotel_package_cancellation_policy_is_localized_and_snapshotted_for_order_detail(): void
+    {
+        $model = file_get_contents(app_path('Models/HotelPackage.php'));
+        $ordersModel = file_get_contents(app_path('Models/Orders.php'));
+        $storeRequest = file_get_contents(app_path('Http/Requests/StoreHotelPackageRequest.php'));
+        $updateRequest = file_get_contents(app_path('Http/Requests/UpdateHotelPackageRequest.php'));
+        $controller = file_get_contents(app_path('Http/Controllers/Backend/Operations/Hotels/HotelPackageAdminController.php'));
+        $orderController = file_get_contents(app_path('Http/Controllers/OrderController.php'));
+        $createView = file_get_contents(resource_path('views/backend/operations/hotels/forms/package-create.blade.php'));
+        $editView = file_get_contents(resource_path('views/backend/operations/hotels/forms/package-edit.blade.php'));
+        $detailView = file_get_contents(resource_path('views/frontend/home/orders/details/partials/hotel-detail-modern.blade.php'));
+        $migration = file_get_contents(database_path('migrations/2026_08_10_150000_add_cancellation_policy_to_hotel_packages_and_orders.php'));
+
+        foreach (['cancellation_policy', 'cancellation_policy_traditional', 'cancellation_policy_simplified'] as $field) {
+            $this->assertStringContainsString("'{$field}'", $model);
+            $this->assertStringContainsString("'{$field}'", $ordersModel);
+            $this->assertStringContainsString("'{$field}' => ['nullable', 'string']", $storeRequest);
+            $this->assertStringContainsString("'{$field}' => ['nullable', 'string']", $updateRequest);
+            $this->assertStringContainsString("'{$field}' => \$validated['{$field}'] ?? null", $controller);
+            $this->assertStringContainsString("name=\"{{ \$field }}\"", $createView);
+            $this->assertStringContainsString("name=\"{{ \$field }}\"", $editView);
+            $this->assertStringContainsString("'{$field}'", $migration);
+        }
+
+        $this->assertStringContainsString('hotelPackageCancellationPolicySnapshot', $orderController);
+        $this->assertStringContainsString("'cancellation_policy_traditional' => \$cancellationPolicies['cancellation_policy_traditional']", $orderController);
+        $this->assertStringContainsString("'cancellation_policy_simplified' => \$cancellationPolicies['cancellation_policy_simplified']", $orderController);
+        $this->assertStringContainsString('data_get($order, $langCancellationPolicy) ?: $order->cancellation_policy', $detailView);
+        $this->assertStringContainsString("__('messages.Cancellation Policy')", $detailView);
     }
 
     public function test_hotel_core_crud_routes_are_decomposed_to_dedicated_controllers(): void
@@ -3466,7 +3580,8 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertSame(120, $pricing->subtotalUsd(1500000, 20, $usdRate));
         $this->assertSame(12, $pricing->taxAmount(1500000, 20, $usdRate, $tax));
         $this->assertSame(132, $pricing->publishedRate(1500000, 20, $usdRate, $tax));
-        $this->assertSame(122, $pricing->normalPricePublishedRate($normalPrice, $usdRate, $tax));
+        $this->assertSame(132, $pricing->normalPricePublishedRate($normalPrice, $usdRate, $tax));
+        $this->assertSame(122, $pricing->normalPriceNetRate($normalPrice, $usdRate, $tax));
         $this->assertSame(242, $pricing->packagePublishedRate($package, $usdRate, $tax));
     }
 
@@ -3554,7 +3669,7 @@ class ProjectStructureStandardTest extends TestCase
 
         $this->assertFileExists(app_path('ViewModels/Hotels/HotelDetailViewModel.php'));
         $this->assertStringContainsString("'rooms'", $service);
-        $this->assertStringContainsString("'rooms.prices'", $service);
+        $this->assertStringContainsString("'prices.rooms'", $service);
         $this->assertStringContainsString("'promos.rooms'", $service);
         $this->assertStringContainsString("'packages.room'", $service);
         $this->assertStringContainsString("'optionalrates'", $service);
@@ -3579,6 +3694,8 @@ class ProjectStructureStandardTest extends TestCase
             resource_path('views/backend/operations/hotels/partials/package-prices.blade.php'),
             resource_path('views/backend/operations/hotels/partials/additional-charges.blade.php'),
             resource_path('views/backend/operations/hotels/partials/audit-summary.blade.php'),
+            resource_path('views/backend/operations/hotels/partials/price-breakdown.blade.php'),
+            resource_path('views/backend/operations/hotels/modals/price-calculation.blade.php'),
         ];
 
         $content = collect($paths)->map(fn ($path) => file_get_contents($path))->implode("\n");
@@ -3589,6 +3706,9 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('$hotelDetail->packageRows()', $content);
         $this->assertStringContainsString('$hotelDetail->additionalChargeRows()', $content);
         $this->assertStringContainsString('$hotelDetail->createdAge()', $content);
+        $this->assertStringContainsString("modals.price-calculation", $content);
+        $this->assertStringContainsString('data-toggle="modal"', $content);
+        $this->assertStringNotContainsString('data-hotel-price-breakdown-toggle', $content);
         $this->assertStringNotContainsString('calculatePrice(', $content);
         $this->assertStringNotContainsString('Carbon::parse', $content);
         $this->assertStringNotContainsString('::where(', $content);
@@ -3597,6 +3717,30 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringNotContainsString('HotelPromo', $content);
         $this->assertStringNotContainsString('HotelPackage', $content);
         $this->assertStringNotContainsString('OptionalRate', $content);
+    }
+
+    public function test_hotel_backend_inventory_filters_expired_prices_at_the_query_boundary(): void
+    {
+        $inventory = file_get_contents(app_path('Services/Hotels/HotelInventoryService.php'));
+        $statusService = file_get_contents(app_path('Services/Hotels/HotelStatusService.php'));
+        $indexController = file_get_contents(app_path('Http/Controllers/HotelsAdminController.php'));
+
+        foreach ([
+            app_path('Models/HotelPrice.php'),
+            app_path('Models/HotelPromo.php'),
+            app_path('Models/HotelPackage.php'),
+            app_path('Models/OptionalRate.php'),
+        ] as $modelPath) {
+            $this->assertStringContainsString('function scopeNotExpired(', file_get_contents($modelPath));
+        }
+
+        $this->assertGreaterThanOrEqual(4, substr_count($inventory, '->notExpired($now)'));
+        $this->assertStringContainsString("'optionalrates' => fn (\$query) => \$query->notExpired(\$now)", $inventory);
+        $this->assertStringContainsString('HotelPrice::notExpired($now)', $indexController);
+        $this->assertStringContainsString('HotelPromo::notExpired($now)', $indexController);
+        $this->assertStringContainsString('HotelPackage::notExpired($now)', $indexController);
+        $this->assertStringContainsString("whereDate('book_periode_end', '<', \$today)", $statusService);
+        $this->assertStringContainsString("whereDate('stay_period_end', '<', \$today)", $statusService);
     }
 
     public function test_hotel_phase_8i_backend_views_and_assets_follow_project_architecture(): void
@@ -3756,7 +3900,7 @@ class ProjectStructureStandardTest extends TestCase
         $routes = file_get_contents(base_path('routes/web.php'));
 
         $expectedRoutes = [
-            "name('hotels-admin.index')",
+            "name('admin.hotels.index')",
             "name('admin.hotels.create')",
             "name('admin.hotels.show')",
             "name('admin.hotels.edit')",
@@ -3861,7 +4005,7 @@ class ProjectStructureStandardTest extends TestCase
         $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         foreach ([
-            "name('activities-admin.index')",
+            "name('admin.activities.index')",
             "name('admin.activities.show')",
             "name('admin.activities.create')",
             "name('admin.activities.edit')",
@@ -3926,7 +4070,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("view('backend.operations.activities.detail'", $backendActivityController);
         $this->assertStringContainsString("view('backend.operations.activities.forms.gallery-edit'", $backendGalleryController);
         $this->assertStringNotContainsString("view('backend.operations.activities.index'", $activityController);
-        $this->assertStringContainsString("redirect()->route('activities-admin.index')", $backendActivityController);
+        $this->assertStringContainsString("redirect()->route('admin.activities.index')", $backendActivityController);
         $this->assertStringContainsString("redirect()->route('admin.activities.show'", $backendActivityController);
         $this->assertStringNotContainsString('redirect("/activities-admin"', $adminController);
         $this->assertStringNotContainsString('redirect("/detail-activity-', $adminController);
@@ -4235,7 +4379,7 @@ class ProjectStructureStandardTest extends TestCase
         ])->map(fn ($path) => file_get_contents($path))->implode("\n");
 
         foreach ([
-            "name('activities-admin.index')",
+            "name('admin.activities.index')",
             "name('admin.activities.show')",
             "name('admin.activities.create')",
             "name('admin.activities.edit')",
@@ -4304,7 +4448,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('<x-backend.page-hero', $formContent);
         $this->assertStringContainsString('backend-page-primary-action', $formContent);
         $this->assertStringContainsString("route('view.admin-panel-main')", $formContent);
-        $this->assertStringContainsString("route('hotels-admin.index')", $formContent);
+        $this->assertStringContainsString("route('admin.hotels.index')", $formContent);
         $this->assertStringContainsString("route('admin.hotels.show'", $formContent);
         $this->assertStringContainsString("route('admin.hotels.normal-prices.store')", $formContent);
         $this->assertStringContainsString("route('admin.hotels.promos.store')", $formContent);
@@ -4363,7 +4507,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('<x-backend.page-hero', $formContent);
         $this->assertStringContainsString('backend-page-primary-action', $formContent);
         $this->assertStringContainsString("route('view.admin-panel-main')", $formContent);
-        $this->assertStringContainsString("route('hotels-admin.index')", $formContent);
+        $this->assertStringContainsString("route('admin.hotels.index')", $formContent);
         $this->assertStringContainsString("route('admin.hotels.show'", $formContent);
         $this->assertStringContainsString("route('admin.hotels.additional-charges.store')", $createView);
         $this->assertStringContainsString("route('admin.hotels.additional-charges.update'", $editView);
@@ -4421,7 +4565,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('<x-backend.page-hero', $formContent);
         $this->assertStringContainsString('backend-page-primary-action', $formContent);
         $this->assertStringContainsString("route('view.admin-panel-main')", $formContent);
-        $this->assertStringContainsString("route('hotels-admin.index')", $formContent);
+        $this->assertStringContainsString("route('admin.hotels.index')", $formContent);
         $this->assertStringContainsString("route('admin.hotels.show'", $formContent);
         $this->assertStringContainsString("route('admin.hotels.packages.store')", $packageCreateView);
         $this->assertStringContainsString("route('admin.hotels.packages.update'", $packageEditView);
@@ -4474,7 +4618,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('<x-backend.page-hero', $formContent);
         $this->assertStringContainsString('backend-page-primary-action', $formContent);
         $this->assertStringContainsString("route('view.admin-panel-main')", $formContent);
-        $this->assertStringContainsString("route('hotels-admin.index')", $formContent);
+        $this->assertStringContainsString("route('admin.hotels.index')", $formContent);
         $this->assertStringContainsString("route('admin.hotels.show'", $formContent);
         $this->assertStringContainsString("route('admin.hotels.normal-prices.update'", $normalPriceView);
         $this->assertStringContainsString("route('admin.hotels.promos.update'", $promoView);
@@ -4522,6 +4666,10 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("@include('backend.operations.hotels.index')", $legacyWrapper);
         $this->assertStringContainsString("view('backend.operations.hotels.index'", $controller);
         $this->assertStringNotContainsString("view('admin.hotelsadmin'", $controller);
+        $this->assertStringContainsString('$now = Carbon::now();', $controller);
+        $this->assertStringContainsString('$queryDate = $now->toDateString();', $controller);
+        $this->assertStringNotContainsString('$now = Carbon::now()->toDateString();', $controller);
+        $this->assertStringContainsString("{{ \$now->format('d M Y') }}", $view);
         $this->assertStringContainsString("name('admin.hotels.create')", $routes);
         $this->assertStringContainsString("name('admin.hotels.show')", $routes);
         $this->assertStringContainsString("name('admin.hotels.edit')", $routes);
@@ -4641,7 +4789,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("backend.operations.hotels.modals.room-preview", $view);
         $this->assertStringContainsString('backend-page-primary-action', $detailContent);
         $this->assertStringContainsString("route('view.admin-panel-main')", $view);
-        $this->assertStringContainsString("route('hotels-admin.index')", $view);
+        $this->assertStringContainsString("route('admin.hotels.index')", $view);
         $this->assertStringContainsString('backend-page-toolbar hotel-detail-toolbar', $view);
         $this->assertStringContainsString('backend-feedback hotel-detail-feedback', $view);
         $this->assertStringContainsString('backend-alert backend-alert--', $view);
@@ -5120,10 +5268,13 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertFileDoesNotExist(resource_path('views/home/landing-page/tour-package.blade.php'));
         $this->assertFileDoesNotExist(resource_path('views/home/hotels/detail.blade.php'));
         $this->assertFileDoesNotExist(resource_path('views/home/tour-packages/detail.blade.php'));
-        $this->assertStringContainsString("app(FrontEndController::class)->accommodation_service", $controller);
+        $this->assertStringContainsString("app(FrontEndController::class)->hotels_service", $controller);
         $this->assertStringContainsString("view('frontend.landing-page.services.index'", $controller);
-        $this->assertStringContainsString("app(FrontEndController::class)->tour_package_services", $controller);
-        $this->assertStringContainsString("redirect()->route('view.accommodation-detail'", $controller);
+        $routes = file_get_contents(base_path('routes/web.php'));
+        $this->assertStringNotContainsString("app(FrontEndController::class)->tour_package_services", $controller);
+        $this->assertSame(2, substr_count($routes, "[FrontEndController::class,'tour_package_services']"));
+        $this->assertStringContainsString("name('tour-package-service')", $routes);
+        $this->assertStringContainsString("redirect()->route('view.hotel-detail'", $controller);
         $this->assertStringContainsString("redirect()->route('view.tour-detail'", $controller);
         $this->assertStringNotContainsString("view('home.landing-page.accommodation'", $controller);
         $this->assertStringNotContainsString("view('home.landing-page.services'", $controller);
@@ -5139,6 +5290,20 @@ class ProjectStructureStandardTest extends TestCase
         $legacyTourDirectoryResponse = $this->get(route('tour-package-service'));
         $legacyTourDirectoryResponse->assertOk();
         $legacyTourDirectoryResponse->assertViewIs('frontend.landing-page.tours.directory');
+    }
+
+    public function test_legacy_tour_directory_route_does_not_bypass_controller_dependency_injection(): void
+    {
+        $controller = file_get_contents(app_path('Http/Controllers/HomeController.php'));
+        $routes = file_get_contents(base_path('routes/web.php'));
+
+        $this->assertStringNotContainsString("app(FrontEndController::class)->tour_package_services", $controller);
+        $this->assertStringNotContainsString('function tour_package_service(', $controller);
+        $this->assertSame(2, substr_count($routes, "[FrontEndController::class,'tour_package_services']"));
+        $this->assertStringContainsString(
+            "Route::get('/tour-package-service',[FrontEndController::class,'tour_package_services'])->name('tour-package-service')",
+            $routes
+        );
     }
 
     public function test_home_agent_and_shared_partials_are_sourced_from_frontend_structure(): void
@@ -5774,7 +5939,7 @@ class ProjectStructureStandardTest extends TestCase
             'method' => 'GET',
             'path' => '/accommodations',
             'url' => 'https://example.test/accommodations',
-            'route_name' => 'view.accommodation-service',
+            'route_name' => 'view.accommodation-services',
             'page_title' => 'Accommodations',
             'area' => 'landing-page',
             'country_code' => 'ID',
@@ -6002,7 +6167,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("@include('backend.operations.tours.index')", $legacyIndexWrapper);
         $this->assertStringContainsString("@include('backend.operations.tours.detail')", $legacyDetailWrapper);
         $this->assertStringContainsString("Route::get('/tours-admin'", $routes);
-        $this->assertStringContainsString("->name('tours-admin.index')", $routes);
+        $this->assertStringContainsString("->name('admin.tour-packages.index')", $routes);
         $this->assertStringContainsString("->name('admin.tours.show')", $routes);
         $this->assertStringContainsString("->name('admin.tours.create')", $routes);
         $this->assertStringContainsString("->name('admin.tours.edit')", $routes);
@@ -6012,7 +6177,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("->name('admin.tours.prices.store')", $routes);
         $this->assertStringContainsString("->name('admin.tours.prices.update')", $routes);
         $this->assertStringContainsString("->name('admin.tours.prices.destroy')", $routes);
-        $this->assertStringContainsString("route('tours-admin.index')", $controller);
+        $this->assertStringContainsString("route('admin.tour-packages.index')", $controller);
         $this->assertStringContainsString("route('admin.tours.show'", $controller);
         $this->assertStringNotContainsString('redirect("/tours-admin', $controller);
         $this->assertStringNotContainsString('redirect("/detail-tour-', $controller);
@@ -6309,12 +6474,15 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("'type' => 'required|integer|exists:tour_types,id'", $storeTourRequest);
         $this->assertStringContainsString("'duration_days' => 'required|integer|min:1'", $storeTourRequest);
         $this->assertStringContainsString("'duration_nights' => 'required|integer|min:0'", $storeTourRequest);
-        $this->assertStringContainsString("'min_qty' => 'required|integer|min:1'", $storePriceRequest);
-        $this->assertStringContainsString("'max_qty' => 'required|integer|gte:min_qty'", $storePriceRequest);
-        $this->assertStringContainsString("'contract_rate' => 'required|numeric|min:1'", $storePriceRequest);
-        $this->assertStringContainsString("'markup' => 'required|numeric|min:0'", $storePriceRequest);
-        $this->assertStringContainsString("'expired_date' => 'required|date'", $storePriceRequest);
-        $this->assertStringContainsString("'status' => 'required|string|in:Draft,Active'", $updatePriceRequest);
+        $this->assertStringContainsString("'min_qty' => ['required', 'integer', 'min:1']", $storePriceRequest);
+        $this->assertStringContainsString("'max_qty' => ['required', 'integer', 'gte:min_qty']", $storePriceRequest);
+        $this->assertStringContainsString("'contract_rate_idr' => ['required', 'integer', 'min:1']", $storePriceRequest);
+        $this->assertStringContainsString("'markup_type' => ['required', Rule::in(TourPrices::MARKUP_TYPES)]", $storePriceRequest);
+        $this->assertStringContainsString("'markup_amount' => ['required', 'regex:", $storePriceRequest);
+        $this->assertStringContainsString("'valid_from' => ['required', 'date_format:Y-m-d']", $storePriceRequest);
+        $this->assertStringContainsString("'valid_until' => ['required', 'date_format:Y-m-d'", $storePriceRequest);
+        $this->assertStringContainsString('use App\\Models\\TourPrices;', $updatePriceRequest);
+        $this->assertStringContainsString('overlapExceptPriceId', $updatePriceRequest);
         $this->assertStringContainsString('- [x] Buat namespace controller `App\Http\Controllers\Backend\Operations\Tours`.', $roadmap);
         $this->assertStringContainsString('- [x] Buat Form Request untuk create/update Tour dan create/update Tour Price.', $roadmap);
     }
@@ -6363,12 +6531,14 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('detailData', $inventory);
         $this->assertStringContainsString('formOptions', $inventory);
         $this->assertStringContainsString('editData', $inventory);
-        $this->assertStringContainsString('publishedRate', $pricing);
+        $this->assertStringContainsString('TourPackagePricingService', $inventory);
+        $this->assertStringContainsString('quoteEachTier', $indexVm . $detailVm);
         $this->assertStringContainsString('createPrice', $pricing);
         $this->assertStringContainsString('updatePrice', $pricing);
         $this->assertStringContainsString('deletePrice', $pricing);
-        $this->assertStringContainsString('contractRateUsd', $pricing);
-        $this->assertStringContainsString('taxAmount', $pricing);
+        $this->assertStringNotContainsString('publishedRate', $pricing);
+        $this->assertStringNotContainsString('contractRateUsd', $pricing);
+        $this->assertStringNotContainsString('taxAmount', $pricing);
         $this->assertStringContainsString('uploadCover', $assets);
         $this->assertStringContainsString('replaceCover', $assets);
         $this->assertStringContainsString('uploadGallery', $assets);
@@ -6393,8 +6563,10 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringNotContainsString('calculated_price', $indexView . $detailView);
         $this->assertStringNotContainsString('ceil(', $indexView . $detailView);
         $this->assertStringNotContainsString('TourPrices::', $profileController . $priceController);
-        $this->assertStringContainsString('- [x] Buat `TourInventoryService` untuk index/detail summary.', $roadmap);
-        $this->assertStringContainsString('- [x] Buat `TourIndexViewModel` dan `TourDetailViewModel`.', $roadmap);
+        $this->assertStringContainsString(
+            '- [x] Operations Tours memakai namespace/backend UI modern, Form Request, service, dan view model.',
+            $roadmap
+        );
     }
 
     public function test_tours_phase_6_final_acceptance_locks_routes_assets_and_legacy_audit(): void
@@ -6416,7 +6588,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('Backend\Operations\Tours\TourGalleryAdminController', $routes);
         $this->assertStringNotContainsString('ToursAdminController::class', $routes);
         $this->assertStringNotContainsString('ToursImagesController::class', $routes);
-        $this->assertStringContainsString("->name('tours-admin.index')", $routes);
+        $this->assertStringContainsString("->name('admin.tour-packages.index')", $routes);
         $this->assertStringContainsString("->name('admin.tours.create')", $routes);
         $this->assertStringContainsString("->name('admin.tours.store')", $routes);
         $this->assertStringContainsString("->name('admin.tours.show')", $routes);
@@ -6544,7 +6716,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("view('backend.operations.transports.detail'", $controller);
 
         foreach ([
-            "->name('transports-admin.index')",
+            "->name('admin.transports.index')",
             "->name('admin.transports.create')",
             "->name('admin.transports.store')",
             "->name('admin.transports.show')",
@@ -6565,7 +6737,7 @@ class ProjectStructureStandardTest extends TestCase
             "route('admin.transports.edit'",
             "route('admin.transports.destroy'",
             "route('admin.transports.create'",
-            "route('transports-admin.index'",
+            "route('admin.transports.index'",
             "route('admin.transports.prices.store'",
             "route('admin.transports.prices.update'",
             "route('admin.transports.prices.destroy'",
@@ -6777,7 +6949,7 @@ class ProjectStructureStandardTest extends TestCase
             "route('admin.transports.store')",
             "route('admin.transports.update'",
             "route('admin.transports.show'",
-            "route('transports-admin.index')",
+            "route('admin.transports.index')",
         ] as $routeHelper) {
             $this->assertStringContainsString($routeHelper, $createForm . $editForm . $galleryForm);
         }
@@ -7077,7 +7249,7 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         foreach ([
-            "->name('transports-admin.index')",
+            "->name('admin.transports.index')",
             "->name('admin.transports.create')",
             "->name('admin.transports.store')",
             "->name('admin.transports.show')",
@@ -7105,7 +7277,7 @@ class ProjectStructureStandardTest extends TestCase
             "route('admin.transports.prices.store')",
             "route('admin.transports.prices.update'",
             "route('admin.transports.prices.destroy'",
-            "route('transports-admin.index')",
+            "route('admin.transports.index')",
         ] as $routeHelper) {
             $this->assertStringContainsString($routeHelper, $surface);
         }
@@ -7336,16 +7508,19 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('Backend Legacy UI Deep Cleanup dimulai', $uiRoadmap);
     }
 
-    public function test_backend_legacy_ui_phase_2_reservation_detail_confirm_behavior_moves_to_domain_asset(): void
+    public function test_backend_legacy_ui_phase_2_reservation_detail_is_replaced_by_canonical_domain_view(): void
     {
-        $view = file_get_contents(resource_path('views/admin/reservation_detail.blade.php'));
+        $view = file_get_contents(resource_path('views/backend/operations/reservations/detail.blade.php'));
+        $context = file_get_contents(resource_path('views/backend/operations/reservations/partials/context.blade.php'));
         $script = file_get_contents(resource_path('backend/js/operations/reservations/detail.js'));
         $webpackMix = file_get_contents(base_path('webpack.mix.js'));
         $roadmap = file_get_contents(base_path('docs/decisions/backend-legacy-ui-deep-cleanup-roadmap.md'));
 
         $this->assertStringContainsString("mix('build/backend/js/operations/reservations/detail.js')", $view);
         $this->assertStringContainsString(".js('resources/backend/js/operations/reservations/detail.js'", $webpackMix);
-        $this->assertStringContainsString('data-confirm-delete', $view);
+        $this->assertFileDoesNotExist(resource_path('views/admin/reservation_detail.blade.php'));
+        $this->assertStringContainsString('<x-backend.detail-layout', $view);
+        $this->assertStringContainsString('data-confirm-delete', $context);
         $this->assertStringContainsString('data-confirm-delete', $script);
         $this->assertStringContainsString('window.confirm', $script);
 
@@ -7364,7 +7539,8 @@ class ProjectStructureStandardTest extends TestCase
             '- [x] Audit section dan modal terbesar di `resources/views/admin/reservation_detail.blade.php`.',
             '- [x] Petakan section besar: Reservation, Flight, Agent, Guest, Guide, Driver, Accommodation, Activity/Tour, Transport, Restaurant, Include, Exclude, Remark, Sidebar Attention/Notes.',
             '- [x] Pindahkan confirm/delete behavior ke asset backend domain.',
-            '- [ ] Pindahkan search/toggle behavior ke asset backend domain ketika section terkait mulai dipisah.',
+            '- [x] Pindahkan section detail ke partial domain responsive dan retire Blade legacy.',
+            '- [x] Pindahkan section navigation/print behavior ke asset backend domain.',
         ] as $roadmapItem) {
             $this->assertStringContainsString($roadmapItem, $roadmap);
         }

@@ -23,7 +23,7 @@
                         description="Create a tour package using the shared backend form and asset standard."
                     >
                         <x-slot name="action">
-                            <a href="{{ route('tours-admin.index') }}" class="backend-page-primary-action">
+                            <a href="{{ route('admin.tour-packages.index') }}" class="backend-page-primary-action">
                                 <i class="fa fa-arrow-left"></i>
                                 Back to Tours
                             </a>
@@ -34,7 +34,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('tours-admin.index') }}">Tour Packages</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.tour-packages.index') }}">Tour Packages</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Add Tour Package</li>
                             </ol>
                         </nav>
@@ -448,7 +448,7 @@
                                         <i class="fa fa-check" aria-hidden="true"></i>
                                         Add Tour
                                     </button>
-                                    <a href="{{ route('tours-admin.index') }}" class="backend-button backend-button-secondary">
+                                    <a href="{{ route('admin.tour-packages.index') }}" class="backend-button backend-button-secondary">
                                         <i class="fa fa-times" aria-hidden="true"></i>
                                         Cancel
                                     </a>

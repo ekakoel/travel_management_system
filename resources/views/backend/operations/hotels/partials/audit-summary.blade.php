@@ -51,12 +51,22 @@
         <li>
             <span>Created</span>
             <strong>{{ dateTimeFormat($hotel->created_at) }}</strong>
-            <small>Initial record timestamp.</small>
+            <small>{{ $hotelDetail->createdAge() }} - Initial record timestamp.</small>
         </li>
         <li>
             <span>Author</span>
             <strong>{{ $author?->name ?: '-' }}</strong>
             <small>Record owner or creator.</small>
+        </li>
+        <li>
+            <span>USD Conversion Rate</span>
+            <strong>{{ $usdrates ? currencyFormatIdr($usdrates->rate) : 'Not configured' }}</strong>
+            <small>Authoritative IDR value used for one USD.</small>
+        </li>
+        <li>
+            <span>Hotel Tax</span>
+            <strong>{{ number_format((float) ($taxes->tax ?? 0), 2) }}%</strong>
+            <small>Applied after contract conversion and markup.</small>
         </li>
     </ul>
 </section>

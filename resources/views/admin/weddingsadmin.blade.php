@@ -159,7 +159,7 @@
                                                 <td class="text-right">
                                                     <div class="table-action">
                                                         <a href="/weddings-hotel-admin-{{ $hotel->id }}">
-                                                            <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                                            <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                                         </a>
                                                     </div>
                                                 </td>

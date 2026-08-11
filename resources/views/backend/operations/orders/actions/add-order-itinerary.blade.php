@@ -125,7 +125,7 @@
                                                 </td>
                                                 <td>
                                                     <a href="#" data-toggle="modal" data-target="#detail-itinerary-{{ $day_one->id }}">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -134,7 +134,7 @@
                                                     <div class="modal-content text-left">
                                                         <div class="card-box">
                                                             <div class="card-box-title">
-                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil"></i>Activity / Service</div>
+                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i>Activity / Service</div>
                                                             </div>
                                                             <form id="updateItinerary{{ $day_one->id }}" action="/fupdate-order-itinerary/{{ $day_one->id }}" method="post" enctype="multipart/form-data">
                                                                 @csrf
@@ -208,7 +208,7 @@
                                                 </td>
                                                 <td>
                                                     <a href="#" data-toggle="modal" data-target="#detail-itinerary-{{ $day_two->id }}">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -217,7 +217,7 @@
                                                     <div class="modal-content text-left">
                                                         <div class="card-box">
                                                             <div class="card-box-title">
-                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil"></i>Activity / Service</div>
+                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i>Activity / Service</div>
                                                             </div>
                                                             <form id="updateItinerary{{ $day_two->id }}" action="/fupdate-order-itinerary/{{ $day_two->id }}" method="post" enctype="multipart/form-data">
                                                                 @csrf
@@ -291,7 +291,7 @@
                                                 </td>
                                                 <td>
                                                     <a href="#" data-toggle="modal" data-target="#detail-itinerary-{{ $day_thre->id }}">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -300,7 +300,7 @@
                                                     <div class="modal-content text-left">
                                                         <div class="card-box">
                                                             <div class="card-box-title">
-                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil"></i>Activity / Service</div>
+                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i>Activity / Service</div>
                                                             </div>
                                                             <form id="updateItinerary{{ $day_thre->id }}" action="/fupdate-order-itinerary/{{ $day_thre->id }}" method="post" enctype="multipart/form-data">
                                                                 @csrf

@@ -21,6 +21,11 @@ Hotel promo orders use selected `hotel_promos` rows when the promo belongs to th
 
 Hotel package orders use the selected `hotel_packages` row when the package belongs to the selected hotel and room, is active, matches selected stay duration, and covers the selected stay period.
 
+Normal price CRUD must reject overlapping periods for the same hotel and room,
+because normal orders require exactly one authoritative rate for every night.
+Legacy overlaps are displayed as `Conflict` in backend detail and must be
+resolved manually; the application does not silently mutate historical rates.
+
 Extra bed and airport shuttle totals are resolved server-side from their database records. Request-provided add-on price totals are not authoritative.
 
 ## Rounding and Totals
@@ -31,6 +36,27 @@ Published Accommodation rate components are calculated in whole USD:
 - `markup_usd`: `ceil(markup)`.
 - `tax_usd`: `ceil((contract_rate_usd + markup_usd) * tax_percent / 100)`.
 - `published_rate`: `contract_rate_usd + markup_usd + tax_usd`.
+
+Backend and frontend use the same pricing semantics:
+
+- `published_rate` is always shown before kickback or discount.
+- Kickback is a separate adjustment after published rate.
+- `net_rate = max(published_rate - kickback, 0)` is a normal-rate preview and
+  must not replace the published-rate label.
+- Package duration multiplies the IDR contract rate before USD conversion;
+  markup is applied once to the package total under this contract.
+- Backend `detail-hotel-{id}` renders the breakdown supplied by
+  `HotelPricingService`; Blade and JavaScript do not recalculate money.
+- Calculation breakdown opens in one reusable backend modal per price record;
+  it must not be expanded inline inside pricing table rows.
+- Backend Hotel index and detail only display non-expired pricing records. End
+  dates are inclusive, so a rate ending today remains visible through today.
+  Normal rates use `end_date`; promos require both `book_periode_end` and
+  `periode_end` not to have passed; packages use `stay_period_end`. Additional
+  charges without an explicit end date remain visible, while `must_buy_end`
+  (or legacy `active_date` when no mandatory end exists) is their expiry bound.
+- Order pricing fails closed when the authoritative USD conversion rate is
+  missing, zero, or negative; backend detail displays the same readiness issue.
 
 Package rates apply package duration as the contract-rate multiplier before USD conversion. Room quantity is applied after nightly or package published rates are summed.
 

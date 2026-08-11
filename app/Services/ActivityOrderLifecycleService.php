@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Schema;
 
 class ActivityOrderLifecycleService
 {
-    private const CURRENT_STATUSES = ['Draft', 'Pending', 'Approved', 'Invalid', 'Paid'];
-    private const CLOSED_STATUSES = ['Canceled', 'Rejected', 'Deleted'];
+    private const CURRENT_STATUSES = ['Draft', 'Pending', 'Approved', 'Paid'];
+    private const CLOSED_STATUSES = ['Canceled', 'Rejected', 'Invalid', 'Deleted'];
 
     public function applyActivityCurrentScope(Builder $query, Carbon $now): Builder
     {
@@ -31,8 +31,14 @@ class ActivityOrderLifecycleService
                 $builder->whereIn('status', self::CLOSED_STATUSES);
 
                 if (Schema::hasColumn('orders', 'completed_at')) {
-                    $builder->orWhereNotNull('completed_at');
+                    $builder->orWhere(function ($completed) {
+                        $completed->where('status', 'Paid')
+                            ->whereNotNull('completed_at');
+                    });
                 }
+
+                // Read compatibility only; new fulfillment writes keep the order Paid.
+                $builder->orWhere('status', 'Completed');
             });
     }
 

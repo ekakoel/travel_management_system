@@ -47,14 +47,14 @@
                                                 <div class="table-action">
 
                                                     <a href="#" data-toggle="modal" data-target="#edit-airport-shuttle-{{ $airport_shuttle->id }}">
-                                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
+                                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                                     </a>
                                                     <form class="display-content" action="/fremove-airport-shuttle/{{ $airport_shuttle->id }}" method="post">
                                                         @csrf
                                                         @method('delete')
                                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                         <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                                        <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                        <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                     </form>
 
                                                 </div>
@@ -68,7 +68,7 @@
 
                                                         <div class="card-box">
                                                             <div class="card-box-title">
-                                                                <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Airport Shuttle</div>
+                                                                <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Airport Shuttle</div>
                                                             </div>
 
                                                                 <form id="fedit-airport-shuttle-{{ $airport_shuttle->id }}" action="/fedit-airport-shuttles-{{ $airport_shuttle->id }}" method="post" enctype="multipart/form-data">

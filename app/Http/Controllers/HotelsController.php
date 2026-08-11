@@ -139,7 +139,7 @@ class HotelsController extends Controller
     {
         if (!Auth::check()) {
             session([
-                'url.intended' => route('view.accommodation-detail', [
+                'url.intended' => route('view.hotel-detail', [
                     'code' => $code,
                     'check_price' => 1,
                 ]) . '#check-price-panel',
@@ -148,7 +148,7 @@ class HotelsController extends Controller
             return redirect()->guest(route('login'));
         }
 
-        return redirect()->to(route('view.accommodation-detail', ['code' => $code, 'check_price' => 1]) . '#check-price-panel');
+        return redirect()->to(route('view.hotel-detail', ['code' => $code, 'check_price' => 1]) . '#check-price-panel');
     }
 
     // Detail Hotel BOOKING CODE ===========================================================================>
@@ -159,14 +159,14 @@ class HotelsController extends Controller
             $this->forgetBookingCodeSession();
 
             return redirect()
-                ->route('view.accommodation-detail', ['code' => $code])
+                ->route('view.hotel-detail', ['code' => $code])
                 ->with('danger', $this->bookingCodeStatusMessage($bookingCodeStatus));
         }
 
         $this->storeBookingCodeSession($bookingCode);
 
         return redirect()
-            ->route('view.accommodation-detail', ['code' => $code])
+            ->route('view.hotel-detail', ['code' => $code])
             ->with('success', 'Booking code applied successfully.');
     }
 
@@ -177,7 +177,7 @@ class HotelsController extends Controller
             [$checkin, $checkout] = $this->extractStayDates($request);
         } catch (\InvalidArgumentException $exception) {
             return redirect()
-                ->route('view.accommodation-detail', ['code' => $code, 'check_price' => 1])
+                ->route('view.hotel-detail', ['code' => $code, 'check_price' => 1])
                 ->with('error', __('messages.Please select stay dates to continue.'));
         }
         
@@ -195,7 +195,7 @@ class HotelsController extends Controller
 
         if (!$this->hasValidStayDates($checkin, $checkout)) {
             return redirect()
-                ->route('view.accommodation-detail', ['code' => $code, 'check_price' => 1])
+                ->route('view.hotel-detail', ['code' => $code, 'check_price' => 1])
                 ->with('error', __('messages.Please select stay dates to continue.'));
         }
 
@@ -262,7 +262,7 @@ class HotelsController extends Controller
         ];
         if ($duration < $hotel->min_stay) {
             return redirect()
-                ->route('view.accommodation-detail', ['code' => $code, 'check_price' => 1])
+                ->route('view.hotel-detail', ['code' => $code, 'check_price' => 1])
                 ->with('error', __('messages.Minimum stay') . ' ' . $hotel->min_stay . ' ' . __('messages.nights'));
         }
         $promo_colors = [
@@ -343,7 +343,7 @@ class HotelsController extends Controller
             [
                 'key' => 'package',
                 'eyebrow' => __('messages.Package Prices'),
-                'title' => __('messages.Bundled accommodation packages matching your stay'),
+                'title' => __('messages.Bundled hotel packages matching your stay'),
                 'cards' => $packageCards,
             ],
             [
@@ -998,7 +998,7 @@ class HotelsController extends Controller
             $this->forgetBookingCodeSession();
 
             return redirect()
-                ->route('view.accommodation-detail', ['code' => $code, 'check_price' => 1])
+                ->route('view.hotel-detail', ['code' => $code, 'check_price' => 1])
                 ->with('danger', $this->bookingCodeStatusMessage($bookingCodeStatus));
         }
 
@@ -1007,7 +1007,7 @@ class HotelsController extends Controller
             [$checkin, $checkout] = $this->extractStayDates($request);
         } catch (\InvalidArgumentException $exception) {
             return redirect()
-                ->route('view.accommodation-detail', ['code' => $code, 'check_price' => 1])
+                ->route('view.hotel-detail', ['code' => $code, 'check_price' => 1])
                 ->with('error', __('messages.Please select stay dates to continue.'));
         }
 

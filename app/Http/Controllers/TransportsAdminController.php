@@ -55,7 +55,7 @@ class TransportsAdminController extends Controller
                 'brand'=>$brand,
             ])->with('transports',$transports);
         }else{
-            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
         }
     }
 
@@ -73,7 +73,7 @@ class TransportsAdminController extends Controller
                 'brand'=>$brand,
             ])->with('transport',$transport);
         }else{
-            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
         }
     }
 
@@ -141,7 +141,7 @@ class TransportsAdminController extends Controller
                 $user_log->save();
                 return redirect()->route('admin.transports.show', $transport->id)->with('success','The Transportation has been Added!');
             }else{
-                return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+                return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
             }
         }
 // Function Add Transports Price =========================================================================================>
@@ -182,7 +182,7 @@ class TransportsAdminController extends Controller
                 $user_log->save();
                 return redirect()->route('admin.transports.show', $request->transports_id)->with('success','The Price has been Added!');
             }else{
-                return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+                return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
             }
         }
 
@@ -242,7 +242,7 @@ class TransportsAdminController extends Controller
             $user_log->save();
             return redirect()->route('admin.transports.show', $transport->id)->with('success','The Transportation has been successfully updated!');
         }else{
-            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
         }
     }
 // function Update Transport Price =============================================================================================================>
@@ -283,7 +283,7 @@ class TransportsAdminController extends Controller
             $user_log->save();
             return back()->with('success','The price has been successfully updated!');
         }else{
-            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
         }
     }
     // function Remove Transport =============================================================================================================>
@@ -314,7 +314,7 @@ class TransportsAdminController extends Controller
             $user_log->save();
             return back()->with('success','The Transportation Package has been successfully deleted!');
         }else{
-            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
         }
     }
     // function Remove Transport Price =============================================================================================================>
@@ -342,7 +342,7 @@ class TransportsAdminController extends Controller
             $user_log->save();
             return redirect()->route('admin.transports.show', $request->transport_id)->withFragment('prices')->with('success','The Price has been successfully deleted!');
         }else{
-            return redirect()->route('transports-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error','Akses ditolak');
         }
     }
 }

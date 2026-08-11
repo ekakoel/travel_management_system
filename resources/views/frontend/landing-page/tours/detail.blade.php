@@ -1,21 +1,26 @@
 @extends('frontend.layouts.app')
-@section('title', $tour->$langName)
+@section('title', $tour->$langName ?: $tour->name)
 
 @php
     $errors = $errors ?? new Illuminate\Support\ViewErrorBag();
+    $tourDisplayName = trim((string) ($tour->$langName ?: $tour->name));
+    $tourDisplayType = trim((string) ($tour->type?->$langType ?: $tour->type?->type));
+    $tourDisplayDescription = $tour->$langDescription
+        ?: $tour->$langShortDescription
+        ?: $tour->description
+        ?: $tour->short_description;
     $hasTourRouteMap = !empty($tourMapLocations);
-    $durationLabel = $tour->duration_days . 'D' . ((int) $tour->duration_nights > 0 ? ' / ' . $tour->duration_nights . 'N' : '');
+    $durationLabel = (int) $tour->duration_nights > 0
+        ? __('tour-detail.duration_days_nights', ['days' => $tour->duration_days, 'nights' => $tour->duration_nights])
+        : __('tour-detail.duration_days', ['days' => $tour->duration_days]);
     $coverImage = $tour->cover
         ? getThumbnail('/tours/tours-cover/' . $tour->cover, 1200, 760)
         : asset('images/default.webp');
-    $activeTourRates = $tour->prices
-        ->where('status', 'Active')
-        ->filter(fn ($tourPrice) => filled($tourPrice->calculated_price))
-        ->sortBy('calculated_price')
+    $availableTourRates = collect($prices)
+        ->filter(fn (array $tourPrice) => filled($tourPrice['unit_price_usd'] ?? null))
+        ->sortBy('unit_price_usd_minor')
         ->values();
-    $lowestRate = optional($activeTourRates->first())->calculated_price;
-    $bookingCodeDiscount = isset($bookingcode->discounts) ? (float) $bookingcode->discounts : (float) ($bookingcode_disc ?? 0);
-    $promotionDiscount = (float) ($promotion_price ?? 0);
+    $lowestRate = $availableTourRates->first()['unit_price_usd'] ?? null;
     $tourDurationDays = max((int) $tour->duration_days, 1);
     $showTourRouteDayTabs = $tourDurationDays > 1;
     $tourMapLocationsByDay = collect($tourMapLocations)->groupBy('day');
@@ -31,21 +36,10 @@
     $tourPackageHighlights = $tour->$langPackageHighlights ?: $tour->package_highlights;
     $tourAdditionalInfo = $tour->$langAdditionalInfo ?: $tour->additional_info;
     $tourCancellationPolicy = $tour->$langCancellationPolicy ?: $tour->cancellation_policy;
-    $selectedGuestCount = min(max((int) old('number_of_guests', 2), 2), 200);
-    $highestTourRateMaxQty = $activeTourRates->max('max_qty');
-    $tourGuestRows = collect(old('guests', [[
-        'name' => '',
-        'phone' => '',
-        'age' => '',
-        'sex' => '',
-        'identification_type' => '',
-        'identification_no' => '',
-    ]]))->values();
+    $tourGuestRows = collect(old('guests', []))->values();
     $tourWizardErrorStep = 0;
     if (
         $errors->has('guests') ||
-        $errors->has('lead_guest_name') ||
-        $errors->has('lead_guest_phone') ||
         collect($errors->keys())->contains(fn ($key) => str_starts_with($key, 'guests.'))
     ) {
         $tourWizardErrorStep = 1;
@@ -77,14 +71,14 @@
                 <nav aria-label="breadcrumb" class="frontend-breadcrumb-wrap">
                     <ol class="breadcrumb frontend-breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">@lang('messages.Home')</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('view.tour-package-services') }}">@lang('messages.Tour Packages')</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ $tour->$langName }}</li>
+                        <li class="breadcrumb-item"><a href="{{ route('view.tour-packages-service') }}">@lang('messages.Tour Packages')</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ $tourDisplayName }}</li>
                     </ol>
                 </nav>
 
                 <div class="frontend-page-intro">
                     <div class="frontend-page-intro__copy">
-                        <div class="tour-detail-kicker">{{ $tour->type?->$langType ?: __('tour-detail.topband_kicker') }}</div>
+                        <div class="tour-detail-kicker">{{ $tourDisplayType ?: __('tour-detail.topband_kicker') }}</div>
                         <h1 class="frontend-page-intro__title">@lang('tour-detail.topband_title')</h1>
                         <p class="frontend-page-intro__text">@lang('tour-detail.topband_text')</p>
                     </div>
@@ -113,20 +107,20 @@
 
             <section class="tour-detail-hero frontend-surface-card">
                 <div class="tour-detail-hero__media">
-                    <img src="{{ $coverImage }}" alt="{{ $tour->$langName }}" loading="eager"
+                    <img src="{{ $coverImage }}" alt="{{ $tourDisplayName }}" loading="eager"
                         onerror="this.onerror=null;this.src='{{ asset('images/default.webp') }}';">
                     <div class="tour-detail-hero__badge">{{ $durationLabel }}</div>
                 </div>
                 <div class="tour-detail-hero__content">
                     <div class="accommodation-section__eyebrow">@lang('tour-detail.overview')</div>
-                    <h2 class="tour-detail-section-title">{{ $tour->$langName }}</h2>
+                    <h2 class="tour-detail-section-title">{{ $tourDisplayName }}</h2>
                     <div class="tour-detail-richtext">
-                        {!! $tour->$langDescription ?: $tour->$langShortDescription !!}
+                        {!! $tourDisplayDescription !!}
                     </div>
                     <div class="tour-detail-meta-grid">
                         <div class="tour-detail-meta">
                             <span>@lang('messages.Type')</span>
-                            <strong>{{ $tour->type?->$langType ?: '-' }}</strong>
+                            <strong>{{ $tourDisplayType ?: '-' }}</strong>
                         </div>
                         <div class="tour-detail-meta">
                             <span>@lang('messages.Duration')</span>
@@ -134,7 +128,7 @@
                         </div>
                         <div class="tour-detail-meta">
                             <span>@lang('tour-detail.active_rates')</span>
-                            <strong>{{ $activeTourRates->count() }}</strong>
+                            <strong>{{ $availableTourRates->count() }}</strong>
                         </div>
                         <div class="tour-detail-meta">
                             <span>@lang('tour-detail.route_map')</span>
@@ -412,33 +406,68 @@
                             @if ($canViewTourRates && $lowestRate)
                                 <div class="tour-booking-card__price">
                                     <span>@lang('tour-detail.from')</span>
-                                    <strong>{{ currencyFormatUsd($lowestRate) }}</strong>
+                                    <strong>USD {{ $lowestRate }}</strong>
                                 </div>
                             @endif
                         </div>
 
                         @if ($canViewTourRates)
                             <div class="tour-rate-list">
-                                @forelse ($activeTourRates as $tourPrice)
+                                @forelse ($availableTourRates as $tourPrice)
                                     @php
-                                        $isHighestTourRate = (int) $tourPrice->max_qty === (int) $highestTourRateMaxQty;
-                                        $tourRateGuestLabel = $isHighestTourRate
-                                            ? __('tour-detail.pax_or_more', ['min' => $tourPrice->min_qty])
-                                            : $tourPrice->min_qty . ' - ' . $tourPrice->max_qty . ' ' . __('messages.pax');
+                                        $tourRateGuestLabel = $tourPrice['min_qty'] . ' - ' . $tourPrice['max_qty'] . ' ' . __('messages.pax');
                                     @endphp
                                     <div class="tour-rate-card">
                                         <div>
                                             <strong>{{ $tourRateGuestLabel }}</strong>
+                                            <small>
+                                                @lang('tour-detail.rate_validity', [
+                                                    'from' => $tourPrice['valid_from'],
+                                                    'until' => $tourPrice['valid_until'],
+                                                ])
+                                            </small>
                                         </div>
-                                        <div class="tour-rate-card__price">{{ currencyFormatUsd($tourPrice->calculated_price) }}@lang('messages./pax')</div>
+                                        <div class="tour-rate-card__price">USD {{ $tourPrice['unit_price_usd'] }}@lang('messages./pax')</div>
                                     </div>
                                 @empty
                                     <div class="tour-detail-empty">@lang('tour-detail.no_active_price')</div>
                                 @endforelse
                             </div>
 
+                            @if ($pricingAvailability)
+                                <details class="tour-pricing-readiness" @if (! $pricingAvailability['ready']) open @endif>
+                                    <summary>
+                                        <i class="fa fa-clipboard-check" aria-hidden="true"></i>
+                                        @lang('tour-detail.pricing_requirements')
+                                    </summary>
+                                    <p class="tour-pricing-readiness__intro">
+                                        @lang('tour-detail.pricing_checked_for', [
+                                            'date' => $pricingAvailability['service_date'],
+                                        ])
+                                    </p>
+                                    <ul class="tour-pricing-readiness__list">
+                                        @foreach ($pricingAvailability['requirements'] as $requirement)
+                                            <li class="{{ $requirement['ready'] ? 'is-ready' : 'is-blocking' }}">
+                                                <i class="fa {{ $requirement['ready'] ? 'fa-check-circle' : 'fa-exclamation-circle' }}" aria-hidden="true"></i>
+                                                <div>
+                                                    <strong>{{ $requirement['label'] }}</strong>
+                                                    <span>{{ $requirement['detail'] }}</span>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    @if ($pricingAvailability['tier_labels']->isNotEmpty())
+                                        <div class="tour-pricing-readiness__tiers">
+                                            @foreach ($pricingAvailability['tier_labels'] as $tierLabel)
+                                                <span>{{ $tierLabel }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </details>
+                            @endif
+
                             <button type="button" class="btn btn-primary tour-booking-card__cta" data-bs-toggle="modal" data-bs-target="#tourReservationModal"
-                                @disabled($activeTourRates->count() === 0)>
+                                @disabled($availableTourRates->count() === 0)>
                                 <i class="fa fa-shopping-basket" aria-hidden="true"></i>
                                 @lang('messages.Order')
                             </button>
@@ -472,15 +501,19 @@
                                 $nearImage = $nearTour->cover
                                     ? getThumbnail('/tours/tours-cover/' . $nearTour->cover, 520, 340)
                                     : asset('images/default.webp');
-                                $nearDuration = $nearTour->duration_days . 'D' . ((int) $nearTour->duration_nights > 0 ? ' / ' . $nearTour->duration_nights . 'N' : '');
+                                $nearDisplayName = trim((string) ($nearTour->$langName ?: $nearTour->name));
+                                $nearDisplayType = trim((string) ($nearTour->type?->$langType ?: $nearTour->type?->type));
+                                $nearDuration = (int) $nearTour->duration_nights > 0
+                                    ? __('tour-detail.duration_days_nights', ['days' => $nearTour->duration_days, 'nights' => $nearTour->duration_nights])
+                                    : __('tour-detail.duration_days', ['days' => $nearTour->duration_days]);
                             @endphp
                             <article class="tour-similar-card">
                                 <a href="{{ route('view.tour-detail', $nearTour->slug) }}">
-                                    <img src="{{ $nearImage }}" alt="{{ $nearTour->$langName }}" loading="lazy"
+                                    <img src="{{ $nearImage }}" alt="{{ $nearDisplayName }}" loading="lazy"
                                         onerror="this.onerror=null;this.src='{{ asset('images/default.webp') }}';">
                                     <div class="tour-similar-card__body">
-                                        <span>{{ $nearTour->type?->$langType }}</span>
-                                        <h3>{{ $nearTour->$langName }}</h3>
+                                        <span>{{ $nearDisplayType }}</span>
+                                        <h3>{{ $nearDisplayName }}</h3>
                                         <strong>{{ $nearDuration }}</strong>
                                     </div>
                                 </a>
@@ -497,13 +530,14 @@
         <div class="modal-dialog modal-xl modal-dialog-centered frontend-order-modal__dialog">
             <div class="modal-content frontend-order-modal__surface">
                 <form action="{{ route('func.order-tour-package.create', $tour->id) }}" method="POST" class="frontend-order-modal__form" data-tour-order-form novalidate
-                    data-rates='@json($prices)' data-booking-discount="{{ $bookingCodeDiscount }}" data-promotion-discount="{{ $promotionDiscount }}"
+                    data-quote-url="{{ route('tour-package.quote', $tour->id) }}"
                     data-initial-guests='@json($tourGuestRows)'
                     data-submission-key="tour-order:{{ $tour->id }}"
                     data-no-rate-label="@lang('tour-detail.no_active_price')"
-                    data-leader-label="@lang('tour-detail.guest_leader')"
-                    data-set-leader-label="@lang('tour-detail.set_guest_leader')"
-                    data-leader-phone-required-label="@lang('tour-detail.phone_required_for_leader')"
+                    data-price-unavailable-label="@lang('tour-detail.price_temporarily_unavailable')"
+                    data-loading-price-label="@lang('tour-detail.loading_price')"
+                    data-min-guests="2"
+                    data-max-guests="200"
                     data-guest-label="@lang('tour-detail.guest')"
                     data-adult-label="@lang('tour-detail.age_adult')"
                     data-child-label="@lang('tour-detail.age_child')"
@@ -515,17 +549,19 @@
                     data-update-guest-label="@lang('messages.Update')"
                     data-cancel-edit-label="@lang('messages.Cancel')"
                     data-guest-table-empty-label="@lang('activities.detail.order.guest_table_empty')"
-                    data-guest-progress-label="@lang('activities.detail.order.guest_progress')"
-                    data-guest-count-mismatch-label="@lang('activities.detail.order.guest_count_mismatch')"
+                    data-guest-progress-label="@lang('tour-detail.guest_progress')"
+                    data-guest-summary-label="@lang('tour-detail.guest_summary')"
+                    data-guest-count-mismatch-label="@lang('tour-detail.guest_minimum_required')"
                     data-processing-label="@lang('messages.Processing')"
                     data-open-on-load="{{ $errors->any() && old('travel_date') ? 'true' : 'false' }}"
                     data-initial-step="{{ $errors->any() && old('travel_date') ? $tourWizardErrorStep : 0 }}">
                     @csrf
                     @include('partials.form-submission-token')
                     <button type="button" class="btn-close frontend-order-modal__close" data-bs-dismiss="modal" aria-label="@lang('messages.Close')"></button>
-                    <input type="hidden" name="lead_guest_name" value="{{ old('lead_guest_name') }}" data-tour-lead-name>
-                    <input type="hidden" name="lead_guest_phone" value="{{ old('lead_guest_phone') }}" data-tour-lead-phone>
                     <input type="hidden" name="tour_price_id" value="{{ old('tour_price_id') }}" data-tour-price-id>
+                    @if (is_object($bookingcode) && filled($bookingcode->code ?? null))
+                        <input type="hidden" name="booking_code" value="{{ $bookingcode->code }}">
+                    @endif
                     @include('partials.form-submit-overlay', [
                         'title' => __('messages.Processing'),
                         'message' => __('tour-detail.processing_order_message'),
@@ -533,16 +569,16 @@
 
                     <div class="frontend-order-modal__service">
                         <div class="frontend-order-modal__media">
-                            <img src="{{ $coverImage }}" alt="{{ $tour->$langName }}" loading="lazy"
+                            <img src="{{ $coverImage }}" alt="{{ $tourDisplayName }}" loading="lazy"
                                 onerror="this.onerror=null;this.src='{{ asset('images/default.webp') }}';">
                         </div>
                         <div class="frontend-order-modal__service-content">
                             <div class="frontend-order-modal__eyebrow">@lang('messages.Create Order')</div>
-                            <h2 class="frontend-order-modal__title" id="tourReservationModalLabel">{{ $tour->$langName }}</h2>
+                            <h2 class="frontend-order-modal__title" id="tourReservationModalLabel">{{ $tourDisplayName }}</h2>
                             <div class="frontend-order-modal__summary">
                                 <div class="frontend-order-modal__summary-card">
                                     <span>@lang('messages.Type')</span>
-                                    <strong>{{ $tour->type?->$langType ?: __('messages.Tour Package') }}</strong>
+                                    <strong>{{ $tourDisplayType ?: __('messages.Tour Package') }}</strong>
                                 </div>
                                 <div class="frontend-order-modal__summary-card">
                                     <span>@lang('messages.Duration')</span>
@@ -555,7 +591,7 @@
                             </div>
                             <div class="frontend-order-modal__price-card">
                                 <span>@lang('tour-detail.from')</span>
-                                <strong>{{ $lowestRate ? currencyFormatUsd($lowestRate) : '-' }}</strong>
+                                <strong>{{ $lowestRate ? 'USD '.$lowestRate : '-' }}</strong>
                             </div>
                         </div>
                     </div>
@@ -594,24 +630,9 @@
                                     <p>@lang('tour-detail.trip_information_hint')</p>
                                 </div>
 
-                                @canany(['posDev','posAuthor','posRsv'])
-                                    <div class="tour-reservation-field">
-                                        <label for="tourAgent" class="form-label">@lang('messages.Select Agent') <span>*</span></label>
-                                        <select id="tourAgent" name="user_id" class="form-control @error('user_id') is-invalid @enderror" required>
-                                            <option value="">@lang('messages.Select Agent')</option>
-                                            @foreach ($agents as $agent)
-                                                <option value="{{ $agent->id }}" @selected((string) old('user_id') === (string) $agent->id)>{{ $agent->name }} ({{ $agent->code }}) @ {{ $agent->office }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('user_id')
-                                            <div class="alert-form">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                @endcanany
-
                                 <div class="tour-reservation-form-area">
                                     <div class="row g-3">
-                                        <div class="col-md-6">
+                                        <div class="col-12">
                                             <label for="tourTravelDate" class="form-label">@lang('messages.Travel Date') <span>*</span></label>
                                             <input
                                                 id="tourTravelDate"
@@ -628,14 +649,6 @@
                                                 data-tour-review-format="datetime"
                                             >
                                             @error('travel_date')
-                                                <div class="alert-form">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="tourGuests" class="form-label">@lang('messages.Number of Guests') <span>*</span></label>
-                                            <input id="tourGuests" name="number_of_guests" class="form-control @error('number_of_guests') is-invalid @enderror" type="number" min="2" max="200"
-                                                step="1" value="{{ $selectedGuestCount }}" required data-tour-guests data-tour-review-field="guestCount">
-                                            @error('number_of_guests')
                                                 <div class="alert-form">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -683,15 +696,12 @@
                                                     <th>@lang('tour-detail.guest_age_group')</th>
                                                     <th>@lang('messages.Gender')</th>
                                                     <th>@lang('messages.Phone')</th>
-                                                    <th>@lang('tour-detail.guest_id_type')</th>
-                                                    <th>@lang('tour-detail.guest_id_number')</th>
-                                                    <th>@lang('tour-detail.leader')</th>
                                                     <th>@lang('messages.Action')</th>
                                                 </tr>
                                             </thead>
                                             <tbody data-tour-guest-table-body>
                                                 <tr data-tour-guest-empty-row>
-                                                    <td colspan="9" class="tour-guest-table__empty">@lang('activities.detail.order.guest_table_empty')</td>
+                                                    <td colspan="6" class="tour-guest-table__empty">@lang('activities.detail.order.guest_table_empty')</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -724,24 +734,6 @@
                                                     <option value="Female">@lang('tour-detail.sex_female')</option>
                                                 </select>
                                             </div>
-                                            <div class="tour-guest-field">
-                                                <label for="tourGuestIdentificationType" class="form-label">@lang('tour-detail.guest_id_type') <span>*</span></label>
-                                                <select id="tourGuestIdentificationType" class="form-control" data-tour-guest-field="identification_type">
-                                                    <option value="">@lang('messages.Select')</option>
-                                                    <option value="Passport">Passport</option>
-                                                    <option value="ID Card">ID Card</option>
-                                                </select>
-                                            </div>
-                                            <div class="tour-guest-field">
-                                                <label for="tourGuestIdentificationNumber" class="form-label">@lang('tour-detail.guest_id_number') <span>*</span></label>
-                                                <input id="tourGuestIdentificationNumber" type="text" class="form-control" data-tour-guest-field="identification_no" placeholder="@lang('tour-detail.guest_id_number')" autocomplete="off">
-                                            </div>
-                                            <div class="tour-guest-field tour-guest-field--leader">
-                                                <label class="tour-guest-leader-toggle">
-                                                    <input type="checkbox" value="1" data-tour-guest-field="is_leader">
-                                                    <span>@lang('tour-detail.set_guest_leader')</span>
-                                                </label>
-                                            </div>
                                         </div>
                                         <div class="tour-guest-editor__actions">
                                             <button type="button" class="btn btn-primary" data-tour-guest-save>@lang('messages.Add')</button>
@@ -750,18 +742,14 @@
                                     </div>
                                 </div>
 
-                                <div class="tour-guest-error" data-tour-guest-error @if($errors->has('guests') || $errors->has('lead_guest_name') || $errors->has('lead_guest_phone') || collect($errors->keys())->contains(fn ($key) => str_starts_with($key, 'guests.'))) @else hidden @endif>
+                                <div class="tour-guest-error" data-tour-guest-error @if($errors->has('guests') || collect($errors->keys())->contains(fn ($key) => str_starts_with($key, 'guests.'))) @else hidden @endif>
                                     @if ($errors->has('guests'))
                                         {{ $errors->first('guests') }}
-                                    @elseif ($errors->has('lead_guest_name'))
-                                        {{ $errors->first('lead_guest_name') }}
-                                    @elseif ($errors->has('lead_guest_phone'))
-                                        {{ $errors->first('lead_guest_phone') }}
                                     @else
                                         {{ collect($errors->getMessages())
                                             ->filter(fn ($messages, $key) => str_starts_with($key, 'guests.'))
                                             ->flatten()
-                                            ->first() ?: __('tour-detail.guest_leader_required') }}
+                                            ->first() ?: __('tour-detail.guest_minimum_required') }}
                                     @endif
                                 </div>
 
@@ -800,10 +788,6 @@
                                             <strong data-tour-review-value="dropoff">-</strong>
                                         </div>
                                         <div>
-                                            <span>@lang('tour-detail.guest_leader')</span>
-                                            <strong data-tour-review-value="leader">-</strong>
-                                        </div>
-                                        <div>
                                             <span>@lang('tour-detail.guest_manifest')</span>
                                             <strong data-tour-review-value="guestManifest">-</strong>
                                         </div>
@@ -822,14 +806,11 @@
                                                     <th>@lang('tour-detail.guest_age_group')</th>
                                                     <th>@lang('messages.Gender')</th>
                                                     <th>@lang('messages.Phone')</th>
-                                                    <th>@lang('tour-detail.guest_id_type')</th>
-                                                    <th>@lang('tour-detail.guest_id_number')</th>
-                                                    <th>@lang('tour-detail.leader')</th>
                                                 </tr>
                                             </thead>
                                             <tbody data-tour-review-guest-table-body>
                                                 <tr data-tour-review-guest-empty-row>
-                                                    <td colspan="8" class="tour-review-guests__empty-row">@lang('activities.detail.order.guest_table_empty')</td>
+                                                    <td colspan="5" class="tour-review-guests__empty-row">@lang('activities.detail.order.guest_table_empty')</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -854,6 +835,9 @@
                                         <strong data-tour-total-price>-</strong>
                                     </div>
                                 </div>
+                                <small class="text-muted" data-tour-price-note>
+                                    {{ $priceUnavailable ? __('tour-detail.price_temporarily_unavailable') : '' }}
+                                </small>
 
                                 @include('partials.order-confirmation-checkbox', [
                                     'id' => 'tourTermsAccepted',

@@ -52,12 +52,12 @@
                 @canany(['posDev','weddingDvl','weddingAuthor'])
                     <div class="card-delete-btn">
                         <a href="#" data-toggle="modal" data-target="#edit-package-{{ $ceremony_decoration->id }}">
-                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button>
+                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil-alt"></i></button>
                         </a>
                         <form action="/fremove-vendor-package/{{ $ceremony_decoration->id }}" method="post" enctype="multipart/form-data">
                             @method('put')
                             {{ csrf_field() }}
-                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                         </form>
                     </div>
                 @endcanany
@@ -165,7 +165,7 @@
                     <div class="modal-content">
                         <div class="card-box">
                             <div class="card-box-title">
-                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Service {{ $ceremony_decoration->service }}</div>
+                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update Service {{ $ceremony_decoration->service }}</div>
                             </div>
                             <form id="update-package-{{ $ceremony_decoration->id }}" action="/fupdate-vendor-package/{{ $ceremony_decoration->id }}" method="post" enctype="multipart/form-data">
                                 @method('put')
@@ -433,12 +433,12 @@
                 @canany(['posDev','weddingDvl','weddingAuthor'])
                     <div class="card-delete-btn">
                         <a href="#" data-toggle="modal" data-target="#edit-reception-decoration-{{ $reception_decoration->id }}">
-                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil"></i></button>
+                            <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Update"><i class="icon-copy fa fa-pencil-alt"></i></button>
                         </a>
                         <form action="/fremove-vendor-package/{{ $reception_decoration->id }}" method="post" enctype="multipart/form-data">
                             @method('put')
                             {{ csrf_field() }}
-                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                         </form>
                     </div>
                 @endcanany
@@ -546,7 +546,7 @@
                     <div class="modal-content">
                         <div class="card-box">
                             <div class="card-box-title">
-                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Service {{ $reception_decoration->service }}</div>
+                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update Service {{ $reception_decoration->service }}</div>
                             </div>
                             <form id="update-package-{{ $reception_decoration->id }}" action="/fupdate-vendor-package/{{ $reception_decoration->id }}" method="post" enctype="multipart/form-data">
                                 @method('put')

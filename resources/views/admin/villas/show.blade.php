@@ -291,7 +291,7 @@
                                     @canany(['posDev','posAuthor'])
                                         <div class="card-box-footer">
                                             <a href="{{ route('admin.villa.edit',$villa->id) }}">
-                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Villa</button>
+                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Villa</button>
                                             </a>
                                         </div>
                                     @endcanany
@@ -315,10 +315,10 @@
                                                     </a>
                                                     @canany(['posDev','posAuthor'])
                                                         <a class="action-btn" href="#" data-toggle="modal" data-target="#edit-contract-{{ $contract->id }}">
-                                                            <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                                                            <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>
                                                         </a>
                                                         <a class="action-btn" href="#" data-toggle="modal" data-target="#delete-contract-{{ $contract->id }}">
-                                                            <i class="icon-copy fa fa-trash" aria-hidden="true"></i>
+                                                            <i class="icon-copy fa fa-trash-alt" aria-hidden="true"></i>
                                                         </a>
                                                     @endcanany
                                                 </div>
@@ -339,7 +339,7 @@
                                                             <div class="modal-content">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Delete Contract</div>
+                                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Delete Contract</div>
                                                                     </div>
                                                                     <div class="row">
                                                                         <div class="col-md-3">
@@ -366,7 +366,7 @@
                                                                             <input type="hidden" name="file_name" value="{{ $contract->file_name }}">
                                                                             <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                                             <input type="hidden" name="villa_id" value="{{ $villa->id }}">
-                                                                            <button class="backend-button backend-button-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i> Delete</button>
+                                                                            <button class="backend-button backend-button-danger" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i> Delete</button>
                                                                             <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                                         </form>
                                                                     </div>
@@ -380,7 +380,7 @@
                                                             <div class="modal-content">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Contract</div>
+                                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Contract</div>
                                                                     </div>
 
                                                                     <form id="update-villa-contract-{{ $contract->id }}" action="{{ route('func.update-villa-contract',$contract->id) }}" method="post" enctype="multipart/form-data">
@@ -549,14 +549,14 @@
                                                         @canany(['posDev','posAuthor'])
                                                             <div class="card-btn-container">
                                                                 <a href="{{ route('view.edit-villa-room',$room->id) }}">
-                                                                    <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button><br>
+                                                                    <button class="btn-update" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button><br>
                                                                 </a>
                                                                 <form id="deleteRoom{{ $room->id }}" action="{{ route('func.delete-villa-room',$room->id) }}" method="post">
                                                                     @csrf
                                                                     @method('delete')
                                                                     <input id="author" name="author" value="{{ Auth::user()->id }}" type="hidden">
                                                                     <input id="villas_id" name="villas_id" value="{{ $villa->id }}" type="hidden">
-                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                 </form>
                                                             </div>
                                                         @endcanany
@@ -671,7 +671,7 @@
                                                                     <div class="card-box-footer">
                                                                         @canany(['posDev','posAuthor'])
                                                                             <a href="{{ route('view.edit-villa-room',$room->id) }}">
-                                                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                                                                                <button type="button" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
                                                                             </a>
                                                                         @endcanany
                                                                         <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>

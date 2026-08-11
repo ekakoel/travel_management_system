@@ -1,627 +1,221 @@
-@php
-    $agent = Auth::User()->where('id',$reservation->agn_id)->first();
-    $from = date('Y-m-d',strtotime($reservation->checkin));
-    $dur = $dur_res + 1;
-    $date_stay = [];
-    for ($a=0; $a < $dur ; $a++) {
-        $date_stay[$a] = $from;
-        $from = date('Y-m-d',strtotime('+1 days',strtotime($from)));
-    }
-@endphp
-@section('title', __('messages.Invoice Detail'))
+@extends('layouts.head')
+
+@section('title', __('invoices.title'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ mix('build/backend/css/finance/invoices/detail.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ mix('build/backend/js/finance/invoices/detail.js') }}" defer></script>
+@endpush
+
 @section('content')
-    @extends('layouts.head')
-    <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
-        <div class="main-container">
+        <div class="mobile-menu-overlay"></div>
+        <main class="main-container invoice-detail-page" data-invoice-detail>
             <div class="pd-ltr-20">
-                <div class="min-height-200px">
-                    <x-backend.page-hero>
-                        <x-slot name="heading">
-                            <i class="icon-copy fa fa-file-text-o" aria-hidden="true"></i> @lang('messages.Invoice')
-                        </x-slot>
-                    </x-backend.page-hero>
-                    <div class="info-action">
-                        @if (count($errors) > 0)
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        @if (\Session::has('success'))
-                            <div class="alert alert-success">
-                                <ul>
-                                    <li>{!! \Session::get('success') !!}</li>
-                                </ul>
-                            </div>
-                        @endif
+                <x-backend.page-hero
+                    class="invoice-detail-hero"
+                    eyebrow="{{ __('invoices.eyebrow') }}"
+                    title="{{ $invoiceOverview['reference'] }}"
+                    description="{{ __('invoices.description') }}"
+                >
+                    <x-slot name="action">
+                        <a href="{{ route('admin.invoices.index') }}" class="backend-page-primary-action" data-backend-action-loading>
+                            <i class="fa fa-arrow-left" aria-hidden="true"></i>{{ __('invoices.back_to_invoices') }}
+                        </a>
+                    </x-slot>
+                </x-backend.page-hero>
+
+                <section class="backend-page-toolbar invoice-detail-toolbar">
+                    <nav aria-label="{{ __('invoices.invoices') }}">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">{{ __('invoices.admin_panel') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.invoices.index') }}">{{ __('invoices.invoices') }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ $invoiceOverview['reference'] }}</li>
+                        </ol>
+                    </nav>
+                    <div class="backend-page-toolbar__actions">
+                        <span class="backend-status-badge backend-status-badge--{{ $invoiceOverview['payment_tone'] }}">{{ $invoiceOverview['payment_state'] }}</span>
                     </div>
-                    <div class="product-wrap">
-                        <div class="product-detail-wrap">
-                            <div class="row">
-                                <div class="col-md-4 mobile">
-                                    <div class="row">
-                                        @include('admin.usd-rate')
-                                    </div>
-                                </div>
-                                <div class="col-md-8 m-b-18">
-                                    <div class="card-box p-b-18">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="page-subtitle">@lang('messages.Invoice')</div>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="row">
-                                                            <div class="col-5">
-                                                                <div class="page-list">@lang('messages.Invoice No')</div>
-                                                                <div class="page-list">@lang('messages.Invoice Date')</div>
-                                                            </div>
-                                                            <div class="col-7">
-                                                                <div class="page-list">{{ ": " .$invoice->inv_no }}</div>
-                                                                <div class="page-list">{{ ": " .dateFormat($invoice->created_at) }}</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 m-b-18">
-                                                        <div class="row">
-                                                            <div class="col-5">
-                                                                <div class="page-list">@lang('messages.Guest Name')</div>
-                                                                <div class="page-list">@lang('messages.Phone')</div>
-                                                                <div class="page-list">@lang('messages.Agent')</div>
-                                                                <div class="page-list">@lang('messages.Company / Office')</div>
-                                                                <div class="page-list">@lang('messages.Contact Number')</div>
-                                                            </div>
-                                                            <div class="col-7">
-                                                                @if ($reservation->pickup_name == "")
-                                                                    <div class="page-list">: -</div>
-                                                                @else
-                                                                    <div class="page-list">{{ ": " .$reservation->pickup_name }}</div>
-                                                                @endif
-                                                                @if ($reservation->phone == "")
-                                                                    <div class="page-list">: -</div>
-                                                                @else
-                                                                    <div class="page-list">{{ ": " .$reservation->phone }}</div>
-                                                                @endif
-                                                                <div class="page-list">{{ ": " .$agent->name }}</div>
-                                                                <div class="page-list">{{ ": " .$agent->office }}</div>
-                                                                <div class="page-list">{{ ": " .$agent->phone }}</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <table class="data-table table table-bordered">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style="width: 5%" scope="col">No</th>
-                                                                    <th style="width: 45%" scope="col">Description</th>
-                                                                    <th style="width: 10%" scope="col">Rate</th>
-                                                                    <th style="width: 10%" scope="col">Unit/Pax</th>
-                                                                    <th style="width: 10%" scope="col">Night/Times</th>
-                                                                    <th style="width: 10%" scope="col">Amount</th>
-                                                                    @if ($reservation->status != "Active")
-                                                                        <th style="width: 10%" scope="col">Action</th>
-                                                                    @endif
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($accommodations as $no=>$acc)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p>{{ ++$no }}</p>
-                                                                        </td>
-                                                                        <td>
-                                                                            <p>{{ $acc->servicename." ".$acc->location." ".date('d M Y',strtotime($acc->checkin))." - ".date('d M Y',strtotime($acc->checkout))." ".$acc->subservice }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd(($acc->final_price / $acc->duration)/$acc->number_of_room) }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ $acc->number_of_room }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ $acc->duration }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($acc->final_price) }}</p>
-                                                                        </td>
-                                                                        @if ($reservation->status != "Active")
-                                                                            <td></td>
-                                                                        @endif
-                                                                    </tr>
-                                                                @endforeach
-                                                                @foreach ($tours as $tour)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p>{{ ++$no }}</p>
-                                                                        </td>
-                                                                        <td>
-                                                                            <p>{{ $tour->service." ".$tour->subservice." ".date('d M Y',strtotime($tour->checkin))." - ".date('d M Y',strtotime($tour->checkout)) }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($tour->price_pax) }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ $tour->number_of_guests }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>1</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($tour->final_price) }}</p>
-                                                                        </td>
-                                                                        @if ($reservation->status != "Active")
-                                                                            <td></td>
-                                                                        @endif
-                                                                    </tr>
-                                                                @endforeach
-                                                                @foreach ($activities as $activity)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p>{{ ++$no }}</p>
-                                                                        </td>
-                                                                        <td>
-                                                                            <p>{{ $activity->service." ".$activity->location." ".date('d M Y',strtotime($activity->checkin))." ".$activity->subservice }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($activity->price_pax) }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ $activity->number_of_guests }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>1</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($activity->final_price) }}</p>
-                                                                        </td>
-                                                                        @if ($reservation->status != "Active")
-                                                                            <td></td>
-                                                                        @endif
-                                                                    </tr>
-                                                                @endforeach
-                                                                @foreach ($transports as $transport)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p>{{ ++$no }}</p>
-                                                                        </td>
-                                                                        <td>
-                                                                            <p>{{ $transport->service." ".$transport->service_type." ".date('d M Y',strtotime($transport->checkin))." ".$transport->servicename." ".$transport->capacity." Seat" }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($transport->price_pax) }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>1</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>1</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($transport->final_price) }}</p>
-                                                                        </td>
-                                                                        @if ($reservation->status != "Active")
-                                                                            <td></td>
-                                                                        @endif
-                                                                    </tr>
-                                                                @endforeach
-                                                                @foreach ($additional_invoice as $additionalinv)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p>{{ ++$no }}</p>
-                                                                        </td>
-                                                                        <td>
-                                                                            <p>{{ $additionalinv->description." ".dateFormat($additionalinv->date) }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($additionalinv->rate) }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ $additionalinv->unit }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ $additionalinv->times }}</p>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <p>{{ currencyFormatUsd($additionalinv->amount) }}</p>
-                                                                        </td>
-                                                                        @if ($reservation->status != "Active")
-                                                                            <td>
-                                                                                <div class="reservation-guest">
-                                                                                    <span>
-                                                                                        <a href="#" data-toggle="modal" data-target="#edit-additional-inv-{{ $additionalinv->id }}">
-                                                                                            <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                                                                        </a>
-                                                                                        <form action="/delete-additional-inv/{{ $additionalinv->id }}" method="post">
-                                                                                            @csrf
-                                                                                            @method('delete')
-                                                                                            <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="left" title="Delete {{ $additionalinv->description }}"><i class="icon-copy fa fa-trash"></i></button>
-                                                                                        </form>
-                                                                                    </span>
-                                                                                </div>
-                                                                            </td>
-                                                                        @endif
-                                                                    </tr>
-                                                                    <div class="modal fade" id="edit-additional-inv-{{ $additionalinv->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                                            <div class="modal-content text-left">
-                                                                                <div class="product-detail-wrap">
-                                                                                    <div class="row">
-                                                                                        <div class="col-md-12">
-                                                                                            <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Update Service</div>
-                                                                                        </div>
-                                                                                        <div class="col-12 text-right">
-                                                                                            <hr class="form-hr">
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <form action="/fupdate-additional-inv/{{ $additionalinv->id }}" method="post" enctype="multipart/form-data">
-                                                                                        @csrf
-                                                                                        @method('put')
-                                                                                        <div class="row">
-                                                                                            <div class="col-sm-4">
-                                                                                                <div class="backend-form-field">
-                                                                                                    <label for="date">Date <span>*</span></label>
-                                                                                                    <select name="date" class="backend-form-control @error('date') is-invalid @enderror" placeholder="Select date" required>
-                                                                                                        <option selected value="{{ date('Y-m-d',strtotime($additionalinv->date)) }}">{{ date('d M Y',strtotime($additionalinv->date)) }}</option>
-                                                                                                        @foreach ($date_stay as $datestay)
-                                                                                                            <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y',strtotime($datestay)) }}</option>
-                                                                                                        @endforeach
-                                                                                                    </select>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="col-sm-8">
-                                                                                                <div class="backend-form-field row">
-                                                                                                    <label for="description" class="col-sm-12 col-md-12 col-form-label">Description <span>*</span></label>
-                                                                                                    <div class="col-sm-12">
-                                                                                                    <input type="text" name="description" class="backend-form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ $additionalinv->description }}" required>
-                                                                                                    </div>
-                                                                                                    @error('description')
-                                                                                                        <div class="alert-form">{{ $message }}</div>
-                                                                                                    @enderror
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="col-sm-4">
-                                                                                                <div class="backend-form-field row">
-                                                                                                    <label for="rate" class="col-sm-12 col-md-12 col-form-label">Rate </label>
-                                                                                                    <div class="col-sm-12">
-                                                                                                    <input type="number" min=1 name="rate" class="backend-form-control @error('rate') is-invalid @enderror" placeholder="Insert USD rate" value="{{ $additionalinv->rate }}">
-                                                                                                    </div>
-                                                                                                    @error('rate')
-                                                                                                        <div class="alert-form">{{ $message }}</div>
-                                                                                                    @enderror
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="col-sm-4">
-                                                                                                <div class="backend-form-field row">
-                                                                                                    <label for="unit" class="col-sm-12 col-md-12 col-form-label">Unit/Pax </label>
-                                                                                                    <div class="col-sm-12">
-                                                                                                    <input type="number" min=1 name="unit" class="backend-form-control @error('unit') is-invalid @enderror" placeholder="Insert unit or pax" value="{{ $additionalinv->unit }}">
-                                                                                                    </div>
-                                                                                                    @error('unit')
-                                                                                                        <div class="alert-form">{{ $message }}</div>
-                                                                                                    @enderror
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="col-sm-4">
-                                                                                                <div class="backend-form-field row">
-                                                                                                    <label for="times" class="col-sm-12 col-md-12 col-form-label">Night/Times </label>
-                                                                                                    <div class="col-sm-12">
-                                                                                                    <input type="number" min=1 name="times" class="backend-form-control @error('times') is-invalid @enderror" placeholder="insert night or times" value="{{ $additionalinv->times }}">
-                                                                                                    </div>
-                                                                                                    @error('times')
-                                                                                                        <div class="alert-form">{{ $message }}</div>
-                                                                                                    @enderror
-                                                                                                </div>
-                                                                                            </div>
+                </section>
 
-                                                                                            <div class="col-sm-12 col-md-12 text-right">
-                                                                                                <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Update</button>
-                                                                                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </form>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                       {{-- {{ "Total Price: $". number_format($total_price_order) }} --}}
-                                                    </div>
-                                                    @if ($reservation->status != "Active")
-                                                        <div class="col-md-12 text-right">
-                                                            <a href="#" data-toggle="modal" data-target="#add-additional-inv">
-                                                                <button class="backend-button backend-button-primary" data-toggle="tooltip" data-placement="left" title="Add Additional Invoice"><i class="icon-copy fa fa-plus"></i> Add</button>
-                                                            </a>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <hr class="form-hr">
-                                                        </div>
-                                                    @endif
-                                                    {{-- MODAL ADD ADDITIONAL INVOICE ========================================================================================================--}}
-                                                    <div class="modal fade" id="add-additional-inv" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content text-left">
-                                                                <div class="product-detail-wrap">
+                @if ($errors->any() || session()->has('success') || session()->has('error'))
+                    <section class="backend-feedback invoice-detail-feedback">
+                        @if ($errors->any())
+                            <div class="backend-alert backend-alert--danger">
+                                <strong>{{ __('invoices.action_attention') }}</strong>
+                                <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+                            </div>
+                        @endif
+                        @if (session()->has('success'))
+                            <div class="backend-alert backend-alert--success"><strong>{{ session('success') }}</strong></div>
+                        @endif
+                        @if (session()->has('error'))
+                            <div class="backend-alert backend-alert--danger"><strong>{{ session('error') }}</strong></div>
+                        @endif
+                    </section>
+                @endif
 
-                                                                        <div class="row">
-                                                                            <div class="col-md-12">
-                                                                                <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Guest</div>
-                                                                            </div>
-                                                                            <div class="col-12 text-right">
-                                                                                <hr class="form-hr">
-                                                                            </div>
-                                                                        </div>
-                                                                        <form action="/fadd-additional-inv" method="post" enctype="multipart/form-data">
-                                                                            @csrf
-                                                                            @method('put')
-                                                                            <div class="row">
-                                                                                <div class="col-sm-4">
-                                                                                    <div class="backend-form-field">
-                                                                                        <label for="date">Date <span>*</span></label>
-                                                                                        <select name="date" class="backend-form-control @error('date') is-invalid @enderror" placeholder="Select date" required>
-                                                                                            <option selected value="">Select Date</option>
-                                                                                            @foreach ($date_stay as $datestay)
-                                                                                                <option value="{{ date('Y-m-d',strtotime($datestay)) }}">{{ date('d M Y',strtotime($datestay)) }}</option>
-                                                                                            @endforeach
-                                                                                        </select>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-8">
-                                                                                    <div class="backend-form-field row">
-                                                                                        <label for="description" class="col-sm-12 col-md-12 col-form-label">Description <span>*</span></label>
-                                                                                        <div class="col-sm-12">
-                                                                                        <input type="text" name="description" class="backend-form-control @error('description') is-invalid @enderror" placeholder="Insert description" value="{{ old('description') }}" required>
-                                                                                        </div>
-                                                                                        @error('description')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-4">
-                                                                                    <div class="backend-form-field row">
-                                                                                        <label for="rate" class="col-sm-12 col-md-12 col-form-label">Rate </label>
-                                                                                        <div class="col-sm-12">
-                                                                                        <input type="number" min=1 name="rate" class="backend-form-control @error('rate') is-invalid @enderror" placeholder="Insert rate" value="{{ old('rate') }}">
-                                                                                        </div>
-                                                                                        @error('rate')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-4">
-                                                                                    <div class="backend-form-field row">
-                                                                                        <label for="unit" class="col-sm-12 col-md-12 col-form-label">Unit/Pax </label>
-                                                                                        <div class="col-sm-12">
-                                                                                        <input type="number" min=1 name="unit" class="backend-form-control @error('unit') is-invalid @enderror" placeholder="Insert unit or pax" value="{{ old('unit') }}">
-                                                                                        </div>
-                                                                                        @error('unit')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-4">
-                                                                                    <div class="backend-form-field row">
-                                                                                        <label for="times" class="col-sm-12 col-md-12 col-form-label">Night/Times </label>
-                                                                                        <div class="col-sm-12">
-                                                                                        <input type="number" min=1 name="times" class="backend-form-control @error('times') is-invalid @enderror" placeholder="insert night or times" value="{{ old('times') }}">
-                                                                                        </div>
-                                                                                        @error('times')
-                                                                                            <div class="alert-form">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-                                                                                </div>
+                <section class="backend-kpi-grid backend-kpi-grid--4" aria-label="{{ __('invoices.summary') }}">
+                    @foreach ($invoiceStats as $stat)
+                        <article class="backend-kpi-card backend-kpi-card--{{ $stat['tone'] }}">
+                            <div class="backend-kpi-card__icon" aria-hidden="true"><i class="{{ $stat['icon'] }}"></i></div>
+                            <div><span>{{ $stat['label'] }}</span><strong>{{ $stat['value'] }}</strong><small>{{ $stat['meta'] }}</small></div>
+                        </article>
+                    @endforeach
+                </section>
 
-                                                                                <div class="col-sm-12 col-md-12 text-right">
-                                                                                    <input type="hidden" name="inv_id" value="{{ $invoice->id }}">
-                                                                                    <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
-                                                                                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </form>
+                <x-backend.detail-layout class="invoice-detail-layout">
+                    <x-slot name="main">
+                        <section class="backend-panel invoice-detail-panel" id="invoice-overview" data-invoice-section>
+                            <header class="backend-section-header invoice-detail-panel__header">
+                                <div><span class="backend-section-header__label">{{ __('invoices.overview_eyebrow') }}</span><h2>{{ __('invoices.invoice_overview') }}</h2></div>
+                                <span class="backend-status-badge backend-status-badge--{{ $invoiceOverview['payment_tone'] }}">{{ $invoiceOverview['payment_state'] }}</span>
+                            </header>
+                            <div class="invoice-detail-overview-grid">
+                                <article class="invoice-detail-info-block">
+                                    <h3><i class="fas fa-file-alt" aria-hidden="true"></i>{{ __('invoices.invoice_overview') }}</h3>
+                                    <dl class="invoice-detail-definition-list">
+                                        <div><dt>{{ __('invoices.invoice_number') }}</dt><dd>{{ $invoiceOverview['reference'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.invoice_date') }}</dt><dd>{{ $invoiceOverview['invoice_date'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.due_date') }}</dt><dd>{{ $invoiceOverview['due_date'] }}<small class="{{ $invoiceOverview['is_overdue'] ? 'is-overdue' : '' }}">{{ $invoiceOverview['is_overdue'] ? __('invoices.overdue') : ($invoiceOverview['hours_left'] !== null ? __('invoices.hours_left', ['count' => $invoiceOverview['hours_left']]) : '-') }}</small></dd></div>
+                                        <div><dt>{{ __('invoices.payment_currency') }}</dt><dd>{{ $invoiceOverview['payment_currency'] }}</dd></div>
+                                    </dl>
+                                </article>
+                                <article class="invoice-detail-info-block">
+                                    <h3><i class="fa fa-calendar" aria-hidden="true"></i>{{ __('invoices.reservation') }}</h3>
+                                    <dl class="invoice-detail-definition-list">
+                                        <div><dt>{{ __('invoices.reference') }}</dt><dd><a href="{{ $invoiceOverview['reservation_url'] }}">{{ $invoiceOverview['reservation_reference'] }}</a></dd></div>
+                                        <div><dt>{{ __('invoices.reservation_status') }}</dt><dd>{{ $invoiceOverview['reservation_status'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.service') }}</dt><dd>{{ $invoiceOverview['service'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.service_period') }}</dt><dd>{{ $invoiceOverview['service_period'] }}</dd></div>
+                                    </dl>
+                                </article>
+                                <article class="invoice-detail-info-block">
+                                    <h3><i class="fa fa-user" aria-hidden="true"></i>{{ __('invoices.guest') }}</h3>
+                                    <dl class="invoice-detail-definition-list">
+                                        <div><dt>{{ __('invoices.guest') }}</dt><dd>{{ $invoiceOverview['guest_name'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.phone') }}</dt><dd>{{ $invoiceOverview['guest_phone'] }}</dd></div>
+                                    </dl>
+                                </article>
+                                <article class="invoice-detail-info-block">
+                                    <h3><i class="fa fa-briefcase" aria-hidden="true"></i>{{ __('invoices.agent') }}</h3>
+                                    <dl class="invoice-detail-definition-list">
+                                        <div><dt>{{ __('invoices.agent') }}</dt><dd>{{ $invoiceOverview['agent_name'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.office') }}</dt><dd>{{ $invoiceOverview['agent_office'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.phone') }}</dt><dd>{{ $invoiceOverview['agent_phone'] }}</dd></div>
+                                        <div><dt>{{ __('invoices.email') }}</dt><dd>{{ $invoiceOverview['agent_email'] }}</dd></div>
+                                    </dl>
+                                </article>
+                            </div>
+                        </section>
 
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12 m-t-18">
-                                                        <div class="row">
-                                                            <div class="col-6 col-md-6">
-                                                                <div class="row">
-                                                                    <div class="col-md-12 text-right det-price">Total Invoice</div>
-                                                                    <div class="col-md-12 text-right det-list">Total IDR</div>
-                                                                    <div class="col-md-12 text-right det-list">Total USD</div>
-                                                                    <div class="col-md-12 text-right det-list">Tax IDR</div>
-                                                                    <div class="col-md-12 text-right det-list">Tax USD</div>
-                                                                    <div class="col-md-12 text-right det-list">Total IDR Plus Tax</div>
-                                                                    <div class="col-md-12 text-right det-list">Total USD Plus Tax</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-3 col-md-4">
-                                                                <div class="row">
-                                                                    <div class="col-md-12 text-right det-list"><br></div>
-                                                                    <div class="col-md-12 text-right det-list">IDR</div>
-                                                                    <div class="col-md-12 text-right det-list">USD</div>
-                                                                    <div class="col-md-12 text-right det-list">IDR</div>
-                                                                    <div class="col-md-12 text-right det-list">USD</div>
-                                                                    <div class="col-md-12 text-right det-list">IDR</div>
-                                                                    <div class="col-md-12 text-right det-list">USD</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-3 col-md-2">
-                                                                <div class="row">
-                                                                    <div class="col-md-12 text-right det-list"><br></div>
-                                                                    <div class="col-md-12 text-right det-list">0.00</div>
-                                                                    <div class="col-md-12 text-right det-list">{{ number_format($total_price_order+$sum_additional_invoice) }}</div>
-                                                                    <div class="col-md-12 text-right det-list">0.00</div>
-                                                                    <div class="col-md-12 text-right det-list">0.00</div>
-                                                                    <div class="col-md-12 text-right det-list">0.00</div>
-                                                                    <div class="col-md-12 text-right det-list">{{ number_format($total_price_order+$sum_additional_invoice) }}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 m-t-18">
-                                                @php
-                                                    $bankaccount = $bank_acc->where('id',$invoice->bank_id)->first();
-                                                @endphp
-                                                <div class="bordered">
-                                                    @if (isset($bankaccount))
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="row">
-                                                                    <div class="col-4">
-                                                                        <p>Bank</p>
-                                                                        <p>Name</p>
-                                                                        <p>Account IDR</p>
-                                                                        <p>Account USD</p>
-                                                                    </div>
-                                                                    <div class="col-8">
-                                                                        <p>: {{ $bankaccount->bank }}</p>
-                                                                        <p>: {{ $bankaccount->name }}</p>
-                                                                        <p>: {{ $bankaccount->account_idr }}</p>
-                                                                        <p>: {{ $bankaccount->account_usd }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="row">
-                                                                    <div class="col-4">
-                                                                        <p>Address</p>
-                                                                        <p>Swift Code</p>
-                                                                        <p>Telephone</p>
-                                                                    </div>
-                                                                    <div class="col-8">
-                                                                        <p>: {{ $bankaccount->address }}</p>
-                                                                        <p>: {{ $bankaccount->swift_code }}</p>
-                                                                        <p>: {{ $bankaccount->telephone }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="btn-edit-modal m-r-18">
-                                                                @if ($reservation->status != "Active")
-                                                                    <a href="#" data-toggle="modal" data-target="#edit-bank-{{ $invoice->id }}">
-                                                                        <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                                                    </a>
-                                                                @endif
-                                                                <div class="modal fade" id="edit-bank-{{ $invoice->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                                                        <div class="modal-content text-left">
-                                                                            <div class="product-detail-wrap">
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
-                                                                                        <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Select Bank Account</div>
-                                                                                    </div>
-                                                                                    <div class="col-12 text-right">
-                                                                                        <hr class="form-hr">
-                                                                                    </div>
-                                                                                </div>
-                                                                                <form action="/fupdate-invoice-bank/{{ $invoice->id }}" method="post" enctype="multipart/form-data">
-                                                                                    @csrf
-                                                                                    @method('put')
-                                                                                    <div class="row">
-                                                                                        <div class="col-sm-12">
-                                                                                            <div class="backend-form-field">
-                                                                                                <label for="bank_id" class="col-sm-12 col-md-12 col-form-label">Select Bank Account <span>*</span></label>
-                                                                                                <div class="col-sm-12">
-                                                                                                    <select name="bank_id" class="backend-form-control @error('bank_id') is-invalid @enderror" placeholder="Select bank account" required>
-                                                                                                        <option selected value="">Select bank account</option>
-                                                                                                        @foreach ($bank_acc as $bankacc)
-                                                                                                            <option value="{{ $bankacc->id }}">{{ $bankacc->name }}</option>
-                                                                                                        @endforeach
-                                                                                                    </select>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-sm-12 col-md-12 text-right">
-                                                                                            <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Select</button>
-                                                                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </form>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @else
-                                                    <div class="row">
-                                                        <div class="col-md-8">
-                                                            <p>Bank account not found, please add a bank account first!</p>
-                                                        </div>
-                                                        <div class="col-md-4 text-right">
-                                                            @if ($reservation->status != "Active")
-                                                                <a href="#" data-toggle="modal" data-target="#edit-bank-{{ $invoice->id }}">
-                                                                    <button class="btn-view"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i></button>
-                                                                </a>
+                        <section class="backend-panel invoice-detail-panel" id="invoice-items" data-invoice-section>
+                            <header class="backend-section-header invoice-detail-panel__header">
+                                <div><span class="backend-section-header__label">{{ __('invoices.items_eyebrow') }}</span><h2>{{ __('invoices.invoice_items') }}</h2><p>{{ __('invoices.items_description') }}</p></div>
+                                @if ($canManageAdjustments)
+                                    <button type="button" class="backend-button backend-button-primary" data-invoice-modal-open="invoice-adjustment-create-modal"><i class="fa fa-plus" aria-hidden="true"></i>{{ __('invoices.add_adjustment') }}</button>
+                                @endif
+                            </header>
+
+                            @if ($invoiceRows->isEmpty())
+                                <div class="backend-empty-state invoice-detail-empty"><i class="fa fa-list-alt" aria-hidden="true"></i><strong>{{ __('invoices.no_items') }}</strong><span>{{ __('invoices.no_items_description') }}</span></div>
+                            @else
+                                <div class="backend-table-wrap invoice-detail-table-wrap">
+                                    <table class="backend-table invoice-detail-table">
+                                        <thead><tr><th>{{ __('invoices.reference') }}</th><th>{{ __('invoices.description_label') }}</th><th>{{ __('invoices.period') }}</th><th>{{ __('invoices.rate') }}</th><th>{{ __('invoices.unit') }}</th><th>{{ __('invoices.times') }}</th><th>{{ __('invoices.amount') }}</th><th>{{ __('invoices.action') }}</th></tr></thead>
+                                        <tbody>
+                                            @foreach ($invoiceRows as $row)
+                                                <tr>
+                                                    <td data-label="{{ __('invoices.reference') }}"><strong>{{ $row['reference'] }}</strong></td>
+                                                    <td data-label="{{ __('invoices.description_label') }}">{{ $row['description'] }}</td>
+                                                    <td data-label="{{ __('invoices.period') }}">{{ $row['period'] }}</td>
+                                                    <td data-label="{{ __('invoices.rate') }}">{{ $row['rate'] }}</td>
+                                                    <td data-label="{{ __('invoices.unit') }}">{{ $row['unit'] }}</td>
+                                                    <td data-label="{{ __('invoices.times') }}">{{ $row['times'] }}</td>
+                                                    <td data-label="{{ __('invoices.amount') }}"><strong>{{ $row['amount'] }}</strong></td>
+                                                    <td data-label="{{ __('invoices.action') }}">
+                                                        <div class="backend-table-actions">
+                                                            @if ($row['detail_url'])
+                                                                <a href="{{ $row['detail_url'] }}" class="backend-icon-action backend-icon-action--view" aria-label="{{ __('invoices.view_order', ['reference' => $row['reference']]) }}" data-backend-action-loading><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                            @elseif ($canManageAdjustments)
+                                                                <button type="button" class="backend-icon-action backend-icon-action--edit" data-invoice-modal-open="invoice-adjustment-edit-{{ $row['id'] }}" aria-label="{{ __('invoices.edit_adjustment', ['description' => $row['description']]) }}"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                <form action="{{ route('admin.invoices.adjustments.destroy', $row['model']) }}" method="post">
+                                                                    @csrf @method('delete')
+                                                                    <button type="submit" class="backend-icon-action backend-icon-action--delete" data-invoice-delete-confirm="{{ __('invoices.delete_adjustment_confirm', ['description' => $row['description']]) }}" aria-label="{{ __('invoices.delete_adjustment', ['description' => $row['description']]) }}"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                </form>
                                                             @endif
-                                                            <div class="modal fade" id="edit-bank-{{ $invoice->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                                    <div class="modal-content text-left">
-                                                                        <div class="product-detail-wrap">
-                                                                            <div class="row">
-                                                                                <div class="col-md-12">
-                                                                                    <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Select Bank Account</div>
-                                                                                </div>
-                                                                                <div class="col-12 text-right">
-                                                                                    <hr class="form-hr">
-                                                                                </div>
-                                                                            </div>
-                                                                            <form action="/fupdate-invoice-bank/{{ $invoice->id }}" method="post" enctype="multipart/form-data">
-                                                                                @csrf
-                                                                                @method('put')
-                                                                                <div class="row">
-                                                                                    <div class="col-sm-12">
-                                                                                        <div class="backend-form-field">
-                                                                                            <label for="bank_id" class="col-sm-12 col-md-12 col-form-label">Select Bank Account <span>*</span></label>
-                                                                                            <div class="col-sm-12">
-                                                                                                <select name="bank_id" class="backend-form-control @error('bank_id') is-invalid @enderror" placeholder="Select bank account" required>
-                                                                                                    <option selected value="">Select bank account</option>
-                                                                                                    @foreach ($bank_acc as $bankacc)
-                                                                                                        <option value="{{ $bankacc->id }}">{{ $bankacc->name }}</option>
-                                                                                                    @endforeach
-                                                                                                </select>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="col-sm-12 col-md-12 text-right">
-                                                                                        <button type="submit" class="backend-button backend-button-primary"><i class="icon-copy fa fa-check" aria-hidden="true"></i> Select</button>
-                                                                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </form>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 m-t-8 text-right">
-                                                <a href="/reservation-{{ $reservation->id }}"><button type="button" class="backend-button backend-button-secondary"><i class="icon-copy fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="col-md-4 desktop">
-                                    <div class="row">
-                                        @include('admin.usd-rate')
-                                    </div>
+                                <div class="backend-table-card-list invoice-detail-card-list">
+                                    @foreach ($invoiceRows as $row)
+                                        <article class="backend-table-card invoice-detail-card">
+                                            <header class="backend-table-card__header"><div><strong>{{ $row['reference'] }}</strong><span>{{ $row['description'] }}</span></div><strong>{{ $row['amount'] }}</strong></header>
+                                            <dl class="backend-table-card-grid"><div><dt>{{ __('invoices.period') }}</dt><dd>{{ $row['period'] }}</dd></div><div><dt>{{ __('invoices.rate') }}</dt><dd>{{ $row['rate'] }}</dd></div><div><dt>{{ __('invoices.unit') }}</dt><dd>{{ $row['unit'] }}</dd></div><div><dt>{{ __('invoices.times') }}</dt><dd>{{ $row['times'] }}</dd></div></dl>
+                                            <footer class="backend-table-card__actions">
+                                                @if ($row['detail_url'])
+                                                    <a href="{{ $row['detail_url'] }}" class="backend-button backend-button-secondary" data-backend-action-loading><i class="fa fa-eye" aria-hidden="true"></i>{{ __('invoices.view_order', ['reference' => $row['reference']]) }}</a>
+                                                @elseif ($canManageAdjustments)
+                                                    <button type="button" class="backend-button backend-button-secondary" data-invoice-modal-open="invoice-adjustment-edit-{{ $row['id'] }}"><i class="fa fa-pencil" aria-hidden="true"></i>{{ __('invoices.edit') }}</button>
+                                                    <form action="{{ route('admin.invoices.adjustments.destroy', $row['model']) }}" method="post">
+                                                        @csrf @method('delete')
+                                                        <button type="submit" class="backend-button backend-button-danger" data-invoice-delete-confirm="{{ __('invoices.delete_adjustment_confirm', ['description' => $row['description']]) }}"><i class="fa fa-trash" aria-hidden="true"></i>{{ __('invoices.delete') }}</button>
+                                                    </form>
+                                                @endif
+                                            </footer>
+                                        </article>
+                                    @endforeach
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @include('layouts.footer')
+                            @endif
+
+                            <dl class="invoice-detail-total-list">
+                                <div><dt>{{ __('invoices.service_subtotal') }}</dt><dd>{{ $invoiceTotals['service_subtotal'] }}</dd></div>
+                                <div><dt>{{ __('invoices.adjustment_total') }}</dt><dd>{{ $invoiceTotals['adjustment_total'] }}</dd></div>
+                                <div class="is-total"><dt>{{ __('invoices.total_usd') }}</dt><dd>{{ $invoiceTotals['invoice_total'] }}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="backend-panel invoice-detail-panel" id="invoice-payments" data-invoice-section>
+                            <header class="backend-section-header invoice-detail-panel__header"><div><span class="backend-section-header__label">{{ __('invoices.payment_eyebrow') }}</span><h2>{{ __('invoices.payment_history') }}</h2><p>{{ __('invoices.payment_history_description') }}</p></div></header>
+                            @if ($invoicePayments->isEmpty())
+                                <div class="backend-empty-state backend-empty-state--compact"><i class="fa fa-credit-card" aria-hidden="true"></i><strong>{{ __('invoices.no_payments') }}</strong></div>
+                            @else
+                                <div class="invoice-detail-record-list">
+                                    @foreach ($invoicePayments as $payment)
+                                        <article class="invoice-detail-record"><div><strong>{{ $payment['amount'] }}</strong><span>{{ $payment['date'] }} &middot; {{ $payment['currency'] }}</span></div><div><span class="backend-status-badge backend-status-badge--{{ $payment['status_tone'] }}">{{ $payment['status'] }}</span><small>{{ $payment['note'] }}</small></div></article>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </section>
+
+                        <section class="backend-panel invoice-detail-panel" id="invoice-transactions" data-invoice-section>
+                            <header class="backend-section-header invoice-detail-panel__header"><div><span class="backend-section-header__label">{{ __('invoices.transaction_eyebrow') }}</span><h2>{{ __('invoices.transaction_history') }}</h2></div></header>
+                            @if ($invoiceTransactions->isEmpty())
+                                <div class="backend-empty-state backend-empty-state--compact"><i class="fa fa-exchange" aria-hidden="true"></i><strong>{{ __('invoices.no_transactions') }}</strong></div>
+                            @else
+                                <div class="invoice-detail-record-list">
+                                    @foreach ($invoiceTransactions as $transaction)
+                                        <article class="invoice-detail-record"><div><strong>{{ $transaction['reference'] }}</strong><span>{{ $transaction['date'] }} &middot; {{ $transaction['type'] }}</span></div><div><strong>{{ $transaction['amount'] }}</strong><span class="backend-status-badge backend-status-badge--{{ $transaction['status_tone'] }}">{{ $transaction['status'] }}</span></div></article>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </section>
+                    </x-slot>
+
+                    <x-slot name="side">
+                        @include('backend.finance.invoices.partials.context')
+                    </x-slot>
+                </x-backend.detail-layout>
             </div>
-        </div>
+        </main>
+
+        @include('backend.finance.invoices.partials.modals')
     @endcan
 @endsection

@@ -32,7 +32,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('activities-admin.index') }}">Activities</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.index') }}">Activities</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.activities.show', $activities->id) }}">{{ $activities->name }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Gallery</li>
                         </ol>
@@ -85,7 +85,7 @@
                                     @foreach ($activities->images as $img)
                                         <div class="col-12 col-md-6">
                                             <article class="backend-table-card activity-gallery-card">
-                                                <img class="img-fluid" src="{{ asset('storage/activities/activities-images/' . $img->image) }}" alt="{{ $activities->name }}" loading="lazy">
+                                                <img class="img-fluid" src="{{ asset('storage/' . $img->image) }}" alt="{{ $activities->name }}" loading="lazy">
                                                 <div class="backend-table-actions">
                                                     <form action="{{ route('admin.activities.images.destroy', $img->id) }}" method="post">
                                                         @csrf
@@ -110,9 +110,13 @@
                     </div>
 
                     <div class="col-12 col-lg-5">
-                        <form action="{{ route('admin.activities.update', $activities->id) }}" method="post" enctype="multipart/form-data">
+                        <form
+                            action="{{ route('admin.gallery-activities.update', $activities->id) }}"
+                            method="POST"
+                            enctype="multipart/form-data"
+                        >
                             @csrf
-                            @method('put')
+                            @method('PUT')
 
                             <section class="backend-panel activity-gallery-panel">
                                 <div class="backend-section-header">
@@ -120,41 +124,64 @@
                                         <span class="backend-section-header__label">Upload</span>
                                         <h2>Add Gallery Images</h2>
                                     </div>
-                                    <p>Profile fields are carried as hidden values so this gallery action does not overwrite existing activity data.</p>
+
+                                    <p>
+                                        Upload new images without changing the existing activity information.
+                                    </p>
                                 </div>
 
-                                <input type="hidden" name="name" value="{{ $activities->name }}">
-                                <input type="hidden" name="type" value="{{ $activities->type }}">
-                                <input type="hidden" name="location" value="{{ $activities->location }}">
-                                <input type="hidden" name="map" value="{{ $activities->map }}">
-                                <input type="hidden" name="partners_id" value="{{ $activities->partners_id }}">
-                                <input type="hidden" name="duration" value="{{ $activities->duration }}">
-                                <input type="hidden" name="description" value="{{ $activities->description }}">
-                                <input type="hidden" name="itinerary" value="{{ $activities->itinerary }}">
-                                <input type="hidden" name="include" value="{{ $activities->include }}">
-                                <input type="hidden" name="additional_info" value="{{ $activities->additional_info }}">
-                                <input type="hidden" name="cancellation_policy" value="{{ $activities->cancellation_policy }}">
-                                <input type="hidden" name="contract_rate" value="{{ $activities->contract_rate }}">
-                                <input type="hidden" name="markup" value="{{ $activities->markup }}">
-                                <input type="hidden" name="min_pax" value="{{ $activities->min_pax }}">
-                                <input type="hidden" name="qty" value="{{ $activities->qty }}">
-                                <input type="hidden" name="status" value="{{ $activities->status }}">
-                                <input type="hidden" name="validity" value="{{ $activities->validity }}">
-                                <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-
                                 <div class="backend-form-field">
-                                    <label for="images" class="backend-form-label">Gallery Images</label>
-                                    <input type="file" name="images[]" id="images" class="backend-form-control @error('images[]') is-invalid @enderror" data-activity-file-input data-activity-file-input-target="#activityGalleryFileStatus" multiple>
-                                    <span id="activityGalleryFileStatus" class="activity-file-status" data-activity-file-input-default="No gallery images selected">No gallery images selected</span>
-                                    @error('images[]')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    <label for="images" class="backend-form-label">
+                                        Gallery Images
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        name="images[]"
+                                        id="images"
+                                        class="backend-form-control
+                                            @error('images') is-invalid @enderror
+                                            @error('images.*') is-invalid @enderror"
+                                        data-activity-file-input
+                                        data-activity-file-input-target="#activityGalleryFileStatus"
+                                        accept=".jpg,.jpeg,.png,.webp"
+                                        multiple
+                                    >
+
+                                    <span
+                                        id="activityGalleryFileStatus"
+                                        class="activity-file-status"
+                                        data-activity-file-input-default="No gallery images selected"
+                                    >
+                                        No gallery images selected
+                                    </span>
+
+                                    @error('images')
+                                        <span class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </span>
+                                    @enderror
+
+                                    @error('images.*')
+                                        <span class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </span>
                                     @enderror
                                 </div>
 
                                 <div class="backend-page-toolbar backend-form-actions">
                                     <div class="backend-page-toolbar__actions">
-                                        <a href="{{ route('admin.activities.show', $activities->id) }}" class="backend-button backend-button-secondary">Cancel</a>
-                                        <button type="submit" class="backend-button backend-button-primary">
+                                        <a
+                                            href="{{ route('admin.activities.show', $activities->id) }}"
+                                            class="backend-button backend-button-secondary"
+                                        >
+                                            Cancel
+                                        </a>
+
+                                        <button
+                                            type="submit"
+                                            class="backend-button backend-button-primary"
+                                        >
                                             <i class="fa fa-check"></i>
                                             Update Gallery
                                         </button>

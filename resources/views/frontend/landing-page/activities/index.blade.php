@@ -58,7 +58,7 @@
             <div class="row g-4">
                 <div class="col-xl-4 col-lg-5">
                     <aside class="activities-sidebar frontend-surface-card">
-                        <form class="activities-filter-form" action="{{ route('view.activity-services') }}" method="get"
+                        <form class="activities-filter-form" action="{{ route('view.activities-service') }}" method="get"
                             data-activities-filter-form>
                             <div class="activities-filter-intro">
                                 <div class="accommodation-section__eyebrow">@lang('activities.filters.eyebrow')</div>
@@ -69,8 +69,7 @@
                                 <div class="activities-filter-field">
                                     <label for="searchActivity">@lang('activities.filters.search_label')</label>
                                     <input type="text" id="searchActivity" name="search_name" class="form-control"
-                                        value="{{ $searchName }}" placeholder="@lang('activities.filters.search_placeholder')"
-                                        data-activities-search>
+                                        value="{{ $searchName }}" placeholder="@lang('activities.filters.search_placeholder')" data-activities-search>
                                 </div>
                                 <div class="activities-filter-field">
                                     <label for="searchLocation">@lang('activities.filters.location_label')</label>
@@ -78,23 +77,24 @@
                                         data-activities-location>
                                         <option value="">@lang('activities.filters.all_locations')</option>
                                         @foreach ($locationOptions as $location)
-                                            <option value="{{ $location }}" @selected($searchLocation === $location)>{{ $location }}</option>
+                                            <option value="{{ $location }}" @selected($searchLocation === $location)>
+                                                {{ $location }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="activities-filter-field">
                                     <label for="searchType">@lang('activities.filters.type_label')</label>
-                                    <select id="searchType" name="search_type" class="form-control"
-                                        data-activities-type>
+                                    <select id="searchType" name="search_type" class="form-control" data-activities-type>
                                         <option value="">@lang('activities.filters.all_types')</option>
                                         @foreach ($typeOptions as $type)
-                                            <option value="{{ $type }}" @selected($searchType === $type)>{{ $type }}</option>
+                                            <option value="{{ $type }}" @selected($searchType === $type)>
+                                                {{ $type }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="activities-filter-actions">
-                                <a href="{{ route('view.activity-services') }}" class="btn btn-outline-secondary flex-fill"
+                                <a href="{{ route('view.activities-service') }}" class="btn btn-outline-secondary flex-fill"
                                     data-activities-reset>
                                     @lang('activities.filters.reset')
                                 </a>
@@ -136,75 +136,71 @@
 
                         @if ($activities->count() > 0)
                             <div class="activities-groups">
-                                @foreach ($activitiesByPartner as $partnerName => $partnerActivities)
-                                    <section class="activities-group">
-                                        <div class="activities-group__header">
-                                            <div>
-                                                <div class="activities-group__eyebrow">@lang('messages.Supplier')</div>
-                                                <h3 class="activities-group__title">{{ $partnerName }}</h3>
-                                            </div>
-                                            <div class="activities-group__count">
-                                                {{ $partnerActivities->count() }} @lang('messages.items')
-                                            </div>
-                                        </div>
+                                <div class="activities-grid">
+                                    @foreach ($activitiesByPartner as $partnerName => $partnerActivities)
+                                        @foreach ($partnerActivities as $activity)
+                                            @php
+                                                $activityImage = $activity->cover
+                                                    ? getThumbnail(
+                                                        '/activities/activities-cover/' . $activity->cover,
+                                                        640,
+                                                        420,
+                                                    )
+                                                    : asset('storage/images/default.webp');
+                                            @endphp
+                                            <article class="activity-directory-card">
+                                                <a href="{{ route('view.activity-public-detail', $activity->code) }}"
+                                                    class="activity-directory-card__link">
+                                                    <div class="activity-directory-card__media">
+                                                        <img src="{{ $activityImage }}" alt="{{ $activity->name }}"
+                                                            loading="lazy"
+                                                            onerror="this.onerror=null;this.src='{{ asset('storage/images/default.webp') }}';">
+                                                        <span class="activity-directory-card__badge">
+                                                            <i class="fa fa-map-marker-alt" aria-hidden="true"></i>
+                                                            {{ $activity->display_location }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="activity-directory-card__body">
+                                                        <div>
+                                                            <div class="activity-directory-card__meta">
+                                                                <span>{{ $activity->display_type }}</span>
+                                                            </div>
+                                                            <h3 class="activity-directory-card__title">
+                                                                {{ $partnerName }}
+                                                            </h3>
+                                                            <p class="activity-directory-card__description">
+                                                                {{ $activity->name }}
+                                                            </p>
+                                                        </div>
+                                                        <div class="activity-directory-card__facts">
+                                                            <div class="activity-directory-card__fact">
+                                                                <span>@lang('activities.results.duration')</span>
+                                                                <strong>{{ $activity->display_duration }}</strong>
+                                                            </div>
+                                                            <div class="activity-directory-card__fact">
+                                                                <span>@lang('activities.results.minimum_pax')</span>
+                                                                <strong>{{ $activity->display_min_pax }} pax</strong>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </article>
+                                        @endforeach
 
-                                        <div class="activities-grid">
-                                            @foreach ($partnerActivities as $activity)
-                                                @php
-                                                    $activityImage = $activity->cover
-                                                        ? getThumbnail('/activities/activities-cover/' . $activity->cover, 640, 420)
-                                                        : asset('storage/images/default.webp');
-                                                @endphp
-                                                <article class="activity-directory-card">
-                                                    <a href="{{ route('view.activity-public-detail', $activity->code) }}"
-                                                        class="activity-directory-card__link">
-                                                        <div class="activity-directory-card__media">
-                                                            <img src="{{ $activityImage }}" alt="{{ $activity->name }}"
-                                                                loading="lazy"
-                                                                onerror="this.onerror=null;this.src='{{ asset('storage/images/default.webp') }}';">
-                                                            <span class="activity-directory-card__badge">
-                                                                <i class="fa fa-map-marker-alt" aria-hidden="true"></i>
-                                                                {{ $activity->display_location }}
-                                                            </span>
-                                                        </div>
-                                                        <div class="activity-directory-card__body">
-                                                            <div>
-                                                                <div class="activity-directory-card__meta">
-                                                                    <span>{{ $activity->display_type }}</span>
-                                                                </div>
-                                                                <h3 class="activity-directory-card__title">
-                                                                    {{ $activity->name }}
-                                                                </h3>
-                                                                <p class="activity-directory-card__description">
-                                                                    {{ $activity->display_description }}
-                                                                </p>
-                                                            </div>
-                                                            <div class="activity-directory-card__facts">
-                                                                <div class="activity-directory-card__fact">
-                                                                    <span>@lang('activities.results.duration')</span>
-                                                                    <strong>{{ $activity->display_duration }}</strong>
-                                                                </div>
-                                                                <div class="activity-directory-card__fact">
-                                                                    <span>@lang('activities.results.minimum_pax')</span>
-                                                                    <strong>{{ $activity->display_min_pax }} pax</strong>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </article>
-                                            @endforeach
-                                        </div>
-                                    </section>
-                                @endforeach
+                                        {{-- </section> --}}
+                                    @endforeach
+                                </div>
                             </div>
                         @endif
 
-                        <div class="activities-empty{{ $activities->count() > 0 || $searchName || $searchLocation || $searchType ? ' d-none' : '' }}">
+                        <div
+                            class="activities-empty{{ $activities->count() > 0 || $searchName || $searchLocation || $searchType ? ' d-none' : '' }}">
                             <div class="activities-empty__icon"><i class="fa fa-hiking"></i></div>
                             <h3 class="activities-empty__title">@lang('activities.empty.title')</h3>
                             <p class="activities-empty__text">@lang('activities.empty.text')</p>
                         </div>
-                        <div class="activities-empty{{ $activities->count() === 0 && ($searchName || $searchLocation || $searchType) ? '' : ' d-none' }}">
+                        <div
+                            class="activities-empty{{ $activities->count() === 0 && ($searchName || $searchLocation || $searchType) ? '' : ' d-none' }}">
                             <div class="activities-empty__icon"><i class="fa fa-search"></i></div>
                             <h3 class="activities-empty__title">@lang('activities.empty.search_title')</h3>
                             <p class="activities-empty__text">@lang('activities.empty.search_text')</p>

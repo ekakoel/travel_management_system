@@ -74,7 +74,7 @@
                     <div class="col-md-8">
                         <div class="card-box">
                             <div class="card-box-title">
-                                <div class="subtitle"><i class="fa fa-pencil"></i>@lang('messages.Edit Additional Charge')</div>
+                                <div class="subtitle"><i class="fa fa-pencil-alt"></i>@lang('messages.Edit Additional Charge')</div>
                             </div>
                             @if(count($optional_rate_orders)>0)
                                 <form id="updateOrderAdditionalCharge" action="{{ route('func.admin-update-optional-service-order',$order->id) }}" method="post" enctype="multipart/form-data">

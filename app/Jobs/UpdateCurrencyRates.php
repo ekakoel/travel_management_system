@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class UpdateCurrencyRates implements ShouldQueue
 {
@@ -31,10 +32,15 @@ class UpdateCurrencyRates implements ShouldQueue
                     [
                         'rate' => $rate,
                         'sell' => $rate, 
-                        'buy' => $rate - $difference, 
+                        'buy' => max($rate - $difference, 0),
+                        'retrieved_at' => now(),
+                        'retrieval_source' => 'exchangerate-api',
                     ]
                 );
             }
+
+            Cache::forget('usd_rates');
+            Cache::forget('pricing.usd_sell');
         }
     }
 }

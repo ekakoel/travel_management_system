@@ -31,7 +31,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('hotels-admin.index') }}">Hotel Manager</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.hotels.index') }}">Hotel Manager</a></li>
                                 <li class="breadcrumb-item"><a href="{{ route('admin.hotels.show', $hotels->id) }}">{{ $hotels->name }}</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Add Room</li>
                             </ol>
@@ -93,7 +93,7 @@
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-6">
                                                 <div class="backend-form-field">
-                                                    <label for="cover" class="backend-form-label">Cover Image </label><br>
+                                                    <label for="cover" class="backend-form-label">Cover Image </label>
                                                     <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
                                                     @error('cover')
                                                         <div class="alert alert-danger">{{ $message }}</div>

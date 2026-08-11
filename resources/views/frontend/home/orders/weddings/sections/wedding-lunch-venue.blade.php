@@ -16,12 +16,12 @@
                                 <form action="/fdelete-lunch-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                     @csrf
                                     @method('put')
-                                    <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                    <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                 </form>
                             </span>
                             <span class="p-r-8">
                                 <a href="#" data-toggle="modal" data-target="#update-lunch-venue-{{ $orderWedding->id }}"> 
-                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                 </a>
                             </span>
                         @endif
@@ -49,7 +49,7 @@
                             <div class="card-box">
                                 <div class="card-box-title">
                                     @if ($lunchVenue)
-                                        <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Lunch Venue')</div>
+                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Lunch Venue')</div>
                                     @else
                                         <div class="subtitle"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Lunch Venue')</div>
                                     @endif
@@ -156,7 +156,7 @@
                                 </form>
                                 <div class="card-box-footer">
                                     @if ($lunchVenue)
-                                        <button type="submit" form="updateLunchVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                        <button type="submit" form="updateLunchVenue" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                     @else
                                         <button type="submit" form="updateLunchVenue" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                     @endif

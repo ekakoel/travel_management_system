@@ -16,4 +16,8 @@ return [
     'first_stop' => 'First stop',
     'last_stop' => 'Last stop',
     'location_types' => 'Location types',
+    'location_type_activity' => 'Activity',
+    'location_type_food_beverage' => 'F&B',
+    'location_type_pickup_dropoff' => 'Pickup/drop-off location',
+    'location_type_attraction' => 'Attraction',
 ];

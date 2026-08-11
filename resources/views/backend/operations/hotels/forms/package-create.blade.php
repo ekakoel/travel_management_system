@@ -33,7 +33,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('hotels-admin.index') }}">Hotel Manager</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.hotels.index') }}">Hotel Manager</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.hotels.show', $hotel->id) }}">{{ $hotel->name }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Add Package</li>
                         </ol>
@@ -129,7 +129,7 @@
                                             <input class="backend-form-control" id="markup" name="markup" value="{{ old('markup', 0) }}" min="0" type="number" required>
                                         </div>
 
-                                        @foreach ([
+                                        {{-- @foreach ([
                                             'benefits' => 'Benefits',
                                             'benefits_traditional' => 'Benefits - Chinese Traditional',
                                             'benefits_simplified' => 'Benefits - Chinese Simplified',
@@ -144,9 +144,56 @@
                                                 <label for="{{ $field }}">{{ $label }}</label>
                                                 <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true">{{ old($field) }}</textarea>
                                             </div>
+                                        @endforeach --}}
+                                    </div>
+                                    <div class="backend-form-field-2">
+                                        @foreach ([
+                                            'benefits' => 'Benefits',
+                                            'benefits_traditional' => 'Benefits - Chinese Traditional',
+                                            'benefits_simplified' => 'Benefits - Chinese Simplified',
+                                        ] as $field => $label)
+                                        <div class="backend-form-field">
+                                            <label for="{{ $field }}">{{ $label }}</label>
+                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true"></textarea>
+                                        </div>
                                         @endforeach
                                     </div>
-
+                                    <div class="backend-form-field-2">
+                                        @foreach ([
+                                            'include' => 'Inclusion',
+                                            'include_traditional' => 'Inclusion - Chinese Traditional',
+                                            'include_simplified' => 'Inclusion - Chinese Simplified',
+                                        ] as $field => $label)
+                                        <div class="backend-form-field">
+                                            <label for="{{ $field }}">{{ $label }}</label>
+                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true"></textarea>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="backend-form-field-2">
+                                        @foreach ([
+                                            'additional_info' => 'Additional Information',
+                                            'additional_info_traditional' => 'Additional Information - Chinese Traditional',
+                                            'additional_info_simplified' => 'Additional Information - Chinese Simplified',
+                                        ] as $field => $label)
+                                        <div class="backend-form-field">
+                                            <label for="{{ $field }}">{{ $label }}</label>
+                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true"></textarea>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="backend-form-field-2">
+                                        @foreach ([
+                                            'cancellation_policy' => 'Cancellation Policy',
+                                            'cancellation_policy_traditional' => 'Cancellation Policy - Chinese Traditional',
+                                            'cancellation_policy_simplified' => 'Cancellation Policy - Chinese Simplified',
+                                        ] as $field => $label)
+                                        <div class="backend-form-field">
+                                            <label for="{{ $field }}">{{ $label }}</label>
+                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true">{{ old($field) }}</textarea>
+                                        </div>
+                                        @endforeach
+                                    </div>
                                     <input class="backend-form-control" name="hotels_id" value="{{ $hotel->id }}" type="hidden">
                                     <input class="backend-form-control" name="author" value="{{ Auth::user()->id }}" type="hidden">
 

@@ -1,7 +1,15 @@
+@once
+    @push('styles')
+        <link rel="stylesheet" href="{{ mix('build/frontend/css/components/frontend-pickers.css') }}">
+    @endpush
+    @push('scripts')
+        <script src="{{ mix('build/frontend/js/components/frontend-pickers.js') }}" defer></script>
+    @endpush
+@endonce
 <div class="col-md-8">
     <div class="card-box">
         <div class="card-box-title">
-            <div class="subtitle"><i class="fa fa-pencil"></i> @lang('messages.Edit Order')</div>
+            <div class="subtitle"><i class="fa fa-pencil-alt"></i> @lang('messages.Edit Order')</div>
         </div>
         <div class="row">
             <div class="col-6 col-md-6">
@@ -177,7 +185,20 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="travel_date"> @lang('messages.Activity Date')</label>
-                        <input id="travel-date" name="travel_date" min="{{ date('Y-m-d',strtotime($now)) }}" type="text" class="form-control datetimepicker  @error('travel_date') is-invalid @enderror" value="{{ date('d M Y H.i',strtotime($order->travel_date)) }}" required>
+                        <input
+                            id="travel-date"
+                            name="travel_date"
+                            min="{{ date('Y-m-d', strtotime($now)) }}"
+                            type="text"
+                            class="form-control @error('travel_date') is-invalid @enderror"
+                            value="{{ old('travel_date', date('d M Y H.i', strtotime($order->travel_date))) }}"
+                            required
+                            data-ui-picker="datetime"
+                            data-ui-picker-format="DD MMM YYYY HH.mm"
+                            data-ui-picker-minute-step="1"
+                            data-ui-picker-readonly="false"
+                            data-ui-picker-allow-today="true"
+                        >
                         @error('travel_date')
                             <div class="alert alert-danger">
                                 {{ $message }}

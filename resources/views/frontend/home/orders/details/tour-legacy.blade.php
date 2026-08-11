@@ -268,13 +268,9 @@
                                                                 $guest->phone,
                                                                 $guest->age,
                                                                 $guest->sex,
-                                                                $guest->identification_type,
-                                                                $guest->identification_no,
                                                             ])->contains(fn ($value) => trim((string) $value) !== '');
                                                         })
                                                         ->values();
-                                                    $tourOrderGuestLeaderPhone = trim((string) $order->pickup_phone);
-                                                    $tourOrderGuestLeaderName = trim((string) $order->pickup_name);
                                                 @endphp
 
                                                 @if ($tourOrderGuestRows->isNotEmpty())
@@ -287,28 +283,16 @@
                                                                     <th>@lang('messages.Phone')</th>
                                                                     <th>@lang('messages.Age')</th>
                                                                     <th>@lang('messages.Gender')</th>
-                                                                    <th>@lang('messages.ID')</th>
-                                                                    <th>@lang('messages.Leader')</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 @foreach ($tourOrderGuestRows as $guestIndex => $guest)
-                                                                    @php
-                                                                        $isTourOrderGuestLeader = ($tourOrderGuestLeaderPhone !== '' && trim((string) $guest->phone) === $tourOrderGuestLeaderPhone)
-                                                                            || ($tourOrderGuestLeaderPhone === '' && $tourOrderGuestLeaderName !== '' && trim((string) $guest->name) === $tourOrderGuestLeaderName);
-                                                                        $tourOrderGuestIdLabel = collect([
-                                                                            trim((string) $guest->identification_type),
-                                                                            trim((string) $guest->identification_no),
-                                                                        ])->filter()->implode(': ');
-                                                                    @endphp
                                                                     <tr>
                                                                         <td>{{ $guestIndex + 1 }}</td>
                                                                         <td>{{ $guest->name ?: '-' }}</td>
                                                                         <td>{{ $guest->phone ?: '-' }}</td>
                                                                         <td>{{ $guest->age ?: '-' }}</td>
                                                                         <td>{{ $guest->sex ?: '-' }}</td>
-                                                                        <td>{{ $tourOrderGuestIdLabel ?: '-' }}</td>
-                                                                        <td>{{ $isTourOrderGuestLeader ? __('messages.Leader') : '-' }}</td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
@@ -321,7 +305,7 @@
                                         </div>
                                     </div>
                                     @php
-                                        $orderTourItinerary = trim((string) ($order->itinerary ?: ($generatedTourItinerary ?? '')));
+                                        $orderTourItinerary = trim((string) ($packageOverviewItinerary ?? $order->itinerary ?: ($generatedTourItinerary ?? '')));
                                     @endphp
                                     @if ($orderTourItinerary != "")
                                         <div class="page-subtitle">@lang('messages.Itinerary')</div>
@@ -350,10 +334,13 @@
                                             {!! $tour->$langExclude !!}
                                         </div>
                                     @endif
-                                    @if ($tour->additional_info != "")
+                                    @php
+                                        $orderTourAdditionalInfo = trim((string) ($packageOverviewAdditionalInfo ?? $order->additional_info ?: ($tour->$langAdditionalInfo ?: $tour->additional_info)));
+                                    @endphp
+                                    @if ($orderTourAdditionalInfo != "")
                                         <div class="page-subtitle">@lang('messages.Additional Information')</div>
                                         <div class="page-text">
-                                            {!! $tour->$langAdditionalInfo !!}
+                                            {!! $orderTourAdditionalInfo !!}
                                         </div>
                                     @endif
                                     @php

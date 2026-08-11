@@ -28,7 +28,7 @@
                     @canany(['posDev','posAuthor'])
                         <x-slot name="action">
                             <a href="{{ route('admin.hotels.edit', $hotel->id) }}" class="backend-page-primary-action">
-                                <i class="fa fa-pencil"></i>
+                                <i class="fa fa-pencil-alt"></i>
                                 Edit Hotel
                             </a>
                         </x-slot>
@@ -39,7 +39,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('hotels-admin.index') }}">Hotel Manager</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.hotels.index') }}">Hotel Manager</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $hotel->name }}</li>
                         </ol>
                     </nav>
@@ -110,8 +110,6 @@
 
                 @include('backend.operations.hotels.modals.contract-preview')
                 @include('backend.operations.hotels.modals.room-preview')
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan

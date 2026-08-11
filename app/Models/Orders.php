@@ -104,6 +104,14 @@ class Orders extends Model
         'airport_shuttle_price',
         'order_tax',
         'final_price',
+        'pricing_version',
+        'pricing_snapshot_id',
+        'base_currency',
+        'display_currency',
+        'final_total_idr',
+        'final_total_usd_minor',
+        'pricing_calculated_at',
+        'submission_token_hash',
         'usd_rate',
         'cny_rate',
         'twd_rate',
@@ -130,6 +138,8 @@ class Orders extends Model
         'sales_agent',
         'notification',
         'cancellation_policy',
+        'cancellation_policy_traditional',
+        'cancellation_policy_simplified',
         'verified_by',
         'handled_by',
         'handled_date',
@@ -145,6 +155,22 @@ class Orders extends Model
         'dropoff_location',
         'rsv_id',
     ];
+
+    protected $casts = [
+        'final_total_idr' => 'integer',
+        'final_total_usd_minor' => 'integer',
+        'pricing_calculated_at' => 'immutable_datetime',
+    ];
+
+    public function pricingSnapshots()
+    {
+        return $this->hasMany(OrderPricingSnapshot::class, 'order_id');
+    }
+
+    public function activePricingSnapshot()
+    {
+        return $this->belongsTo(OrderPricingSnapshot::class, 'pricing_snapshot_id');
+    }
     public function reservations(){
         return $this->belongsTo(Reservation::class,'rsv_id');
     }

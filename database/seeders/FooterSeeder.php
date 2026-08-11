@@ -51,9 +51,9 @@ class FooterSeeder extends Seeder
         }
 
         $links = [
-            ['group' => 'services', 'label' => 'Accommodations', 'label_traditional' => '住宿安排', 'label_simplified' => '住宿安排', 'route_name' => 'view.accommodation-service', 'sort_order' => 10],
-            ['group' => 'services', 'label' => 'Transports', 'label_traditional' => '交通', 'label_simplified' => '交通', 'route_name' => 'view.transport-service', 'sort_order' => 20],
-            ['group' => 'services', 'label' => 'Tour Packages', 'label_traditional' => '旅遊套餐', 'label_simplified' => '旅游套餐', 'route_name' => 'view.tour-package-services', 'sort_order' => 30],
+            ['group' => 'services', 'label' => 'Accommodations', 'label_traditional' => '住宿安排', 'label_simplified' => '住宿安排', 'route_name' => 'view.hotels-service', 'sort_order' => 10],
+            ['group' => 'services', 'label' => 'Transports', 'label_traditional' => '交通', 'label_simplified' => '交通', 'route_name' => 'view.transports-service', 'sort_order' => 20],
+            ['group' => 'services', 'label' => 'Tour Packages', 'label_traditional' => '旅遊套餐', 'label_simplified' => '旅游套餐', 'route_name' => 'view.tour-packages-service', 'sort_order' => 30],
             ['group' => 'quick_links', 'label' => 'About Us', 'label_traditional' => '關於我們', 'label_simplified' => '关于我们', 'route_name' => 'about-us', 'sort_order' => 10],
             ['group' => 'quick_links', 'label' => 'Contact Us', 'label_traditional' => '聯絡我們', 'label_simplified' => '联系我们', 'route_name' => 'contact-us', 'sort_order' => 20],
             ['group' => 'quick_links', 'label' => 'Our Services', 'label_traditional' => '我們的服務', 'label_simplified' => '我们的服务', 'route_name' => 'services', 'sort_order' => 30],

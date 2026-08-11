@@ -28,7 +28,7 @@ const { createFormSubmissionGuard } = require('../../components/form-submission-
         var guestInput = form.querySelector('[data-order-edit-guests]');
         var submitButton = form.querySelector('[data-order-edit-submit]');
         var submitOverlay = form.querySelector('[data-form-submit-overlay]');
-        var processingLabel = form.dataset.processingLabel || 'Processing...';
+        var processingLabel = form.dataset.processingLabel || '';
         var submissionGuard = createFormSubmissionGuard(form, {
             storageKey: form.dataset.submissionKey || ('tour-order-edit:' + window.location.pathname),
         });
@@ -103,7 +103,7 @@ const { createFormSubmissionGuard } = require('../../components/form-submission-
                 if (priceGuests) priceGuests.textContent = guestCount > 0 ? String(guestCount) : '-';
                 if (priceTotal) priceTotal.textContent = '-';
                 if (reviewMap.total) reviewMap.total.textContent = '-';
-                if (priceNote) priceNote.textContent = form.dataset.noRateLabel || 'No matching active rate for this guest count yet.';
+                if (priceNote) priceNote.textContent = form.dataset.noRateLabel || '';
                 if (submitButton) submitButton.disabled = true;
                 return;
             }

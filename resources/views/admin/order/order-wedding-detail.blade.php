@@ -271,7 +271,7 @@
                                                     @if ($receipt->status != "Valid")
                                                         <div class="view-receipt">
                                                             <a href="#" data-toggle="modal" data-target="#mobile-receipt-{{ $receipt->id }}">
-                                                                <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                                                                <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>
                                                             </a>
                                                         </div>
                                                     @endif
@@ -728,7 +728,7 @@
                                                             </div>
                                                             <div class="form-btn">
                                                                 @if ($orderWedding->confirmation_number)
-                                                                    <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang("messages.Update")</button>
+                                                                    <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang("messages.Update")</button>
                                                                 @else
                                                                     <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang("messages.Add")</button>
                                                                 @endif
@@ -777,7 +777,7 @@
                                                                 @if ($orderWedding->handled_by == Auth::user()->id)
                                                                     <div class="form-btn">
                                                                         @if ($orderWedding->confirmation_number)
-                                                                            <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang("messages.Update")</button>
+                                                                            <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang("messages.Update")</button>
                                                                         @else
                                                                             <button type="submit" form="updateConfirmationNumber" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang("messages.Add")</button>
                                                                         @endif
@@ -847,14 +847,14 @@
                                                 @if ($orderWedding->handled_by == Auth::user()->id)
                                                     <span>
                                                         <a href="#" data-toggle="modal" data-target="#edit-wedding-bride-{{ $bride->id }}">
-                                                            <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                                                            <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                         </a>
                                                     </span>
                                                 @endif
                                             @else
                                                 <span>
                                                     <a href="#" data-toggle="modal" data-target="#edit-wedding-bride-{{ $bride->id }}">
-                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
                                             @endif
@@ -912,7 +912,7 @@
                                             <div class="modal-content">
                                                 <div class="card-box">
                                                     <div class="card-box-title">
-                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i>@lang('messages.Bride')</div>
+                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>@lang('messages.Bride')</div>
                                                     </div>
                                                     <form id="updateWeddingOrderBride" action="/admin-fupdate-wedding-order-bride/{{ $bride->id }}" method="post" enctype="multipart/form-data">
                                                         @csrf
@@ -1094,24 +1094,24 @@
                                                                         @if ($orderWedding->handled_by == Auth::user()->id)
                                                                             <div class="table-action">
                                                                                 <a href="#" data-toggle="modal" data-target="#update-wedding-flight-{{ $flight->id }}">
-                                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
+                                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <form id="deleteFlightOrder{{ $flight->id }}" action="/func-delete-order-wedding-flight-admin/{{ $flight->id }}" method="post" enctype="multipart/form-data">
                                                                                     @csrf
                                                                                     @method('delete')
-                                                                                    <button form="deleteFlightOrder{{ $flight->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                                                    <button form="deleteFlightOrder{{ $flight->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                                 </form>
                                                                             </div>
                                                                         @endif
                                                                     @else
                                                                         <div class="table-action">
                                                                             <a href="#" data-toggle="modal" data-target="#update-wedding-flight-{{ $flight->id }}">
-                                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
+                                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                             </a>
                                                                             <form id="deleteFlightOrder{{ $flight->id }}" action="/func-delete-order-wedding-flight-admin/{{ $flight->id }}" method="post" enctype="multipart/form-data">
                                                                                 @csrf
                                                                                 @method('delete')
-                                                                                <button form="deleteFlightOrder{{ $flight->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                                                <button form="deleteFlightOrder{{ $flight->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                             </form>
                                                                         </div>
                                                                     @endif
@@ -1127,7 +1127,7 @@
                                                                     <div class="modal-content text-left">
                                                                         <div class="card-box">
                                                                             <div class="card-box-title">
-                                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i>Edit Flight</div>
+                                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>Edit Flight</div>
                                                                             </div>
                                                                             <form id="updateWeddingOrderFlight{{ $flight->id }}" action="/func-update-order-wedding-flight-admin/{{ $flight->id }}" method="post" enctype="multipart/form-data">
                                                                                 @csrf
@@ -1239,7 +1239,7 @@
                                                                                 </div>
                                                                             </form>
                                                                             <div class="card-box-footer">
-                                                                                <button type="submit" form="updateWeddingOrderFlight{{ $flight->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                                <button type="submit" form="updateWeddingOrderFlight{{ $flight->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                                                                 <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                             </div>
                                                                         </div>
@@ -1702,12 +1702,12 @@
                                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $guest->id }}">
-                                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <form id="deleteInvitationOrder{{ $guest->id }}" action="/func-delete-order-wedding-invitation-admin/{{ $guest->id }}" method="post" enctype="multipart/form-data">
                                                                                     @csrf
                                                                                     @method('delete')
-                                                                                    <button form="deleteInvitationOrder{{ $guest->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                                                    <button form="deleteInvitationOrder{{ $guest->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                                 </form>
                                                                             @endif
                                                                         @else
@@ -1716,12 +1716,12 @@
                                                                                     <i class="icon-copy  fa fa-eye" data-toggle="tooltip" data-placement="top" title="@lang('messages.Detail')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $guest->id }}">
-                                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
+                                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit')" aria-hidden="true"></i>
                                                                                 </a>
                                                                                 <form id="deleteInvitationOrder{{ $guest->id }}" action="/func-delete-order-wedding-invitation-admin/{{ $guest->id }}" method="post" enctype="multipart/form-data">
                                                                                     @csrf
                                                                                     @method('delete')
-                                                                                    <button form="deleteInvitationOrder{{ $guest->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                                                    <button form="deleteInvitationOrder{{ $guest->id }}" class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                                 </form>
                                                                             </div>
                                                                         @endif
@@ -1774,7 +1774,7 @@
                                                                     <div class="modal-content text-left">
                                                                         <div class="card-box">
                                                                             <div class="card-box-title">
-                                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Invitation')</div>
+                                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Invitation')</div>
                                                                             </div>
                                                                             <form id="editInvitationOrderWedding-{{ $guest->id }}" action="/fedit-invitation-order-wedding/{{ $guest->id }}" method="post" enctype="multipart/form-data">
                                                                                 @csrf
@@ -1871,7 +1871,7 @@
                                                                                 </div>
                                                                             </form>
                                                                             <div class="card-box-footer">
-                                                                                <button type="submit" form="editInvitationOrderWedding-{{ $guest->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                                <button type="submit" form="editInvitationOrderWedding-{{ $guest->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                                                                 <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                             </div>
                                                                         </div>
@@ -1900,14 +1900,14 @@
                                                 @if ($orderWedding->handled_by == Auth::user()->id)
                                                     <span>
                                                         <a href="#" data-toggle="modal" data-target="#update-wedding-order-wedding-{{ $orderWedding->id }}">
-                                                            <i class="fa fa-pencil"></i>
+                                                            <i class="fa fa-pencil-alt"></i>
                                                         </a>
                                                     </span>
                                                 @endif
                                             @else
                                                 <span>
                                                     <a href="#" data-toggle="modal" data-target="#update-wedding-order-wedding-{{ $orderWedding->id }}">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </a>
                                                 </span>
                                             @endif
@@ -1968,7 +1968,7 @@
                                                 <div class="modal-content">
                                                     <div class="card-box">
                                                         <div class="card-box-title">
-                                                            <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i>@lang('messages.Wedding')</div>
+                                                            <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>@lang('messages.Wedding')</div>
                                                         </div>
                                                         <form id="updateWeddingOrderWedding" action="/admin-fupdate-wedding-order-wedding/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                             @csrf
@@ -2158,11 +2158,11 @@
                                                         @if ($ceremonyVenue)
                                                             @if ($orderWedding->service != "Wedding Package")
                                                                 <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-wedding-order-ceremony-venue-{{ $orderWedding->id }}">
-                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 </button>
                                                                 @if ($orderWedding->service != "Ceremony Venue")
                                                                     <button type="submit" form="deleteCeremonyVenue" class="icon-btn-remove" onclick="return confirm('Are you sure?');" data-toggle="tooltip" data-placement="top" title="Remove">
-                                                                        <i class="icon-copy fa fa-trash"></i>
+                                                                        <i class="icon-copy fa fa-trash-alt"></i>
                                                                     </button>
                                                                 @endif
                                                             @endif
@@ -2181,16 +2181,16 @@
                                                         @if ($orderWedding->service != "Ceremony Venue")
                                                             @if ($orderWedding->service != "Wedding Package")
                                                                 <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-wedding-order-ceremony-venue-{{ $orderWedding->id }}">
-                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 </button>
                                                                 <button type="submit" form="deleteCeremonyVenue" class="icon-btn-remove" onclick="return confirm('Are you sure?');" data-toggle="tooltip" data-placement="top" title="Remove">
-                                                                    <i class="icon-copy fa fa-trash"></i>
+                                                                    <i class="icon-copy fa fa-trash-alt"></i>
                                                                 </button>
                                                             @endif
                                                         @else
                                                             @if ($orderWedding->service != "Wedding Package")
                                                                 <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-wedding-order-ceremony-venue-{{ $orderWedding->id }}">
-                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 </button>
                                                             @endif
                                                         @endif
@@ -2281,7 +2281,7 @@
                                                         <div class="modal-content text-left">
                                                             <div class="card-box">
                                                                 <div class="card-box-title">
-                                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Ceremony Venue')</div>
+                                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Ceremony Venue')</div>
                                                                 </div>
                                                                 <form id="updateWeddingOrderCeremonyVenue" action="/admin-fupdate-wedding-order-ceremony-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                                     @csrf
@@ -2434,7 +2434,7 @@
                                                                     <input type="hidden" name="arrangement_price" id="arrangement_price">
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="updateWeddingOrderCeremonyVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                    <button type="submit" form="updateWeddingOrderCeremonyVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                                                     <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
@@ -2546,20 +2546,20 @@
                                                             @if ($orderWedding->handled_by == $admin->id)
                                                                 @if ($orderWedding->service != "Wedding Package")
                                                                     <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-ceremony-venue-{{ $orderWedding->id }}">
-                                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     </button>
                                                                     <button type="submit" form="deleteDecorationCeremonyVenue" class="icon-btn-remove" onclick="return confirm('Are you sure?');" data-toggle="tooltip" data-placement="top" title="Remove">
-                                                                        <i class="icon-copy fa fa-trash"></i>
+                                                                        <i class="icon-copy fa fa-trash-alt"></i>
                                                                     </button>
                                                                 @endif
                                                             @endif
                                                         @else
                                                             @if ($orderWedding->service != "Wedding Package")
                                                                 <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-ceremony-venue-{{ $orderWedding->id }}">
-                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 </button>
                                                                 <button type="submit" form="deleteDecorationCeremonyVenue" class="icon-btn-remove" onclick="return confirm('Are you sure?');" data-toggle="tooltip" data-placement="top" title="Remove">
-                                                                    <i class="icon-copy fa fa-trash"></i>
+                                                                    <i class="icon-copy fa fa-trash-alt"></i>
                                                                 </button>
                                                             @endif
                                                         @endif
@@ -2568,7 +2568,7 @@
                                                             @if ($orderWedding->handled_by == $admin->id)
                                                                 @if ($orderWedding->status == "Pending")
                                                                     <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-ceremony-venue-{{ $orderWedding->id }}">
-                                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     </button>
                                                                 @endif
                                                             @endif
@@ -2576,7 +2576,7 @@
                                                             @if ($orderWedding->handled_by == $admin->id)
                                                                 @if ($orderWedding->status == "Pending")
                                                                     <button type="button" class="btn-icon" data-toggle="modal" data-target="#update-decoration-ceremony-venue-{{ $orderWedding->id }}">
-                                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     </button>
                                                                 @endif
                                                             @endif
@@ -2652,7 +2652,7 @@
                                                         <div class="modal-content text-left">
                                                             <div class="card-box">
                                                                 <div class="card-box-title">
-                                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Decoration')</div>
+                                                                    <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Decoration')</div>
                                                                 </div>
                                                                 <form id="updateDecorationCeremonyVenue" action="/admin-fupdate-wedding-order-decoration-ceremony-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                                     @csrf
@@ -2705,7 +2705,7 @@
                                                                     <input type="hidden" name="arrangement_price" id="arrangement_price">
                                                                 </form>
                                                                 <div class="card-box-footer">
-                                                                    <button type="submit" form="updateDecorationCeremonyVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Change')</button>
+                                                                    <button type="submit" form="updateDecorationCeremonyVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Change')</button>
                                                                     <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                                 </div>
                                                             </div>
@@ -2886,13 +2886,13 @@
                                                                         <form action="/admin-fdelete-wedding-order-reception-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                                             @csrf
                                                                             @method('put')
-                                                                            <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                                            <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                         </form>
                                                                     </span>
                                                                 @endif
                                                                 <span>
                                                                     <a href="#" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}">
-                                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     </a>
                                                                 </span>
                                                             @endif
@@ -2902,13 +2902,13 @@
                                                                     <form action="/admin-fdelete-wedding-order-reception-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                                         @csrf
                                                                         @method('put')
-                                                                        <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                                        <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                     </form>
                                                                 </span>
                                                             @endif
                                                             <span>
                                                                 <a href="#" data-toggle="modal" data-target="#update-reception-venue-{{ $orderWedding->id }}">
-                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 </a>
                                                             </span>
                                                         @endif
@@ -2994,7 +2994,7 @@
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
                                                                         @if ($receptionVenue)
-                                                                            <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
+                                                                            <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
                                                                         @else
                                                                             <div class="subtitle"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Reception Venue')</div>
                                                                         @endif
@@ -3114,7 +3114,7 @@
                                                                     </form>
                                                                     <div class="card-box-footer">
                                                                         @if ($receptionVenue)
-                                                                            <button type="submit" form="updateReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                                            <button type="submit" form="updateReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                                                         @else
                                                                             <button type="submit" form="updateReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                                                                         @endif
@@ -3222,12 +3222,12 @@
                                                                         <form action="/admin-fdelete-wedding-order-decoration-reception-venue/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                                             @csrf
                                                                             @method('put')
-                                                                            <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                                            <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                         </form>
                                                                     </span>
                                                                     <span>
                                                                         <a href="#" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}">
-                                                                            <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                            <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                         </a>
                                                                     </span>
                                                                 @endif
@@ -3247,7 +3247,7 @@
                                                                     @if ($orderWedding->service != "Wedding Package")
                                                                         <span>
                                                                             <a href="#" data-toggle="modal" data-target="#update-decoration-reception-venue-{{ $orderWedding->id }}">
-                                                                                <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                                <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                             </a>
                                                                         </span>
                                                                     @endif
@@ -3329,7 +3329,7 @@
                                                                             <div class="card-box">
                                                                                 <div class="card-box-title">
                                                                                     @if ($decorationReceptionVenue)
-                                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Reception Venue Decoration')</div>
+                                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Reception Venue Decoration')</div>
                                                                                     @else
                                                                                         <div class="subtitle"><i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i> @lang('messages.Decoration')</div>
                                                                                     @endif
@@ -3386,7 +3386,7 @@
                                                                                 </form>
                                                                                 <div class="card-box-footer">
                                                                                     @if ($decorationReceptionVenue)
-                                                                                        <button type="submit" form="updateDecorationReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                                        <button type="submit" form="updateDecorationReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt"></i> @lang('messages.Change')</button>
                                                                                     @else
                                                                                         <button type="submit" form="updateDecorationReceptionVenue" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus-circle"></i> @lang('messages.Add')</button>
                                                                                     @endif
@@ -3496,7 +3496,7 @@
                                                                                 @if ($orderWedding->status != "Paid")
                                                                                     <span>
                                                                                         <a href="#" data-toggle="modal" data-target="#update-transport-invitation-{{ $transport_invitation->id }}">
-                                                                                            <i class="fa fa-pencil"></i>
+                                                                                            <i class="fa fa-pencil-alt"></i>
                                                                                         </a>
                                                                                     </span>
                                                                                 @endif
@@ -3507,7 +3507,7 @@
                                                                             @if ($orderWedding->status != "Paid")
                                                                                 <span>
                                                                                     <a href="#" data-toggle="modal" data-target="#update-transport-invitation-{{ $transport_invitation->id }}">
-                                                                                        <i class="fa fa-pencil"></i>
+                                                                                        <i class="fa fa-pencil-alt"></i>
                                                                                     </a>
                                                                                 </span>
                                                                             @endif
@@ -3699,7 +3699,7 @@
                                                                             @if ($orderWedding->status != "Paid")
                                                                                 <span>
                                                                                     <a href="#" data-toggle="modal" data-target="#update-transport-invitation-{{ $transport_invitation->id }}">
-                                                                                        <i class="fa fa-pencil"></i>
+                                                                                        <i class="fa fa-pencil-alt"></i>
                                                                                     </a>
                                                                                 </span>
                                                                             @endif
@@ -3710,7 +3710,7 @@
                                                                         @if ($orderWedding->status != "Paid")
                                                                             <span>
                                                                                 <a href="#" data-toggle="modal" data-target="#update-transport-invitation-{{ $transport_invitation->id }}">
-                                                                                    <i class="fa fa-pencil"></i>
+                                                                                    <i class="fa fa-pencil-alt"></i>
                                                                                 </a>
                                                                             </span>
                                                                         @endif
@@ -3729,7 +3729,7 @@
                                                                         <div class="modal-content">
                                                                             <div class="card-box">
                                                                                 <div class="card-box-title">
-                                                                                    <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i>Airport Shuttle, {{ $transport_invitation->desc_type=="In"?"Arrival":"Departure" }}, {{ $transport_invitation->transport->brand }} - {{ $transport_invitation->transport->name }}</div>
+                                                                                    <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>Airport Shuttle, {{ $transport_invitation->desc_type=="In"?"Arrival":"Departure" }}, {{ $transport_invitation->transport->brand }} - {{ $transport_invitation->transport->name }}</div>
                                                                                 </div>
                                                                                 <form id="updateTransportInvitation{{ $transport_invitation->id }}" action="/admin-fupdate-transport-invitation/{{ $transport_invitation->id }}" method="post" enctype="multipart/form-data">
                                                                                     @csrf
@@ -4024,7 +4024,7 @@
                                                                                 @if ($orderWedding->status != "Paid")
                                                                                     <span>
                                                                                         <a href="#" data-toggle="modal" data-target="#update-accommodation-invitation-{{ $accommodation_invitation->id }}">
-                                                                                            <i class="fa fa-pencil"></i>
+                                                                                            <i class="fa fa-pencil-alt"></i>
                                                                                         </a>
                                                                                     </span>
                                                                                 @endif
@@ -4035,7 +4035,7 @@
                                                                             @if ($orderWedding->status != "Paid")
                                                                                 <span>
                                                                                     <a href="#" data-toggle="modal" data-target="#update-accommodation-invitation-{{ $accommodation_invitation->id }}">
-                                                                                        <i class="fa fa-pencil"></i>
+                                                                                        <i class="fa fa-pencil-alt"></i>
                                                                                     </a>
                                                                                 </span>
                                                                             @endif
@@ -4150,7 +4150,7 @@
                                                             <span>
                                                                 <a href="/admin-validate-order-wedding-accommodation-{{ $orderWedding->id }}">
                                                                     @if ($weddingAccommodations)
-                                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     @else
                                                                         <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                                     @endif
@@ -4165,7 +4165,7 @@
                                                         <span>
                                                             <a href="/admin-validate-order-wedding-accommodation-{{ $orderWedding->id }}">
                                                                 @if ($weddingAccommodations)
-                                                                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                 @else
                                                                     <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                                 @endif
@@ -4245,7 +4245,7 @@
                                                                             @if ($orderWedding->status != "Paid")
                                                                                 <span>
                                                                                     <a href="#" data-toggle="modal" data-target="#update-accommodation-invitation-{{ $accommodation_invitation->id }}">
-                                                                                        <i class="fa fa-pencil"></i>
+                                                                                        <i class="fa fa-pencil-alt"></i>
                                                                                     </a>
                                                                                 </span>
                                                                             @endif
@@ -4256,7 +4256,7 @@
                                                                         @if ($orderWedding->status != "Paid")
                                                                             <span>
                                                                                 <a href="#" data-toggle="modal" data-target="#update-accommodation-invitation-{{ $accommodation_invitation->id }}">
-                                                                                    <i class="fa fa-pencil"></i>
+                                                                                    <i class="fa fa-pencil-alt"></i>
                                                                                 </a>
                                                                             </span>
                                                                         @endif
@@ -4273,7 +4273,7 @@
                                                                 <div class="modal-content">
                                                                     <div class="card-box">
                                                                         <div class="card-box-title">
-                                                                            <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> {{ $accommodation_invitation->hotel->name }} | {{ $accommodation_invitation->room->rooms }} {{ $accommodation_invitation->extra_bed_order?"+ ".$accommodation_invitation->extra_bed_order->extra_bed->type." Extra Bed":""; }}</div>
+                                                                            <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> {{ $accommodation_invitation->hotel->name }} | {{ $accommodation_invitation->room->rooms }} {{ $accommodation_invitation->extra_bed_order?"+ ".$accommodation_invitation->extra_bed_order->extra_bed->type." Extra Bed":""; }}</div>
                                                                         </div>
                                                                         <form id="updateTransportInvitation{{ $accommodation_invitation->id }}" action="/admin-fupdate-accommodation-invitation-price/{{ $accommodation_invitation->id }}" method="post" enctype="multipart/form-data">
                                                                             @csrf
@@ -4644,14 +4644,14 @@
                                                                     @if ($orderWedding->handled_by == Auth::user()->id)
                                                                         <span>
                                                                             <a href="#" data-toggle="modal" data-target="#update-additional-charge-{{ $request_service->id }}">
-                                                                                <i class="fa fa-pencil"></i>
+                                                                                <i class="fa fa-pencil-alt"></i>
                                                                             </a>
                                                                         </span>
                                                                     @endif
                                                                 @else
                                                                     <span>
                                                                         <a href="#" data-toggle="modal" data-target="#update-additional-charge-{{ $request_service->id }}">
-                                                                            <i class="fa fa-pencil"></i>
+                                                                            <i class="fa fa-pencil-alt"></i>
                                                                         </a>
                                                                     </span>
                                                                 @endif
@@ -4663,7 +4663,7 @@
                                                                 <div class="modal-content">
                                                                     <div class="card-box">
                                                                         <div class="card-box-title">
-                                                                            <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> {{ $request_service->service }}</div>
+                                                                            <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> {{ $request_service->service }}</div>
                                                                         </div>
                                                                         <form id="updateRequestServices{{ $request_service->id }}" action="/admin-fupdate-additional-charge/{{ $request_service->id }}" method="post" enctype="multipart/form-data">
                                                                             @csrf
@@ -4789,14 +4789,14 @@
                                                                 @if ($orderWedding->handled_by == Auth::user()->id)
                                                                     <span>
                                                                         <a href="#" data-toggle="modal" data-target="#update-rejected-additional-charge-{{ $rejected_service->id }}">
-                                                                            <i class="fa fa-pencil"></i>
+                                                                            <i class="fa fa-pencil-alt"></i>
                                                                         </a>
                                                                     </span>
                                                                 @endif
                                                             @else
                                                                 <span>
                                                                     <a href="#" data-toggle="modal" data-target="#update-rejected-additional-charge-{{ $rejected_service->id }}">
-                                                                        <i class="fa fa-pencil"></i>
+                                                                        <i class="fa fa-pencil-alt"></i>
                                                                     </a>
                                                                 </span>
                                                             @endif
@@ -4808,7 +4808,7 @@
                                                             <div class="modal-content">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> {{ $rejected_service->service }}</div>
+                                                                        <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> {{ $rejected_service->service }}</div>
                                                                     </div>
                                                                     <form id="updateRejectedServices{{ $rejected_service->id }}" action="/admin-fupdate-additional-charge/{{ $rejected_service->id }}" method="post" enctype="multipart/form-data">
                                                                         @csrf
@@ -4954,7 +4954,7 @@
                                                             <div class="card-box">
                                                                 <div class="card-box-title">
                                                                     @if ($addser_ids)
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
                                                                     @else
                                                                         <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
                                                                     @endif
@@ -4997,7 +4997,7 @@
                                                                 </form>
                                                                 <div class="card-box-footer">
                                                                     @if ($addser_ids)
-                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt"></i> @lang('messages.Change')</button>
                                                                     @else
                                                                         <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
                                                                     @endif
@@ -5144,7 +5144,7 @@
                                                                 <span>
                                                                     <a href="#" data-toggle="modal" data-target="#add-additional-service-{{ $orderWedding->id }}">
                                                                         @if ($addser_ids)
-                                                                            <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                            <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                         @else
                                                                             <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                                         @endif
@@ -5159,7 +5159,7 @@
                                                             <span>
                                                                 <a href="#" data-toggle="modal" data-target="#add-additional-service-{{ $orderWedding->id }}">
                                                                     @if ($addser_ids)
-                                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                                     @else
                                                                         <i class="icon-copy  fa fa-plus-circle" data-toggle="tooltip" data-placement="top" title="@lang('messages.Add')" aria-hidden="true"></i>
                                                                     @endif
@@ -5279,7 +5279,7 @@
                                                             <div class="card-box">
                                                                 <div class="card-box-title">
                                                                     @if ($addser_ids)
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
                                                                     @else
                                                                         <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Additional Services')</div>
                                                                     @endif
@@ -5400,7 +5400,7 @@
                                                                 </form>
                                                                 <div class="card-box-footer">
                                                                     @if ($addser_ids)
-                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                        <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt"></i> @lang('messages.Change')</button>
                                                                     @else
                                                                         <button type="submit" form="addAdditionalService" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Add')</button>
                                                                     @endif
@@ -5425,12 +5425,12 @@
                                                     <form action="/fdelete-order-wedding-remark/{{ $orderWedding->id }}" method="post" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('put')
-                                                        <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash"></i></button>
+                                                        <button class="icon-btn-remove" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Remove"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                     </form>
                                                 </span>
                                                 <span>
                                                     <a href="#" data-toggle="modal" data-target="#add-order-wedding-remark-{{ $orderWedding->id }}">
-                                                        <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
+                                                        <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Change')" aria-hidden="true"></i>
                                                     </a>
                                                 </span>
                                             @else
@@ -5453,7 +5453,7 @@
                                                     <div class="card-box">
                                                         <div class="card-box-title">
                                                             @if ($addser_ids)
-                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Remark')</div>
+                                                                <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Remark')</div>
                                                             @else
                                                                 <div class="subtitle"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> @lang('messages.Remark')</div>
                                                             @endif
@@ -5476,7 +5476,7 @@
                                                         </form>
                                                         <div class="card-box-footer">
                                                             @if ($addser_ids)
-                                                                <button type="submit" form="addOrderWeddingRemark" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil"></i> @lang('messages.Change')</button>
+                                                                <button type="submit" form="addOrderWeddingRemark" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt"></i> @lang('messages.Change')</button>
                                                             @else
                                                                 <button type="submit" form="addOrderWeddingRemark" class="backend-button backend-button-primary"><i class="icon-copy fa fa-plus"></i> @lang('messages.Create')</button>
                                                             @endif
@@ -6211,7 +6211,7 @@
                                                         @if ($receipt->status != "Valid")
                                                             <div class="view-receipt">
                                                                 <a href="#" data-toggle="modal" data-target="#desktop-receipt-{{ $receipt->id }}">
-                                                                    <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                                                                    <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i>
                                                                 </a>
                                                             </div>
                                                         @endif

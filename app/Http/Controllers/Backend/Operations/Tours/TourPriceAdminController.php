@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Backend\Operations\Tours;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\Operations\Tours\StoreTourPriceAdminRequest;
 use App\Http\Requests\Backend\Operations\Tours\UpdateTourPriceAdminRequest;
+use App\Models\TourPrices;
+use App\Models\Tours;
 use App\Services\Tours\TourAuditService;
 use App\Services\Tours\TourPricingService;
-use Illuminate\Support\Facades\Gate;
 
 class TourPriceAdminController extends Controller
 {
@@ -16,43 +17,69 @@ class TourPriceAdminController extends Controller
         $this->middleware(['auth', 'can:isAdmin']);
     }
 
-    public function store(StoreTourPriceAdminRequest $request, $id, TourAuditService $audit, TourPricingService $pricing)
+    public function store(
+        StoreTourPriceAdminRequest $request,
+        Tours $tour,
+        TourAuditService $audit,
+        TourPricingService $pricing,
+    )
     {
-        if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
-        }
+        $tourPrice = $pricing->createPrice($tour, $request->validated(), (int) $request->user()->id);
 
-        $pricing->createPrice((int) $id, $request->validated());
+        $audit->userLog($request, 'Add Tour Price', 'Tour Package', $tour->id, 'detail-tour', 'Add Tour Price: ' . $tourPrice->id);
 
-        $audit->userLog($request, 'Add Tour Price', 'Tour Package', $id, 'detail-tour', 'Add Tour Price: ' . $id);
-
-        return redirect()->route('admin.tours.show', $id)->withFragment('prices')->with('success', 'New Tour Package Price has been successfully created!');
+        return redirect()->route('admin.tours.show', $tour)->withFragment('prices')->with('success', 'New Tour Package Price has been successfully created!');
     }
 
-    public function update(UpdateTourPriceAdminRequest $request, $id, TourAuditService $audit, TourPricingService $pricing)
+    public function update(
+        UpdateTourPriceAdminRequest $request,
+        Tours $tour,
+        TourPrices $tourPrice,
+        TourAuditService $audit,
+        TourPricingService $pricing,
+    )
     {
-        if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
-        }
+        $tourPrice = $pricing->updatePrice($tour, $tourPrice, $request->validated(), (int) $request->user()->id);
 
-        $tourPrice = $pricing->updatePrice((int) $id, $request->validated());
-
-        $audit->userLog($request, 'Update Tour Price', 'Price', $id, 'detail-tour', 'Update Tour Price: ' . $id);
+        $audit->userLog($request, 'Update Tour Price', 'Price', $tourPrice->id, 'detail-tour', 'Update Tour Price: ' . $tourPrice->id);
 
         return redirect()->route('admin.tours.show', $tourPrice->tour_id)->withFragment('prices')->with('success', 'The Tour Price has been successfully updated!');
     }
 
-    public function destroy($id, TourAuditService $audit, TourPricingService $pricing)
+    public function destroy(
+        Tours $tour,
+        TourPrices $tourPrice,
+        TourAuditService $audit,
+        TourPricingService $pricing,
+    )
     {
-        if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
-        }
+        $this->authorizeMutation();
+        $pricing->deletePrice($tour, $tourPrice);
+        $audit->userLog(request(), 'Remove', 'Price', $tourPrice->id, 'detail-tour', 'Remove Tour Price on Tour : ' . $tour->id . ', Price id : ' . $tourPrice->id, 'Tour Package');
 
-        $tourPrice = $pricing->deletePrice((int) $id);
-        $tourId = $tourPrice->tour_id;
+        return redirect()->route('admin.tours.show', $tour)->withFragment('prices')->with('success', 'The Tour Price has been successfully deleted!');
+    }
 
-        $audit->userLog(request(), 'Remove', 'Price', $id, 'detail-tour', 'Remove Tour Price on Tour : ' . $tourId . ', Price id : ' . $id, 'Tour Package');
+    public function restore(
+        Tours $tour,
+        int $tourPrice,
+        TourAuditService $audit,
+        TourPricingService $pricing,
+    ) {
+        $this->authorizeMutation();
+        $price = $pricing->restorePrice($tour, $tourPrice);
+        $audit->userLog(request(), 'Restore', 'Price', $price->id, 'detail-tour', 'Restore Tour Price: ' . $price->id, 'Tour Package');
 
-        return redirect()->route('admin.tours.show', $tourId)->withFragment('prices')->with('success', 'The Tour Price has been successfully deleted!');
+        return redirect()->route('admin.tours.show', $tour)->withFragment('prices')->with('success', 'The Tour Price has been successfully restored.');
+    }
+
+    private function authorizeMutation(): void
+    {
+        abort_unless(
+            auth()->check()
+            && auth()->user()->can('isAdmin')
+            && (auth()->user()->can('posDev') || auth()->user()->can('posAuthor')),
+            403
+        );
     }
 }

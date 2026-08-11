@@ -22,10 +22,6 @@ class TourAdminController extends Controller
 
     public function index(TourInventoryService $inventory)
     {
-        if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('view.admin-panel-main')->with('error', 'Akses ditolak');
-        }
-
         return view('backend.operations.tours.index', $inventory->indexData());
     }
 
@@ -37,7 +33,7 @@ class TourAdminController extends Controller
     public function create(TourInventoryService $inventory)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
         }
 
         return view('backend.operations.tours.forms.create', $inventory->formOptions());
@@ -46,7 +42,7 @@ class TourAdminController extends Controller
     public function edit($id, TourInventoryService $inventory)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
         }
 
         return view('backend.operations.tours.forms.edit', $inventory->editData((int) $id));
@@ -55,7 +51,7 @@ class TourAdminController extends Controller
     public function store(StoreTourAdminRequest $request, TourAssetService $assets, TourLocationService $locationsService)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
         }
 
         $locations = $locationsService->validateLocations($request);
@@ -77,7 +73,7 @@ class TourAdminController extends Controller
     public function update(UpdateTourAdminRequest $request, $id, TourAssetService $assets, TourLocationService $locationsService)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
         }
 
         $tour = Tours::findOrFail($id);
@@ -102,7 +98,7 @@ class TourAdminController extends Controller
     public function destroy($id, TourAuditService $audit)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('tours-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
         }
 
         Tours::findOrFail($id)->update([

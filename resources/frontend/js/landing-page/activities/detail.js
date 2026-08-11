@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeStep = 0;
     let isSubmitting = false;
     let guests = [];
-    let activityDatePickerRefreshed = false;
 
     try {
         guests = JSON.parse(orderForm.dataset.initialGuests || '[]')
@@ -591,149 +590,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    const hasDateRangePickerLibrary = () => (
-        window.jQuery
-        && typeof window.jQuery.fn.daterangepicker === 'function'
-        && typeof window.moment === 'function'
-    );
-
-    const getActivityDatePicker = () => (
-        hasDateRangePickerLibrary()
-            ? window.jQuery(travelDateInput).data('daterangepicker')
-            : null
-    );
-
-    const parseActivityDate = (value) => {
-        if (!value || !hasDateRangePickerLibrary()) {
-            return null;
-        }
-
-        const parsed = window.moment(value, [
-            'YYYY-MM-DD HH:mm',
-            'YYYY-MM-DDTHH:mm',
-            'YYYY-MM-DD HH:mm:ss',
-            window.moment.ISO_8601,
-        ], true);
-
-        return parsed.isValid() ? parsed : null;
-    };
-
-    const resolveActivityMinimumDate = () => {
-        if (!hasDateRangePickerLibrary()) {
-            return null;
-        }
-
-        const tomorrow = window.moment().startOf('day').add(1, 'day');
-        const configuredMinimum = parseActivityDate(travelDateInput?.dataset.uiPickerMin || travelDateInput?.getAttribute('min'));
-
-        return configuredMinimum && configuredMinimum.isAfter(tomorrow)
-            ? configuredMinimum
-            : tomorrow;
-    };
-
-    const syncActivityDatePickerValue = (picker) => {
-        if (!travelDateInput || !picker) {
-            return;
-        }
-
-        travelDateInput.value = picker.startDate.format('YYYY-MM-DD HH:mm');
-        travelDateInput.dispatchEvent(new Event('input', { bubbles: true }));
-        travelDateInput.dispatchEvent(new Event('change', { bubbles: true }));
-    };
-
-    const initActivityDatePickerFallback = () => {
-        if (!travelDateInput || !hasDateRangePickerLibrary() || getActivityDatePicker()) {
-            return Boolean(getActivityDatePicker());
-        }
-
-        const minimumDate = resolveActivityMinimumDate();
-        const parsedValue = parseActivityDate(travelDateInput.value);
-        const startDate = parsedValue && (!minimumDate || parsedValue.isSameOrAfter(minimumDate))
-            ? parsedValue
-            : (minimumDate ? minimumDate.clone() : window.moment());
-
-        travelDateInput.classList.add('ui-picker-input', 'ui-picker-input--datetime');
-        travelDateInput.setAttribute('readonly', 'readonly');
-
-        window.jQuery(travelDateInput).daterangepicker({
-            autoApply: false,
-            autoUpdateInput: false,
-            singleDatePicker: true,
-            timePicker: true,
-            timePicker24Hour: true,
-            timePickerIncrement: 5,
-            showDropdowns: true,
-            parentEl: 'body',
-            opens: 'center',
-            drops: 'down',
-            startDate,
-            endDate: startDate.clone(),
-            minDate: minimumDate || false,
-            locale: {
-                format: 'YYYY-MM-DD HH:mm',
-                applyLabel: travelDateInput.dataset.uiPickerApplyLabel || 'Apply',
-                cancelLabel: travelDateInput.dataset.uiPickerCancelLabel || 'Cancel',
-            },
-        });
-
-        window.jQuery(travelDateInput)
-            .off('apply.daterangepicker.activityDate show.daterangepicker.activityDate')
-            .on('apply.daterangepicker.activityDate', (_event, picker) => syncActivityDatePickerValue(picker))
-            .on('show.daterangepicker.activityDate', () => {
-                const picker = getActivityDatePicker();
-
-                if (!picker) {
-                    return;
-                }
-
-                picker.container.addClass('ui-picker-panel ui-picker-panel--datetime');
-                picker.container.css('z-index', '3000');
-
-                const inputRect = travelDateInput.getBoundingClientRect();
-                const panelHeight = picker.container.outerHeight?.() || 360;
-                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-                const spaceBelow = viewportHeight - inputRect.bottom;
-                const spaceAbove = inputRect.top;
-
-                picker.drops = spaceBelow < panelHeight + 12 && spaceAbove > spaceBelow ? 'up' : 'down';
-                picker.container
-                    .toggleClass('drop-up', picker.drops === 'up')
-                    .toggleClass('drop-down', picker.drops !== 'up');
-
-                if (typeof picker.move === 'function') {
-                    picker.move();
-                }
-            });
-
-        return true;
-    };
-
-    const initActivityDatePicker = ({ force = false } = {}) => {
-        if (!travelDateInput) {
-            return;
-        }
-
-        travelDateInput.dataset.uiPicker = 'datetime';
-        travelDateInput.dataset.uiPickerFormat = 'YYYY-MM-DD HH:mm';
-        travelDateInput.dataset.uiPickerParent = 'body';
-        travelDateInput.dataset.uiPickerOpens = 'center';
-        travelDateInput.dataset.uiPickerDrops = 'auto';
-        travelDateInput.dataset.uiPickerShowButtons = 'true';
-        travelDateInput.dataset.uiPickerMinuteStep = '5';
-
-        if (force && window.FrontendPickerSystem && typeof window.FrontendPickerSystem.refresh === 'function') {
-            window.FrontendPickerSystem.refresh(travelDateInput);
-            initActivityDatePickerFallback();
-            return;
-        }
-
-        if (window.FrontendPickerSystem && typeof window.FrontendPickerSystem.initPicker === 'function') {
-            window.FrontendPickerSystem.initPicker(travelDateInput);
-        }
-
-        initActivityDatePickerFallback();
-    };
-
     const attemptSubmit = () => {
         if (isSubmitting) {
             return;
@@ -910,21 +766,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    modalElement?.addEventListener('shown.bs.modal', () => {
-        initActivityDatePicker({ force: !activityDatePickerRefreshed });
-        activityDatePickerRefreshed = true;
-    });
-
-    travelDateInput?.addEventListener('click', () => {
-        initActivityDatePicker();
-
-        const picker = getActivityDatePicker();
-
-        if (picker) {
-            picker.show();
-        }
-    });
-
     modalElement?.setAttribute('data-activity-name', modalElement?.dataset.activityName || document.title);
     modalElement?.setAttribute('data-activity-supplier', modalElement?.dataset.activitySupplier || '-');
 
@@ -941,7 +782,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetGuestForm();
     renderGuestTable();
-    initActivityDatePicker();
     updateReview();
     showStep(Number.isFinite(initialStep) ? initialStep : 0);
 });

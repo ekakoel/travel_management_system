@@ -152,11 +152,16 @@ Current shared order lifecycle must remain compatible with:
 * Pending
 * Approved
 * Paid
-* Completed as a fulfillment milestone
 * Canceled
 * Rejected
 * Invalid
 * Deleted
+
+`Paid` is the final successful commercial value in `orders.status`.
+Service completion is a separate fulfillment milestone represented by
+`orders.completed_at` and `orders.completed_by`; it must not write
+`Completed` to `orders.status`. Reservation `Completed` remains valid and
+must not be interpreted as an order status.
 
 Legacy statuses must only be handled through documented read compatibility.
 
@@ -251,6 +256,19 @@ After changing code, provide:
 * Remaining risks
 * Recommended next step
 
+### Mandatory Next-Step Recommendation
+
+Every final task report must end with a clearly labeled **Recommended next
+step**. The recommendation must be concrete, relevant to the completed work,
+and proportionate to the remaining risk or normal delivery sequence. When no
+additional implementation is necessary, recommend the most useful verification,
+deployment, monitoring, or maintenance action instead of omitting this section.
+
+A recommendation is advisory only. It does not expand the current task scope or
+authorize the agent to perform additional changes, external actions, deployment,
+or destructive operations without the authorization otherwise required by this
+file.
+
 Do not state that a feature is complete when verification is incomplete.
 
 ## 13. Stop Conditions
@@ -282,3 +300,4 @@ A task is complete only when:
 * The diff has been reviewed.
 * Documentation is updated when architecture, lifecycle, or behavior changes.
 * The final report clearly states what was and was not verified.
+* The final report ends with a concrete Recommended next step.

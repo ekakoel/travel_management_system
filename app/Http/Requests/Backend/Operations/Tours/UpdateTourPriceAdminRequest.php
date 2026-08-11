@@ -2,12 +2,14 @@
 
 namespace App\Http\Requests\Backend\Operations\Tours;
 
+use App\Models\TourPrices;
+
 class UpdateTourPriceAdminRequest extends StoreTourPriceAdminRequest
 {
-    public function rules(): array
+    protected function overlapExceptPriceId(): ?int
     {
-        return array_merge(parent::rules(), [
-            'status' => 'required|string|in:Draft,Active',
-        ]);
+        $price = $this->route('tourPrice');
+
+        return $price instanceof TourPrices ? (int) $price->id : null;
     }
 }

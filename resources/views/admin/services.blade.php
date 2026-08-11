@@ -106,7 +106,7 @@
                                                                         aria-hidden="true"></i></a>&nbsp; &nbsp;
                                                                 <a href="tour-delete {{ $tour['id'] }}"data-toggle="tooltip"
                                                                     data-original-title="Delete data Tour"> <i
-                                                                        class="icon-copy fa fa-trash"
+                                                                        class="icon-copy fa fa-trash-alt"
                                                                         aria-hidden="true"></i></a>
 
                                                             </td>

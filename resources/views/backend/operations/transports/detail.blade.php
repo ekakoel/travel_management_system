@@ -24,7 +24,7 @@
                     @canany(['posDev','posAuthor'])
                         <x-slot name="action">
                             <a href="{{ route('admin.transports.edit', $transport->id) }}" class="backend-page-primary-action">
-                                <i class="fa fa-pencil"></i>
+                                <i class="fa fa-pencil-alt"></i>
                                 Edit Transport
                             </a>
                         </x-slot>
@@ -35,7 +35,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('transports-admin.index') }}">Transportation</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.transports.index') }}">Transportation</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $transport->name }}</li>
                         </ol>
                     </nav>
@@ -208,7 +208,7 @@
                                                 </button>
                                                 @canany(['posDev','posAuthor'])
                                                     <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#edit-price-{{ $price->id }}" aria-label="Edit price">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </button>
                                                     <form action="{{ route('admin.transports.prices.destroy', $price->id) }}" method="post">
                                                         @csrf
@@ -274,7 +274,7 @@
                             @canany(['posDev','posAuthor'])
                                 <div class="backend-detail-side-actions">
                                     <a href="{{ route('admin.transports.edit', $transport->id) }}" class="backend-page-primary-action">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-pencil-alt"></i>
                                         Edit Transport
                                     </a>
                                     <button type="button" class="backend-toolbar-action" data-toggle="modal" data-target="#add-transport-price">

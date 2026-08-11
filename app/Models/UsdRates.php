@@ -15,6 +15,12 @@ class UsdRates extends Model
         'sell',
         'buy',
         'difference',
+        'retrieved_at',
+        'retrieval_source',
+    ];
+
+    protected $casts = [
+        'retrieved_at' => 'immutable_datetime',
     ];
     public function receipts(){
         return $this->hasMany(PaymentConfirmation::class);

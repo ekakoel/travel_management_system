@@ -84,9 +84,9 @@
                                 {{ $user["type"] }}
                             </td>
                             <td>
-                                <a href="user-detail-{{ $user["id"] }}" data-toggle="tooltip" data-original-title="View Detail user"><i class="dw dw-eye"></i></a> &nbsp; &nbsp;
+                                <a href="user-detail-{{ $user["id"] }}" data-toggle="tooltip" data-original-title="View Detail user"><i class="fas fa-eye"></i></a> &nbsp; &nbsp;
                                 <a href="user-edit {{ $user["id"] }}"data-toggle="tooltip" data-original-title="Edit data user"><i class="icon-copy fa fa-edit" aria-hidden="true"></i></a>&nbsp; &nbsp;
-                                <a href="user-delete {{ $user["id"] }}"data-toggle="tooltip" data-original-title="Delete data Tour"> <i class="icon-copy fa fa-trash" aria-hidden="true"></i></a>
+                                <a href="user-delete {{ $user["id"] }}"data-toggle="tooltip" data-original-title="Delete data Tour"> <i class="icon-copy fa fa-trash-alt" aria-hidden="true"></i></a>
 
                             </td>
                         </tr>
@@ -133,9 +133,9 @@
                                 {{ $user["status"] }}
                             </td>
                             <td>
-                                <a href="user-package-{{ $user["id"] }}" data-toggle="tooltip" data-original-title="View Detail user"><i class="dw dw-eye"></i></a> &nbsp; &nbsp;
+                                <a href="user-package-{{ $user["id"] }}" data-toggle="tooltip" data-original-title="View Detail user"><i class="fas fa-eye"></i></a> &nbsp; &nbsp;
                                 <a href="user-edit {{ $user["id"] }}"data-toggle="tooltip" data-original-title="Edit data user"><i class="icon-copy fa fa-edit" aria-hidden="true"></i></a>&nbsp; &nbsp;
-                                <a href="user-delete {{ $user["id"] }}"data-toggle="tooltip" data-original-title="Delete data Tour"> <i class="icon-copy fa fa-trash" aria-hidden="true"></i></a>
+                                <a href="user-delete {{ $user["id"] }}"data-toggle="tooltip" data-original-title="Delete data Tour"> <i class="icon-copy fa fa-trash-alt" aria-hidden="true"></i></a>
 
                             </td>
                         </tr>

@@ -17,6 +17,9 @@ use App\Models\UsdRates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Services\PublicFaqService;
+use App\Services\Tours\TourPackagePricingService;
+use App\Support\MoneyFormatter;
+use App\ValueObjects\Money;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ViewErrorBag;
@@ -102,9 +105,13 @@ class FrontEndController extends Controller
         }
     }
 
-    public function tour_package_services(Request $request)
+    public function tour_package_services(
+        Request $request,
+        TourPackagePricingService $pricing,
+        MoneyFormatter $formatter,
+    )
     {
-        $now = Carbon::now()->toDateString();
+        $now = Carbon::now();
         $searchName = trim((string) $request->input('search_name', ''));
         $searchArea = trim((string) $request->input('search_area', ''));
         $searchType = trim((string) $request->input('search_type', ''));
@@ -125,7 +132,8 @@ class FrontEndController extends Controller
             ->withCount([
                 'prices as active_rates_count' => function ($query) use ($now) {
                     $query->where('status', 'Active')
-                        ->whereDate('expired_date', '>=', $now);
+                        ->where('pricing_data_status', 'ready')
+                        ->whereDate('valid_until', '>=', $now->toDateString());
                 },
                 'locations as tour_destination_highlights_count' => function ($query) {
                     $query->where('is_active', true)
@@ -189,8 +197,9 @@ class FrontEndController extends Controller
             ->with([
                 'prices' => function ($query) use ($now) {
                     $query->where('status', 'Active')
-                        ->whereDate('expired_date', '>=', $now)
-                        ->orderBy('contract_rate');
+                        ->where('pricing_data_status', 'ready')
+                        ->whereDate('valid_until', '>=', $now->toDateString())
+                        ->orderBy('contract_rate_idr');
                 },
             ])
             ->when($searchName, function ($query) use ($searchName, $areaColumn, $hasTraditionalName, $hasSimplifiedName, $hasTypeRelation, $hasLegacyType, $hasTypeTraditional, $hasTypeSimplified) {
@@ -243,10 +252,14 @@ class FrontEndController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        $usdrates = UsdRates::where('name', 'USD')->first();
-        $tax = Tax::where('name', 'tax')->first() ?: Tax::find(1);
-
-        $tours->getCollection()->transform(function ($tour) use ($usdrates, $tax, $areaColumn, $hasTypeRelation, $hasLegacyType) {
+        $tours->getCollection()->transform(function ($tour) use (
+            $pricing,
+            $formatter,
+            $now,
+            $areaColumn,
+            $hasTypeRelation,
+            $hasLegacyType
+        ) {
             $tour->display_name = $this->localizedModelField($tour, 'name');
             $tour->display_area = $areaColumn
                 ? ($areaColumn === 'area'
@@ -260,16 +273,14 @@ class FrontEndController extends Controller
                 ? $this->localizedModelField($tour->type, 'type')
                 : ($hasLegacyType && filled($tour->type) ? $tour->type : __('tour-packages.fallback.type'));
 
-            $startingPrice = $tour->prices
-                ->map(function ($price) use ($usdrates, $tax) {
-                    return ($usdrates && $tax) ? $price->calculatePrice($usdrates, $tax) : (float) $price->contract_rate;
-                })
-                ->filter()
-                ->min();
-
-            $tour->display_starting_price = $startingPrice
-                ? 'USD ' . number_format((float) $startingPrice, 0)
-                : __('tour-packages.fallback.request_rate');
+            $startingQuote = $pricing->quoteEachTier($tour, $now)->sortBy(
+                fn (array $tier) => $tier['quote']->unitPriceUsdMinor()
+            )->first();
+            $tour->display_starting_price = $startingQuote
+                ? 'USD '.$formatter->decimal(
+                    Money::usdCents($startingQuote['quote']->unitPriceUsdMinor())
+                )
+                : __('tour-detail.price_temporarily_unavailable');
 
             return $tour;
         });
@@ -288,7 +299,8 @@ class FrontEndController extends Controller
             'top_area_name' => $topArea['name'] ?? null,
             'top_area_count' => $topArea['count'] ?? 0,
             'active_rates' => TourPrices::where('status', 'Active')
-                ->whereDate('expired_date', '>=', $now)
+                ->where('pricing_data_status', 'ready')
+                ->whereDate('valid_until', '>=', $now->toDateString())
                 ->count(),
         ];
 
@@ -303,7 +315,7 @@ class FrontEndController extends Controller
             'directoryStats'
         ));
     }
-    public function accommodation_service(Request $request)
+    public function hotels_service(Request $request)
     {
         $now = Carbon::now()->toDateString();
         $searchName = $request->input('search_name');
@@ -583,43 +595,98 @@ class FrontEndController extends Controller
                 return filled($image->image);
             })->map(function ($image) use ($activity) {
                 return [
-                    'src' => asset('storage/activities/activities-images/' . $image->image),
-                    'thumb' => asset('storage/activities/activities-images/' . $image->image),
+                    'src' => asset('storage/' . $image->image),
+                    'thumb' => asset('storage/' . $image->image),
                     'alt' => $activity->name,
                 ];
             })
         )->unique('src')->values();
 
+        $langDescription = match (config('app.locale')) {
+            'zh' => 'description_traditional',
+            'zh-CN' => 'description_simplified',
+            default => 'description',
+        };
+        $langItinerary = match (config('app.locale')) {
+            'zh' => 'itinerary_traditional',
+            'zh-CN' => 'itinerary_simplified',
+            default => 'itinerary',
+        };
+        $langInclude = match (config('app.locale')) {
+            'zh' => 'include_traditional',
+            'zh-CN' => 'include_simplified',
+            default => 'include',
+        };
+        $langExclude = match (config('app.locale')) {
+            'zh' => 'exclude_traditional',
+            'zh-CN' => 'exclude_simplified',
+            default => 'exclude',
+        };
+        $langAdditionalInfo = match (config('app.locale')) {
+            'zh' => 'additional_info_traditional',
+            'zh-CN' => 'additional_info_simplified',
+            default => 'additional_info',
+        };
+        $langCancellationPolicy = match (config('app.locale')) {
+            'zh' => 'cancellation_policy_traditional',
+            'zh-CN' => 'cancellation_policy_simplified',
+            default => 'cancellation_policy',
+        };
+
+
+        $localeSuffix = match (app()->getLocale()) {
+            'zh-TW', 'zh_TW', 'zh-tw', 'traditional' => '_traditional',
+            'zh-CN', 'zh_CN', 'zh-cn', 'simplified' => '_simplified',
+            default => '',
+        };
+
+        $getLocalizedActivityContent = function (string $field) use ($activity, $localeSuffix): ?string {
+            $localizedField = $field . $localeSuffix;
+
+            $content = $localeSuffix !== ''
+                ? $activity->{$localizedField}
+                : $activity->{$field};
+
+            // Fallback ke bahasa utama jika terjemahan kosong.
+            if (!filled(trim(strip_tags((string) $content)))) {
+                $content = $activity->{$field};
+            }
+
+            return filled(trim(strip_tags((string) $content)))
+                ? $content
+                : null;
+        };
+
         $activitySections = collect([
             [
                 'eyebrow' => __('messages.About This Activity'),
                 'title' => __('messages.Essential activity information'),
-                'content' => filled(trim(strip_tags((string) $activity->description))) ? $activity->description : null,
+                'content' => $getLocalizedActivityContent($langDescription),
                 'empty_text' => __('messages.Activity description is not available yet.'),
                 'compact' => false,
             ],
             [
                 'eyebrow' => __('messages.Included'),
                 'title' => __('messages.What is included'),
-                'content' => filled(trim(strip_tags((string) $activity->include))) ? $activity->include : null,
+                'content' => $getLocalizedActivityContent($langInclude),
                 'compact' => true,
             ],
             [
                 'eyebrow' => __('messages.Itinerary'),
                 'title' => __('messages.How the activity experience is structured'),
-                'content' => filled(trim(strip_tags((string) $activity->itinerary))) ? $activity->itinerary : null,
+                'content' => $getLocalizedActivityContent($langItinerary),
                 'compact' => true,
             ],
             [
                 'eyebrow' => __('messages.Additional Information'),
                 'title' => __('messages.Operational notes and service reminders'),
-                'content' => filled(trim(strip_tags((string) $activity->additional_info))) ? $activity->additional_info : null,
+                'content' => $getLocalizedActivityContent($langAdditionalInfo),
                 'compact' => true,
             ],
             [
                 'eyebrow' => __('messages.Cancellation Policy'),
                 'title' => __('messages.Cancellation terms'),
-                'content' => filled(trim(strip_tags((string) $activity->cancellation_policy))) ? $activity->cancellation_policy : null,
+                'content' => $getLocalizedActivityContent($langCancellationPolicy),
                 'compact' => true,
             ],
         ]);
@@ -801,11 +868,19 @@ class FrontEndController extends Controller
             'nearActivities',
             'canUseActivityOrderFlow',
             'activityOrderCta',
-            'activityOrderForm'
+            'activityOrderForm',
+            'langItinerary',
+            'langDescription',
+            'langInclude',
+            'langExclude',
+            'langItinerary',
+            'langCancellationPolicy',
+            'langAdditionalInfo',
+            
         ));
     }
 
-    public function accommodation_detail(Request $request, $code)
+    public function hotel_detail(Request $request, $code)
     {
         $now = Carbon::now()->toDateString();
         $columns = [
@@ -922,7 +997,7 @@ class FrontEndController extends Controller
     private function resolveCheckPriceAccess(string $hotelCode): array
     {
         if (!Auth::check()) {
-            $redirectTarget = route('view.accommodation-detail', [
+            $redirectTarget = route('view.hotel-detail', [
                 'code' => $hotelCode,
                 'check_price' => 1,
             ]) . '#check-price-panel';
@@ -962,7 +1037,7 @@ class FrontEndController extends Controller
 
         return [true, [
             'text' => __('messages.Continue to the dedicated hotel check price page to view contract pricing, active promotions, and matching packages for your selected stay dates.'),
-            'url' => route('view.accommodation-check-price', ['code' => $hotelCode]),
+            'url' => route('view.hotel-check-price', ['code' => $hotelCode]),
             'button_label' => __('messages.Check Price'),
         ]];
     }

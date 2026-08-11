@@ -87,7 +87,7 @@
                                                         - {{ date('Y-m-d',strtotime($wp->wedding_date)) }}
                                                     @endif
                                                     <a href="/edit-wedding-planner-{{ $wp->id }}" class="text-link">
-                                                        <i class="fa fa-pencil"></i> @lang('messages.Edit')
+                                                        <i class="fa fa-pencil-alt"></i> @lang('messages.Edit')
                                                     </a>
                                                 </li>
                                             </ul>
@@ -97,7 +97,7 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
             @include('layouts.footer')

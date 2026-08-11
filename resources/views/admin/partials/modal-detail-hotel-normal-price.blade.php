@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="card-box">
                 <div class="card-box-title">
-                    <i class="dw dw-eye"></i> Price {{ $room->rooms }}
+                    <i class="fas fa-eye"></i> Price {{ $room->rooms }}
                 </div>
                 <div class="card-box-body">
                     <div class="row">

@@ -1,9 +1,9 @@
 .frontend-order-modal {
-    --frontend-order-modal-accent: #0f5fa8;
-    --frontend-order-modal-accent-secondary: #0d7b8f;
+    --frontend-order-modal-accent: var(--ui-primary, #0f5fa8);
+    --frontend-order-modal-accent-secondary: var(--ui-secondary, #0d7b8f);
     --frontend-order-modal-border: #dbe7f3;
-    --frontend-order-modal-muted: #64748b;
-    --frontend-order-modal-text: #0f172a;
+    --frontend-order-modal-muted: var(--ui-muted, #64748b);
+    --frontend-order-modal-text: var(--ui-text, #0f172a);
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -45,8 +45,8 @@
     padding: 0;
     border: 1px solid var(--frontend-order-modal-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.94);
-    color: var(--frontend-order-modal-text);
+    // background: rgba(255, 255, 255, 0.94);
+    color: var(--frontend-order-modal-text, #0f172a);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
     opacity: 1;
 }
@@ -54,8 +54,7 @@
 .frontend-order-modal__close:hover,
 .frontend-order-modal__close:focus {
     border-color: rgba(15, 95, 168, 0.34);
-    background: #ffffff;
-    color: var(--frontend-order-modal-accent);
+    color: var(--frontend-order-modal-accent, #0f5fa8);
 }
 
 .frontend-order-modal__service {
@@ -183,7 +182,7 @@
     padding: 0.95rem 1rem;
     border: 1px solid var(--frontend-order-modal-border);
     border-radius: 20px;
-    background: #ffffff;
+    background: var(--ui-surface, #ffffff);
     color: var(--frontend-order-modal-muted);
     text-align: left;
     box-shadow: none;
@@ -267,7 +266,7 @@
     min-height: 48px;
     border-color: var(--frontend-order-modal-border);
     border-radius: 15px;
-    background-color: #ffffff !important;
+    background-color: var(--ui-surface, #ffffff) !important;
     color: var(--frontend-order-modal-text);
     box-shadow: none;
 }
@@ -295,21 +294,21 @@
 }
 
 .frontend-order-modal .btn-primary {
-    border-color: var(--frontend-shell-primary, #0f5fa8);
-    background: linear-gradient(135deg, var(--frontend-shell-primary, #0f5fa8) 0%, var(--frontend-shell-secondary, #0d7b8f) 100%);
-    color: #ffffff;
+    border-color: var(--ui-primary, #0f5fa8);
+    background: linear-gradient(135deg, var(--ui-primary, #0f5fa8) 0%, var(--ui-secondary, #0d7b8f) 100%);
+    color: var(--ui-on-primary, #ffffff);
 }
 
 .frontend-order-modal .btn-primary:hover,
 .frontend-order-modal .btn-primary:focus {
-    border-color: var(--frontend-shell-primary, #0f5fa8);
-    background: linear-gradient(135deg, var(--frontend-shell-primary, #0f5fa8) 100%, var(--frontend-shell-secondary, #0d7b8f) 0%);
-    color: #ffffff;
+    border-color: var(--ui-primary, #0f5fa8);
+    background: linear-gradient(135deg, var(--ui-primary, #0f5fa8) 100%, var(--ui-secondary, #0d7b8f) 0%);
+    color: var(--ui-on-primary, #ffffff);
 }
 
 .frontend-order-modal .btn-light {
     border-color: var(--frontend-order-modal-border);
-    background: #ffffff;
+    background: var(--ui-surface, #ffffff);
     color: #334155;
 }
 

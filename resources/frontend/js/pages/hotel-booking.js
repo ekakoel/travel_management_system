@@ -536,6 +536,8 @@
         var quoteReviewLabel = $form.data('label-quote-review') || 'This order will be handled as a quote request because it contains more than 8 rooms.';
         var processingLabel = $form.find('button[type="submit"]').first().data('processingLabel') || 'Processing...';
         var $roomList = $form.find('#dynamic_field');
+        var $guestManifest = $form.find('[data-guest-manifest]');
+        var $guestList = $guestManifest.find('[data-guest-list]');
         var $addButton = $form.find('#add');
         var $quoteCheckbox = $form.find('[data-quote-checkbox]');
         var $quoteCard = $form.find('[data-quote-card]');
@@ -587,6 +589,85 @@
                 guestTotal += toNumber($(this).val());
             });
             return guestTotal;
+        }
+
+        function syncRoomOccupancy() {
+            $roomList.find('[data-room-item]').each(function (roomIndex) {
+                var $item = $(this);
+                var adults = Math.max(toNumber($item.find('[data-room-adults]').val()), 1);
+                var children = Math.max(toNumber($item.find('[data-room-children]').val()), 0);
+                var $ageList = $item.find('[data-child-age-list]');
+                var noChildrenLabel = $ageList.data('label-no-children') || 'No children in this room.';
+                var existingAges = [];
+
+                $ageList.find('input').each(function () {
+                    existingAges.push($(this).val());
+                });
+
+                $item.find('[data-room-guest-total]').val(adults + children);
+                $ageList.empty();
+
+                if (!children) {
+                    $ageList.append('<span class="form-text text-muted" data-no-child-age>'
+                        + escapeHtml(noChildrenLabel)
+                        + '</span>');
+                    return;
+                }
+
+                for (var childIndex = 0; childIndex < children; childIndex += 1) {
+                    $ageList.append(''
+                        + '<label class="hotel-child-age">'
+                        + '<span>' + escapeHtml(($guestManifest.data('label-child') || 'Child') + ' ' + (childIndex + 1)) + ' <span class="text-danger">*</span></span>'
+                        + '<input type="number" min="0" max="17" required class="form-control" name="room_child_ages[' + roomIndex + '][]" value="' + escapeHtml(existingAges[childIndex] || '') + '">'
+                        + '</label>');
+                }
+            });
+        }
+
+        function syncGuestManifest() {
+            if (!$guestList.length) {
+                return;
+            }
+
+            var existing = {};
+            $guestList.find('[data-guest-item]').each(function () {
+                var $item = $(this);
+                existing[$item.data('guest-key')] = {
+                    name: $item.find('input[name="guest_name[]"]').val() || '',
+                    phone: $item.find('input[name="guest_phone[]"]').val() || '',
+                    sex: $item.find('select[name="guest_sex[]"]').val() || ''
+                };
+            });
+
+            var markup = '';
+            $roomList.find('[data-room-item]').each(function (roomIndex) {
+                var $room = $(this);
+                var counts = {
+                    Adult: Math.max(toNumber($room.find('[data-room-adults]').val()), 1),
+                    Child: Math.max(toNumber($room.find('[data-room-children]').val()), 0)
+                };
+
+                $.each(['Adult', 'Child'], function (_, category) {
+                    for (var personIndex = 0; personIndex < counts[category]; personIndex += 1) {
+                        var key = (roomIndex + 1) + '-' + category + '-' + personIndex;
+                        var values = existing[key] || {};
+                        var label = ($guestManifest.data('label-room') || 'Room') + ' ' + (roomIndex + 1)
+                            + ' · ' + ($guestManifest.data(category === 'Adult' ? 'label-adult' : 'label-child') || category)
+                            + ' ' + (personIndex + 1);
+                        markup += '<article class="hotel-guest-card" data-guest-item data-guest-key="' + key + '">'
+                            + '<div class="hotel-guest-card__title">' + escapeHtml(label) + '</div>'
+                            + '<input type="hidden" name="guest_room[]" value="' + (roomIndex + 1) + '">'
+                            + '<input type="hidden" name="guest_category[]" value="' + category + '">'
+                            + '<div class="row">'
+                            + '<div class="col-lg-5 col-md-6"><div class="form-group"><label>' + escapeHtml($guestManifest.data('label-full-name') || 'Guest Full Name') + ' <span class="text-danger">*</span></label><input required maxlength="150" class="form-control" type="text" name="guest_name[]" value="' + escapeHtml(values.name || '') + '"></div></div>'
+                            + '<div class="col-lg-4 col-md-6"><div class="form-group"><label>' + escapeHtml($guestManifest.data('label-phone') || 'Phone') + ' <small>(' + escapeHtml($guestManifest.data('label-optional') || 'Optional') + ')</small></label><input maxlength="40" class="form-control" type="tel" name="guest_phone[]" value="' + escapeHtml(values.phone || '') + '"></div></div>'
+                            + '<div class="col-lg-3 col-md-6"><div class="form-group"><label>' + escapeHtml($guestManifest.data('label-gender') || 'Gender') + ' <span class="text-danger">*</span></label><select required class="custom-select" name="guest_sex[]"><option value="">-</option><option value="Male"' + (values.sex === 'Male' ? ' selected' : '') + '>' + escapeHtml($guestManifest.data('label-male') || 'Male') + '</option><option value="Female"' + (values.sex === 'Female' ? ' selected' : '') + '>' + escapeHtml($guestManifest.data('label-female') || 'Female') + '</option></select></div></div>'
+                            + '</div></article>';
+                    }
+                });
+            });
+
+            $guestList.html(markup);
         }
 
         function renumberRooms() {
@@ -929,15 +1010,43 @@
             $roomList.find('[data-room-item]').each(function (index) {
                 var $item = $(this);
                 var guestCount = toNumber($item.find('input[name="number_of_guests[]"]').val());
-                var guestDetail = $.trim($item.find('input[name="guest_detail[]"]').val());
+                var adults = toNumber($item.find('[data-room-adults]').val());
+                var children = toNumber($item.find('[data-room-children]').val());
+                var childAges = [];
+                var guestNames = [];
                 var specialDay = $.trim($item.find('input[name="special_day[]"]').val());
                 var specialDate = $.trim($item.find('input[name="special_date[]"]').val());
                 var formattedSpecialDate = formatNativeDate(specialDate);
                 var selectedExtraBedLabel = $.trim($item.find('[data-extra-bed-select] option:selected').text());
                 var roomMeta = [];
 
+                $guestList.find('[data-guest-item]').each(function () {
+                    var $guestItem = $(this);
+                    if (toNumber($guestItem.find('input[name="guest_room[]"]').val()) === index + 1) {
+                        var guestName = $.trim($guestItem.find('input[name="guest_name[]"]').val());
+                        var guestCategory = $guestItem.find('input[name="guest_category[]"]').val();
+                        if (guestName) {
+                            guestNames.push(guestName + ' (' + ($guestManifest.data(guestCategory === 'Child' ? 'label-child' : 'label-adult') || guestCategory) + ')');
+                        }
+                    }
+                });
+
+                $item.find('[data-child-age-list] input').each(function () {
+                    if ($(this).val() !== '') {
+                        childAges.push($(this).val());
+                    }
+                });
+
                 if (guestCount > 0) {
                     roomMeta.push(guestCount + ' ' + (guestCount > 1 ? guestPluralLabel : guestSingularLabel));
+                }
+
+                roomMeta.push(adults + ' ' + ($guestManifest.data('label-adult') || 'Adult'));
+                if (children > 0) {
+                    roomMeta.push(children + ' ' + ($guestManifest.data('label-child') || 'Child'));
+                    if (childAges.length) {
+                        roomMeta.push(($guestManifest.data('label-child-ages') || 'Child ages') + ': ' + childAges.join(', '));
+                    }
                 }
 
                 if (selectedExtraBedLabel && selectedExtraBedLabel !== noneLabel && selectedExtraBedLabel !== noExtraBedLabel) {
@@ -954,7 +1063,7 @@
                     + '<strong>' + escapeHtml(roomLabel + ' ' + (index + 1)) + '</strong>'
                     + '<span>' + escapeHtml(roomMeta.join(' | ') || guestDetailsPendingLabel) + '</span>'
                     + '</div>'
-                    + '<div class="booking-review__room-body">' + escapeHtml(guestDetail || guestNamesMissingLabel) + '</div>'
+                    + '<div class="booking-review__room-body">' + escapeHtml(guestNames.join(', ') || guestNamesMissingLabel) + '</div>'
                     + '</article>';
             });
 
@@ -995,6 +1104,10 @@
                 $input.removeClass('is-invalid');
             });
 
+            $item.find('[data-room-adults]').val('1');
+            $item.find('[data-room-children]').val('0');
+            $item.find('[data-room-guest-total]').val('1');
+
             $item.find('textarea').each(function () {
                 $(this).val('').removeClass('is-invalid');
             });
@@ -1026,10 +1139,64 @@
 
             initDateInputs($clone);
             renumberRooms();
+            syncRoomOccupancy();
+            syncGuestManifest();
             syncQuotationState();
             toggleExtraBedSelection();
             updatePriceSummary();
             updateReviewSummary();
+        }
+
+        function restoreOldBookingState() {
+            var stateElement = $form.find('[data-booking-old-state]').get(0);
+            var state;
+
+            if (!stateElement) {
+                return;
+            }
+
+            try {
+                state = JSON.parse(stateElement.textContent || '{}');
+            } catch (error) {
+                return;
+            }
+
+            var adults = state.room_adults || [];
+            if (!adults.length) {
+                return;
+            }
+
+            if (adults.length > maxRooms && $quoteCheckbox.length) {
+                $quoteCheckbox.prop('checked', true);
+            }
+
+            while (getRoomCount() < adults.length && getRoomCount() < getCurrentRoomLimit()) {
+                cloneRoom();
+            }
+
+            $roomList.find('[data-room-item]').each(function (index) {
+                var $room = $(this);
+                $room.find('[data-room-adults]').val(adults[index] || 1);
+                $room.find('[data-room-children]').val((state.room_children || [])[index] || 0);
+                $room.find('input[name="special_day[]"]').val((state.special_day || [])[index] || '');
+                $room.find('input[name="special_date[]"]').val((state.special_date || [])[index] || '');
+                $room.find('select[name="extra_bed_id[]"]').val((state.extra_bed_id || [])[index] || '');
+            });
+
+            syncRoomOccupancy();
+            $roomList.find('[data-room-item]').each(function (index) {
+                var ages = (state.room_child_ages || [])[index] || [];
+                $(this).find('[data-child-age-list] input').each(function (ageIndex) {
+                    $(this).val(typeof ages[ageIndex] === 'undefined' ? '' : ages[ageIndex]);
+                });
+            });
+
+            syncGuestManifest();
+            $guestList.find('[data-guest-item]').each(function (index) {
+                $(this).find('input[name="guest_name[]"]').val((state.guest_name || [])[index] || '');
+                $(this).find('input[name="guest_phone[]"]').val((state.guest_phone || [])[index] || '');
+                $(this).find('select[name="guest_sex[]"]').val((state.guest_sex || [])[index] || '');
+            });
         }
 
         function getDefaultTransferType() {
@@ -1100,6 +1267,8 @@
 
             $(this).closest('[data-room-item]').remove();
             renumberRooms();
+            syncRoomOccupancy();
+            syncGuestManifest();
             syncQuotationState();
             toggleExtraBedSelection();
             updatePriceSummary();
@@ -1119,7 +1288,11 @@
             updateReviewSummary();
         });
 
-        $form.on('input change', 'input[name="number_of_guests[]"], input[name="guest_detail[]"], input[name="special_day[]"], input[name="special_date[]"], input[name="flight_number[]"], input[name="flight_time[]"], select[name="flight_type[]"], select[name="flight_transport_id[]"], select[name="extra_bed_id[]"], textarea[name="note"]', function () {
+        $form.on('input change', '[data-room-adults], [data-room-children], input[name^="room_child_ages"], input[name="guest_name[]"], input[name="guest_phone[]"], select[name="guest_sex[]"], input[name="special_day[]"], input[name="special_date[]"], input[name="flight_number[]"], input[name="flight_time[]"], select[name="flight_type[]"], select[name="flight_transport_id[]"], select[name="extra_bed_id[]"], textarea[name="note"]', function (event) {
+            if ($(event.target).is('[data-room-adults], [data-room-children]')) {
+                syncRoomOccupancy();
+                syncGuestManifest();
+            }
             toggleExtraBedSelection();
             updatePriceSummary();
             updateReviewSummary();
@@ -1148,6 +1321,9 @@
         applyInitialTransferDateDefaults();
         syncLegacyTransferFields();
         renumberRooms();
+        syncRoomOccupancy();
+        syncGuestManifest();
+        restoreOldBookingState();
         syncQuotationState();
         toggleExtraBedSelection();
         updatePriceSummary();

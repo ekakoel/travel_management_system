@@ -406,7 +406,7 @@
                                         </div>
                                         <div class="card-box-footer">
                                             @if ($weddings->status !== "Active")
-                                                <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
+                                                <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash-alt"></i> Remove</button>
                                                 @if ($weddings->markup > 0)
                                                     @if ($total_service_price < $published_price)
                                                         <button type="submit" form="activatePackage" class="backend-button backend-button-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
@@ -414,7 +414,7 @@
                                                 @endif
                                             @endif
                                             @if ($weddings->status !== "Draft")
-                                                <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
+                                                <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil-alt"></i> Draft</button>
                                             @endif
                                         </div>
                                     </div>
@@ -577,7 +577,7 @@
                                         </div>
                                         @if ($weddings->status !== "Active")
                                             <div class="card-box-footer">
-                                                <a href="/{{ $service->nicname }}-edit-{{ $weddings['id'] }}"><button class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button></a>
+                                                <a href="/{{ $service->nicname }}-edit-{{ $weddings['id'] }}"><button class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button></a>
                                             </div>
                                         @endif
                                     </div>
@@ -751,7 +751,7 @@
                                                         </div>
                                                         <div class="card-box-footer">
                                                             @if ($weddings->status !== "Active")
-                                                                <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
+                                                                <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash-alt"></i> Remove</button>
                                                                 @if ($weddings->markup > 0)
                                                                     @if ($total_service_price < $published_price)
                                                                         <button type="submit" form="activatePackage" class="backend-button backend-button-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
@@ -759,7 +759,7 @@
                                                                 @endif
                                                             @endif
                                                             @if ($weddings->status !== "Draft")
-                                                                <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
+                                                                <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil-alt"></i> Draft</button>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -918,7 +918,7 @@
                                                     </div>
                                                     <div class="card-box-footer">
                                                         @if ($weddings->status !== "Active")
-                                                            <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash"></i> Remove</button>
+                                                            <button type="submit" form="removePackage" class="backend-button backend-button-danger" onclick="return confirm('Are you sure to remove {{ $weddings->name }}?');" data-toggle="tooltip" data-placement="top" title="Remove Wedding Package"><i class="icon-copy fa fa-trash-alt"></i> Remove</button>
                                                             @if ($weddings->markup > 0)
                                                                 @if ($total_service_price < $published_price)
                                                                     <button type="submit" form="activatePackage" class="backend-button backend-button-primary" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate Wedding Package"><i class="icon-copy fa fa-check"></i> Activate</button>
@@ -926,7 +926,7 @@
                                                             @endif
                                                         @endif
                                                         @if ($weddings->status !== "Draft")
-                                                            <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil"></i> Draft</button>
+                                                            <button type="submit" form="draftedPackage" class="backend-button backend-button-secondary"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Drafted Wedding Package"><i class="icon-copy fa fa-pencil-alt"></i> Draft</button>
                                                         @endif
                                                     </div>
                                                 </div>

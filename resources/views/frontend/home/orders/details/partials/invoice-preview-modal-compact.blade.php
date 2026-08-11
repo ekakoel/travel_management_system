@@ -74,7 +74,7 @@
                     <h3 id="{{ $invoicePreviewModalId }}-title">@lang('messages.Invoice Preview')</h3>
                     <p class="order-detail-modal__subtext">{{ $invoice->inv_no }}</p>
                 </div>
-                <button type="button" class="order-detail-modal__close" data-invoice-preview-close aria-label="@lang('messages.Close')">
+                <button type="button" class="order-detail-modal__close ui-btn ui-btn--icon" data-invoice-preview-close aria-label="@lang('messages.Close')">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
@@ -177,11 +177,11 @@
                 </div>
             </div>
             <div class="order-detail-modal__footer">
-                <a href="{{ $invoicePreviewRoute }}" target="_blank" rel="noopener" class="order-detail-btn order-detail-btn--soft order-detail-btn--auto">
+                <a href="{{ $invoicePreviewRoute }}" target="_blank" rel="noopener" class="ui-btn ui-btn--secondary">
                     <i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i>
                     @lang('messages.Open PDF')
                 </a>
-                <a href="{{ $invoiceDownloadRoute }}" class="order-detail-btn order-detail-btn--primary order-detail-btn--auto">
+                <a href="{{ $invoiceDownloadRoute }}" class="ui-btn ui-btn--primary">
                     <i class="fa-solid fa-download" aria-hidden="true"></i>
                     @lang('messages.Download PDF')
                 </a>

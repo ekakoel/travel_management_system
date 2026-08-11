@@ -77,7 +77,7 @@
             <div class="row g-4">
                 <div class="col-xl-4 col-lg-5">
                     <aside class="tour-packages-sidebar frontend-surface-card">
-                        <form class="tour-packages-filter-form" action="{{ route('view.tour-package-services') }}"
+                        <form class="tour-packages-filter-form" action="{{ route('view.tour-packages-service') }}"
                             method="get" data-tour-packages-filter-form>
                             <div class="tour-packages-filter-intro">
                                 <div class="accommodation-section__eyebrow">@lang('tour-packages.filters.eyebrow')</div>
@@ -123,7 +123,7 @@
                             </div>
 
                             <div class="tour-packages-filter-actions">
-                                <a href="{{ route('view.tour-package-services') }}" class="btn btn-outline-secondary flex-fill" data-tour-packages-reset>
+                                <a href="{{ route('view.tour-packages-service') }}" class="btn btn-outline-secondary flex-fill" data-tour-packages-reset>
                                     @lang('tour-packages.filters.reset')
                                 </a>
                             </div>
@@ -169,10 +169,9 @@
                                         $tourImage = $tour->cover
                                             ? getThumbnail('/tours/tours-cover/' . $tour->cover, 640, 420)
                                             : asset('storage/images/default.webp');
-                                        $duration = $tour->duration_days . 'D';
-                                        if ((int) $tour->duration_nights > 0) {
-                                            $duration .= ' / ' . $tour->duration_nights . 'N';
-                                        }
+                                        $duration = (int) $tour->duration_nights > 0
+                                            ? __('tour-detail.duration_days_nights', ['days' => $tour->duration_days, 'nights' => $tour->duration_nights])
+                                            : __('tour-detail.duration_days', ['days' => $tour->duration_days]);
                                     @endphp
                                     <article class="tour-package-card">
                                         <a class="tour-package-card__link" href="{{ route('view.tour-detail', $tour->slug) }}">
@@ -186,6 +185,7 @@
                                                 <div>
                                                     <span class="tour-package-card__type">{{ $tour->display_type }}</span>
                                                     <h3 class="tour-package-card__title">{{ $tour->display_name }}</h3>
+                                                    <p class="tour-package-card__price">{{ $tour->display_starting_price }}</p>
                                                 </div>
                                                 <div class="tour-package-card__facts">
                                                     <div class="tour-package-card__fact">

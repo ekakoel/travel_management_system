@@ -95,6 +95,10 @@ body.sidebar-light .backend-detail-side-actions .backend-secondary-action {
   width: 100%;
 }
 
+.normal-price{
+  color: red;
+}
+
 @media (max-width: 1199px) {
   body.sidebar-light .backend-detail-layout {
     grid-template-columns: 1fr;

@@ -12,7 +12,7 @@
     <div class="availability-related-grid">
         @foreach ($nearhotels as $nearHotel)
             <article class="availability-related-card">
-                <a class="availability-related-card__link" href="{{ route('view.accommodation-detail', $nearHotel->code) }}">
+                <a class="availability-related-card__link" href="{{ route('view.hotel-detail', $nearHotel->code) }}">
                     <div class="availability-related-card__media">
                         <img
                             src="{{ $nearHotel->cover ? getThumbnail('/hotels/hotels-cover/' . $nearHotel->cover, 380, 240) : asset('storage/images/default.webp') }}"

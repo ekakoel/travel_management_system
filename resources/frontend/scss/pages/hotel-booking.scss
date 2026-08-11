@@ -62,6 +62,7 @@
 .hotel-booking-layout .form-hr {
     margin: 1rem 0;
     border-color: #e2e8f0;
+    background-color: #cbcbcb !important;
     opacity: 1;
 }
 
@@ -428,12 +429,46 @@ body.booking-submit-scroll-locked {
     line-height: 1.65;
 }
 
-.hotel-booking-layout .btn.is-processing {
+.hotel-booking-layout .btn.is-processing,
+.hotel-booking-layout .ui-btn.is-processing {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
     pointer-events: none;
+}
+
+.hotel-child-age-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+}
+
+.hotel-child-age {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    color: #475569;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.hotel-guest-manifest {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.hotel-guest-card {
+    padding: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 14px;
+    background: #f8fafc;
+}
+
+.hotel-guest-card__title {
+    margin-bottom: 0.75rem;
+    color: #0f5fa8;
+    font-weight: 800;
 }
 
 .booking-submit-button__spinner {

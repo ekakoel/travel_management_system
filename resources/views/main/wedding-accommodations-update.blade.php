@@ -9,7 +9,7 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
                             <div class="title">
-                                <i class="icon-copy fa fa-pencil"></i>@lang('messages.Update Wedding Accommodation')
+                                <i class="icon-copy fa fa-pencil-alt"></i>@lang('messages.Update Wedding Accommodation')
                             </div>
                             <nav aria-label="breadcrumb" role="navigation">
                                 <ol class="breadcrumb">

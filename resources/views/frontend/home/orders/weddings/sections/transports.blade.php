@@ -50,12 +50,12 @@
                             <td class="pd-2-8 text-right">
                                 <div class="table-action">
                                     <a href="#" data-toggle="modal" data-target="#update-order-wedding-transport-{{ $wp_transport->id }}">
-                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Transport')"><i class="icon-copy fa fa-pencil"></i></button>
+                                        <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Transport')"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                     </a>
                                     <form action="/fremove-order-wedding-transport/{{ $wp_transport->id }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                        <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                     </form>
                                 </div>
                             </td>
@@ -134,7 +134,7 @@
                                 @if ($wp_transport->id == $transport_inv->transport_id)
                                     <tr>
                                         <td class="pd-2-8">
-                                            {{ dateTimeFormat($transport_inv->date)) }}
+                                            {{ dateTimeFormat($transport_inv->date) }}
                                         </td>
                                         <td class="pd-2-8">
                                             @lang('messages.Airport Shuttle')<br>
@@ -156,12 +156,12 @@
                                         <td class="pd-2-8 text-right">
                                             <div class="table-action">
                                                 <a href="#" data-toggle="modal" data-target="#update-order-wedding-transport-{{ $transport_inv->id }}">
-                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Transport')"><i class="icon-copy fa fa-pencil"></i></button>
+                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="@lang('messages.Edit Transport')"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                                 </a>
                                                 <form action="/fremove-order-wedding-transport/{{ $transport_inv->id }}" method="post" enctype="multipart/form-data">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                 </form>
                                             </div>
                                         </td>
@@ -264,7 +264,7 @@
                                                         </div>
                                                     </form>
                                                     <div class="card-box-footer">
-                                                        <button type="submit" form="updateOrderWeddingTransport-{{ $transport_inv->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Update')</button>
+                                                        <button type="submit" form="updateOrderWeddingTransport-{{ $transport_inv->id }}" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Update')</button>
                                                         <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Cancel')</button>
                                                     </div>
                                                 </div>
@@ -310,7 +310,7 @@
                                     {{ ++$wp_tr_no }}
                                 </td>
                                 <td class="pd-2-8">
-                                    {{ dateTimeFormat($transport->date)) }}
+                                    {{ dateTimeFormat($transport->date) }}
                                 </td>
                                 <td class="pd-2-8">
                                     {{ $transport->type }}

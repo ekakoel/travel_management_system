@@ -19,6 +19,17 @@ Tracker ringkas standardisasi UI backend/internal.
 - [x] Shared form style tersedia.
 - [x] Rich text textarea shared tersedia.
 - [x] Guardrail rich text backend tersedia melalui initializer `initBackendRichText`.
+- [x] Canonical backend date picker `data-backend-picker="date"` tersedia dengan request format `Y-m-d`.
+- [x] Required marker backend otomatis mengikuti atribut HTML `required`
+  melalui `initBackendRequiredMarkers` dan token `--backend-required`.
+- [x] Monetary input backend memakai unit IDR/USD/% yang eksplisit melalui
+  shared `initBackendMoneyInputs`, termasuk markup Tour yang dinamis.
+- [x] Mutation form backend memakai shared `initBackendSubmitGuards`, spinner
+  inline sejak fase click, associated-button lock, double-submit prevention,
+  validation/cancel reset, history reset, serta hook reusable action non-form.
+- [x] Canonical backend modal memakai satu `<x-backend.modal-close>` di header
+  dan shared Bootstrap 4/5 compatibility adapter `showBackendModal` /
+  `closeBackendModal`; informational modal tidak menduplikasi Close di footer.
 - [x] Backend Legacy UI Deep Cleanup dimulai.
 
 ## Domain Status
@@ -31,6 +42,26 @@ Tracker ringkas standardisasi UI backend/internal.
 - [x] Operations Transports memakai namespace/backend UI modern, Form Request, service, dan view model.
 - [x] Drivers dan Guides memakai shared backend components.
 - [x] Orders Admin dan Reservations memiliki cleanup awal.
+- [x] Reservation Active work queue memiliki read-only operational calendar
+  dengan month/week/list view, localized event summary, mobile list fallback,
+  serta in-memory filter tanpa query tambahan.
+- [x] Reservation detail memakai shared hero, breadcrumb, KPI,
+  `x-backend.detail-layout`, operational context sidebar, quick action,
+  localized section navigation, canonical modal close runtime, serta projection
+  service terikat reservation tanpa full-table Orders/Users lookup.
+- [x] Reservation detail runtime dipindahkan dari Blade legacy 2.800+ baris ke
+  namespace `backend.operations.reservations.detail` dengan partial overview,
+  manifest, linked service order, trip notes, dan context; order Deleted tidak
+  diproyeksikan, detail order memakai route canonical, invoice creation
+  idempotent/server-authoritative, serta tidak ada JSON pricing logic di Blade.
+- [x] Invoice detail memakai shared hero, breadcrumb, KPI, panel,
+  `x-backend.detail-layout`, context sidebar, canonical modal/form/button,
+  localized EN/zh-CN/zh, projection service tanpa query/perhitungan di Blade,
+  historical Tour pricing snapshot, serta mutation service transactional.
+- [x] Invoice index memakai finance work queue terikat active billing window,
+  shared hero/KPI/filter/table/card/status/action, projection service dengan
+  constrained eager loading, shared payment-state resolver, dan tanpa modal
+  invoice duplikatif atau query/perhitungan di Blade.
 - [x] Transport Management/SPK memakai shared backend components pada index/detail aktif.
 
 ## Current Focus

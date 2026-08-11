@@ -31,7 +31,7 @@ class Guests extends Model
         'age',
     ];
     public function reservation(){
-        return $this->belongsToMany(Reservation::class,'rsv_id');
+        return $this->belongsTo(Reservation::class, 'rsv_id');
     }
     public function order(){
         return $this->belongsTo(Orders::class,'order_id');

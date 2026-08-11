@@ -47,7 +47,7 @@
                                     <td class="text-right">
                                         <div class="table-action">
                                             <a href="#" data-toggle="modal" data-target="#detail-price-{{ $price->id }}">
-                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="dw dw-eye"></i></button>
+                                                <button class="btn-view" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></button>
                                             </a>
                                             @canany(['posDev','posAuthor'])
                                                 <a href="#" data-toggle="modal" data-target="#edit-price-{{ $price->id }}">
@@ -56,7 +56,7 @@
                                                 <form action="{{ route('func.villa-price.delete',$price->id) }}" method="post">
                                                     @csrf
                                                     @method('delete')
-                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                 </form>
                                             @endcanany
                                         </div>
@@ -67,7 +67,7 @@
                                             <div class="modal-content">
                                                 <div class="card-box">
                                                     <div class="card-box-title">
-                                                        <div class="title"><i class="dw dw-eye"></i> Price</div>
+                                                        <div class="title"><i class="fas fa-eye"></i> Price</div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-12">
@@ -207,7 +207,7 @@
                                                 <div class="modal-content">
                                                     <div class="card-box">
                                                         <div class="card-box-title">
-                                                            <div class="title"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Price Edit</div>
+                                                            <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Price Edit</div>
                                                         </div>
                                                         <form id="updateVillaPrice-{{ $price->id }}" action="{{ route('func.villa-price.update',$price->id) }}" method="post" enctype="multipart/form-data">
                                                             @method('put')
@@ -317,7 +317,7 @@
                                                             </div>
                                                         </form>
                                                         <div class="card-box-footer">
-                                                            <button type="submit" form="updateVillaPrice-{{ $price->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                                                            <button type="submit" form="updateVillaPrice-{{ $price->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                                                             <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                                                         </div>
                                                     </div>

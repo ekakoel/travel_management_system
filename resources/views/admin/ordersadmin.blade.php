@@ -269,11 +269,12 @@
                                                         <td>
                                                             <strong>{{ $agent?->name ?? '-' }}</strong>
                                                             <small>{{ $order->created_at ? dateFormat($order->created_at) : '-' }}</small>
+                                                            <span class="backend-status-badge backend-status-badge--{{ $statusClass($order->status) }} orders-admin-status orders-admin-status--{{ $statusClass($order->status) }}">{{ $order->status ?? '-' }}</span>
                                                         </td>
                                                         <td>
                                                             <strong>{{ $order->orderno ?? '-' }}</strong>
+                                                            <small>{{ $order->servicename }}</small>
                                                             <small>{{ $order->service }}{{ $order->subservice ? ' / ' . $order->subservice : '' }}</small>
-                                                            <span class="backend-status-badge backend-status-badge--{{ $statusClass($order->status) }} orders-admin-status orders-admin-status--{{ $statusClass($order->status) }}">{{ $order->status ?? '-' }}</span>
                                                         </td>
                                                         <td>{{ $formatDateRange($order) }}</td>
                                                         <td>{{ $formatGuests($order) }}</td>
@@ -286,7 +287,7 @@
                                                         </td>
                                                         <td class="text-right">
                                                             <div class="backend-table-actions">
-                                                                <a class="backend-icon-action" href="{{ url('/orders-admin-' . $order->id) }}" aria-label="{{ __('admin-orders.actions.detail') }}">
+                                                                <a class="backend-icon-action" href="{{ route('admin.order.show', $order->id) }}" aria-label="{{ __('admin-orders.actions.detail') }}">
                                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                                 </a>
                                                             </div>
@@ -318,7 +319,7 @@
                                                     <div><dt>@lang('admin-orders.table.price')</dt><dd>{{ $order->request_quotation === 'Yes' ? __('admin-orders.table.quote') : $formatMoney($order->final_price) }}</dd></div>
                                                 </dl>
                                                 <div class="backend-table-actions">
-                                                    <a class="backend-button backend-button-secondary" href="{{ url('/orders-admin-' . $order->id) }}">
+                                                    <a class="backend-button backend-button-secondary" href="{{ route('admin.order.show', $order->id) }}">
                                                         <i class="fa fa-eye" aria-hidden="true"></i>
                                                         @lang('admin-orders.actions.detail')
                                                     </a>

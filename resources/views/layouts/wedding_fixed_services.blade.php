@@ -79,7 +79,7 @@
                 <div class="card-box-footer">
                     <a href="#" data-toggle="modal" data-target="#add-wedding-fixed_service">
                         @if ($weddings->fixed_services_id != 'null')
-                            <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit</button>
+                            <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit</button>
                         @else
                             <button type="button" class="btn btn-primary"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add</button>
                         @endif

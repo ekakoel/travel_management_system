@@ -5,7 +5,7 @@
         @if ($wedding_planner->status == "Draft")
             <span>
                 <a href="#" data-toggle="modal" data-target="#update-wedding-detail-{{ $wedding_planner->id }}"> 
-                    <i class="icon-copy  fa fa-pencil" data-toggle="tooltip" data-placement="top" title="@lang('messages.Update wedding detail')" aria-hidden="true"></i>
+                    <i class="icon-copy  fa fa-pencil-alt" data-toggle="tooltip" data-placement="top" title="@lang('messages.Update wedding detail')" aria-hidden="true"></i>
                 </a>
             </span>
             
@@ -92,7 +92,7 @@
             <div class="modal-content text-left">
                 <div class="card-box">
                     <div class="card-box-title">
-                        <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> @lang('messages.Update Wedding Detail')</div>
+                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> @lang('messages.Update Wedding Detail')</div>
                     </div>
                     <form id="updateWeddingDetail" action="/fupdate-wedding-planner-wedding/{{ $wedding_planner->id }}" method="post" enctype="multipart/form-data">
                         @csrf
@@ -146,7 +146,7 @@
                         <input type="hidden" name="hotel_id" value="{{ $hotel->id }}">
                     </form>
                     <div class="card-box-footer">
-                        <button type="submit" form="updateWeddingDetail" class="btn btn-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                        <button type="submit" form="updateWeddingDetail" class="btn btn-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                     </div>
                 </div>

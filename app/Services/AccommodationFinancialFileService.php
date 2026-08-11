@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\InvoiceAdmin;
 use App\Models\Orders;
 use App\Models\PaymentConfirmation;
+use App\Support\Pdf\InvoiceLocale;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -50,7 +51,7 @@ class AccommodationFinancialFileService
     public function invoiceFilename(Orders $order, InvoiceAdmin $invoice, string $locale): string
     {
         $invoiceNumber = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $invoice->inv_no) ?: 'invoice';
-        $locale = $locale === 'zh' ? 'zh' : 'en';
+        $locale = InvoiceLocale::assertSupported($locale);
 
         return "invoice-{$invoiceNumber}-{$order->id}_{$locale}.pdf";
     }
@@ -109,7 +110,7 @@ class AccommodationFinancialFileService
 
     public function resolveInvoiceFile(Orders $order, InvoiceAdmin $invoice, string $locale): ?array
     {
-        $locale = $locale === 'zh' ? 'zh' : 'en';
+        $locale = InvoiceLocale::assertSupported($locale);
         $privatePath = $this->privateInvoicePath($order, $invoice, $locale);
 
         return $this->resolvePrivateFile(

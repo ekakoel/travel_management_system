@@ -788,9 +788,6 @@ p {
     right: 10px
 }
 
-.dropdown.show>.dropdown-toggle::after {
-    content: "\f106"
-}
 
 .dropdown-toggle.no-arrow:after {
     display: none
@@ -1611,7 +1608,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
 
 .header {
     position: fixed;
-    height: 70px;
+    height: 72px;
     width: calc(100% - 280px);
     background: #fff;
     right: 0;
@@ -1718,7 +1715,8 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
     -ms-flex-pack: end;
     justify-content: flex-end;
     height: 70px;
-    width: 50%
+    width: 50%;
+    align-self: center;
 }
 
 .header-left .brand-logo {
@@ -1749,8 +1747,8 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
 }
 
 .user-info-dropdown .dropdown-toggle .user-icon {
-    width: 52px;
-    height: 52px;
+    width: 35px !important;
+    height: 35px !important;
     font-size: 24px;
     background: #ebeff3;
     color: #00000087;
@@ -1793,7 +1791,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
     min-width: 185px
 }
 
-.dropdown-menu-icon-list .dropdown-item {
+/* .dropdown-menu-icon-list .dropdown-item {
     position: relative;
     padding-left: 45px
 }
@@ -1805,7 +1803,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
     font-size: 18px;
     -webkit-transform: translate(0, -50%);
     transform: translate(0, -50%)
-}
+} */
 
 .user-notification {
     float: right;
@@ -2063,10 +2061,10 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
     font-size: 18px
 }
 
-.sidebar-menu.icon-style-2 .dropdown-toggle:after {
+/* .sidebar-menu.icon-style-2 .dropdown-toggle:after {
     content: "\f217";
     font-family: Ionicons
-}
+} */
 
 .sidebar-menu.icon-style-2 .dropdown.show .dropdown-toggle:after {
     content: "\f208"

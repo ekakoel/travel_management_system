@@ -11,7 +11,7 @@
                 <div class="min-height-200px">
                     <x-backend.page-hero>
                         <x-slot name="heading">
-                            <i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Wedding Package
+                            <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Wedding Package
                         </x-slot>
                     </x-backend.page-hero>
                     <div class="product-wrap">

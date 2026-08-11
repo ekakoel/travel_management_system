@@ -35,6 +35,11 @@
             'occasion' => !empty($special_days[$index]) ? trim(dateFormat($special_dates[$index] ?? null) . ' ' . $special_days[$index]) : null,
         ];
     });
+    $includeContent = trim((string) (data_get($order, $langInclude) ?: $order->include ?: data_get($order, $langInclude) ?: $order->include));
+    $benefitsContent = trim((string) (data_get($order, $langBenefits) ?: $order->include ?: data_get($order, $langBenefits) ?: $order->benefits));
+    $excludeContent = trim((string) (data_get($order, $langExclude) ?: $order->exclude ?: data_get($order, $langExclude) ?: $order->exclude));
+    $additionalInfoContent = trim((string) ($order->additional_info ?: data_get($order, $langAdditionalInfo) ?: $order->additional_info));
+    $cancellationPolicyContent = trim((string) (data_get($order, $langCancellationPolicy) ?: $order->cancellation_policy));
 @endphp
 
 @section('content')
@@ -154,15 +159,16 @@
                                 </div>
 
                                 @foreach ([
-                                    'benefits' => 'messages.Benefit',
-                                    'include' => 'messages.Include',
-                                    'additional_info' => 'messages.Additional Information',
-                                    'cancellation_policy' => 'messages.Cancelation Policy',
-                                ] as $key => $label)
-                                    @if (!empty($order->$key))
+                                    'include' => [$includeContent, __('messages.Include')],
+                                    'benefits' => [$benefitsContent, __('messages.Benefits')],
+                                    'exclude' => [$excludeContent, __('messages.Exclude')],
+                                    'additional_info' => [$additionalInfoContent, __('messages.Additional Information')],
+                                    'cancellation_policy' => [$cancellationPolicyContent, __('messages.Cancellation Policy')],
+                                ] as $section)
+                                    @if ($section[0] !== '')
                                         <div class="order-detail-note mt-3">
-                                            <strong>@lang($label)</strong>
-                                            <div class="order-detail-rich mt-2">{!! $order->$key !!}</div>
+                                            <strong>{{ $section[1] }}</strong>
+                                            <div class="order-detail-rich mt-2">{!! $section[0] !!}</div>
                                         </div>
                                     @endif
                                 @endforeach

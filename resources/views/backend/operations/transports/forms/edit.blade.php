@@ -32,7 +32,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('transports-admin.index') }}">Transportation</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.transports.index') }}">Transportation</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.transports.show', $transport->id) }}">{{ $transport->name }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Edit</li>
                         </ol>

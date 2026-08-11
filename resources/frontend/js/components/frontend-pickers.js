@@ -124,15 +124,17 @@
             return null;
         }
 
-        const tomorrow = tomorrowStart();
+        const minimumFloor = getBooleanConfig(input, 'uiPickerAllowToday', 'allowToday')
+            ? moment()().startOf('day')
+            : tomorrowStart();
         const minSource = getConfigValue(input, 'uiPickerMin', 'minDate', input.getAttribute('min'));
         const configuredMin = parseMoment(minSource, format);
 
-        if (configuredMin && configuredMin.isAfter(tomorrow)) {
+        if (configuredMin && configuredMin.isSameOrAfter(minimumFloor)) {
             return configuredMin;
         }
 
-        return tomorrow;
+        return minimumFloor;
     };
 
     const setNativePickerState = (input, mode) => {
@@ -224,6 +226,20 @@
     const isInsideFloatingLayer = (input) => (
         input.closest('.modal, .frontend-order-modal, [data-transport-reservation-modal], [data-tour-order-modal], [data-activity-order-modal]')
     );
+
+    const resolvePanelZIndex = (input) => {
+        const floatingLayer = isInsideFloatingLayer(input);
+
+        if (!floatingLayer) {
+            return 2000;
+        }
+
+        const layerZIndex = Number.parseInt(window.getComputedStyle(floatingLayer).zIndex, 10);
+
+        return Number.isFinite(layerZIndex)
+            ? Math.max(layerZIndex + 10, 3000)
+            : 3000;
+    };
 
     const resolveDrops = (input, picker, configuredDrops) => {
         if (configuredDrops && configuredDrops !== 'auto') {
@@ -343,7 +359,10 @@
 
             if (picker) {
                 picker.container.addClass(`ui-picker-panel ui-picker-panel--${mode}`);
-                picker.container.css('z-index', isInsideFloatingLayer(input) ? '3000' : '2000');
+                picker.container[0]?.style.setProperty(
+                    '--ui-picker-panel-z-index',
+                    String(resolvePanelZIndex(input)),
+                );
                 picker.drops = resolveDrops(input, picker, configuredDrops);
                 picker.container
                     .toggleClass('drop-up', picker.drops === 'up')
@@ -354,6 +373,10 @@
                 }
             }
         });
+
+        if (!input.value && getBooleanConfig(input, 'uiPickerPrefill', 'prefill')) {
+            syncValue($(input).data('daterangepicker'));
+        }
 
         input._frontendPickerSetDate = (value) => {
             const nextDate = parseMoment(value, format);

@@ -8,7 +8,7 @@
             <div class="min-height-200px">
                 <x-backend.page-hero>
                     <x-slot name="heading">
-                        <i class="icon-copy fa fa-pencil"></i>  Edit Rooms Order
+                        <i class="icon-copy fa fa-pencil-alt"></i>  Edit Rooms Order
                     </x-slot>
                 </x-backend.page-hero>
                 <div class="row">

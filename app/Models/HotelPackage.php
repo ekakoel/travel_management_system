@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Hotels;
 use App\Models\HotelRoom;
 use App\Services\Hotels\HotelPricingService;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +32,9 @@ class HotelPackage extends Model
         'additional_info',
         'additional_info_traditional',
         'additional_info_simplified',
+        'cancellation_policy',
+        'cancellation_policy_traditional',
+        'cancellation_policy_simplified',
         'author',
         'status',
     ];
@@ -51,6 +55,13 @@ class HotelPackage extends Model
     {
         return $query->where('stay_period_start', '<=', $checkin)
                     ->where('stay_period_end', '>=', $checkin);
+    }
+
+    public function scopeNotExpired($query, CarbonInterface|string $date)
+    {
+        $today = $date instanceof CarbonInterface ? $date->toDateString() : $date;
+
+        return $query->whereDate('stay_period_end', '>=', $today);
     }
     public function scopeForDuration($query, $duration)
     {

@@ -78,6 +78,11 @@ use App\Services\AccommodationReservationService;
 use App\Services\ActivityReservationService;
 use App\Services\TransportAvailabilityService;
 use App\Services\TourReservationService;
+use App\Services\OrderConfirmationEmailDataService;
+use App\Services\Orders\OrderPaymentDeadlineService;
+use App\Services\Pricing\OrderPricingSnapshotReader;
+use App\Support\Pricing\FixedScale;
+use App\Support\Pdf\InvoiceLocale;
 
 
 class OrdersAdminController extends Controller
@@ -182,11 +187,27 @@ class OrdersAdminController extends Controller
 
     private function buildStandardInvoicePdfPayload(Orders $order, InvoiceAdmin $invoice): array
     {
+        $isTourPackage = $order->service === Orders::PUBLIC_TOUR_SERVICE;
+        $tourPricing = $isTourPackage
+            ? app(OrderPricingSnapshotReader::class)->historicalValues($order, $invoice)
+            : null;
         $agent = User::where('id', $order->sales_agent)->first();
+        if ($isTourPackage) {
+            return [
+                'order' => $order,
+                'invoice' => $invoice,
+                'tourPricing' => $tourPricing,
+                'agent' => $agent,
+                'business' => BusinessProfile::find(1),
+                'bankAccount' => BankAccount::find($invoice->bank_id),
+                'pickup_people' => Guests::find($order->pickup_name),
+            ];
+        }
+
         $hotels = Hotels::all();
         $villa = Villas::find($order->service_id);
-        $usdrates = UsdRates::where('name', 'USD')->first();
-        $tax = Tax::where('id', 1)->first();
+        $usdrates = $isTourPackage ? null : UsdRates::where('name', 'USD')->first();
+        $tax = $isTourPackage ? null : Tax::where('id', 1)->first();
         $business = BusinessProfile::where('id', 1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type', 'Meals')->get();
@@ -197,8 +218,8 @@ class OrdersAdminController extends Controller
         $bankAccount = BankAccount::where('id', $invoice->bank_id ?: 1)->first();
         $pdsc = json_decode($order->promotion_disc);
 
-        if ($order->service == 'Tour Package') {
-            $amount = $order->price_total;
+        if ($isTourPackage) {
+            $amount = $tourPricing['gross_total_usd'];
             if ($order->duration == '1D') {
                 $order_duration = 1;
             } elseif ($order->duration == '2D/1N') {
@@ -282,25 +303,33 @@ class OrdersAdminController extends Controller
             'departure_flight' => $order->departure_flight,
             'departure_time' => $order->departure_time,
             'airport_shuttles' => $airport_shuttles,
+            'tourPricing' => $tourPricing,
         ];
     }
 
     private function saveStandardInvoicePdfDocuments(Orders $order, InvoiceAdmin $invoice): void
     {
         $data = $this->buildStandardInvoicePdfPayload($order, $invoice);
-        [$englishView, $chineseView] = $order->service === 'Tour Package'
-            ? ['emails.invoiceTourEn', 'emails.invoiceTourZh']
-            : ['emails.orderContractEn', 'emails.orderContractZh'];
+        $views = $order->service === Orders::PUBLIC_TOUR_SERVICE
+            ? [
+                InvoiceLocale::ENGLISH => 'emails.invoiceTourEn',
+                InvoiceLocale::SIMPLIFIED_CHINESE => 'emails.invoiceTourZh',
+                InvoiceLocale::TRADITIONAL_CHINESE => 'emails.invoiceTourZh',
+            ]
+            : [
+                InvoiceLocale::ENGLISH => 'emails.orderContractEn',
+                InvoiceLocale::TRADITIONAL_CHINESE => 'emails.orderContractZh',
+            ];
 
         if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
             $files = app(AccommodationFinancialFileService::class);
 
-            foreach (['en' => $englishView, 'zh' => $chineseView] as $locale => $view) {
+            foreach ($views as $locale => $view) {
                 $path = $files->privateInvoicePath($order, $invoice, $locale);
                 $absolutePath = Storage::disk(AccommodationFinancialFileService::DISK)->path($path);
 
                 File::ensureDirectoryExists(dirname($absolutePath));
-                PDF::loadView($view, $data)->save($absolutePath);
+                PDF::loadView($view, array_merge($data, ['invoiceLocale' => $locale]))->save($absolutePath);
             }
 
             return;
@@ -308,20 +337,20 @@ class OrdersAdminController extends Controller
 
         $basePath = "storage/document/invoice-{$invoice->inv_no}-{$order->id}";
 
-        foreach (['en' => $englishView, 'zh' => $chineseView] as $locale => $view) {
+        foreach ($views as $locale => $view) {
             $path = $basePath . "_{$locale}.pdf";
 
             if (File::exists($path)) {
                 File::delete($path);
             }
 
-            PDF::loadView($view, $data)->save($path);
+            PDF::loadView($view, array_merge($data, ['invoiceLocale' => $locale]))->save($path);
         }
     }
 
     private function canRegenerateStandardInvoice(?Orders $order, ?InvoiceAdmin $invoice): bool
     {
-        return $order && $invoice && $order->status === 'Approved';
+        return $order && $invoice && in_array($order->status, ['Approved', 'Paid'], true);
     }
     
     public function index()
@@ -507,6 +536,7 @@ class OrdersAdminController extends Controller
     {
         $guestColumns = ['id', 'rsv_id', 'name', 'name_mandarin', 'sex', 'age', 'phone'];
         $relations = [
+            'activePricingSnapshot',
             'optional_rate_orders',
             'reservations.invoice.payment.kurs',
             'reservations.invoice.currency',
@@ -614,6 +644,39 @@ class OrdersAdminController extends Controller
             'total_payment_cny' => $validReceipts->filter(fn ($receipt) => $receipt->kurs?->name === 'CNY')->sum('amount'),
             'total_payment_twd' => $validReceipts->filter(fn ($receipt) => $receipt->kurs?->name === 'TWD')->sum('amount'),
             'total_payment_idr' => $validReceipts->filter(fn ($receipt) => $receipt->kurs?->name === 'IDR')->sum('amount'),
+        ];
+    }
+
+    private function agentCommunicationSummary(Orders $order): array
+    {
+        $rawMessage = trim((string) $order->msg);
+        $legacyPayload = null;
+        if ($rawMessage !== '') {
+            $decoded = json_decode($rawMessage, true);
+            $legacyPayload = json_last_error() === JSON_ERROR_NONE && is_array($decoded)
+                ? $decoded
+                : null;
+        }
+
+        $statusReason = null;
+        if (in_array($order->status, ['Canceled', 'Rejected', 'Invalid'], true)
+            && $rawMessage !== ''
+            && $legacyPayload === null) {
+            $statusReason = strip_tags($rawMessage);
+        }
+
+        $context = collect([
+            ['label' => 'Order remark', 'value' => trim((string) $order->note)],
+            ['label' => 'Guest notes', 'value' => trim((string) data_get($legacyPayload, 'guest_notes'))],
+            ['label' => 'Special request', 'value' => trim((string) data_get($legacyPayload, 'special_request'))],
+        ])->filter(fn ($item) => $item['value'] !== '')
+            ->unique(fn ($item) => mb_strtolower($item['label'].'|'.$item['value']))
+            ->values();
+
+        return [
+            'status_reason' => $statusReason,
+            'status' => $statusReason ? $order->status : null,
+            'context' => $context,
         ];
     }
 
@@ -763,8 +826,12 @@ class OrdersAdminController extends Controller
 
         $guests = $this->guestsForOrder($order, $reservation);
         $invoice = $reservation->invoice ?: InvoiceAdmin::with(['payment.kurs', 'currency', 'bank'])->where('rsv_id', $reservation->id)->first();
+        $tourPricing = $order->service === Orders::PUBLIC_TOUR_SERVICE
+            ? app(OrderPricingSnapshotReader::class)->historicalValues($order, $invoice)
+            : null;
         $paymentSummary = $this->paymentSummary($invoice);
         $receipts = $paymentSummary['receipts'];
+        $agentCommunication = $this->agentCommunicationSummary($order);
 
         $optional_rate_orders = $order->optional_rate_orders;
         $optional_rate_order_total_price = (float) $optional_rate_orders->sum('price_total');
@@ -773,6 +840,13 @@ class OrdersAdminController extends Controller
         $extraBedSummary = $this->buildExtraBedSummary($order->extra_bed_price, $order->duration);
         $hotelValidation = $this->hotelValidationData($order);
         $hotel = $hotelValidation['hotel'] ?: Hotels::find($order->service_id);
+        $isTourPackageOrder = $order->service === Orders::PUBLIC_TOUR_SERVICE;
+        $confirmationWasSent = $isTourPackageOrder
+            ? $this->tourPackageConfirmationWasSent($order)
+            : (string) $reservation->send === 'yes';
+        $tourOrder = $isTourPackageOrder
+            ? Tours::with('type')->find($order->service_id)
+            : null;
         $villa = Villas::find($order->service_id);
         $transports = Transports::select('id', 'brand', 'name')->get();
         $weddingData = $this->weddingDetailData($order, $hotel, $transports);
@@ -789,10 +863,16 @@ class OrdersAdminController extends Controller
             'handled_by' => User::find($handled_by)?->name ?? '-',
             'confirmation' => $order->confirmation_order ?: 'Not set',
             'payment_status' => !$invoice ? __('admin-orders.detail.payment_not_generated') : ($invoiceBalance <= 1 ? __('admin-orders.detail.payment_paid') : __('admin-orders.detail.payment_due')),
-            'total_price' => currencyFormatUsd($order->final_price ?: 0),
+            'total_price' => currencyFormatUsd($tourPricing['total_usd'] ?? ($order->final_price ?: 0)),
         ];
 
         $orderDetailRecommendations = collect([
+            $isTourPackageOrder && in_array($order->status, ['Draft', 'Pending'], true) ? [
+                'tone' => 'warning',
+                'label' => 'Validate and confirm Tour order',
+                'description' => 'Review travel date, route, guest manifest, supplier reference, and the committed pricing snapshot before approval.',
+                'href' => '#workflow',
+            ] : null,
             !$order->confirmation_order ? [
                 'tone' => 'warning',
                 'label' => __('admin-orders.detail.recommendations.confirmation'),
@@ -811,7 +891,7 @@ class OrdersAdminController extends Controller
                 'description' => __('admin-orders.detail.recommendations.guests_help'),
                 'href' => '#guests',
             ] : null,
-            !$invoice ? [
+            !$invoice && (!$isTourPackageOrder || $order->status === 'Approved') ? [
                 'tone' => 'info',
                 'label' => __('admin-orders.detail.recommendations.invoice'),
                 'description' => __('admin-orders.detail.recommendations.invoice_help'),
@@ -831,7 +911,7 @@ class OrdersAdminController extends Controller
             'orderDetailRecommendations' => $orderDetailRecommendations,
             'orderDetailQuickLinks' => [
                 ['href' => '#order-snapshot', 'label' => __('admin-orders.detail.quick_links.snapshot')],
-                ['href' => '#hotel-validation', 'label' => 'Hotel Validation'],
+                ['href' => $isTourPackageOrder ? '#tour-details' : '#hotel-validation', 'label' => $isTourPackageOrder ? 'Tour Details' : 'Hotel Validation'],
                 ['href' => '#guests', 'label' => __('admin-orders.detail.quick_links.guests')],
                 ['href' => '#billing', 'label' => __('admin-orders.detail.quick_links.billing')],
                 ['href' => '#workflow', 'label' => __('admin-orders.detail.quick_links.workflow')],
@@ -839,7 +919,11 @@ class OrdersAdminController extends Controller
             'reservation' => $reservation,
             'guests' => $guests,
             'invoice' => $invoice,
+            'tourPricing' => $tourPricing,
+            'tourOrder' => $tourOrder,
             'receipts' => $receipts,
+            'agentCommunication' => $agentCommunication,
+            'confirmationWasSent' => $confirmationWasSent,
             'banks' => BankAccount::select('id', 'bank', 'currency')->get(),
             'rates' => UsdRates::select('id', 'name', 'rate')->get(),
             'admins' => User::select('id', 'name')->get(),
@@ -864,7 +948,7 @@ class OrdersAdminController extends Controller
             'now' => $now,
             'hotel' => $hotel,
             'villa' => $villa,
-            'tax' => Tax::find(1),
+            'tax' => $tourPricing ? null : Tax::find(1),
             'business' => BusinessProfile::find(1),
             'users' => User::select('id', 'name')->get(),
             'guides' => Guide::select('id', 'name')->get(),
@@ -3225,17 +3309,38 @@ class OrdersAdminController extends Controller
     }
     // Function Activated =============================================================================================================>
     public function func_activate_order(Request $request,$id){
-        $order=Orders::where('id',$id)->first();
+        $order = Orders::findOrFail($id);
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            return $this->activateTourPackageOrder($request, $order);
+        }
+        $isTourPackage = $order->service === Orders::PUBLIC_TOUR_SERVICE;
+        $tourSnapshotInvoice = null;
+        $selectedInvoiceCurrency = null;
+
+        if ($isTourPackage) {
+            abort_unless(in_array($order->status, ['Draft', 'Pending'], true), 409);
+            $validatedTourApproval = $request->validate([
+                'bank' => ['required', 'integer', 'exists:bank_accounts,id'],
+                'currency' => ['required', 'integer', 'exists:usd_rates,id'],
+            ]);
+            $selectedInvoiceCurrency = UsdRates::findOrFail($validatedTourApproval['currency']);
+            if (!in_array($selectedInvoiceCurrency->name, ['USD', 'IDR'], true)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'currency' => 'Tour Package snapshot invoices support USD or IDR only.',
+                ]);
+            }
+            $tourSnapshotInvoice = app(OrderPricingSnapshotReader::class)->invoiceValues($order);
+        }
         $agent = User::where('id', $order->sales_agent)->first();
         $hotels=Hotels::all();
         $hotel=Hotels::find($order->service_id)??null;
         $villa=Villas::find($order->service_id)??null;
         $user_id = Auth::User()->id;
-        $usdrates = UsdRates::where('name','USD')->first();
-        $cnyrates = UsdRates::where('name','CNY')->first();
-        $twdrates = UsdRates::where('name','TWD')->first();
-        $idrrates = UsdRates::where('name','IDR')->first();
-        $tax = Tax::where('id',1)->first();
+        $usdrates = $isTourPackage ? null : UsdRates::where('name','USD')->first();
+        $cnyrates = $isTourPackage ? null : UsdRates::where('name','CNY')->first();
+        $twdrates = $isTourPackage ? null : UsdRates::where('name','TWD')->first();
+        $idrrates = $isTourPackage ? null : UsdRates::where('name','IDR')->first();
+        $tax = $isTourPackage ? null : Tax::where('id',1)->first();
         $business = BusinessProfile::where('id',1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
@@ -3249,6 +3354,10 @@ class OrdersAdminController extends Controller
         if (!$reservation && $order->service === Orders::PUBLIC_ACTIVITY_SERVICE) {
             $reservation = app(ActivityReservationService::class)->ensurePendingReservationForOrder($order);
         }
+        if (!$reservation && $isTourPackage) {
+            $reservation = app(TourReservationService::class)->ensurePendingReservationForOrder($order);
+        }
+        abort_unless($reservation, 409, 'A reservation is required before this order can be approved.');
         $orderno = $order->orderno;
         if ($order->service == "Wedding Package") {
             $status = "Active";
@@ -3389,16 +3498,18 @@ class OrdersAdminController extends Controller
         // INVOICE
         $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
         $inv_no = "INV-".$reservation->rsv_no;
-        $due_date = date('Y-m-d', strtotime("-7 days", strtotime($order->checkin)));
-        $final_price = $order->final_price;
-        $total_idr = $final_price * $usdrates->rate;
-        $total_cny = ceil($total_idr / $cnyrates->rate);
-        $total_twd = ceil($total_idr / $twdrates->rate);
-        $rate_usd = $usdrates->rate;
-        $rate_cny = $cnyrates->rate;
-        $rate_twd = $twdrates->rate;
+        $due_date = app(OrderPaymentDeadlineService::class)->deadlineFrom($now);
         $currency_id = $request->currency;
-        if ($currency_id == 1) {
+        $snapshotInvoice = $tourSnapshotInvoice;
+
+        $final_price = $snapshotInvoice['total_usd'] ?? $order->final_price;
+        $total_idr = $snapshotInvoice['total_idr'] ?? ($final_price * $usdrates->rate);
+        $total_cny = $snapshotInvoice ? 0 : ceil($total_idr / $cnyrates->rate);
+        $total_twd = $snapshotInvoice ? 0 : ceil($total_idr / $twdrates->rate);
+        $rate_usd = $snapshotInvoice['rate_usd'] ?? $usdrates->rate;
+        $rate_cny = $snapshotInvoice ? null : $cnyrates->rate;
+        $rate_twd = $snapshotInvoice ? null : $twdrates->rate;
+        if (($selectedInvoiceCurrency?->name ?? null) === 'USD' || (!$isTourPackage && $currency_id == 1)) {
             $balance = $final_price;
             $currency = "USD";
         }elseif($currency_id == 2){
@@ -3423,11 +3534,11 @@ class OrdersAdminController extends Controller
                 "total_cny"=>$total_cny,
                 "total_twd"=>$total_twd,
                 "rate_usd"=>$rate_usd,
-                "sell_usd"=>$usdrates->sell,
+                "sell_usd"=>$snapshotInvoice['sell_usd'] ?? $usdrates->sell,
                 "rate_twd"=>$rate_twd,
-                "sell_twd"=>$twdrates->sell,
+                "sell_twd"=>$snapshotInvoice ? null : $twdrates->sell,
                 "rate_cny"=>$rate_cny,
-                "sell_cny"=>$cnyrates->sell,
+                "sell_cny"=>$snapshotInvoice ? null : $cnyrates->sell,
                 "bank_id"=>$bank_id,
                 "currency_id"=>$currency_id,
                 "balance"=>$balance,
@@ -3445,11 +3556,11 @@ class OrdersAdminController extends Controller
                 "total_cny"=>$total_cny,
                 "total_twd"=>$total_twd,
                 "rate_usd"=>$rate_usd,
-                "sell_usd"=>$usdrates->sell,
+                "sell_usd"=>$snapshotInvoice['sell_usd'] ?? $usdrates->sell,
                 "rate_twd"=>$rate_twd,
-                "sell_twd"=>$twdrates->sell,
+                "sell_twd"=>$snapshotInvoice ? null : $twdrates->sell,
                 "rate_cny"=>$rate_cny,
-                "sell_cny"=>$cnyrates->sell,
+                "sell_cny"=>$snapshotInvoice ? null : $cnyrates->sell,
                 "bank_id"=>$bank_id,
                 "currency_id"=>$currency_id,
                 "balance"=>$balance,
@@ -3529,8 +3640,15 @@ class OrdersAdminController extends Controller
             'weddingFixedServices'=>$weddingFixedServices,
             'bride'=>$bride,
         ];
+        $data['confirmation'] = app(OrderConfirmationEmailDataService::class)->build(
+            $order,
+            $reservation,
+            $invoice,
+            $admin
+        );
+        $data['title'] = $data['confirmation']['subject'];
         
-        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+        if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
             $this->saveStandardInvoicePdfDocuments($order, $invoice);
             $fileService = app(AccommodationFinancialFileService::class);
             $contractEnFile = $fileService->resolveInvoiceFile($order, $invoice, 'en');
@@ -3598,15 +3716,35 @@ class OrdersAdminController extends Controller
             return redirect()->back()->with('success', 'Invoice PDF regenerated successfully.');
         }
 
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            $this->persistTourPackageInvoice($request, $order, false);
+
+            return redirect()->back()->with('success', 'Tour Package invoice generated successfully.');
+        }
+
+        $isTourPackage = $order->service === Orders::PUBLIC_TOUR_SERVICE;
+        $selectedInvoiceCurrency = null;
+        if ($isTourPackage) {
+            $validatedTourInvoice = $request->validate([
+                'bank' => ['required', 'integer', 'exists:bank_accounts,id'],
+                'currency' => ['required', 'integer', 'exists:usd_rates,id'],
+            ]);
+            $selectedInvoiceCurrency = UsdRates::findOrFail($validatedTourInvoice['currency']);
+            if (!in_array($selectedInvoiceCurrency->name, ['USD', 'IDR'], true)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'currency' => 'Tour Package snapshot invoices support USD or IDR only.',
+                ]);
+            }
+        }
         $agent = User::where('id', $order->sales_agent)->first();
         $hotels=Hotels::all();
         $villa=Villas::find($order->service_id);
         $user_id = Auth::User()->id;
-        $usdrates = UsdRates::where('name','USD')->first();
-        $cnyrates = UsdRates::where('name','CNY')->first();
-        $twdrates = UsdRates::where('name','TWD')->first();
-        $idrrates = UsdRates::where('name','IDR')->first();
-        $tax = Tax::where('id',1)->first();
+        $usdrates = $isTourPackage ? null : UsdRates::where('name','USD')->first();
+        $cnyrates = $isTourPackage ? null : UsdRates::where('name','CNY')->first();
+        $twdrates = $isTourPackage ? null : UsdRates::where('name','TWD')->first();
+        $idrrates = $isTourPackage ? null : UsdRates::where('name','IDR')->first();
+        $tax = $isTourPackage ? null : Tax::where('id',1)->first();
         $business = BusinessProfile::where('id',1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
@@ -3624,7 +3762,7 @@ class OrdersAdminController extends Controller
         }
         $order_log =new OrderLog([
             "order_id"=>$order->id,
-            "action"=>"Confirm Order",
+            "action"=>"Generate Invoice",
             "url"=>$request->getClientIp(),
             "method"=>"Confirm",
             "agent"=>$order->name,
@@ -3695,16 +3833,23 @@ class OrdersAdminController extends Controller
 
         // INVOICE
         $inv_no = "INV-".$reservation->rsv_no;
-        $due_date = Carbon::parse($now)->addHours(48);
-        $rate_usd = $usdrates->rate;
-        $rate_cny = $cnyrates->rate;
-        $rate_twd = $twdrates->rate;
-        $total_idr = ceil($order->final_price * $rate_usd);
-        $total_cny = ceil($total_idr / $rate_cny);
-        $total_twd = ceil($total_idr / $rate_twd);
+        $due_date = app(OrderPaymentDeadlineService::class)->deadlineFrom($now);
         $currency_id = $request->currency;
-        if ($currency_id == 1) {
-            $balance = $order->final_price;
+        $snapshotInvoice = null;
+
+        if ($isTourPackage) {
+            $snapshotInvoice = app(OrderPricingSnapshotReader::class)->invoiceValues($order);
+        }
+
+        $rate_usd = $snapshotInvoice['rate_usd'] ?? $usdrates->rate;
+        $rate_cny = $snapshotInvoice ? null : $cnyrates->rate;
+        $rate_twd = $snapshotInvoice ? null : $twdrates->rate;
+        $totalUsd = $snapshotInvoice['total_usd'] ?? $order->final_price;
+        $total_idr = $snapshotInvoice['total_idr'] ?? ceil($order->final_price * $rate_usd);
+        $total_cny = $snapshotInvoice ? 0 : ceil($total_idr / $rate_cny);
+        $total_twd = $snapshotInvoice ? 0 : ceil($total_idr / $rate_twd);
+        if (($selectedInvoiceCurrency?->name ?? null) === 'USD' || (!$isTourPackage && $currency_id == 1)) {
+            $balance = $totalUsd;
             $currency = "USD";
         }elseif($currency_id == 2){
             $balance = $total_cny;
@@ -3721,17 +3866,17 @@ class OrdersAdminController extends Controller
             "rsv_id"=>$reservation->id,
             "inv_date"=>$now,
             "due_date"=>$due_date,
-            "total_usd"=>$order->final_price,
+            "total_usd"=>$totalUsd,
             "total_idr"=>$total_idr,
             "total_cny"=>$total_cny,
             "total_twd"=>$total_twd,
             "bank_id"=>$bank,
             "rate_usd"=>$rate_usd,
-            "sell_usd"=>$usdrates->sell,
+            "sell_usd"=>$snapshotInvoice['sell_usd'] ?? $usdrates->sell,
             "rate_cny"=>$rate_cny,
-            "sell_cny"=>$cnyrates->sell,
+            "sell_cny"=>$snapshotInvoice ? null : $cnyrates->sell,
             "rate_twd"=>$rate_twd,
-            "sell_twd"=>$twdrates->sell,
+            "sell_twd"=>$snapshotInvoice ? null : $twdrates->sell,
             "currency_id"=>$currency_id,
             "created_by"=>$user_id,
             "agent_id"=>$order->sales_agent,
@@ -3768,13 +3913,14 @@ class OrdersAdminController extends Controller
 
     public function test_contrat(Request $request,$id){
         $order=Orders::findOrFail($id);
+        $isTourPackage = $order->service === Orders::PUBLIC_TOUR_SERVICE;
         $agent = User::where('id', $order->sales_agent)->first();
         $hotels=Hotels::all();
         $hotel=Hotels::find($order->service_id);
         $villa=Villas::find($order->service_id);
         $user_id = Auth::User()->id;
-        $usdrates = UsdRates::where('name','USD')->first();
-        $tax = Tax::where('id',1)->first();
+        $usdrates = $isTourPackage ? null : UsdRates::where('name','USD')->first();
+        $tax = $isTourPackage ? null : Tax::where('id',1)->first();
         $business = BusinessProfile::where('id',1)->first();
         $optionalrates = OptionalRate::with('hotels')->get();
         $optionalrate_meals = OptionalRate::with('hotels')->where('type',"Meals")->get();
@@ -3879,8 +4025,13 @@ class OrdersAdminController extends Controller
 
         // INVOICE
         $inv_no = "INV-".$reservation->rsv_no;
-        $due_date = Carbon::parse($now)->addHours(48);
-        $total_idr = ceil($order->final_price / $usdrates->rate);
+        $due_date = app(OrderPaymentDeadlineService::class)->deadlineFrom($now);
+        $snapshotInvoice = $order->service === Orders::PUBLIC_TOUR_SERVICE
+            ? app(OrderPricingSnapshotReader::class)->invoiceValues($order)
+            : null;
+        $totalUsd = $snapshotInvoice['total_usd'] ?? $order->final_price;
+        $total_idr = $snapshotInvoice['total_idr']
+            ?? ceil($order->final_price / $usdrates->rate);
         $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
         $dataInvoice = [
             "invoice" => $invoice,
@@ -3888,7 +4039,7 @@ class OrdersAdminController extends Controller
             "rsv_id"=>$reservation->id,
             "inv_date"=>$now,
             "due_date"=>$due_date,
-            "total_usd"=>$order->final_price,
+            "total_usd"=>$totalUsd,
             "total_idr"=>$total_idr,
             "bank_id"=>$bank,
         ];
@@ -3968,6 +4119,19 @@ class OrdersAdminController extends Controller
 
     public function func_send_confirmation (Request $request,$id){
         $order=Orders::findOrFail($id);
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            abort_unless(in_array($order->status, ['Approved', 'Paid'], true), 409);
+            abort_if(
+                $this->tourPackageConfirmationWasSent($order),
+                409,
+                'This Tour confirmation has already been sent. Use Resend Confirmation instead.'
+            );
+            $reservation = Reservation::where('id', $order->rsv_id)->firstOrFail();
+            $invoice = InvoiceAdmin::where('rsv_id', $reservation->id)->firstOrFail();
+            $this->sendTourPackageConfirmation($request, $order, $reservation, $invoice, 'Send Confirmation');
+
+            return redirect()->back()->with('success', 'Confirmation email sent successfully.');
+        }
         $user_id = Auth::User()->id;
         $agent = User::where('id', $order->user_id)->first();
         $order_link = 'https://online.balikamitour.com/detail-order-'.$order->id;
@@ -3975,8 +4139,8 @@ class OrdersAdminController extends Controller
         $agent = Auth::user()->where('id',$order->sales_agent)->first();
         $email = $order->email;
         // Tambahan data
-        $reservation = Reservation::where('id',$order->rsv_id)->first();
-        $inv = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
+        $reservation = Reservation::where('id',$order->rsv_id)->firstOrFail();
+        $inv = InvoiceAdmin::where('rsv_id',$reservation->id)->firstOrFail();
         $inv_no = $inv->inv_no;
         $reservation->update([
             "status"=>"Active",
@@ -3999,7 +4163,14 @@ class OrdersAdminController extends Controller
             'admin'=>$admin,
             'order_link'=>$order_link,
         ];
-        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+        $data['confirmation'] = app(OrderConfirmationEmailDataService::class)->build(
+            $order,
+            $reservation,
+            $inv,
+            $admin
+        );
+        $data['title'] = $data['confirmation']['subject'];
+        if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
             $fileService = app(AccommodationFinancialFileService::class);
             $contractEnFile = $fileService->resolveInvoiceFile($order, $inv, 'en');
             $contractZhFile = $fileService->resolveInvoiceFile($order, $inv, 'zh');
@@ -4035,8 +4206,21 @@ class OrdersAdminController extends Controller
     // FUNCTION RESEND CONFIRMATION ORDER
     public function resend_confirmation_order(Request $request,$id){
         $order = Orders::findOrFail($id);
-        $reservation = Reservation::where('id',$order->rsv_id)->first();
-        $inv = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            abort_unless(in_array($order->status, ['Approved', 'Paid'], true), 409);
+            abort_unless(
+                $this->tourPackageConfirmationWasSent($order),
+                409,
+                'Send the Tour confirmation before using Resend Confirmation.'
+            );
+            $reservation = Reservation::where('id', $order->rsv_id)->firstOrFail();
+            $invoice = InvoiceAdmin::where('rsv_id', $reservation->id)->firstOrFail();
+            $this->sendTourPackageConfirmation($request, $order, $reservation, $invoice, 'Resend Confirmation');
+
+            return redirect()->back()->with('success', 'Confirmation email resent successfully.');
+        }
+        $reservation = Reservation::where('id',$order->rsv_id)->firstOrFail();
+        $inv = InvoiceAdmin::where('rsv_id',$reservation->id)->firstOrFail();
         $inv_no = $inv->inv_no;
         $email = $order->email;
         $adm = Auth::user()->where('id',$order->verified_by)->first();
@@ -4063,7 +4247,14 @@ class OrdersAdminController extends Controller
             'admin'=>$admin,
             'order_link'=>$order_link,
         ];
-        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
+        $data['confirmation'] = app(OrderConfirmationEmailDataService::class)->build(
+            $order,
+            $reservation,
+            $inv,
+            $admin
+        );
+        $data['title'] = $data['confirmation']['subject'];
+        if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
             $fileService = app(AccommodationFinancialFileService::class);
             $contractEnFile = $fileService->resolveInvoiceFile($order, $inv, 'en');
             $contractZhFile = $fileService->resolveInvoiceFile($order, $inv, 'zh');
@@ -4123,13 +4314,19 @@ class OrdersAdminController extends Controller
     public function func_update_confirmation_number(Request $request,$id){
         $now = Carbon::now();
         $order = Orders::findOrFail($id);
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            abort_unless(in_array($order->status, ['Draft', 'Pending', 'Approved'], true), 409);
+        }
+        $validated = $request->validate([
+            'confirmation_order' => ['required', 'string', 'max:255'],
+        ]);
         if (!$order->handled_by) {
             $handled_by = Auth::user()->id;
         }else{
             $handled_by = $order->handled_by;
         }
         $order->update([
-            "confirmation_order"=>$request->confirmation_order,
+            "confirmation_order"=>$validated['confirmation_order'],
             "handled_by"=>$handled_by,
             "handled_date"=>$now,
         ]);
@@ -4147,6 +4344,14 @@ class OrdersAdminController extends Controller
 // Function Updated Rejected =============================================================================================================>
     public function func_update_order_rejected(Request $request,$id){
         $order_rejected=Orders::findOrFail($id);
+        if ($order_rejected->service === Orders::PUBLIC_TOUR_SERVICE) {
+            return $this->transitionTourOrderToTerminalState(
+                $request,
+                $order_rejected,
+                'Rejected',
+                ['Draft', 'Pending']
+            );
+        }
         $orderno = $order_rejected->orderno;
         $traveldate = date('Y-m-d', strtotime($request->traveldate));
         $status = "Rejected";
@@ -4236,6 +4441,11 @@ class OrdersAdminController extends Controller
     public function func_finalization_order(Request $request,$id){
         $user = Auth::User();
         $order=Orders::findOrFail($id);
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'status' => 'Tour Package orders become Paid only through a valid payment confirmation.',
+            ]);
+        }
         if (!$order) {
             return redirect("/orders-admin")->with('error','The order can not find!');
         }
@@ -4316,6 +4526,14 @@ class OrdersAdminController extends Controller
 // Function Updated Invalid =============================================================================================================>
     public function func_update_order_invalid(Request $request,$id){
         $order_invalid=Orders::findOrFail($id);
+        if ($order_invalid->service === Orders::PUBLIC_TOUR_SERVICE) {
+            return $this->transitionTourOrderToTerminalState(
+                $request,
+                $order_invalid,
+                'Invalid',
+                ['Draft', 'Pending']
+            );
+        }
         $orderno = $order_invalid->orderno;
         $status = "Invalid";
         $checkin = date('Y-m-d', strtotime($request->checkin));
@@ -4355,6 +4573,14 @@ class OrdersAdminController extends Controller
 // Function Archive Invalid =============================================================================================================>
     public function func_archive_order(Request $request,$id){
         $order_archive=Orders::findOrFail($id);
+        if ($order_archive->service === Orders::PUBLIC_TOUR_SERVICE) {
+            return $this->transitionTourOrderToTerminalState(
+                $request,
+                $order_archive,
+                'Deleted',
+                ['Rejected', 'Invalid', 'Canceled']
+            );
+        }
         $orderno = $order_archive->orderno;
         $status = "Archive";
         $order_archive->update([
@@ -4393,6 +4619,13 @@ class OrdersAdminController extends Controller
     public function func_add_order_note(Request $request, $id)
         {
             $order = Orders::findOrFail($id);
+            if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+                abort_unless(in_array($order->status, ['Draft', 'Pending', 'Approved'], true), 409);
+            }
+            $validated = $request->validate([
+                'order_note' => ['required', 'string', 'max:5000'],
+                'status' => ['required', 'in:Info,Waiting,Urgent,Error,Reject'],
+            ]);
             if (!$order->handled_by) {
                 $handled_by = Auth::user()->id;
             }else{
@@ -4400,14 +4633,280 @@ class OrdersAdminController extends Controller
             }
             $order_note =new OrderNote([
                 "order_id"=>$order->id,
-                "note"=>$request->order_note,
+                "note"=>strip_tags($validated['order_note']),
                 "user_id"=>Auth::user()->id,
-                "status"=>$request->status,
+                "status"=>$validated['status'],
                 "handled_by"=>$handled_by,
             ]);
             $order_note->save();
             return redirect()->back()->with('success','Note has been add to the order');
         }
+
+    private function activateTourPackageOrder(Request $request, Orders $order)
+    {
+        abort_unless(in_array($order->status, ['Draft', 'Pending'], true), 409);
+
+        [$reservation, $invoice] = $this->persistTourPackageInvoice($request, $order, true);
+        $this->sendTourPackageConfirmation(
+            $request,
+            $order->fresh(),
+            $reservation,
+            $invoice,
+            'Send Confirmation'
+        );
+
+        return redirect('/orders-admin-'.$order->id)
+            ->with('success', 'Tour Package order approved and invoice generated successfully.');
+    }
+
+    private function persistTourPackageInvoice(Request $request, Orders $order, bool $approveOrder): array
+    {
+        abort_unless($order->service === Orders::PUBLIC_TOUR_SERVICE, 409);
+        abort_unless(
+            $approveOrder
+                ? in_array($order->status, ['Draft', 'Pending'], true)
+                : $order->status === 'Approved',
+            409
+        );
+
+        $validated = $request->validate([
+            'bank' => ['required', 'integer', 'exists:bank_accounts,id'],
+            'currency' => ['required', 'integer', 'exists:usd_rates,id'],
+        ]);
+
+        [$reservation, $invoice] = DB::transaction(function () use (
+            $request,
+            $order,
+            $approveOrder,
+            $validated
+        ) {
+            $lockedOrder = Orders::query()->lockForUpdate()->findOrFail($order->id);
+            abort_unless($lockedOrder->service === Orders::PUBLIC_TOUR_SERVICE, 409);
+            abort_unless(
+                $approveOrder
+                    ? in_array($lockedOrder->status, ['Draft', 'Pending'], true)
+                    : $lockedOrder->status === 'Approved',
+                409,
+                $approveOrder
+                    ? 'This Tour order has already been processed.'
+                    : 'Invoice generation requires an approved Tour order.'
+            );
+
+            $supportedCurrencyCodes = ['USD', 'CNY', 'TWD'];
+            $invoiceRates = UsdRates::query()
+                ->whereIn('name', $supportedCurrencyCodes)
+                ->get()
+                ->keyBy('name');
+            $selectedCurrency = $invoiceRates->firstWhere('id', (int) $validated['currency']);
+            if (!$selectedCurrency) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'currency' => 'Tour Package invoices support USD, CNY, or TWD only.',
+                ]);
+            }
+
+            foreach ($supportedCurrencyCodes as $currencyCode) {
+                $rate = $invoiceRates->get($currencyCode);
+                if (!$rate || !is_numeric($rate->rate) || !is_numeric($rate->sell)
+                    || (float) $rate->rate <= 0 || (float) $rate->sell <= 0) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'currency' => "A valid positive {$currencyCode} rate and sell rate must be configured before confirming this Tour order.",
+                    ]);
+                }
+            }
+
+            $pricing = app(OrderPricingSnapshotReader::class)->invoiceValues($lockedOrder);
+            $totalIdr = (int) $pricing['total_idr'];
+            $totalCny = $this->convertIdrToInvoiceCurrency($totalIdr, $invoiceRates->get('CNY'));
+            $totalTwd = $this->convertIdrToInvoiceCurrency($totalIdr, $invoiceRates->get('TWD'));
+            $invoiceBalance = match ($selectedCurrency->name) {
+                'USD' => $pricing['total_usd'],
+                'CNY' => $totalCny,
+                'TWD' => $totalTwd,
+            };
+
+            $reservation = Reservation::where('id', $lockedOrder->rsv_id)->lockForUpdate()->first();
+            if (!$reservation) {
+                $reservation = app(TourReservationService::class)->ensurePendingReservationForOrder($lockedOrder);
+            }
+            abort_unless($reservation, 409, 'A reservation is required before processing this Tour order.');
+            if ($approveOrder) {
+                abort_unless(
+                    $reservation->status === 'Pending',
+                    409,
+                    'Only a pending Tour reservation can be confirmed.'
+                );
+            }
+
+            if ($approveOrder) {
+                $lockedOrder->update([
+                    'status' => 'Approved',
+                    'verified_by' => Auth::id(),
+                    'handled_by' => $lockedOrder->handled_by ?: Auth::id(),
+                ]);
+                $reservation->update(['status' => 'Active']);
+            }
+
+            $invoice = InvoiceAdmin::where('rsv_id', $reservation->id)->lockForUpdate()->first()
+                ?: new InvoiceAdmin([
+                    'rsv_id' => $reservation->id,
+                    'created_by' => Auth::id(),
+                    'agent_id' => $lockedOrder->sales_agent,
+                ]);
+            $invoice->fill([
+                'inv_no' => 'INV-'.$reservation->rsv_no,
+                'inv_date' => Carbon::now(),
+                'due_date' => $approveOrder || !$invoice->exists
+                    ? app(OrderPaymentDeadlineService::class)->deadlineFrom()
+                    : $invoice->due_date,
+                'total_usd' => $pricing['total_usd'],
+                'total_idr' => $pricing['total_idr'],
+                'total_cny' => $totalCny,
+                'total_twd' => $totalTwd,
+                'rate_usd' => $pricing['rate_usd'],
+                'sell_usd' => $pricing['sell_usd'],
+                'rate_cny' => $invoiceRates->get('CNY')->rate,
+                'sell_cny' => $invoiceRates->get('CNY')->sell,
+                'rate_twd' => $invoiceRates->get('TWD')->rate,
+                'sell_twd' => $invoiceRates->get('TWD')->sell,
+                'bank_id' => $validated['bank'],
+                'currency_id' => $validated['currency'],
+                'balance' => $invoiceBalance,
+            ]);
+            $invoice->save();
+
+            OrderLog::create([
+                'order_id' => $lockedOrder->id,
+                'action' => $approveOrder ? 'Confirm Tour Package Order' : 'Generate Tour Package Invoice',
+                'url' => $request->getClientIp(),
+                'method' => $approveOrder ? 'Confirm' : 'Create',
+                'agent' => $lockedOrder->name,
+                'admin' => Auth::id(),
+            ]);
+
+            return [$reservation->fresh(), $invoice->fresh()];
+        });
+
+        $this->saveStandardInvoicePdfDocuments($order->fresh(), $invoice);
+
+        return [$reservation, $invoice];
+    }
+
+    private function convertIdrToInvoiceCurrency(int $totalIdr, UsdRates $currency): int
+    {
+        $sellRate = FixedScale::parseDecimal((string) $currency->sell, FixedScale::FX_SCALE);
+        $scaledTotal = FixedScale::checkedMultiply($totalIdr, FixedScale::FX_SCALE);
+
+        return intdiv(
+            FixedScale::checkedAdd($scaledTotal, $sellRate - 1),
+            $sellRate
+        );
+    }
+
+    private function sendTourPackageConfirmation(
+        Request $request,
+        Orders $order,
+        Reservation $reservation,
+        InvoiceAdmin $invoice,
+        string $action
+    ): void {
+        $fileService = app(AccommodationFinancialFileService::class);
+        $invoiceEn = $fileService->resolveInvoiceFile($order, $invoice, 'en');
+        $invoiceZhCn = $fileService->resolveInvoiceFile($order, $invoice, 'zh-CN');
+        $invoiceZh = $fileService->resolveInvoiceFile($order, $invoice, 'zh');
+        $invoiceDocuments = [$invoiceEn, $invoiceZhCn, $invoiceZh];
+
+        abort_unless(
+            collect($invoiceDocuments)->every(fn ($document) => !empty($document['absolute_path'])),
+            409,
+            'The three-language invoice set must be generated before sending confirmation.'
+        );
+        $data = [
+            'email' => $order->email,
+            'title' => 'Confirmation Order - '.$order->orderno,
+            'order' => $order,
+            'admin' => Auth::user(),
+        ];
+        $data['confirmation'] = app(OrderConfirmationEmailDataService::class)->build(
+            $order,
+            $reservation,
+            $invoice,
+            Auth::user()
+        );
+        $data['title'] = $data['confirmation']['subject'];
+
+        Mail::send('emails.confirmationOrder', $data, function ($message) use ($data, $invoiceDocuments) {
+            $message->to($data['email'])->subject($data['title']);
+            foreach ($invoiceDocuments as $document) {
+                $message->attach($document['absolute_path']);
+            }
+        });
+
+        OrderLog::create([
+            'order_id' => $order->id,
+            'action' => $action,
+            'url' => $request->getClientIp(),
+            'method' => $action === 'Resend Confirmation' ? 'Resend' : 'Send',
+            'agent' => $order->name,
+            'admin' => Auth::id(),
+        ]);
+    }
+
+    private function tourPackageConfirmationWasSent(Orders $order): bool
+    {
+        if ($order->service !== Orders::PUBLIC_TOUR_SERVICE) {
+            return false;
+        }
+
+        return OrderLog::query()
+            ->where('order_id', $order->id)
+            ->whereIn('action', ['Send Confirmation', 'Resend Confirmation'])
+            ->exists();
+    }
+
+    private function transitionTourOrderToTerminalState(
+        Request $request,
+        Orders $order,
+        string $targetStatus,
+        array $allowedSourceStatuses
+    ) {
+        abort_unless($order->service === Orders::PUBLIC_TOUR_SERVICE, 409);
+        abort_unless(in_array($order->status, $allowedSourceStatuses, true), 409);
+
+        $validated = $request->validate([
+            'msg' => ['required', 'string', 'max:2000'],
+        ]);
+
+        DB::transaction(function () use ($request, $order, $targetStatus, $validated) {
+            $order->update([
+                'status' => $targetStatus,
+                'msg' => strip_tags($validated['msg']),
+            ]);
+
+            Reservation::where('id', $order->rsv_id)->update(['status' => 'Canceled']);
+
+            UserLog::create([
+                'action' => 'Update',
+                'service' => 'Order',
+                'subservice' => $order->orderno,
+                'subservice_id' => $order->id,
+                'page' => 'order-admin',
+                'user_id' => Auth::id(),
+                'user_ip' => $request->getClientIp(),
+                'note' => 'Update order: '.$order->orderno.' to : '.$targetStatus,
+            ]);
+
+            OrderLog::create([
+                'order_id' => $order->id,
+                'action' => $targetStatus.' Order',
+                'url' => $request->getClientIp(),
+                'method' => 'Update',
+                'agent' => $order->name,
+                'admin' => Auth::id(),
+            ]);
+        });
+
+        return redirect('/orders-admin')->with('success', 'Tour Package order has been updated to '.$targetStatus.'.');
+    }
 // Function Add Order Note =========================================================================================>
     public function func_add_order_wedding_note(Request $request, $id)
         {
@@ -4535,9 +5034,6 @@ class OrdersAdminController extends Controller
             'note' => ['nullable', 'string', 'max:5000'],
         ]);
 
-        $usdrate = UsdRates::where('name','USD')->first();
-        $twdrate = UsdRates::where('name','TWD')->first();
-        $cnyrate = UsdRates::where('name','CNY')->first();
         $receipt = PaymentConfirmation::findOrFail($id);
         $invoice = InvoiceAdmin::findOrFail($receipt->inv_id);
         $reservation = Reservation::findOrFail($invoice->rsv_id);
@@ -4548,15 +5044,6 @@ class OrdersAdminController extends Controller
         $status = $validated['status'];
         $amount = (float) $validated['amount'];
         $kursId = $validated['kurs_id'];
-        if ($kursId == "1") {
-            $kurs_rate = $usdrate->rate;
-        }elseif($kursId == "3") {
-            $kurs_rate = $twdrate->rate;
-        }elseif($kursId == "2") {
-            $kurs_rate = $cnyrate->rate;
-        }else{
-            $kurs_rate = 1;
-        }
         $transaction_code = "ORD".$order->orderno."/INV".$receipt->inv_id."/PAY".$receipt->id;
        
         // PAYMENT CALCULATE

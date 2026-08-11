@@ -60,7 +60,7 @@ class DriversController extends Controller
             "country"=>$request->country,
             "status"=>$request->status ?: 'Active',
         ]);
-        return redirect()->route('drivers-admin.index')->with('success','Drivers has been updated');
+        return redirect()->route('admin.drivers.index')->with('success','Drivers has been updated');
     }
     
     public function destroy(Request $request,$id)
@@ -70,7 +70,7 @@ class DriversController extends Controller
             $driver->delete();
             return back()->with('success','Drivers has been deleted');
         }else{
-            return redirect()->route('drivers-admin.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.drivers.index')->with('error','Akses ditolak');
         }
     }
 }

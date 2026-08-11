@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="card-box">
                 <div class="card-box-title">
-                    <i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update Price
+                    <i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update Price
                 </div>
                 <div class="card-box-body">
                     <form id="update-price-{{ $price->id }}" action="/fedit-price-{{ $price->id }}" method="post" enctype="multipart/form-data">
@@ -88,7 +88,7 @@
                     </form>
                 </div>
                 <div class="card-box-footer">
-                    <button type="submit" form="update-price-{{ $price->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Update</button>
+                    <button type="submit" form="update-price-{{ $price->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Update</button>
                     <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> Cancel</button>
                 </div>
             </div>

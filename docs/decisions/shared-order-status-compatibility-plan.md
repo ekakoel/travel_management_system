@@ -1,7 +1,8 @@
 ---
 title: Shared Order Status Compatibility Plan
-status: proposed
-updated_at: 2026-07-27
+status: superseded
+updated_at: 2026-07-28
+superseded_by: docs/status-contract.md
 applies_to:
   - accommodation
   - transports
@@ -17,6 +18,12 @@ excludes:
 ---
 
 # Shared Order Status Compatibility Plan
+
+> Status: `superseded` pada 2026-07-28 oleh
+> `docs/status-contract.md`. Rekomendasi pemisahan global commercial status
+> `Paid` dari fulfillment melalui `completed_at` telah diadopsi sebagai
+> kontrak final. Isi rencana ini dipertahankan sebagai audit trail dan bukan
+> sumber aturan aktif.
 
 ## 1. Purpose
 

@@ -2,7 +2,7 @@
     <span>{{ $label }}</span>
     <div class="company-profile-logo-preview company-profile-logo-preview--{{ $variant }}" data-company-logo-preview="{{ $name }}">
         @if ($logoUrl)
-            <img src="{{ $logoUrl }}" alt="{{ $alt }}">
+            <img src="{{ asset($logoUrl) }}">
         @else
             <strong>No {{ strtolower($label) }} uploaded</strong>
         @endif

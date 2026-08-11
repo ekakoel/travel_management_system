@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PricingException;
 use App\Models\Tax;
 use App\Models\Guide;
 use App\Models\Guests;
@@ -33,8 +34,13 @@ use App\Models\RemarkReservation;
 use App\Models\ExcludeReservation;
 use App\Models\IncludeReservation;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\StoreReservationRequest;
-use App\Http\Requests\UpdateReservationRequest;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Backend\Operations\Reservations\StoreManualReservationRequest;
+use App\Services\Reservations\ReservationAdminService;
+use App\Services\Reservations\ReservationDetailService;
+use App\Services\Pricing\OrderPricingSnapshotReader;
+use App\Services\Tours\TourOrderManifestService;
+use App\Services\Orders\OrderPaymentDeadlineService;
 
 class ReservationController extends Controller
 {
@@ -42,38 +48,9 @@ class ReservationController extends Controller
     {
         $this->middleware(['auth','verified']);
     }
-    public function index()
+    public function index(ReservationAdminService $reservationAdmin)
     {
-        $reservation_onprogress = Reservation::where('status','On Progress')->orderBy('created_at','DESC')->get();
-        $reservation_active = Reservation::where('status','Active')->orderBy('created_at','DESC')->get();
-        $reservation_archived = Reservation::where('status','Archived')->orderBy('created_at','DESC')->get();
-        $reservations = Reservation::where('adm_id', Auth::user()->id)->get();
-        $guests = Guests::all();
-        $tgl = Carbon::now();
-        $now = date('Y-m-d',strtotime($tgl));
-        $business = BusinessProfile::first();
-        $crsv = Reservation::all();
-        $agents = Auth::user()->where('status',"Active")->get();
-        $crsv_no = count($crsv);
-        
-        $rsv_no = $crsv_no + 1;
-        $invoices = InvoiceAdmin::all();
-        
-       
-       
-        return view('admin.reservations',compact('reservation_onprogress'),[
-            'reservations'=>$reservations,
-            'reservation_active'=>$reservation_active,
-            'agents'=>$agents,
-            'crsv'=>$crsv,
-            'rsv_no'=>$rsv_no,
-            'reservation_onprogress'=>$reservation_onprogress,
-            'reservation_archived'=>$reservation_archived,
-            'business'=>$business,
-            'now' => $now,
-            'guests' => $guests,
-            'invoices' => $invoices,
-        ]);
+        return view('admin.reservations', $reservationAdmin->indexData(Auth::user()));
     }
 
     public function view_reservation_hotel($id){
@@ -81,7 +58,7 @@ class ReservationController extends Controller
         $guests = Guests::where('rsv_id',$id)->get();
         $extrabed = ExtraBed::all();
         
-        $reservation = reservation::find($id);
+        $reservation = Reservation::findOrFail($id);
        
         return view('admin.reservation-hotel',[
             'hotels'=>$hotels,
@@ -140,11 +117,12 @@ class ReservationController extends Controller
         ->where('service','Activity')
         ->where('status','=','Active')
         ->orderBy('checkin', 'asc')->get();
-        $activitytours= Orders::where([
+        $activitytours= Orders::with('activePricingSnapshot')->where([
             ['service','Tour Package'],['status','Active'],['rsv_id', $id],])
         ->orWhere([
             ['service','Activity'],['status','Active'],['rsv_id', $id],])
         ->orderBy('checkin', 'asc')->get();
+        $tourPricingValues = $this->tourPricingValues($activitytours, $invoice);
 
         $transports = Orders::where('rsv_id','=', $id)
         ->where('service','Transport')
@@ -164,6 +142,7 @@ class ReservationController extends Controller
             'optionalrateorders' => $optionalrateorders,
             'optionalrates' => $optionalrates,
             'activitytours' => $activitytours,
+            'tourPricingValues' => $tourPricingValues,
             'dur_res' => $dur_res,
             'hotel_orders' => $hotel_orders,
             'optional_rates' => $optional_rates,
@@ -189,106 +168,32 @@ class ReservationController extends Controller
     }
 
 
-    public function view_detail_reservation($id)
+    public function view_detail_reservation($id, ?ReservationDetailService $reservationDetail = null)
     {
-        $now = Carbon::now();
-        $business = BusinessProfile::where('id','=',1)->first();
-        $reservation = reservation::find($id);
-        $in=Carbon::parse($reservation->checkin);
-        $out=Carbon::parse($reservation->checkout);
-        $dur_res = $in->diffInDays($out);
-        $invoice = InvoiceAdmin::where('rsv_id',$id)->first();
-        $agent = Auth::user()->where('id','=',$reservation->agn_id)->first();
-        $guide = Guide::where('id','=',$reservation->guide_id)->first();
-        $guides = Guide::all();
-        $driver = Drivers::where('id','=',$reservation->driver_id)->first();
-        $drivers = Drivers::all();
-        $guests = Guests::where('rsv_id',"=",$reservation->id)->get();
-        $orders = Orders::whereNull('rsv_id')->get();
-        $extra_beds = ExtraBed::all();
-        $order_track = Orders::all();
-        $user = Auth::user()->all();
-        $additionalservices = AdditionalService::where('rsv_id','=',$id)->get();
-        $hotels = Hotels::where('status','Active')->get();
-        $rooms = HotelRoom::where('status','Active')->get();
-        $restaurants = RestaurantRsv::where('rsv_id',$id)->get();
-        $includes = IncludeReservation::where('rsv_id',$id)->get();
-        $excludes = ExcludeReservation::where('rsv_id',$id)->get();
-        $remarks = RemarkReservation::where('rsv_id',$id)->get();
-        $hotel_orders = Orders::where([
-            ['rsv_id',$reservation->id],['service','Hotel'],['status', "Active"],['checkin',">=",$now]])
-        ->orWhere([
-            ['rsv_id',$reservation->id],['service','Hotel Promo'],['status', "Active"],['checkin',">=",$now]])
-        ->orWhere([
-            ['rsv_id',$reservation->id],['service','Hotel Package'],['status', "Active"],['checkin',">=",$now]])->get();
-        $opsi_rate_order = OptionalRateOrder::all();
-        $optional_rates = OptionalRate::all();
-        $order_accomodation = Orders::where([
-            ['service','Hotel'],['rsv_id', $id],])
-        ->orWhere([
-            ['service','Hotel Promo'],['rsv_id', $id],])
-        ->orWhere([
-            ['service','Hotel Package'],['rsv_id', $id],])
-        ->orderBy('checkin', 'asc')->get();
-        $order_tour = Orders::where('rsv_id','=', $id)
-        ->where('service','Tour Package')
-        ->where('status','=','Active')
-        ->where('checkin',">=",$now)
-        ->orderBy('checkin', 'asc')->get();
-        $activities = Orders::where('rsv_id','=', $id)
-        ->where('service','Activity')
-        ->where('status','=','Active')
-        ->where('checkin',">=",$now)
-        ->orderBy('checkin', 'asc')->get();
-        $activitytours= Orders::where([
-            ['service','Tour Package'],['status','Active'],['rsv_id', $id],['checkin',">=",$now]])
-        ->orWhere([
-            ['service','Activity'],['status','Active'],['rsv_id', $id],['checkin',">=",$now]])
-        ->orderBy('checkin', 'asc')->get();
+        $reservation = Reservation::query()
+            ->whereNull('deleted_at')
+            ->where('status', 'Active')
+            ->find($id);
 
-        $transports = Orders::where('rsv_id','=', $id)
-        ->where('service','Transport')
-        ->where('status','=','Active')
-        ->where('checkin',">=",$now)
-        ->orderBy('checkin', 'asc')->get();
-        $optionalrateorders = OptionalRateOrder::all();
-        $optionalrates = OptionalRate::with('hotels')->get();
-        return view('admin.reservation_detail',[
-            'additionalservices' => $additionalservices,
-            'transports' => $transports,
-            'activities' => $activities,
-            'order_track' => $order_track,
-            'guests' => $guests,
-            'hotels' => $hotels,
-            'rooms' => $rooms,
-            'extra_beds' => $extra_beds,
-            'optionalrateorders' => $optionalrateorders,
-            'optionalrates' => $optionalrates,
-            'activitytours' => $activitytours,
-            'dur_res' => $dur_res,
-            'hotel_orders' => $hotel_orders,
-            'optional_rates' => $optional_rates,
-            'opsi_rate_order' => $opsi_rate_order,
-            'restaurants' => $restaurants,
-            'includes' => $includes,
-            'excludes' => $excludes,
-            'remarks' => $remarks,
-            'invoice' => $invoice,
-            
-            
-            'driver' => $driver,
-            'drivers' => $drivers,
-            'guide' => $guide,
-            'guides' => $guides,
-            'order_tour'=>$order_tour,
-            'orders' =>$orders,
-            'agent'=>$agent,
-            'now' => $now,
-            'business'=>$business,
-            'reservation' => $reservation,
-            'order_accomodation' => $order_accomodation,
-            'user' => $user,
-        ]);
+        if (! $reservation) {
+            return redirect()->route('view.reservation')
+                ->with('invalid', __('reservations.active_only_detail'));
+        }
+
+        return view(
+            'backend.operations.reservations.detail',
+            ($reservationDetail ?? app(ReservationDetailService::class))->data($reservation)
+        );
+    }
+
+    private function tourPricingValues($orders, ?InvoiceAdmin $invoice)
+    {
+        return $orders
+            ->where('service', Orders::PUBLIC_TOUR_SERVICE)
+            ->mapWithKeys(fn (Orders $order) => [
+                $order->id => app(OrderPricingSnapshotReader::class)
+                    ->historicalValues($order, $invoice),
+            ]);
     }
 
     public function view_order_rsv($id)
@@ -424,19 +329,42 @@ class ReservationController extends Controller
     // ADD GUESTS ==================================================================================================================================================================================
     public function func_add_guest(Request $request,$id)
     {
-        $validated = $request->validate([
-            'name' => 'required',
-            'sex' => 'required',
-        ]);
+        $order = Orders::findOrFail($id);
+        $tourRules = $order->service === Orders::PUBLIC_TOUR_SERVICE
+            ? ['sex' => ['required', 'in:Male,Female'], 'age' => ['required', 'in:Adult,Child']]
+            : ['sex' => ['required']];
+        $validated = $request->validate(array_merge([
+            'name' => ['required', 'string', 'max:255'],
+            'rsv_id' => ['required', 'integer', 'in:'.$order->rsv_id],
+            'phone' => ['nullable', 'string', 'max:50'],
+        ], $tourRules));
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            try {
+                app(TourOrderManifestService::class)->addGuest($order, [
+                    'name' => $validated['name'],
+                    'name_mandarin' => $request->name_mandarin,
+                    'date_of_birth' => $request->date_of_birth,
+                    'sex' => $validated['sex'],
+                    'phone' => $validated['phone'] ?? null,
+                    'age' => $validated['age'],
+                ], (int) Auth::id(), $request->getClientIp());
+
+                return redirect()->back()->with('success', 'Guest added and Tour price recalculated.');
+            } catch (PricingException $exception) {
+                return redirect()->back()->withErrors([
+                    'guests' => 'Guest was not added because no valid Tour price is available for the new pax count.',
+                ]);
+            }
+        }
         $guest = new Guests ([
-            'name' =>$request->name,
-            'rsv_id' =>$request->rsv_id,
+            'name' =>$validated['name'],
+            'rsv_id' =>$validated['rsv_id'],
             'order_id' =>$id,
             'name_mandarin'=>$request->name_mandarin,
             'date_of_birth'=>$request->date_of_birth,
-            'sex'=>$request->sex,
-            'phone'=>$request->phone,
-            'age'=>$request->age,
+            'sex'=>$validated['sex'],
+            'phone'=>$validated['phone'] ?? null,
+            'age'=>$validated['age'] ?? $request->age,
         ]);
         // @dd($guest);
         $guest->save();
@@ -453,11 +381,12 @@ class ReservationController extends Controller
         //     'due_date' => 'required',
         // ]);
         $status = "Draft";
+        $invoiceStartedAt = Carbon::now();
         $invoice = new InvoiceAdmin ([
             'inv_no' =>$request->inv_no,
             'rsv_id' =>$request->rsv_id,
-            'inv_date'=>$request->inv_date,
-            'due_date'=>$request->due_date,
+            'inv_date'=>$invoiceStartedAt,
+            'due_date'=>app(OrderPaymentDeadlineService::class)->deadlineFrom($invoiceStartedAt),
             'total_usd'=>$request->total_usd,
             'total_idr'=>$request->total_idr,
             'bank_id'=>$request->bank_id,
@@ -466,6 +395,44 @@ class ReservationController extends Controller
         $invoice->save();
         return redirect()->back()->with('success','Invoice has been add to the reservation');
         return redirect()->back()->with('error','Invoice cannot be added, please check your form!');
+    }
+
+    public function create_reservation_invoice(Reservation $reservation)
+    {
+        if ($reservation->status !== 'Active' || $reservation->deleted_at) {
+            return redirect()->route('view.reservation')
+                ->with('invalid', __('reservations.active_only_detail'));
+        }
+
+        $invoiceStartedAt = Carbon::now();
+        $invoice = DB::transaction(function () use ($reservation, $invoiceStartedAt) {
+            $lockedReservation = Reservation::query()
+                ->whereKey($reservation->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            return InvoiceAdmin::query()->firstOrCreate(
+                ['rsv_id' => $lockedReservation->id],
+                [
+                    'inv_no' => 'INV-'.$lockedReservation->rsv_no,
+                    'inv_date' => $invoiceStartedAt->toDateTimeString(),
+                    'due_date' => app(OrderPaymentDeadlineService::class)
+                        ->deadlineFrom($invoiceStartedAt)
+                        ->toDateTimeString(),
+                    'bank_id' => 1,
+                    'created_by' => Auth::id(),
+                    'agent_id' => $lockedReservation->agn_id,
+                ]
+            );
+        });
+
+        return redirect()->route('view.reservation.detail', $reservation)
+            ->with(
+                'success',
+                $invoice->wasRecentlyCreated
+                    ? __('reservations.invoice_created_success')
+                    : __('reservations.invoice_already_exists')
+            );
     }
     // ADD RESTAURANT ==================================================================================================================================================================================
     public function func_add_restaurant(Request $request)
@@ -569,16 +536,44 @@ class ReservationController extends Controller
     public function func_update_guest(Request $request, $id)
     {
         $guest=Guests::findOrFail($id);
+        $order = Orders::query()
+            ->when($guest->order_id, fn ($query) => $query->where('id', $guest->order_id))
+            ->when(!$guest->order_id, fn ($query) => $query->where('rsv_id', $guest->rsv_id))
+            ->first();
+        $tourRules = $order?->service === Orders::PUBLIC_TOUR_SERVICE
+            ? ['sex' => ['required', 'in:Male,Female'], 'age' => ['required', 'in:Adult,Child']]
+            : ['sex' => ['required']];
+        $validated = $request->validate(array_merge([
+            'name' => ['required', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+        ], $tourRules));
+        if ($order?->service === Orders::PUBLIC_TOUR_SERVICE) {
+            try {
+                app(TourOrderManifestService::class)->updateGuest($guest, [
+                    'name' => $validated['name'],
+                    'name_mandarin' => $request->name_mandarin,
+                    'date_of_birth' => $request->date_of_birth,
+                    'sex' => $validated['sex'],
+                    'age' => $validated['age'],
+                    'phone' => $validated['phone'] ?? null,
+                ], (int) Auth::id(), $request->getClientIp());
+
+                return redirect()->back()->with('success', 'Guest updated and Tour price recalculated.');
+            } catch (PricingException $exception) {
+                return redirect()->back()->withErrors([
+                    'guests' => 'Guest was not updated because no valid Tour price is available for the manifest.',
+                ]);
+            }
+        }
         $guest->update([
-            'name' =>$request->name,
+            'name' =>$validated['name'],
             'name_mandarin' =>$request->name_mandarin,
             'date_of_birth'=>$request->date_of_birth,
-            'sex'=>$request->sex,
-            'age'=>$request->age,
-            'phone'=>$request->phone,
+            'sex'=>$validated['sex'],
+            'age'=>$validated['age'] ?? $request->age,
+            'phone'=>$validated['phone'] ?? null,
         ]);
-        // @dd($guest);
-        return redirect()->back()->with('error','Guest cannot be update, please check your form!');
+        return redirect()->back()->with('success','Guest has been updated.');
     }
     // UPDATE RESTAURANT ==================================================================================================================================================================================
     public function func_update_restaurant(Request $request, $id)
@@ -648,153 +643,19 @@ class ReservationController extends Controller
             'status' =>$status,
         ]);
         // @dd($guest);
-        return redirect()->back()->with('success','Reservation has been deactivated');
+        return redirect()->route('view.reservation')->with('success', __('reservations.deactivated_success'));
         return redirect()->back()->with('error','Reservation cannot be deactivate, please check your form!');
     }
     // ADD RESERVATION ==================================================================================================================================================================================
-    public function func_add_rsv_order(Request $request)
+    public function func_add_rsv_order(
+        StoreManualReservationRequest $request,
+        ReservationAdminService $reservationAdmin
+    )
     {
-        $tgl_sekarang = Carbon::now();
-        $now = date("Y-m-d",strtotime($tgl_sekarang));
-        $agent = Auth::user()->where('id',$request->agn_id)->first();
-        $service_name = "Reservation";
-        $status = "Draft";
-        $a = $agent->code.date('ymd',strtotime($now))."A";
-        $b = $agent->code.date('ymd',strtotime($now))."B";
-        $c = $agent->code.date('ymd',strtotime($now))."C";
-        $d = $agent->code.date('ymd',strtotime($now))."D";
-        $e = $agent->code.date('ymd',strtotime($now))."E";
-        $f = $agent->code.date('ymd',strtotime($now))."F";
-        $g = $agent->code.date('ymd',strtotime($now))."G";
-        $h = $agent->code.date('ymd',strtotime($now))."H";
-        $i = $agent->code.date('ymd',strtotime($now))."I";
-        $j = $agent->code.date('ymd',strtotime($now))."J";
-        $k = $agent->code.date('ymd',strtotime($now))."K";
-        $l = $agent->code.date('ymd',strtotime($now))."L";
-        $m = $agent->code.date('ymd',strtotime($now))."M";
-        $n = $agent->code.date('ymd',strtotime($now))."N";
-        $o = $agent->code.date('ymd',strtotime($now))."O";
-        $p = $agent->code.date('ymd',strtotime($now))."P";
-        $q = $agent->code.date('ymd',strtotime($now))."Q";
-        $r = $agent->code.date('ymd',strtotime($now))."R";
-        $s = $agent->code.date('ymd',strtotime($now))."S";
-        $t = $agent->code.date('ymd',strtotime($now))."T";
-        $u = $agent->code.date('ymd',strtotime($now))."U";
-        $v = $agent->code.date('ymd',strtotime($now))."V";
-        $w = $agent->code.date('ymd',strtotime($now))."W";
-        $x = $agent->code.date('ymd',strtotime($now))."X";
-        $y = $agent->code.date('ymd',strtotime($now))."Y";
-        $z = $agent->code.date('ymd',strtotime($now))."Z";
-       
-        $rsva = Reservation::where('rsv_no', $a)
-        ->orWhere('rsv_no', $b)
-        ->orWhere('rsv_no', $c)
-        ->orWhere('rsv_no', $d)
-        ->orWhere('rsv_no', $e)
-        ->orWhere('rsv_no', $f)
-        ->orWhere('rsv_no', $g)
-        ->orWhere('rsv_no', $h)
-        ->orWhere('rsv_no', $i)
-        ->orWhere('rsv_no', $j)
-        ->orWhere('rsv_no', $k)
-        ->orWhere('rsv_no', $l)
-        ->orWhere('rsv_no', $m)
-        ->orWhere('rsv_no', $n)
-        ->orWhere('rsv_no', $o)
-        ->orWhere('rsv_no', $p)
-        ->orWhere('rsv_no', $q)
-        ->orWhere('rsv_no', $r)
-        ->orWhere('rsv_no', $s)
-        ->orWhere('rsv_no', $t)
-        ->orWhere('rsv_no', $u)
-        ->orWhere('rsv_no', $v)
-        ->orWhere('rsv_no', $w)
-        ->orWhere('rsv_no', $x)
-        ->orWhere('rsv_no', $y)
-        ->orWhere('rsv_no', $z)
-        ->get();
-        $crsva = count($rsva);
-        
+        $reservation = $reservationAdmin->createManual($request->validated(), Auth::user());
 
-        if ($crsva == 0) {
-            $rsv_no = $a;
-        }elseif($crsva == 1){
-            $rsv_no = $b;
-        }elseif($crsva == 2){
-            $rsv_no = $c;
-        }elseif($crsva == 3){
-            $rsv_no = $d;
-        }elseif($crsva == 4){
-            $rsv_no = $e;
-        }elseif($crsva == 5){
-            $rsv_no = $f;
-        }elseif($crsva == 6){
-            $rsv_no = $g;
-        }elseif($crsva == 7){
-            $rsv_no = $h;
-        }elseif($crsva == 8){
-            $rsv_no = $i;
-        }elseif($crsva == 9){
-            $rsv_no = $j;
-        }elseif($crsva == 10){
-            $rsv_no = $k;
-        }elseif($crsva == 11){
-            $rsv_no = $l;
-        }elseif($crsva == 12){
-            $rsv_no = $m;
-        }elseif($crsva == 13){
-            $rsv_no = $n;
-        }elseif($crsva == 14){
-            $rsv_no = $o;
-        }elseif($crsva == 15){
-            $rsv_no = $p;
-        }elseif($crsva == 16){
-            $rsv_no = $q;
-        }elseif($crsva == 17){
-            $rsv_no = $r;
-        }elseif($crsva == 18){
-            $rsv_no = $s;
-        }elseif($crsva == 19){
-            $rsv_no = $t;
-        }elseif($crsva == 20){
-            $rsv_no = $u;
-        }elseif($crsva == 21){
-            $rsv_no = $v;
-        }elseif($crsva == 22){
-            $rsv_no = $w;
-        }elseif($crsva == 23){
-            $rsv_no = $x;
-        }elseif($crsva == 24){
-            $rsv_no = $y;
-        }elseif($crsva == 25){
-            $rsv_no = $z;
-        }else{
-            $rsv_no = $AA;
-        }
-        $check_in = substr($request->checkincout, 0, 10);
-        $check_out = substr($request->checkincout, 14, 23);
-        $checkin = date('Y-m-d',strtotime($check_in));
-        $checkout = date('Y-m-d',strtotime($check_out));
-        $reservation = new Reservation ([
-            'rsv_no' =>$rsv_no,
-            'service' =>$request->service ?: 'Reservation',
-            'checkin' =>$checkin,
-            'checkout' =>$checkout,
-            'agn_id'=>$request->agn_id,
-            'adm_id'=>$request->author,
-            'status'=>$status,
-        ]);
-        // @dd($reservation);
-        $log= new LogData ([
-            'service' =>$request->service,
-            'service_name'=>$service_name,
-            'action'=>$request->action,
-            'user_id'=>$request->author,
-        ]);
-        // @dd($reservation);
-        $log->save();
-        $reservation->save();
-        return redirect('/reservation-'.$reservation->id)->with('success','The Reservation has been created');
+        return redirect()->route('view.reservation')
+            ->with('success', __('reservations.draft_created_hidden'));
     }
 
     public function func_update_additional_service(Request $request, $id)
@@ -922,7 +783,7 @@ class ReservationController extends Controller
             "note"=>$request->note,
         ]);
         $action_log->save();
-        return redirect("/reservation-$reservation->id")->with('success','Reservation has been updated');
+        return redirect()->route('view.reservation.detail', $reservation)->with('success','Reservation has been updated');
     }
 
 
@@ -1005,20 +866,35 @@ class ReservationController extends Controller
         return redirect()->back()->with('success','Additional service has been removed');
     }
     // Function Delete Reservation =============================================================================================================>
-    public function destroy_rsv(Request $request, $id)
+    public function destroy_rsv($id, ReservationAdminService $reservationAdmin)
     {
-        $reservation=Reservation::findOrFail($id);
-        if ($reservation->inv_id != "") {
-            $inv=InvoiceAdmin::where('id',$reservation->inv_id)->first();
-            $inv->delete();
-        }
-        $reservation->delete();
-        return redirect()->back()->with('success','Reservation has been removed');
+        $reservation = Reservation::findOrFail($id);
+        $reservationAdmin->deleteManualDraft($reservation, Auth::user());
+
+        return redirect()->route('view.reservation')->with('success', 'Draft reservation has been removed.');
     }
     // Function Delete Guest =============================================================================================================>
     public function destroy_guest(Request $request, $id)
     {
          $guest=Guests::findOrFail($id);
+         $order = $guest->order_id
+             ? Orders::find($guest->order_id)
+             : Orders::where('rsv_id', $guest->rsv_id)->first();
+         if ($order?->service === Orders::PUBLIC_TOUR_SERVICE) {
+             try {
+                 app(TourOrderManifestService::class)->deleteGuest(
+                     $guest,
+                     (int) Auth::id(),
+                     $request->getClientIp()
+                 );
+
+                 return redirect()->back()->with('success', 'Guest removed and Tour price recalculated.');
+             } catch (PricingException $exception) {
+                 return redirect()->back()->withErrors([
+                     'guests' => 'Guest was not removed because no valid Tour price is available for the remaining pax count.',
+                 ]);
+             }
+         }
          $guest->delete();
          return redirect()->back()->with('success','Guest has been removed');
     }

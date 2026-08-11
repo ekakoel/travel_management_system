@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Services;
 use App\Services\BusinessProfileService;
 use App\Services\FooterContentService;
 use App\Services\RegistrationAccessService;
@@ -9,6 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Cache;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,6 +45,14 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $view->with('registrationEnabled', app(RegistrationAccessService::class)->enabled());
+        });
+        View::composer('*', function ($view) {
+            $services = Services::query()
+                ->where('status', 'Active')
+                ->orderBy('name')
+                ->get();
+
+            $view->with('globalServices', $services);
         });
     }
 }

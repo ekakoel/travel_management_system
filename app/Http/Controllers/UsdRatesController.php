@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use App\Models\Tax;
 use App\Models\Tours;
 use App\Models\UserLog;
@@ -11,10 +12,13 @@ use App\Models\BankAccount;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreUsdRatesRequest;
+use App\Services\Pricing\TourTaxPolicyActivationService;
 use AmrShawky\LaravelCurrency\Facade\Currency;
+use InvalidArgumentException;
 
 class UsdRatesController extends Controller
 {
@@ -40,6 +44,8 @@ class UsdRatesController extends Controller
                 'buy' => optional($rate)->buy,
                 'difference' => optional($rate)->difference,
                 'updated_at' => optional($rate)->updated_at,
+                'retrieved_at' => optional($rate)->retrieved_at,
+                'retrieval_source' => optional($rate)->retrieval_source,
                 'external_rate' => $externalRates['rates'][$code] ?? null,
             ];
         })->values();
@@ -67,35 +73,58 @@ class UsdRatesController extends Controller
         return $this->updateRate($request, $id, 'TWD', 'Update TWD Rate');
     }
 
-    public function func_update_tax(Request $request,$id)
+    public function func_update_tax(
+        Request $request,
+        $id,
+        TourTaxPolicyActivationService $taxPolicyActivation,
+    )
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $tax=Tax::findOrFail($id);
-            $tax->update([
-                "tax"=>$request->tax,
-            ]);
-            // USER LOG
-            $action = "Update Tax";
-            $service = "Tax";
-            $subservice = "Tax";
-            $page = "usdrates";
-            $note = "Update Tax: ".$id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            
-            return redirect("/currency")->with('success','The UsdRates has been successfully updated!');
-        }else{
-            return redirect("/currency")->with('error','Tidak dapat merubah data!');
+        if (! Gate::any(['posDev', 'posAuthor'])) {
+            return redirect()->route('currency')->with('error', 'Tidak dapat merubah data!');
         }
+
+        $validated = $request->validate([
+            'tax' => ['required', 'numeric', 'min:0', 'max:100'],
+        ]);
+        $actorId = (int) $request->user()->id;
+        $percentage = (string) $validated['tax'];
+
+        try {
+            DB::transaction(function () use (
+                $id,
+                $percentage,
+                $actorId,
+                $request,
+                $taxPolicyActivation,
+            ) {
+                Tax::findOrFail($id)->update(['tax' => $percentage]);
+                $taxPolicyActivation->replaceActivePolicy(
+                    $percentage,
+                    CarbonImmutable::now(),
+                    $actorId,
+                );
+
+                UserLog::create([
+                    'action' => 'Update Tax',
+                    'service' => 'Tax',
+                    'subservice' => 'Tour Package',
+                    'subservice_id' => $id,
+                    'page' => 'currency',
+                    'user_id' => $actorId,
+                    'user_ip' => $request->getClientIp(),
+                    'note' => "Update Tour Package Tax: {$percentage}%",
+                ]);
+            });
+        } catch (InvalidArgumentException $exception) {
+            return redirect()->route('currency')->with('error', $exception->getMessage());
+        }
+
+        Cache::forget('pricing.tour_tax_policy');
+
+        return redirect()->route('currency')->with(
+            'success',
+            'Tax and Tour Package pricing policy have been updated.'
+        );
     }
 
     public function showRates()
@@ -128,7 +157,7 @@ class UsdRatesController extends Controller
         }
 
         $validated = $request->validate([
-            'sell' => ['required', 'numeric', 'min:0'],
+            'sell' => ['required', 'numeric', 'gt:0'],
             'difference' => ['required', 'numeric', 'min:0'],
         ]);
 
@@ -142,7 +171,12 @@ class UsdRatesController extends Controller
             'sell' => $sell,
             'buy' => $buy,
             'difference' => $difference,
+            'retrieved_at' => now(),
+            'retrieval_source' => 'manual-admin',
         ]);
+
+        Cache::forget('usd_rates');
+        Cache::forget('pricing.usd_sell');
 
         UserLog::create([
             'action' => $action,

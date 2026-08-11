@@ -236,13 +236,13 @@
                                                         <td class="text-right">
                                                             <div class="table-action">
                                                                 <a href="#" data-toggle="modal" data-target="#edit-bookingcode-{{ $bookingcode->id }}">
-                                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
+                                                                    <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                                                 </a>
                                                                 <form class="display-content" action="/fremove-bookingcode/{{ $bookingcode->id }}" method="post" enctype="multipart/form-data">
                                                                     @csrf
                                                                     @method('put')
                                                                     <input type="hidden" name="author" value="{{ Auth::user()->id }}">
-                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                                    <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                                 </form>
                                                             </div>
                                                         </td>
@@ -252,7 +252,7 @@
                                                                 <div class="modal-content">
                                                                     <div class="card-box">
                                                                         <div class="card-box-title">
-                                                                            <div class="subtitle"><i class="icon-copy fa fa-pencil" aria-hidden="true"></i> Edit Booking Code</div>
+                                                                            <div class="subtitle"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Booking Code</div>
                                                                         </div>
                                                                         <form id="update-bcode-{{ $bookingcode->id }}" action="fupdate-bookingcode-{{ $bookingcode->id }}" method="post" enctype="multipart/form-data">
                                                                             @method('put')

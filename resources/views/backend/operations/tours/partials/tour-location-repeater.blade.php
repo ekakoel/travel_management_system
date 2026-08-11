@@ -64,7 +64,7 @@
                     <div class="d-flex justify-content-between align-items-center m-b-12">
                         <strong>Location <span data-tour-location-number>{{ $index + 1 }}</span></strong>
                         <button type="button" class="backend-icon-action is-danger" data-remove-tour-location>
-                            <i class="fa fa-trash"></i> Remove
+                            <i class="fa fa-trash-alt"></i> Remove
                         </button>
                     </div>
 
@@ -185,7 +185,7 @@
                 <div class="d-flex justify-content-between align-items-center m-b-12">
                     <strong>Location <span data-tour-location-number></span></strong>
                     <button type="button" class="backend-icon-action is-danger" data-remove-tour-location>
-                        <i class="fa fa-trash"></i> Remove
+                        <i class="fa fa-trash-alt"></i> Remove
                     </button>
                 </div>
                 <div class="row">

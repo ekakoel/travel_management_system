@@ -10,15 +10,16 @@
     $travelStart = $order->checkin ? Carbon::parse($order->checkin) : null;
     $travelEnd = $order->checkout ? Carbon::parse($order->checkout) : null;
     $currencyCode = optional($invoice?->currency)->name ?: 'USD';
+    $totalPriceUsd = currencyFormatUsd($tourPricing['total_usd']);
     $amountDue = match ($currencyCode) {
         'CNY' => 'CNY ' . number_format((float) $invoice?->total_cny, 0),
         'TWD' => 'NT$ ' . number_format((float) $invoice?->total_twd, 0),
         'IDR' => 'Rp ' . number_format((float) $invoice?->total_idr, 0),
-        default => currencyFormatUsd($invoice?->total_usd ?: $order->final_price),
+        default => $totalPriceUsd,
     };
 @endphp
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Invoice {{ $invoice->inv_no ?? $order->orderno }}</title>
@@ -172,6 +173,15 @@
             font-size: 15px;
             font-weight: 800;
         }
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .totals-table td {
+            width: 50%;
+            padding: 0;
+            vertical-align: top;
+        }
         .footer-note {
             margin-top: 8px;
             padding-top: 6px;
@@ -284,8 +294,18 @@
         </div>
 
         <div class="totals">
-            <div class="totals-label">Amount Due</div>
-            <div class="totals-value">{{ $amountDue }}</div>
+            <table class="totals-table">
+                <tr>
+                    <td>
+                        <div class="totals-label">Total Price (USD)</div>
+                        <div class="totals-value">{{ $totalPriceUsd }}</div>
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="totals-label">Amount Due ({{ $currencyCode }})</div>
+                        <div class="totals-value">{{ $amountDue }}</div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div class="footer-note">

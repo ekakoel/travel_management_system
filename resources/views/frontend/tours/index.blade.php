@@ -58,7 +58,7 @@
             <div class="row g-4">
                 <div class="col-xl-4 col-lg-5">
                     <aside class="tour-packages-sidebar frontend-surface-card">
-                        <form class="tour-packages-filter-form" action="{{ route('view.accommodation-service') }}"
+                        <form class="tour-packages-filter-form" action="{{ route('view.hotels-service') }}"
                             method="get" data-tour-packages-filter-form>
                             <div class="tour-packages-filter-intro">
                                 <div class="accommodation-section__eyebrow">@lang('tour-packages.filters.eyebrow')</div>
@@ -96,7 +96,7 @@
                                 </span>
                             </label>
                             <div class="tour-packages-filter-actions">
-                                <a href="{{ route('view.accommodation-service') }}"
+                                <a href="{{ route('view.hotels-service') }}"
                                     class="btn btn-outline-secondary flex-fill" data-tour-packages-reset>
                                     @lang('tour-packages.filters.reset')
                                 </a>
@@ -153,7 +153,7 @@
                                     @endphp
                                     <article class="accommodation-directory-card">
                                         <a class="accommodation-directory-card__link"
-                                            href="{{ route('view.accommodation-detail', $hotel->code) }}">
+                                            href="{{ route('view.hotel-detail', $hotel->code) }}">
                                             <div class="accommodation-directory-card__media">
                                                 <img src="{{ $hotelImage }}" alt="{{ $hotel->name }}" loading="lazy"
                                                     onerror="this.onerror=null;this.src='{{ asset('storage/images/default.webp') }}';">

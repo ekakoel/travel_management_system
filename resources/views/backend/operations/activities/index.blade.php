@@ -124,7 +124,7 @@
                                                 </a>
                                                 @canany(['posDev','posAuthor'])
                                                     <a href="{{ route('admin.activities.edit', $activity->id) }}" class="backend-icon-action" aria-label="Edit {{ $activity->name }}">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </a>
                                                     <form action="{{ route('admin.activities.destroy', $activity->id) }}" method="post">
                                                         @csrf

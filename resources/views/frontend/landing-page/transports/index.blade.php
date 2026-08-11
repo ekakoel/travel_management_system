@@ -49,7 +49,7 @@
             <div class="row g-4">
                 <div class="col-xl-4 col-lg-5">
                     <aside class="transportations-sidebar frontend-surface-card">
-                        <form class="transportations-filter-form" action="{{ route('view.transport-service') }}"
+                        <form class="transportations-filter-form" action="{{ route('view.transports-service') }}"
                             method="get" data-transportations-filter-form>
                             <div class="transportations-filter-intro">
                                 <div class="accommodation-section__eyebrow">@lang('messages.Filter transport')</div>
@@ -91,7 +91,7 @@
                                 </div>
                             </div>
                             <div class="transportations-filter-actions">
-                                <a href="{{ route('view.transport-service') }}" class="btn btn-outline-secondary flex-fill"
+                                <a href="{{ route('view.transports-service') }}" class="btn btn-outline-secondary flex-fill"
                                     data-transportations-reset>
                                     @lang('messages.Reset Filter')
                                 </a>

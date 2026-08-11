@@ -9,7 +9,7 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
                             <div class="title">
-                                <i class="icon-copy fa fa-pencil"></i>@lang('messages.Update Wedding Invitations')
+                                <i class="icon-copy fa fa-pencil-alt"></i>@lang('messages.Update Wedding Invitations')
                             </div>
                             <nav aria-label="breadcrumb" role="navigation">
                                 <ol class="breadcrumb">
@@ -83,12 +83,12 @@
                                                     <td class="text-center">
                                                         <div class="table-action">
                                                             <a href="#" data-toggle="modal" data-target="#update-invitation-{{ $invitation->id }}">
-                                                                <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil"></i></button>
+                                                                <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-pencil-alt"></i></button>
                                                             </a>
                                                             <form class="display-content" action="/fdelete-wedding-invitations/{{ $invitation->id }}" method="post">
                                                                 @csrf
                                                                 @method('delete')
-                                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash"></i></button>
+                                                                <button class="btn-delete" onclick="return confirm('Are you sure?');" type="submit" data-toggle="tooltip" data-placement="top" title="Delete"><i class="icon-copy fa fa-trash-alt"></i></button>
                                                             </form>
                                                         </div>
                                                     </td>
@@ -97,7 +97,7 @@
                                                             <div class="modal-content text-left">
                                                                 <div class="card-box">
                                                                     <div class="card-box-title">
-                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil"></i>@lang('messages.Update Invitation')</div>
+                                                                        <div class="subtitle"><i class="icon-copy fa fa-pencil-alt"></i>@lang('messages.Update Invitation')</div>
                                                                     </div>
                                                                     <form id="updateInvitation-{{ $invitation->id }}" action="/fupdate-wedding-invitations/{{ $invitation->id }}" method="post" enctype="multipart/form-data">
                                                                         @csrf

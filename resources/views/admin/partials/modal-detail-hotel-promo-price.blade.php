@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="card-box">
                 <div class="card-box-title">
-                    <i class="dw dw-eye"></i> Promo
+                    <i class="fas fa-eye"></i> Promo
                     <div class="status-card m-t-8 right-18">
                         @include('partials.status-icon', ['status' => $promo->status])
                     </div>

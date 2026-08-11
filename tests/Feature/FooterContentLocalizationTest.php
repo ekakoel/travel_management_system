@@ -49,7 +49,7 @@ class FooterContentLocalizationTest extends TestCase
             [
                 'label_traditional' => null,
                 'label_simplified' => null,
-                'route_name' => 'view.accommodation-service',
+                'route_name' => 'view.hotels-service',
                 'sort_order' => 10,
                 'open_new_tab' => false,
                 'status' => true,

@@ -1,7 +1,7 @@
 # Database Rules and Data Model
 
 Status: active
-Updated: 2026-07-28
+Updated: 2026-07-31
 
 Dokumen ini adalah pintu masuk kanonik untuk pekerjaan yang menyentuh database project `balikamitour`. Project memakai database aktif; keselamatan data lebih penting daripada kecepatan perubahan schema.
 
@@ -18,6 +18,20 @@ Dokumen ini adalah pintu masuk kanonik untuk pekerjaan yang menyentuh database p
 
 - Service publik: accommodations/hotels, transports, tour packages, dan activities.
 - Transaksi bersama: orders, reservations, invoices, payment confirmations, dan history.
+- Schema canonical `reservations` tidak memiliki kolom `send`. Untuk Tour
+  Package, state pengiriman confirmation harus dibaca dari audit
+  `order_logs` (`Send Confirmation`/`Resend Confirmation`), bukan ditambahkan
+  ke lifecycle reservation. Pemakaian `reservations.send` pada layanan legacy
+  hanya compatibility read/write bila deployment terkait memang memiliki
+  kolom tersebut dan tidak boleh dipakai oleh implementasi Tour baru.
+- `orders.status = Paid` adalah akhir komersial yang sukses. Fulfillment empat
+  public service tidak menulis `Completed` ke kolom tersebut.
+- `orders.completed_at` adalah marker resmi fulfillment:
+  `null` berarti belum selesai dan non-null berarti selesai.
+- `orders.completed_by` merekam user/admin untuk manual completion; automated
+  completion harus tetap memiliki audit trail yang dapat dibedakan.
+- Reservation dapat memakai `Completed` sebagai status operasional tanpa
+  mengubah `orders.status` dari `Paid`.
 - Operasional internal dan service publik dapat memakai tabel/flow yang berdekatan, tetapi Service Transports berbeda dari Transport Management/SPK.
 - Detail struktur dan kepemilikan area aplikasi berada di `docs/architecture.md`.
 - Status lintas tabel berada di `docs/status-contract.md`.
@@ -40,6 +54,22 @@ Dokumen ini adalah pintu masuk kanonik untuk pekerjaan yang menyentuh database p
 - Duplicate submission harus ditangani dengan idempotency atau guard unik yang sesuai domain.
 - File finansial dan record database terkait harus dikelola sebagai satu lifecycle yang konsisten.
 
+## Tour Package Price Markup
+
+- `tour_prices.markup_type` adalah discriminator canonical yang nullable untuk
+  kompatibilitas data lama: `percentage`, `usd`, atau `idr`.
+- `markup_amount` adalah numeric-string tervalidasi `VARCHAR(32)` agar database
+  tidak menambahkan fixed decimal padding. CRUD menyimpan representasi numerik
+  minimal: `20.00 -> 20`, `20.50 -> 20.5`, dan `20.25 -> 20.25`.
+  Percentage memakai contract rate IDR sebagai basis, USD menyimpan major unit
+  maksimal dua desimal, dan IDR menyimpan rupiah bulat.
+- Seluruh perhitungan mengubah numeric-string tersebut ke fixed-scale integer;
+  tidak ada aritmetika finansial berbasis float atau string concatenation.
+- Migration hanya melakukan mapping deterministik `USD -> usd` dan `IDR -> idr`
+  dari `markup_currency`. Nilai legacy lain tidak ditebak atau diaktifkan.
+- Kolom status dan verification lama tetap tersedia sebagai metadata internal;
+  operator CRUD tidak mengirim atau mengendalikannya.
+
 ## Referensi Rinci
 
 - `docs/testing.md`
@@ -50,6 +80,5 @@ Dokumen ini adalah pintu masuk kanonik untuk pekerjaan yang menyentuh database p
 - `docs/modules/tour-package.md`
 - `docs/modules/activity.md`
 - `docs/decisions/accommodation-pricing-contract.md`
-- `docs/decisions/accommodation-status-contract.md`
-- `docs/decisions/shared-order-status-audit.md`
-
+- `docs/decisions/accommodation-status-contract.md` (`superseded`)
+- `docs/decisions/shared-order-status-audit.md` (`historical`)

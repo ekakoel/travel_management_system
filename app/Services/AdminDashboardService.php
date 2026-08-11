@@ -150,9 +150,9 @@ class AdminDashboardService
             ['label' => 'Hotels', 'data' => $serviceTotals['hotels'], 'icon' => 'dw dw-building1', 'route' => Route::has('view.hotels') ? route('view.hotels') : null],
             ['label' => 'Hotel Packages', 'data' => $serviceTotals['hotelPackages'], 'icon' => 'dw dw-hotel', 'route' => Route::has('view.hotels') ? route('view.hotels') : null],
             ['label' => 'Hotel Promotions', 'data' => $serviceTotals['hotelPromos'], 'icon' => 'fa fa-percent', 'route' => Route::has('index.flyers') ? route('index.flyers') : null],
-            ['label' => 'Transports', 'data' => $serviceTotals['transports'], 'icon' => 'dw dw-bus', 'route' => Route::has('transports-admin.index') ? route('transports-admin.index') : null],
-            ['label' => 'Tour Packages', 'data' => $serviceTotals['tours'], 'icon' => 'dw dw-map-6', 'route' => Route::has('tours-admin.index') ? route('tours-admin.index') : null],
-            ['label' => 'Activities', 'data' => $serviceTotals['activities'], 'icon' => 'dw dw-pin-1', 'route' => Route::has('activities-admin.index') ? route('activities-admin.index') : null],
+            ['label' => 'Transports', 'data' => $serviceTotals['transports'], 'icon' => 'dw dw-bus', 'route' => Route::has('admin.transports.index') ? route('admin.transports.index') : null],
+            ['label' => 'Tour Packages', 'data' => $serviceTotals['tours'], 'icon' => 'dw dw-map-6', 'route' => Route::has('admin.tour-packages.index') ? route('admin.tour-packages.index') : null],
+            ['label' => 'Activities', 'data' => $serviceTotals['activities'], 'icon' => 'dw dw-pin-1', 'route' => Route::has('admin.activities.index') ? route('admin.activities.index') : null],
             ['label' => 'Users', 'data' => $serviceTotals['users'], 'icon' => 'dw dw-group', 'route' => Route::has('user-manager') ? route('user-manager') : null],
         ];
     }
@@ -179,6 +179,8 @@ class AdminDashboardService
 
         $reservations = DB::table('reservations')
             ->select('id', 'rsv_no as code', 'customer_name as name', 'service', 'status', 'checkin as date', 'created_at')
+            ->where('status', 'Active')
+            ->whereNull('deleted_at')
             ->latest('created_at')
             ->limit(4)
             ->get()
@@ -188,7 +190,7 @@ class AdminDashboardService
                 'type' => $reservation->service ?: 'Reservation',
                 'status' => $reservation->status ?: 'Unknown',
                 'date' => $this->formatDate($reservation->date ?: $reservation->created_at),
-                'route' => Route::has('view.detail-reservation') ? route('view.detail-reservation', $reservation->code ?: $reservation->id) : null,
+                'route' => Route::has('view.reservation.detail') ? route('view.reservation.detail', $reservation->id) : null,
             ]);
 
         return $orders

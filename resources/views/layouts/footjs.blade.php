@@ -20,6 +20,14 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
+<!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('/frontend/lib/wow/wow.min.js') }}"></script>
+    <script src="{{ asset('/frontend/lib/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('/frontend/lib/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ asset('/frontend/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('/frontend/lib/counterup/counterup.min.js') }}"></script>
+
 <!-- JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 <script src="{{ mix('build/backend/js/app.js') }}" defer></script>
@@ -187,7 +195,7 @@
 				format: 'YYYY-MM-DD',
 			}
         });
-        $('input[name="travel_date"]').daterangepicker({
+        $('input[name="travel_date"]:not([data-ui-picker])').daterangepicker({
             singleDatePicker: true,
 			autoApply: true,
 			autoUpdateInput: true,

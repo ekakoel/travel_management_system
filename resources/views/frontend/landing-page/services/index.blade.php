@@ -85,25 +85,25 @@
                             'title' => __('messages.Accommodations'),
                             'description' => __('messages.Curated hotels, villas, and premium stays for professional travel programs.'),
                             'items' => data_get($servicePreviews, 'accommodations', collect()),
-                            'href' => route('view.accommodation-service'),
+                            'href' => route('view.hotels-service'),
                         ],
                         [
                             'title' => __('messages.Transports'),
                             'description' => __('messages.Airport shuttle and daily rent transport options for seamless guest mobility.'),
                             'items' => data_get($servicePreviews, 'transports', collect()),
-                            'href' => route('view.transport-service'),
+                            'href' => route('view.transports-service'),
                         ],
                         [
                             'title' => __('messages.Tour Packages'),
                             'description' => __('messages.Private and curated Indonesia journeys designed for international travel agents.'),
                             'items' => data_get($servicePreviews, 'tours', collect()),
-                            'href' => route('view.tour-package-services'),
+                            'href' => route('view.tour-packages-service'),
                         ],
                         [
                             'title' => __('messages.Activities'),
                             'description' => __('messages.Experiences, excursions, and add-on activity options for more complete client itineraries.'),
                             'items' => data_get($servicePreviews, 'activities', collect()),
-                            'href' => route('view.activity-services'),
+                            'href' => route('view.activities-service'),
                         ],
                     ];
                 @endphp

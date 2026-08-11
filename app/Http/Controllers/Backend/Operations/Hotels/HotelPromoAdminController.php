@@ -51,7 +51,6 @@ class HotelPromoAdminController extends Controller
         if (! $this->canManage()) {
             return $this->redirectToHotelsIndexWithError();
         }
-
         HotelPromo::create([
             'promotion_type' => $request->promotion_type,
             'quotes' => $request->quotes,
@@ -70,8 +69,8 @@ class HotelPromoAdminController extends Controller
             'benefits_traditional' => $request->benefits_traditional,
             'benefits_simplified' => $request->benefits_simplified,
             'email_status' => 0,
-            'send_to_spesific_email' => 0,
-            'spesific_email' => '',
+            'send_to_specific_email' => 1,
+            'specific_email' => '',
             'status' => 'Draft',
             'author' => auth()->id(),
             'include' => $request->include,
@@ -174,7 +173,7 @@ class HotelPromoAdminController extends Controller
 
     private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
     {
-        return redirect()->route('hotels-admin.index')->with('error', $message);
+        return redirect()->route('admin.hotels.index')->with('error', $message);
     }
 
     private function redirectToHotelDetail($hotelId, ?string $anchor = null)

@@ -19,7 +19,7 @@ class TransportPriceAdminController extends Controller
     public function store(StoreTransportPriceAdminRequest $request, TransportAuditService $audit, TransportPricingService $pricing)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         $validated = $request->validated();
@@ -33,7 +33,7 @@ class TransportPriceAdminController extends Controller
     public function update(UpdateTransportPriceAdminRequest $request, $id, TransportAuditService $audit, TransportPricingService $pricing)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         $validated = $request->validated();
@@ -47,7 +47,7 @@ class TransportPriceAdminController extends Controller
     public function destroy($id, TransportAuditService $audit, TransportPricingService $pricing)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('transports-admin.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
         }
 
         $price = $pricing->deletePrice((int) $id);

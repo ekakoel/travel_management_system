@@ -2,7 +2,7 @@
     $services = [
         [
             'delay' => '0.1s',
-            'href' => route('view.accommodation-service'),
+            'href' => route('view.hotels-service'),
             'image' => getThumbnail($homeServiceImages['accommodations'] ?? 'images/default.webp', 760, 520),
             'title' => __('home.services.items.accommodations.title'),
             'accent' => __('home.services.items.accommodations.accent'),
@@ -11,7 +11,7 @@
         ],
         [
             'delay' => '0.2s',
-            'href' => route('view.transport-service'),
+            'href' => route('view.transports-service'),
             'image' => getThumbnail($homeServiceImages['transportation'] ?? 'images/default.webp', 760, 520),
             'title' => __('home.services.items.transportation.title'),
             'accent' => __('home.services.items.transportation.accent'),
@@ -20,7 +20,7 @@
         ],
         [
             'delay' => '0.3s',
-            'href' => route('view.tour-package-services'),
+            'href' => route('view.tour-packages-service'),
             'image' => getThumbnail($homeServiceImages['tours'] ?? 'images/default.webp', 760, 520),
             'title' => __('home.services.items.tours.title'),
             'accent' => __('home.services.items.tours.accent'),
@@ -29,7 +29,7 @@
         ],
         [
             'delay' => '0.4s',
-            'href' => route('view.activity-services'),
+            'href' => route('view.activities-service'),
             'image' => getThumbnail($homeServiceImages['activities'] ?? 'images/default.webp', 760, 520),
             'title' => __('home.services.items.activities.title'),
             'accent' => __('home.services.items.activities.accent'),

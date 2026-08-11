@@ -102,7 +102,7 @@
                         </div>
                     </div>
                     <div class="col-xl-1 col-lg-1 col-md-12">
-                        <button type="button" class="btn btn-remove booking-transfer-row__remove" data-remove-flight>
+                        <button type="button" class="ui-btn ui-btn--danger ui-btn--sm booking-transfer-row__remove" data-remove-flight>
                             <i class="icon-copy fa fa-close" aria-hidden="true"></i>
                             <span class="sr-only">@lang('messages.Remove')</span>
                         </button>
@@ -112,7 +112,7 @@
         @endforeach
     </div>
 
-    <button type="button" class="btn btn-outline-primary hotel-booking-page__add-flight" data-add-flight>
+    <button type="button" class="ui-btn ui-btn--secondary hotel-booking-page__add-flight" data-add-flight>
         <i class="icon-copy fa fa-plus-circle" aria-hidden="true"></i>
         @lang('messages.Add More Flight')
     </button>
@@ -188,7 +188,7 @@
                         </div>
                     </div>
                     <div class="col-xl-1 col-lg-1 col-md-12">
-                        <button type="button" class="btn btn-remove booking-transfer-row__remove" data-remove-flight>
+                        <button type="button" class="ui-btn ui-btn--danger ui-btn--sm booking-transfer-row__remove" data-remove-flight>
                             <i class="icon-copy fa fa-close" aria-hidden="true"></i>
                             <span class="sr-only">@lang('messages.Remove')</span>
                         </button>

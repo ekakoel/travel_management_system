@@ -66,6 +66,7 @@ use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TermAndConditionController;
 use App\Http\Controllers\TourPricesController;
 use App\Http\Controllers\ToursController;
+use App\Http\Controllers\TourPackageQuoteController;
 use App\Http\Controllers\TransportManagementController;
 use App\Http\Controllers\TransportsController;
 use App\Http\Controllers\UsdRatesController;
@@ -96,43 +97,46 @@ use Illuminate\Support\Facades\Route;
     //                    FRONTEND
     // ---------------------------------------------------
     Route::get('/',[FrontEndController::class,'index'])->name('home');
-    Route::get('/accommodations',[FrontEndController::class,'accommodation_service'])->name('view.accommodation-service');
-    Route::get('/activity-services',[FrontEndController::class,'activity_services'])->name('view.activity-services');
+    Route::get('/hotels',[FrontEndController::class,'hotels_service'])->name('view.hotels-service');
+    Route::get('/activities',[FrontEndController::class,'activity_services'])->name('view.activities-service');
     Route::get('/activity/{code}', [FrontEndController::class, 'activity_detail'])->name('view.activity-public-detail');
-    Route::get('/accommodation/{code}', [FrontEndController::class, 'accommodation_detail'])
-        ->where('code', '^(?!price-).+$')
-        ->name('view.accommodation-detail');
+    Route::get('/hotel/{code}', [FrontEndController::class, 'hotel_detail'])->where('code', '^(?!price-).+$')->name('view.hotel-detail');
     Route::post('/booking-code/remove', [FrontEndController::class, 'remove_booking_code'])->name('bookingcode.remove');
-    Route::get('/hotel/{code}', function (Request $request, $code) {
-        $parameters = ['code' => $code];
+    // Route::get('/hotel/{code}', function (Request $request, $code) {
+    //     $parameters = ['code' => $code];
+    //     if ($request->boolean('check_price')) {
+    //         $parameters['check_price'] = 1;
+    //     }
 
-        if ($request->boolean('check_price')) {
-            $parameters['check_price'] = 1;
-        }
-
-        return redirect()->route('view.accommodation-detail', $parameters);
-    })->name('view.hotel-detail');
+    //     return redirect()->route('view.hotel-detail', $parameters);
+    // })->name('view.hotel-detail');
     Route::get('/hotel-{code}', function (Request $request, $code) {
         $parameters = ['code' => $code];
 
         if ($request->boolean('check_price')) {
             $parameters['check_price'] = 1;
         }
+        return redirect()->route('view.hotel-detail', $parameters);
 
-        return redirect()->route('view.accommodation-detail', $parameters);
     })->where('code', '^(?!price-).+$')->name('view.hotel-detail-flyer');
-    Route::get('/accommodation/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.accommodation-check-price');
+    // Route::get('/accommodation/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.accommodation-check-price');
     Route::get('/hotel/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.hotel-check-price');
-    Route::get('/transportations',[FrontEndController::class,'transport_service'])->name('view.transport-service');
-    Route::get('/tour-package-services',[FrontEndController::class,'tour_package_services'])->name('view.tour-package-services');
+    Route::get('/transportations',[FrontEndController::class,'transport_service'])->name('view.transports-service');
+    Route::get('/tour-packages',[FrontEndController::class,'tour_package_services'])->name('view.tour-packages-service');
+    Route::redirect('/tours', '/tour-packages')->name('view.tours');
 
     Route::get('/about-us',[HomeController::class,'about_us'])->name('about-us');
     Route::get('/contact-us',[HomeController::class,'contact_us'])->name('contact-us');
     Route::get('/services',[HomeController::class,'services'])->name('services');
-    Route::get('/transportation-{id}', [HomeController::class, 'show_transport'])->name('transport.show');
-    Route::get('/tour-package-service',[HomeController::class,'tour_package_service'])->name('tour-package-service');
-    Route::get('/tour-package-{id}',[HomeController::class,'show_tour_package'])->name('tour-package.show');
+    Route::get('/transportation/{id}', [HomeController::class, 'show_transport'])->name('transport.show');
+    Route::get('/tour-package-service',[FrontEndController::class,'tour_package_services'])->name('tour-package-service');
+    Route::get('/tour-package/{id}',[HomeController::class,'show_tour_package'])->name('tour-package.show');
     Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe.store');
+    Route::get('/logout', function () {
+        return Auth::check()
+            ? redirect('/profile')
+            : redirect()->route('login');
+    });
     // ================================================================================================================================= DONE
 
 
@@ -198,14 +202,14 @@ use Illuminate\Support\Facades\Route;
     //     Route::post('/wa/send-driver', [WhatsAppController::class, 'send_wa_driver']);
     //     Route::post('/wa/send-operator', [WhatsAppController::class, 'send_wa_operator']);
     // });
-    Route::prefix('whatsapp')->group(function () {
-        Route::get('/status', [WhatsAppController::class, 'status'])->name('wa.status');
-        Route::post('/connect', [WhatsAppController::class, 'connect'])->name('wa.connect');
-        Route::get('/qr', [WhatsAppController::class, 'qr'])->name('wa.qr');
-        Route::post('/disconnect', [WhatsAppController::class, 'disconnect'])->name('wa.disconnect');
-        Route::post('/restart', [WhatsAppController::class, 'restart'])->name('wa.restart');
-        Route::post('/reset', [WhatsAppController::class, 'reset'])->name('wa.reset');
-    });
+    // Route::prefix('whatsapp')->group(function () {
+    //     Route::get('/status', [WhatsAppController::class, 'status'])->name('wa.status');
+    //     Route::post('/connect', [WhatsAppController::class, 'connect'])->name('wa.connect');
+    //     Route::get('/qr', [WhatsAppController::class, 'qr'])->name('wa.qr');
+    //     Route::post('/disconnect', [WhatsAppController::class, 'disconnect'])->name('wa.disconnect');
+    //     Route::post('/restart', [WhatsAppController::class, 'restart'])->name('wa.restart');
+    //     Route::post('/reset', [WhatsAppController::class, 'reset'])->name('wa.reset');
+    // });
     // Route::get('/test-wa', function () {
     //     return Http::timeout(5)->get("http://127.0.0.1:3000/status")->json();
     // });
@@ -216,8 +220,8 @@ use Illuminate\Support\Facades\Route;
     // ---------------------------------------------------
     //                    TEST SYSTEM
     // ---------------------------------------------------
-    Route::get('/email-confirmation-{id}',[OrdersAdminController::class,'test_email_confirmation']);
-    Route::get('/test-order-contract-{id}',[OrdersAdminController::class,'test_contrat']);
+    Route::get('/email-confirmation/{id}',[OrdersAdminController::class,'test_email_confirmation']);
+    Route::get('/test-order-contract/{id}',[OrdersAdminController::class,'test_contrat']);
     Route::get('calendar-event', [CalendarController::class, 'index'])->middleware(['auth','adminType']);
     Route::post('calendar-crud-ajax', [CalendarController::class, 'calendarEvents'])->middleware(['auth','adminType']);
     Route::get('/keycode', function () {return view('keycode');});
@@ -242,13 +246,14 @@ use Illuminate\Support\Facades\Route;
     Route::get('/faq', [TermAndConditionController::class, 'faq'])->name('faq');
     Route::get('/help', [TermAndConditionController::class, 'faq'])->name('help');
     Route::get('/tour/{slug}',[ToursController::class,'view_tour_detail'])->name('view.tour-detail');
+    Route::post('/tour/{tour}/quote', TourPackageQuoteController::class)->name('tour-package.quote');
     Auth::routes(['verify' => true]);
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->middleware('throttle:5,1')->name('password.email');
     Route::post('password/reset', [\App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
     Route::middleware(['auth'])->group(function () {
         // Route::get('home', function () {return redirect('/profile');});
-        Route::get('profile', [ProfileController::class,'profile'])->name('profile');
-        Route::get('profile-{email}',[ProfileController::class,'users']);
+        Route::get('/profile', [ProfileController::class,'profile'])->name('profile');
+        Route::get('/profile-{email}',[ProfileController::class,'users']);
         Route::put('/fupdate-profile/{id}',[UsersController::class,'func_update_profile']);
         Route::put('/fupdate-profileimg/{id}',[UsersController::class,'func_update_profileimg']);
         Route::put('/fupdate-password',[UsersController::class,'updatePassword'])->name('update-password');
@@ -261,7 +266,7 @@ use Illuminate\Support\Facades\Route;
         Route::middleware(['checkPosition:developer'])->group(function () {
             Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
             Route::get('/users',[UsersController::class,'index']);
-            Route::get('/user-detail-{id}',[UsersController::class,'userdetail']);
+            Route::get('/user-detail/{id}',[UsersController::class,'userdetail']);
             Route::get('/admin-panel',[AdminPanelController::class,'index'])->name('admin-panel');
             Route::post('/fadd-service',[AdminPanelController::class,'func_add_service'])->name('f-add-service');
             Route::put('/fdisable-service/{id}',[AdminPanelController::class,'func_disable_service'])->name('f-disable-service');
@@ -303,10 +308,10 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/user-manager', [UsersController::class, 'user_manager'])->name('user-manager');
             Route::post('/create-user',[UsersController::class,'func_create_user'])->name('create-user');
-            Route::put('/fedit-user-{id}',[UsersController::class,'func_edit_user'])->name('edit-user');
-            Route::put('/fapprove-user-{id}',[UsersController::class,'func_approve_user'])->name('approve-user');
-            Route::put('/fverified-user-{id}',[UsersController::class,'func_verified_user'])->name('verified-user');
-            Route::delete('/fremove-user-{id}', [UsersController::class, 'destroy'])->name('remove-user');
+            Route::put('/fedit-user/{id}',[UsersController::class,'func_edit_user'])->name('edit-user');
+            Route::put('/fapprove-user/{id}',[UsersController::class,'func_approve_user'])->name('approve-user');
+            Route::put('/fverified-user/{id}',[UsersController::class,'func_verified_user'])->name('verified-user');
+            Route::delete('/fremove-user/{id}', [UsersController::class, 'destroy'])->name('remove-user');
             // ---------------------------------------------------
             //                      WEDDING
             // ---------------------------------------------------
@@ -340,35 +345,28 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                    HOTELS ROOM
             // ---------------------------------------------------
-            Route::get('/add-room-{id}',[HotelRoomAdminController::class,'create'])->name('admin.hotels.rooms.create');
-            Route::get('/edit-room-{id}',[HotelRoomAdminController::class,'edit'])->name('admin.hotels.rooms.edit');
+            Route::get('/add-room/{id}',[HotelRoomAdminController::class,'create'])->name('admin.hotels.rooms.create');
+            Route::get('/edit-room/{id}',[HotelRoomAdminController::class,'edit'])->name('admin.hotels.rooms.edit');
             Route::post('/fadd-room',[HotelRoomAdminController::class,'store'])->name('func.room.add');
-            Route::put('/fedit-room-{id}',[HotelRoomAdminController::class,'update'])->name('func.room.update');
+            Route::put('/fedit-room/{id}',[HotelRoomAdminController::class,'update'])->name('func.room.update');
             Route::delete('/delete-room/{id}',[HotelRoomAdminController::class,'destroy'])->name('func.room.delete');
             Route::get('/autocomplete/room-view', [RoomViewController::class, 'autocomplete'])->name('autocomplate.room_view');
             Route::get('/autocomplete/bed-type', [BedTypeController::class, 'autocomplete'])->name('autocomplate.bed_type');
             // ---------------------------------------------------
             //                   HOTELS PRICES
             // ---------------------------------------------------
-            Route::get('/edit-hotel-price-{id}',[HotelNormalPriceAdminController::class,'edit'])->name('admin.hotels.prices.edit');
+            Route::get('/edit-hotel-price/{id}',[HotelNormalPriceAdminController::class,'edit'])->name('admin.hotels.prices.edit');
             Route::post('/fadd-price',[HotelNormalPriceAdminController::class,'store'])->name('admin.hotels.normal-prices.store');
-            Route::put('/fedit-price-{id}',[HotelNormalPriceAdminController::class,'update'])->name('admin.hotels.normal-prices.update');
+            Route::put('/fedit-price/{id}',[HotelNormalPriceAdminController::class,'update'])->name('admin.hotels.normal-prices.update');
             Route::delete('/delete-price/{id}',[HotelNormalPriceAdminController::class,'destroy'])->name('admin.hotels.normal-prices.destroy');
             // ---------------------------------------------------
             //                    HOTELS PROMO
             // ---------------------------------------------------
-            Route::get('/edit-hotel-promo-{id}',[HotelPromoAdminController::class,'edit'])->name('admin.hotels.promos.edit');
+            Route::get('/edit-hotel-promo/{id}',[HotelPromoAdminController::class,'edit'])->name('admin.hotels.promos.edit');
             Route::post('/fadd-promo',[HotelPromoAdminController::class,'store'])->name('admin.hotels.promos.store');
-            Route::put('/fedit-promo-{id}',[HotelPromoAdminController::class,'update'])->name('admin.hotels.promos.update');
+            Route::put('/fedit-promo/{id}',[HotelPromoAdminController::class,'update'])->name('admin.hotels.promos.update');
             Route::delete('/delete-promo/{id}',[HotelPromoAdminController::class, 'destroy'])->name('admin.hotels.promos.destroy');
-            // ---------------------------------------------------
-            //                   HOTELS PACKAGE
-            // ---------------------------------------------------
-            Route::get('/add-hotel-package-{id}',[HotelPackageAdminController::class,'create'])->name('admin.hotels.packages.create');
-            Route::get('/edit-hotel-package-{id}',[HotelPackageAdminController::class,'edit'])->name('admin.hotels.packages.edit');
-            Route::post('/fadd-package',[HotelPackageAdminController::class,'store'])->name('admin.hotels.packages.store');
-            Route::put('/fedit-package-{id}',[HotelPackageAdminController::class,'update'])->name('admin.hotels.packages.update');
-            Route::delete('/delete-package/{id}',[HotelPackageAdminController::class, 'destroy'])->name('admin.hotels.packages.destroy');
+
             // ---------------------------------------------------
             //                 ADDITIONAL SERVICE
             // ---------------------------------------------------
@@ -379,19 +377,29 @@ use Illuminate\Support\Facades\Route;
             //                     ACTIVITIES
             // ---------------------------------------------------
             Route::get('/add-activity',[ActivityAdminController::class,'create'])->name('admin.activities.create');
-            Route::get('/edit-activity-{id}',[ActivityAdminController::class,'edit'])->name('admin.activities.edit');
-            Route::get('/edit-galery-activity-{id}',[ActivityGalleryAdminController::class,'edit'])->name('admin.activities.gallery.edit');
+            Route::get('/edit-activity/{id}',[ActivityAdminController::class,'edit'])->name('admin.activities.edit');
+            Route::get('/edit-galery-activity/{id}',[ActivityGalleryAdminController::class,'edit'])->name('admin.activities.gallery.edit');
+            Route::put('/activities/{activity}/gallery',[ActivityGalleryAdminController::class, 'update_gallery'])->name('admin.gallery-activities.update');
             Route::post('/fadd-activity',[ActivityAdminController::class,'store'])->name('admin.activities.store');
             Route::put('/fupdate-activity/{id}',[ActivityAdminController::class,'update'])->name('admin.activities.update');
             Route::delete('/remove-activity/{id}',[ActivityGalleryAdminController::class,'destroy'])->name('admin.activities.destroy');
             Route::delete('/fdelete-activity-cover/{id}',[ActivityGalleryAdminController::class,'destroyCover'])->name('admin.activities.cover.destroy');
             Route::delete('/fdelete-activity-img/{id}',[ActivityGalleryAdminController::class,'destroyImage'])->name('admin.activities.images.destroy');
+
+
+            // Route::middleware(['auth'])->prefix('admin')->name('admin.')
+            //     ->group(function () {
+            //         Route::put(
+            //             '/activities/{activity}/images',
+            //             [ActivityGalleryAdminController::class, 'update']
+            //         )->name('images-activity.update');
+            //     });
             // ---------------------------------------------------
             //                     TRANSPORTS
             // ---------------------------------------------------
             Route::get('/add-transport',[TransportAdminController::class,'create'])->name('admin.transports.create');
-            Route::get('/edit-transport-{id}',[TransportAdminController::class,'edit'])->name('admin.transports.edit');
-            Route::get('/edit-galery-transport-{id}',[TransportGalleryAdminController::class,'edit'])->name('admin.transports.gallery.edit');
+            Route::get('/edit-transport/{id}',[TransportAdminController::class,'edit'])->name('admin.transports.edit');
+            Route::get('/edit-galery-transport/{id}',[TransportGalleryAdminController::class,'edit'])->name('admin.transports.gallery.edit');
             Route::post('/fadd-transport',[TransportAdminController::class,'store'])->name('admin.transports.store');
             Route::post('/fadd-transport-price',[TransportPriceAdminController::class,'store'])->name('admin.transports.prices.store');
             Route::put('/fupdate-transport/{id}',[TransportAdminController::class,'update'])->name('admin.transports.update');
@@ -403,8 +411,8 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                      PARTNER
             // ---------------------------------------------------
-            Route::get('/partner-add-activity-{id}',[PartnersController::class,'view_partner_add_activity']);
-            Route::get('/partner-add-tour-{id}',[PartnersController::class,'view_partner_add_tour']);
+            Route::get('/partner-add-activity/{id}',[PartnersController::class,'view_partner_add_activity']);
+            Route::get('/partner-add-tour/{id}',[PartnersController::class,'view_partner_add_tour']);
             Route::post('/fadd-partner',[PartnersController::class,'func_add_partner']);
             Route::post('/fpartner-add-activity',[PartnersController::class,'func_partner_add_activity']);
             Route::post('/fpartner-add-tour',[PartnersController::class,'func_partner_add_tour']);
@@ -414,16 +422,16 @@ use Illuminate\Support\Facades\Route;
             //                       EMAIL
             // ---------------------------------------------------
             Route::get('/promo-email-blast', [EmailBlastsController::class, 'index']);
-            Route::get('/send-promo-to-agent-{id}', [EmailBlastsController::class, 'send_email_promo']);
-            Route::get('/send-promo-to-specific-agent-{id}', [EmailBlastsController::class, 'send_specific_email_promo']);
-            Route::post('/fsend-promo-email-to-agent-{id}', [EmailBlastsController::class, 'func_send_email_promo'])->name('send.promo.email');
-            Route::post('/fsend-promo-specific-email-to-agent-{id}', [EmailBlastsController::class, 'func_send_specific_email_promo'])->name('send.promo.specific.email');
-            Route::get('/send-promo-to-agent-{id}', [EmailBlastsController::class, 'send_email_promo']);
+            Route::get('/send-promo-to-agent/{id}', [EmailBlastsController::class, 'send_email_promo']);
+            Route::get('/send-promo-to-specific-agent/{id}', [EmailBlastsController::class, 'send_specific_email_promo']);
+            Route::post('/fsend-promo-email-to-agent/{id}', [EmailBlastsController::class, 'func_send_email_promo'])->name('send.promo.email');
+            Route::post('/fsend-promo-specific-email-to-agent/{id}', [EmailBlastsController::class, 'func_send_specific_email_promo'])->name('send.promo.specific.email');
+            Route::get('/send-promo-to-agent/{id}', [EmailBlastsController::class, 'send_email_promo']);
             // ---------------------------------------------------
             //                    BOOKING CODE
             // ---------------------------------------------------
             Route::put('/fadd-booking-code',[BookingCodeController::class,'create'])->name('fadd-booking-code');
-            Route::put('/fupdate-bookingcode-{id}',[BookingCodeController::class,'func_update_bookingcode'])->name('f-update-booking-code');
+            Route::put('/fupdate-bookingcode/{id}',[BookingCodeController::class,'func_update_bookingcode'])->name('f-update-booking-code');
             Route::put('/fremove-bookingcode/{id}',[BookingCodeController::class,'func_remove_bookingcode'])->name('f-remove-booking-code');
             // ---------------------------------------------------
             //                      PROMOTION
@@ -446,7 +454,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                      WEDDING
             // ---------------------------------------------------
-            Route::get('/weddings-edit-{id}',[WeddingsController::class,'view_edit_wedding']);
+            Route::get('/weddings-edit/{id}',[WeddingsController::class,'view_edit_wedding']);
             Route::get('/weddings-add',[WeddingsController::class,'view_add_wedding']);
             Route::put('/fupdate-weddings/{id}',[WeddingsController::class,'func_update_wedding']);
             Route::put('/fadd-wedding-fixed-service/{id}',[WeddingsController::class,'func_add_wedding_fixed_service']);
@@ -458,9 +466,9 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                  WEDDING PACKAGE
             // ---------------------------------------------------
-            Route::get('/add-wedding-package-{id}',[WeddingsController::class,'view_add_wedding_package']);
-            Route::get('/edit-wedding-package-{id}',[WeddingsController::class,'view_edit_wedding_package']);
-            Route::post('/fadd-wedding-package-{id}',[WeddingsController::class,'func_add_wedding_package']);
+            Route::get('/add-wedding-package/{id}',[WeddingsController::class,'view_add_wedding_package']);
+            Route::get('/edit-wedding-package/{id}',[WeddingsController::class,'view_edit_wedding_package']);
+            Route::post('/fadd-wedding-package/{id}',[WeddingsController::class,'func_add_wedding_package']);
             Route::put('/factivate-wedding-package/{id}',[WeddingsController::class,'func_activate_wedding_package']);
             Route::put('/fdraft-wedding-package/{id}',[WeddingsController::class,'func_draft_wedding_package']);
             Route::put('/fdrafted-wedding-package/{id}',[WeddingsController::class,'func_drafted_wedding_package']);
@@ -476,18 +484,18 @@ use Illuminate\Support\Facades\Route;
             //                  RECEPTION VENUE
             // ---------------------------------------------------
             Route::post('/fcreate-new-reception-venue/{id}',[WeddingReceptionVenuesController::class,'func_add_reception_venue']);
-            Route::get('/update-reception-venue-{id}',[WeddingReceptionVenuesController::class,'view_edit_reception_venue']);
-            Route::put('/fupdate-reception-venue-{id}',[WeddingReceptionVenuesController::class,'func_edit_reception_venue']);
-            Route::put('/factivate-reception-venue-{id}',[WeddingReceptionVenuesController::class,'func_activate_reception_venue']);
-            Route::put('/fdeactivate-reception-venue-{id}',[WeddingReceptionVenuesController::class,'func_deactivate_reception_venue']);
+            Route::get('/update-reception-venue/{id}',[WeddingReceptionVenuesController::class,'view_edit_reception_venue']);
+            Route::put('/fupdate-reception-venue/{id}',[WeddingReceptionVenuesController::class,'func_edit_reception_venue']);
+            Route::put('/factivate-reception-venue/{id}',[WeddingReceptionVenuesController::class,'func_activate_reception_venue']);
+            Route::put('/fdeactivate-reception-venue/{id}',[WeddingReceptionVenuesController::class,'func_deactivate_reception_venue']);
             Route::delete('/fdelete-wedding-reception-venue/{id}',[WeddingReceptionVenuesController::class,'destroy_wedding_reception_venue']);
             // ---------------------------------------------------
             //                  CEREMONY VENUE
             // ---------------------------------------------------
-            Route::get('/add-ceremony-venue-{id}',[WeddingsController::class,'view_add_wedding_venue']);
+            Route::get('/add-ceremony-venue/{id}',[WeddingsController::class,'view_add_wedding_venue']);
             Route::post('/fadd-wedding-venue',[WeddingsController::class,'func_add_wedding_venue']);
-            Route::get('/edit-wedding-venue-{id}',[WeddingsController::class,'view_edit_wedding_venue']);
-            Route::put('/fedit-wedding-venue-{id}',[WeddingsController::class,'func_edit_wedding_venue']);
+            Route::get('/edit-wedding-venue/{id}',[WeddingsController::class,'view_edit_wedding_venue']);
+            Route::put('/fedit-wedding-venue/{id}',[WeddingsController::class,'func_edit_wedding_venue']);
             Route::delete('/fdelete-wedding-venue/{id}',[WeddingsController::class,'destroy_wedding_venue']);
             Route::put('/factivate-ceremony-venue/{id}',[WeddingVenuesController::class,'func_activate_ceremony_venue']);
             Route::put('/fdeactivate-ceremony-venue/{id}',[WeddingVenuesController::class,'func_deactivate_ceremony_venue']);
@@ -495,13 +503,13 @@ use Illuminate\Support\Facades\Route;
             //                 WEDDING DECORATION
             // ---------------------------------------------------
             Route::put('/fadd-wedding-decoration/{id}',[WeddingsController::class,'func_add_wedding_decoration']);
-            Route::get('/add-decoration-ceremony-venue-{id}',[WeddingsController::class,'view_add_decoration_ceremony_venue']);
-            Route::get('/edit-decoration-ceremony-venue-{id}',[WeddingsController::class,'view_edit_decoration_ceremony_venue']);
-            Route::post('/fadd-decoration-ceremony-venue-{id}',[WeddingsController::class,'func_add_decoration_ceremony_venue']);
-            Route::put('/fedit-decoration-ceremony-venue-{id}',[WeddingsController::class,'func_edit_decoration_ceremony_venue']);
-            Route::put('/fsave-to-draft-decoration-ceremony-venue-{id}',[WeddingsController::class,'func_save_to_draft_decoration_ceremony_venue']);
-            Route::put('/fsave-to-active-decoration-ceremony-venue-{id}',[WeddingsController::class,'func_save_to_active_decoration_ceremony_venue']);
-            Route::delete('/fdelete-decoration-ceremony-venue-{id}',[WeddingsController::class,'destroy_decoration_ceremony_venue']);
+            Route::get('/add-decoration-ceremony-venue/{id}',[WeddingsController::class,'view_add_decoration_ceremony_venue']);
+            Route::get('/edit-decoration-ceremony-venue/{id}',[WeddingsController::class,'view_edit_decoration_ceremony_venue']);
+            Route::post('/fadd-decoration-ceremony-venue/{id}',[WeddingsController::class,'func_add_decoration_ceremony_venue']);
+            Route::put('/fedit-decoration-ceremony-venue/{id}',[WeddingsController::class,'func_edit_decoration_ceremony_venue']);
+            Route::put('/fsave-to-draft-decoration-ceremony-venue/{id}',[WeddingsController::class,'func_save_to_draft_decoration_ceremony_venue']);
+            Route::put('/fsave-to-active-decoration-ceremony-venue/{id}',[WeddingsController::class,'func_save_to_active_decoration_ceremony_venue']);
+            Route::delete('/fdelete-decoration-ceremony-venue/{id}',[WeddingsController::class,'destroy_decoration_ceremony_venue']);
             // ---------------------------------------------------
             //                  WEDDING MAKEUP
             // ---------------------------------------------------
@@ -536,33 +544,33 @@ use Illuminate\Support\Facades\Route;
             //                 WEDDING LUNCH VENUE
             // ---------------------------------------------------
             Route::post('/fcreate-new-lunch-venue/{id}',[WeddingLunchVenuesController::class,'func_add_lunch_venue']);
-            Route::get('/update-lunch-venue-{id}',[WeddingLunchVenuesController::class,'view_edit_lunch_venue']);
-            Route::put('/fupdate-lunch-venue-{id}',[WeddingLunchVenuesController::class,'func_edit_lunch_venue']);
-            Route::put('/factivate-lunch-venue-{id}',[WeddingLunchVenuesController::class,'func_activate_lunch_venue']);
-            Route::put('/fdeactivate-lunch-venue-{id}',[WeddingLunchVenuesController::class,'func_deactivate_lunch_venue']);
+            Route::get('/update-lunch-venue/{id}',[WeddingLunchVenuesController::class,'view_edit_lunch_venue']);
+            Route::put('/fupdate-lunch-venue/{id}',[WeddingLunchVenuesController::class,'func_edit_lunch_venue']);
+            Route::put('/factivate-lunch-venue/{id}',[WeddingLunchVenuesController::class,'func_activate_lunch_venue']);
+            Route::put('/fdeactivate-lunch-venue/{id}',[WeddingLunchVenuesController::class,'func_deactivate_lunch_venue']);
             Route::delete('/fdelete-wedding-lunch-venue/{id}',[WeddingLunchVenuesController::class,'destroy_wedding_lunch_venue']);
             // ---------------------------------------------------
             //                 WEDDING DINNER VENUE
             // ---------------------------------------------------
-            Route::get('/add-dinner-venue-{id}',[WeddingDinnerVenuesController::class,'view_add_dinner_venue']);
+            Route::get('/add-dinner-venue/{id}',[WeddingDinnerVenuesController::class,'view_add_dinner_venue']);
             Route::post('/fcreate-new-dinner-venue/{id}',[WeddingDinnerVenuesController::class,'func_add_dinner_venue']);
-            Route::get('/update-dinner-venue-{id}',[WeddingDinnerVenuesController::class,'view_edit_dinner_venue']);
-            Route::put('/fupdate-dinner-venue-{id}',[WeddingDinnerVenuesController::class,'func_edit_dinner_venue']);
-            Route::put('/factivate-dinner-venue-{id}',[WeddingDinnerVenuesController::class,'func_activate_dinner_venue']);
-            Route::put('/fdeactivate-dinner-venue-{id}',[WeddingDinnerVenuesController::class,'func_deactivate_dinner_venue']);
+            Route::get('/update-dinner-venue/{id}',[WeddingDinnerVenuesController::class,'view_edit_dinner_venue']);
+            Route::put('/fupdate-dinner-venue/{id}',[WeddingDinnerVenuesController::class,'func_edit_dinner_venue']);
+            Route::put('/factivate-dinner-venue/{id}',[WeddingDinnerVenuesController::class,'func_activate_dinner_venue']);
+            Route::put('/fdeactivate-dinner-venue/{id}',[WeddingDinnerVenuesController::class,'func_deactivate_dinner_venue']);
             Route::delete('/fdelete-dinner-venue/{id}',[WeddingDinnerVenuesController::class,'destroy_dinner_venue']);
             // ---------------------------------------------------
             //                WEDDING DINNER PACKAGE
             // ---------------------------------------------------
-            // Route::get('/vadd-dinner-package-{id}',[WeddingDinnerController::class,'view_add_dinner_package']);
+            // Route::get('/vadd-dinner-package/{id}',[WeddingDinnerController::class,'view_add_dinner_package']);
             // Route::post('/fcreate-dinner-package/{id}',[WeddingDinnerController::class,'func_add_dinner_package']);
-            // Route::get('/update-dinner-package-{id}',[WeddingDinnerController::class,'view_update_dinner_package']);
-            // Route::put('/fupdate-dinner-package-{id}',[WeddingDinnerController::class,'func_update_dinner_package']);
+            // Route::get('/update-dinner-package/{id}',[WeddingDinnerController::class,'view_update_dinner_package']);
+            // Route::put('/fupdate-dinner-package/{id}',[WeddingDinnerController::class,'func_update_dinner_package']);
             // ---------------------------------------------------
             //               WEDDING FOOD AND BEVERAGE
             // ---------------------------------------------------
-            Route::get('/vadd-food-and-beverage/{id}',[WeddingMenuController::class,'view_add_food_and_beverage']);
-            Route::post('/fadd-food-and-beverage/{id}',[WeddingMenuController::class,'func_add_food_and_beverage']);
+            // Route::get('/vadd-food-and-beverage/{id}',[WeddingMenuController::class,'view_add_food_and_beverage']);
+            // Route::post('/fadd-food-and-beverage/{id}',[WeddingMenuController::class,'func_add_food_and_beverage']);
         });
         // ========================================================================================================================================> (WEDDING SALES)
         Route::middleware(['checkPosition:developer,weddingSls'])->group(function () {
@@ -602,49 +610,49 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                       ORDERS
             // ---------------------------------------------------
-            Route::get('/orders-admin',[OrdersAdminController::class,'index'])->name('orders-admin');
-            Route::get('/orders-admin-{id}',[OrdersAdminController::class,'view_order_admin_detail'])->name('view.detail-order-admin');
-            Route::put('/fupdate-confirmation-number-{id}',[OrdersAdminController::class,'func_update_confirmation_number']);
-            Route::post('/fadd-order-note-{id}',[OrdersAdminController::class,'func_add_order_note']);
-            Route::put('/fsend-confirmation-{id}',[OrdersAdminController::class,'func_send_confirmation']);
-            Route::put('/fresend-confirmation-order-{id}',[OrdersAdminController::class,'resend_confirmation_order']);
-            Route::put('/fgenerate-invoice-{id}',[OrdersAdminController::class,'fgenerate_invoice']);
-            Route::put('/fregenerate-invoice-pdf-{id}',[OrdersAdminController::class,'fregenerate_invoice_pdf']);
-            Route::put('/fsend-approval-email-{id}',[OrdersAdminController::class,'fsend_approval_email']);
-            Route::put('/fedit-confirmation-order-{id}',[OrdersAdminController::class,'func_edit_confirmation_order']);
-            Route::put('/fadd-confirmation-order-{id}',[OrdersAdminController::class,'func_add_confirmation_order']);
+            Route::get('/orders-admin',[OrdersAdminController::class,'index'])->name('admin.order.index');
+            Route::get('/orders-admin/{id}',[OrdersAdminController::class,'view_order_admin_detail'])->name('admin.order.show');
+            Route::put('/fupdate-confirmation-number/{id}',[OrdersAdminController::class,'func_update_confirmation_number']);
+            Route::post('/fadd-order-note/{id}',[OrdersAdminController::class,'func_add_order_note']);
+            Route::put('/fsend-confirmation/{id}',[OrdersAdminController::class,'func_send_confirmation']);
+            Route::put('/fresend-confirmation-order/{id}',[OrdersAdminController::class,'resend_confirmation_order']);
+            Route::put('/fgenerate-invoice/{id}',[OrdersAdminController::class,'fgenerate_invoice']);
+            Route::put('/fregenerate-invoice-pdf/{id}',[OrdersAdminController::class,'fregenerate_invoice_pdf']);
+            Route::put('/fsend-approval-email/{id}',[OrdersAdminController::class,'fsend_approval_email']);
+            Route::put('/fedit-confirmation-order/{id}',[OrdersAdminController::class,'func_edit_confirmation_order']);
+            Route::put('/fadd-confirmation-order/{id}',[OrdersAdminController::class,'func_add_confirmation_order']);
             Route::put('/factivate-order/{id}',[OrdersAdminController::class,'func_activate_order']);
-            Route::get('/add-optional-rate-order-{id}',[OrdersAdminController::class,'add_optional_rate_order'])->name('view.add-optional-rate-order');
+            Route::get('/add-optional-rate-order/{id}',[OrdersAdminController::class,'add_optional_rate_order'])->name('view.add-optional-rate-order');
             Route::post('/fadmin-add-optional-service-order/{id}',[OrdersAdminController::class,'func_add_optional_service_order'])->name('func.admin-add-optional-service-order');
             Route::put('/fadmin-update-optional-service-order/{id}',[OrdersAdminController::class,'func_update_optional_service_order'])->name('func.admin-update-optional-service-order');
-            Route::get('/edit-additional-services-{id}',[OrdersAdminController::class,'edit_additional_services']);
-            Route::put('/fedit-additional-services-{id}',[OrdersAdminController::class,'func_edit_additional_services']);
-            Route::get('/edit-airport-shuttle-{id}',[OrdersAdminController::class,'edit_airport_shuttle']);
+            Route::get('/edit-additional-services/{id}',[OrdersAdminController::class,'edit_additional_services']);
+            Route::put('/fedit-additional-services/{id}',[OrdersAdminController::class,'func_edit_additional_services']);
+            Route::get('/edit-airport-shuttle/{id}',[OrdersAdminController::class,'edit_airport_shuttle']);
             Route::post('/fadd-airport-shuttle',[OrdersAdminController::class,'func_add_airport_shuttle']);
-            Route::put('/fedit-airport-shuttles-{id}',[OrdersAdminController::class,'func_edit_airport_shuttle']);
-            Route::put('/fupdate-pickup-dropoff-{id}',[OrdersAdminController::class,'func_update_pickup_dropoff']);
-            Route::put('/fupdate-flight-{id}',[OrdersAdminController::class,'func_update_flight']);
-            Route::get('/admin-edit-order-room-{id}',[OrdersAdminController::class,'admin_edit_order_room']);
-            Route::put('/fadd-guide-order-{id}',[OrdersAdminController::class,'func_add_guide_order']);
-            Route::put('/fedit-guide-order-{id}',[OrdersAdminController::class,'func_edit_guide_order']);
+            Route::put('/fedit-airport-shuttles/{id}',[OrdersAdminController::class,'func_edit_airport_shuttle']);
+            Route::put('/fupdate-pickup-dropoff/{id}',[OrdersAdminController::class,'func_update_pickup_dropoff']);
+            Route::put('/fupdate-flight/{id}',[OrdersAdminController::class,'func_update_flight']);
+            Route::get('/admin-edit-order-room/{id}',[OrdersAdminController::class,'admin_edit_order_room']);
+            Route::put('/fadd-guide-order/{id}',[OrdersAdminController::class,'func_add_guide_order']);
+            Route::put('/fedit-guide-order/{id}',[OrdersAdminController::class,'func_edit_guide_order']);
             Route::put('/fdelete-guide-order/{id}',[OrdersAdminController::class,'func_delete_guide_order']);
-            Route::put('/fadd-driver-order-{id}',[OrdersAdminController::class,'func_add_driver_order']);
-            Route::put('/fedit-driver-order-{id}',[OrdersAdminController::class,'func_edit_driver_order']);
-            Route::put('/fdelete-driver-order-{id}',[OrdersAdminController::class,'func_delete_driver_order']);
+            Route::put('/fadd-driver-order/{id}',[OrdersAdminController::class,'func_add_driver_order']);
+            Route::put('/fedit-driver-order/{id}',[OrdersAdminController::class,'func_edit_driver_order']);
+            Route::put('/fdelete-driver-order/{id}',[OrdersAdminController::class,'func_delete_driver_order']);
             Route::put('/fadmin-update-order/{id}',[OrdersAdminController::class,'fadmin_update_order'])->name('func.order-admin.update');
             Route::put('/farchive-order/{id}',[OrdersAdminController::class,'func_archive_order']);
             Route::put('/fupdate-order-invalid/{id}',[OrdersAdminController::class,'func_update_order_invalid']);
             Route::put('/fupdate-order-rejected/{id}',[OrdersAdminController::class,'func_update_order_rejected']);
             Route::put('/fupdate-order-discounts/{id}',[OrdersAdminController::class,'func_update_order_discounts'])->name('func.admin-update-order-dicounts');
             
-            Route::put('/ffinalization-order-{id}',[OrdersAdminController::class,'func_finalization_order'])->name('func.admin-finalization-order');
+            Route::put('/ffinalization-order/{id}',[OrdersAdminController::class,'func_finalization_order'])->name('func.admin-finalization-order');
             Route::delete('/optional-rate-order/{id}', [OrdersAdminController::class, 'remove_optional_rate_order'])->name('optional-rate-order.destroy');
 
             // ---------------------------------------------------
             //                    ORDER WEDDING
             // ---------------------------------------------------
-            Route::post('/fadd-order-wedding-note-{id}',[OrdersAdminController::class,'func_add_order_wedding_note']);
-            Route::get('/update-wedding-service-{id}',[OrdersAdminController::class, 'view_update_wedding_service']);
+            Route::post('/fadd-order-wedding-note/{id}',[OrdersAdminController::class,'func_add_order_wedding_note']);
+            Route::get('/update-wedding-service/{id}',[OrdersAdminController::class, 'view_update_wedding_service']);
             Route::put('/fupdate-order-wedding-venue/{id}',[OrdersAdminController::class,'func_update_order_wedding_venue']);
             Route::put('/fupdate-order-wedding-room/{id}',[OrdersAdminController::class,'func_update_order_wedding_room']);
             Route::put('/fupdate-order-wedding-makeup/{id}',[OrdersAdminController::class,'func_update_order_wedding_makeup']);
@@ -660,7 +668,7 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fadmin-update-bridal/{id}',[OrdersAdminController::class,'func_update_bridal']);
             Route::delete('/fremove-airport-shuttle/{id}',[OrdersAdminController::class,'func_remove_airport_shuttle']);
             Route::delete('/admin-delete-opser/{id}',[OrdersAdminController::class,'destroy_opser_order']);
-            Route::get('/contract-{id}',[OrdersAdminController::class,'view_contract_wedding_eng']);
+            Route::get('/contract/{id}',[OrdersAdminController::class,'view_contract_wedding_eng']);
             Route::put('/confirm-order-wedding/{id}',[OrdersAdminController::class,'func_confirm_order_wedding']);
             Route::put('/func-add-order-wedding-flight-admin/{id}',[OrdersAdminController::class,'func_add_order_wedding_flight']);
             Route::delete('/func-delete-order-wedding-flight-admin/{id}',[OrdersAdminController::class,'func_delete_order_wedding_flight_admin']);
@@ -671,13 +679,13 @@ use Illuminate\Support\Facades\Route;
             Route::put('/admin-fupdate-additional-charge/{id}',[OrdersAdminController::class,'func_admin_update_request_service']);
             Route::put('/admin-fdelete-additional-charge/{id}',[OrdersAdminController::class,'func_admin_delete_request_service']);
             Route::put('/fadmin-add-order-wedding-accommodation/{id}',[OrdersAdminController::class,'func_admin_add_order_wedding_accommodation']);
-            Route::get('/admin-validate-order-wedding-accommodation-{id}',[OrdersAdminController::class,'view_validate_order_wedding_accommodation']);
+            Route::get('/admin-validate-order-wedding-accommodation/{id}',[OrdersAdminController::class,'view_validate_order_wedding_accommodation']);
             Route::put('/admin-fupdate-accommodation-wedding-order/{id}',[OrdersAdminController::class,'func_update_wedding_order_accommodation']);
             Route::put('/admin-fupdate-accommodation-brides/{id}',[OrdersAdminController::class,'admin_func_update_accommodation_brides']);
             Route::put('/admin-fupdate-accommodation-invitation-price/{id}',[OrdersAdminController::class,'admin_func_update_accommodation_invitation']);
             Route::put('/admin-fupdate-price-accommodation/{id}',[OrdersAdminController::class,'admin_func_update_price_accommodation']);
             Route::delete('/admin-func-delete-order-wedding-accommodation/{id}',[OrdersAdminController::class,'func_delete_order_wedding_accommodation_invitation']);
-            Route::get('/validate-orders-wedding-{id}',[OrdersAdminController::class,'view_validate_order_wedding']);
+            Route::get('/validate-orders-wedding/{id}',[OrdersAdminController::class,'view_validate_order_wedding']);
             Route::put('/admin-fupdate-wedding-order-bride/{id}',[OrdersAdminController::class,'func_validate_bride_order_wedding']);
             Route::put('/admin-fupdate-wedding-order-wedding/{id}',[OrdersAdminController::class,'func_validate_wedding_and_reservation']);
             Route::put('/admin-fupdate-wedding-order-ceremony-venue/{id}',[OrdersAdminController::class,'func_validate_wedding_order_ceremony_venue']);
@@ -690,7 +698,7 @@ use Illuminate\Support\Facades\Route;
             Route::put('/admin-fupdate-wedding-order-decoration-reception-venue/{id}',[OrdersAdminController::class,'admin_func_update_decoration_reception_venue']);
             Route::put('/admin-fdelete-wedding-order-decoration-reception-venue/{id}',[OrdersAdminController::class,'admin_func_delete_decoration_reception_venue']);
             Route::put('/admin-fadd-additional-service-to-order-wedding/{id}',[OrdersAdminController::class,'admin_func_add_additional_service_to_wedding_order']);
-            Route::put('/admin-fupdate-confirmation-number-{id}',[OrdersAdminController::class,'admin_func_update_confirmation_numbber']);
+            Route::put('/admin-fupdate-confirmation-number/{id}',[OrdersAdminController::class,'admin_func_update_confirmation_numbber']);
             Route::put('/fvalidate-order-wedding/{id}',[OrdersAdminController::class,'admin_func_validate_order_wedding']);
             Route::put('/admin-fadd-transport-invitation/{id}',[OrdersAdminController::class,'admin_func_add_transport_invitation_wedding']);
             Route::put('/admin-fupdate-transport-invitation/{id}',[OrdersAdminController::class,'admin_func_update_transport_invitation']);
@@ -699,15 +707,16 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                    RESERVATION (RSV)
             // ---------------------------------------------------
-            Route::get('/reservation',[ReservationController::class, 'index']);
-            Route::get('/order-rsv-{id}',[ReservationController::class, 'view_order_rsv']);
-            Route::get('/reservation-{id}',[ReservationController::class, 'view_detail_reservation']);
-            Route::get('/rsv-hotel-{id}',[ReservationController::class, 'view_reservation_hotel']);
-            Route::get('/add-rsv-order-{id}',[ReservationController::class, 'view_add_rsv_order']);
-            Route::get('/add-rsv-transport-{id}',[ReservationController::class, 'view_add_rsv_transport']);
-            Route::get('/add-rsv-activity-tour-{id}',[ReservationController::class, 'view_add_rsv_activity_tour']);
+            Route::get('/reservation',[ReservationController::class, 'index'])->name('view.reservation');
+            Route::get('/order-rsv/{id}',[ReservationController::class, 'view_order_rsv']);
+            Route::get('/reservation/{id}',[ReservationController::class, 'view_detail_reservation'])->whereNumber('id')->name('view.reservation.detail');
+            Route::put('/reservation/{reservation}/invoice',[ReservationController::class, 'create_reservation_invoice'])->whereNumber('reservation')->name('view.reservation.invoice.store');
+            Route::get('/rsv-hotel/{id}',[ReservationController::class, 'view_reservation_hotel']);
+            Route::get('/add-rsv-order/{id}',[ReservationController::class, 'view_add_rsv_order']);
+            Route::get('/add-rsv-transport/{id}',[ReservationController::class, 'view_add_rsv_transport']);
+            Route::get('/add-rsv-activity-tour/{id}',[ReservationController::class, 'view_add_rsv_activity_tour']);
             Route::put('/fremove-rsv-order/{id}',[ReservationController::class,'func_remove_rsv_order']);
-            Route::put('/fadd-reservation',[ReservationController::class,'func_add_rsv_order']);
+            Route::put('/fadd-reservation',[ReservationController::class,'func_add_rsv_order'])->name('admin.reservations.manual.store');
             Route::put('/fupdate-accommodation/{id}',[ReservationController::class,'func_update_accommodation']);
             Route::put('/fupdate-restaurant/{id}',[ReservationController::class,'func_update_restaurant']);
             Route::put('/fupdate-activity-tour/{id}',[ReservationController::class,'func_update_activity_tour']);
@@ -716,7 +725,7 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fupdate-remark/{id}',[ReservationController::class,'func_update_remark']);
             Route::put('/fupdate-invoice-bank/{id}',[ReservationController::class,'func_update_invoice_bank']);
             Route::put('/activate-reservation/{id}',[ReservationController::class,'func_activate_reservation']);
-            Route::put('/deactivate-reservation/{id}',[ReservationController::class,'func_deactivate_reservation']);
+            Route::put('/deactivate-reservation/{id}',[ReservationController::class,'func_deactivate_reservation'])->whereNumber('id')->name('view.reservation.deactivate');
             Route::put('/fadd-guest/{id}',[ReservationController::class,'func_add_guest'])->name('func.reservation-add-guest');
             Route::put('/fadd-restaurant',[ReservationController::class,'func_add_restaurant']);
             Route::put('/fadd-include',[ReservationController::class,'func_add_include']);
@@ -732,14 +741,16 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/fdelete-include/{id}',[ReservationController::class,'destroy_include']);
             Route::delete('/fdelete-exclude/{id}',[ReservationController::class,'destroy_exclude']);
             Route::delete('/fdelete-remark/{id}',[ReservationController::class,'destroy_remark']);
-            Route::delete('/fdelete-rsv/{id}',[ReservationController::class,'destroy_rsv']);
+            Route::delete('/fdelete-rsv/{id}',[ReservationController::class,'destroy_rsv'])->whereNumber('id')->name('admin.reservations.destroy');
             // ---------------------------------------------------
             //                      INVOICE
             // ---------------------------------------------------
-            Route::get('/invoice',[InvoiceAdminController::class,'index']);
-            Route::get('/invoice-{id}',[InvoiceAdminController::class,'view_detail_invoice']);
-            Route::put('/fupdate-additional-inv/{id}',[InvoiceAdminController::class,'func_update_additional_inv']);
-            Route::delete('/delete-additional-inv/{id}',[InvoiceAdminController::class,'destroy_additional_inv']);
+            Route::get('/invoice',[InvoiceAdminController::class,'index'])->name('admin.invoices.index');
+            Route::get('/invoice/{invoice}',[InvoiceAdminController::class,'view_detail_invoice'])->whereNumber('invoice')->name('admin.invoices.show');
+            Route::put('/invoice/{invoice}/additional-items',[InvoiceAdminController::class,'func_add_additional_inv'])->whereNumber('invoice')->name('admin.invoices.adjustments.store');
+            Route::put('/fupdate-additional-inv/{additionalInvoice}',[InvoiceAdminController::class,'func_update_additional_inv'])->whereNumber('additionalInvoice')->name('admin.invoices.adjustments.update');
+            Route::delete('/delete-additional-inv/{additionalInvoice}',[InvoiceAdminController::class,'destroy_additional_inv'])->whereNumber('additionalInvoice')->name('admin.invoices.adjustments.destroy');
+            Route::put('/invoice/{invoice}/bank',[InvoiceAdminController::class,'updateBank'])->whereNumber('invoice')->name('admin.invoices.bank.update');
             // ---------------------------------------------------
             //                PAYMENT CONFIRMATION
             // ---------------------------------------------------
@@ -747,47 +758,60 @@ use Illuminate\Support\Facades\Route;
             Route::get('/orders-admin/{order}/transport/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'adminTransportReceipt'])->name('admin.orders.transport.payments.receipt');
             Route::get('/orders-admin/{order}/tour/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'adminTourReceipt'])->name('admin.orders.tour.payments.receipt');
             Route::get('/orders-admin/{order}/activity/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'adminActivityReceipt'])->name('admin.orders.activity.payments.receipt');
-            Route::get('/orders-admin/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'adminInvoicePreview'])->where('locale', 'en|zh')->name('admin.orders.accommodation.invoice.preview');
-            Route::get('/orders-admin/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'adminInvoiceDownload'])->where('locale', 'en|zh')->name('admin.orders.accommodation.invoice.download');
-            Route::post('/fconfirmation-payment-{id}',[OrdersAdminController::class,'fconfirmation_payment'])->name('admin.confirm.receipt');
-            Route::post('/fadmin-add-payment-confirmation-{id}',[OrdersAdminController::class,'admin_add_payment_confirmation'])->name('func.admin-add-payment-confirmation');
-            Route::post('/forder-wedding-confirmation-payment-{id}',[OrdersAdminController::class,'forder_wedding_confirmation_payment']);
-            Route::post('/order-wedding-add-payment-confirmation-{id}',[OrdersAdminController::class,'admin_add_payment_confirmation_to_order_wedding']);
+            Route::get('/orders-admin/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'adminInvoicePreview'])->where('locale', 'en|zh-CN|zh')->name('admin.orders.accommodation.invoice.preview');
+            Route::get('/orders-admin/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'adminInvoiceDownload'])->where('locale', 'en|zh-CN|zh')->name('admin.orders.accommodation.invoice.download');
+            Route::post('/fconfirmation-payment/{id}',[OrdersAdminController::class,'fconfirmation_payment'])->name('admin.confirm.receipt');
+            Route::post('/fadmin-add-payment-confirmation/{id}',[OrdersAdminController::class,'admin_add_payment_confirmation'])->name('func.admin-add-payment-confirmation');
+            Route::post('/forder-wedding-confirmation-payment/{id}',[OrdersAdminController::class,'forder_wedding_confirmation_payment']);
+            Route::post('/order-wedding-add-payment-confirmation/{id}',[OrdersAdminController::class,'admin_add_payment_confirmation_to_order_wedding']);
         });
         // ========================================================================================================================================> (ADMIN)
         Route::middleware(['adminType'])->group(function () {
+            Route::prefix('admin')->group(function () {
+                // ---------------------------------------------------
+                //                       HOTELS
+                // ---------------------------------------------------
+                Route::get('/hotels',[HotelAdminController::class,'index'])->name('admin.hotels.index');
+                Route::get('/detail-hotel/{id}',[HotelAdminController::class,'show'])->name('admin.hotels.show');
+                Route::get('/edit-hotel/{id}',[HotelAdminController::class,'edit'])->name('admin.hotels.edit');
+                Route::get('/add-hotel-price/{id}',[HotelNormalPriceAdminController::class,'create'])->name('admin.hotels.prices.create');
+                Route::get('/add-hotel-promo/{id}',[HotelPromoAdminController::class,'create'])->name('admin.hotels.promos.create');
+                Route::get('/add-hotel',[HotelAdminController::class,'create'])->name('admin.hotels.create');
+                Route::get('/edit-galery-hotel/{id}',[HotelGalleryAdminController::class,'edit'])->name('admin.hotels.gallery.edit');
+                Route::post('/fadd-hotel',[HotelAdminController::class,'store'])->name('func.hotel.add');
+                Route::post('/fadd-optionalrate',[HotelsAdminController::class,'func_add_optionalrate'])->name('func.optional_rate.add');
+                Route::post('/fadd-hotel-contract',[HotelContractAdminController::class,'store'])->name('admin.hotels.contracts.store');
+                Route::put('/fupdate-hotel-contract/{id}',[HotelContractAdminController::class,'update'])->name('admin.hotels.contracts.update');
+                Route::delete('/fdelete-contract/{id}',[HotelContractAdminController::class,'destroy'])->name('admin.hotels.contracts.destroy');
+                Route::put('/fupdate-optionalrate/{id}',[HotelsAdminController::class,'func_edit_optionalrate'])->name('func.optional_rate.update');
+                Route::delete('/remove-hotel/{id}',[HotelAdminController::class,'destroy'])->name('admin.hotels.destroy');
+                Route::delete('/fdelete-hotel-cover/{id}',[HotelGalleryAdminController::class,'destroyCover'])->name('admin.hotels.cover.destroy');
+                Route::delete('/fdelete-hotel-img/{id}',[HotelGalleryAdminController::class,'destroyImage'])->name('admin.hotels.images.destroy');
+                Route::delete('/fdelete-optionalrate/{id}',[HotelsAdminController::class,'delete_optionalrate'])->name('func.optional_rate.delete');
+
+            });
             // ---------------------------------------------------
-            //                       HOTELS
+            //                   HOTELS PACKAGE
             // ---------------------------------------------------
-            Route::get('/hotels-admin',[HotelAdminController::class,'index'])->name('hotels-admin.index');
-            Route::get('/detail-hotel-{id}',[HotelAdminController::class,'show'])->name('admin.hotels.show');
-            Route::get('/edit-hotel-{id}',[HotelAdminController::class,'edit'])->name('admin.hotels.edit');
-            Route::get('/add-hotel-price-{id}',[HotelNormalPriceAdminController::class,'create'])->name('admin.hotels.prices.create');
-            Route::get('/add-hotel-promo-{id}',[HotelPromoAdminController::class,'create'])->name('admin.hotels.promos.create');
-            Route::get('/add-hotel',[HotelAdminController::class,'create'])->name('admin.hotels.create');
-            Route::get('/edit-galery-hotel-{id}',[HotelGalleryAdminController::class,'edit'])->name('admin.hotels.gallery.edit');
-            Route::post('/fadd-hotel',[HotelAdminController::class,'store'])->name('func.hotel.add');
-            Route::post('/fadd-optionalrate',[HotelsAdminController::class,'func_add_optionalrate'])->name('func.optional_rate.add');
-            Route::post('/fadd-hotel-contract',[HotelContractAdminController::class,'store'])->name('admin.hotels.contracts.store');
-            Route::put('/fupdate-hotel-contract/{id}',[HotelContractAdminController::class,'update'])->name('admin.hotels.contracts.update');
-            Route::delete('/fdelete-contract/{id}',[HotelContractAdminController::class,'destroy'])->name('admin.hotels.contracts.destroy');
-            Route::put('/fupdate-optionalrate/{id}',[HotelsAdminController::class,'func_edit_optionalrate'])->name('func.optional_rate.update');
-            Route::delete('/remove-hotel/{id}',[HotelAdminController::class,'destroy'])->name('admin.hotels.destroy');
-            Route::delete('/fdelete-hotel-cover/{id}',[HotelGalleryAdminController::class,'destroyCover'])->name('admin.hotels.cover.destroy');
-            Route::delete('/fdelete-hotel-img/{id}',[HotelGalleryAdminController::class,'destroyImage'])->name('admin.hotels.images.destroy');
-            Route::delete('/fdelete-optionalrate/{id}',[HotelsAdminController::class,'delete_optionalrate'])->name('func.optional_rate.delete');
-            Route::get('/add-hotel-additional-charge-{id}',[HotelAdditionalChargeAdminController::class,'create'])->name('admin.hotels.additional-charges.create');
-            Route::get('/edit-hotel-additional-charge-{id}',[HotelAdditionalChargeAdminController::class,'edit'])->name('admin.hotels.additional-charges.edit');
+            Route::get('/add-hotel-package/{id}',[HotelPackageAdminController::class,'create'])->name('admin.hotels.packages.create');
+            Route::get('/edit-hotel-package/{id}',[HotelPackageAdminController::class,'edit'])->name('admin.hotels.packages.edit');
+            Route::post('/fadd-package',[HotelPackageAdminController::class,'store'])->name('admin.hotels.packages.store');
+            Route::put('/fedit-package/{id}',[HotelPackageAdminController::class,'update'])->name('admin.hotels.packages.update');
+            Route::delete('/delete-package/{id}',[HotelPackageAdminController::class, 'destroy'])->name('admin.hotels.packages.destroy');
+            // ---------------------------------------------------
+            //                ADDITIONAL CHARGE HOTEL
+            // ---------------------------------------------------
+            Route::get('/add-hotel-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'create'])->name('admin.hotels.additional-charges.create');
+            Route::get('/edit-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'edit'])->name('admin.hotels.additional-charges.edit');
             Route::delete('/fdelete-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'destroy'])->name('admin.hotels.additional-charges.destroy');
             Route::post('/fadd-additional-charge',[HotelAdditionalChargeAdminController::class,'store'])->name('admin.hotels.additional-charges.store');
             Route::put('/fupdate-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'update'])->name('admin.hotels.additional-charges.update');
             // ---------------------------------------------------
-            
-            //                           VILLAS
+            //                        VILLAS
             // ---------------------------------------------------
-            Route::get('/villas-admin',[VillasController::class,'admin_index'])->name('villas-admin.index');
-            Route::get('/admin-villa-detail-{id}',[VillasController::class,'admin_villa_detail'])->name('admin.villa.show');
-            Route::get('/admin-villa-edit-{id}',[VillasController::class,'admin_villa_edit'])->name('admin.villa.edit');
+            Route::get('/villas-admin',[VillasController::class,'admin_index'])->name('admin.villas.index');
+            Route::get('/admin-villa-detail/{id}',[VillasController::class,'admin_villa_detail'])->name('admin.villa.show');
+            Route::get('/admin-villa-edit/{id}',[VillasController::class,'admin_villa_edit'])->name('admin.villa.edit');
             Route::delete('/fdelete-villa/{id}',[VillasController::class,'func_delete_villa'])->name('func.villa.delete');
             Route::put('/fupdate-villa/{id}',[VillasController::class,'func_update_villa'])->name('func.update-villa');
             Route::post('/fadd-villa-contract',[VillasController::class,'func_add_villa_contract'])->name('func.add-villa-contract');
@@ -795,12 +819,12 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fupdate-villa-contract/{id}',[VillasController::class,'func_edit_villa_contract'])->name('func.update-villa-contract');
             Route::put('/fupdate-villa-room/{id}',[VillasController::class,'func_update_villa_room'])->name('func.update-villa-room');
             Route::delete('/fdelete-villa-room/{id}',[VillasController::class,'func_delete_villa_room'])->name('func.delete-villa-room');
-            Route::get('/admin-villa-room-add-{id}',[VillasController::class,'view_add_villa_room'])->name('admin.villa-room.add');
-            Route::get('/edit-villa-room-{id}',[VillasController::class,'admin_edit_villa_room'])->name('view.edit-villa-room');
+            Route::get('/admin-villa-room-add/{id}',[VillasController::class,'view_add_villa_room'])->name('admin.villa-room.add');
+            Route::get('/edit-villa-room/{id}',[VillasController::class,'admin_edit_villa_room'])->name('view.edit-villa-room');
             Route::post('/fadd-villa-room',[VillasController::class,'func_add_villa_room'])->name('func.add-villa-room');
-            Route::get('/edit-villa-room-{id}',[VillasController::class,'admin_edit_villa_room'])->name('view.edit-villa-room');
+            Route::get('/edit-villa-room/{id}',[VillasController::class,'admin_edit_villa_room'])->name('view.edit-villa-room');
             
-            Route::get('/add-villa-price-{id}',[VillasController::class,'view_admin_add_villa_price'])->name('view.add-villa-price');
+            Route::get('/add-villa-price/{id}',[VillasController::class,'view_admin_add_villa_price'])->name('view.add-villa-price');
             Route::post('/fadd-villa-price/{id}',[VillasController::class,'func_add_villa_price'])->name('func.villa-price.add');
             Route::put('/fupdate-villa-price/{id}',[VillasController::class,'func_edit_villa_price'])->name('func.villa-price.update');
             Route::delete('/fdelete-villa-price/{id}',[VillasController::class,'func_delete_villa_price'])->name('func.villa-price.delete');
@@ -819,32 +843,33 @@ use Illuminate\Support\Facades\Route;
             Route::post('/tours/gallery/{id}/update', [TourGalleryAdminController::class, 'update'])->name('func.tour-gallery.update');
 
 
-            Route::get('/tours-admin',[TourAdminController::class,'index'])->name('tours-admin.index');
-            Route::get('/detail-tour-{id}',[TourAdminController::class,'show'])->name('admin.tours.show');
-            Route::get('/edit-tour-{id}',[TourAdminController::class,'edit'])->name('admin.tours.edit');
+            Route::get('/tour-package-admin',[TourAdminController::class,'index'])->name('admin.tour-packages.index');
+            Route::get('/detail-tour/{id}',[TourAdminController::class,'show'])->name('admin.tours.show');
+            Route::get('/edit-tour/{id}',[TourAdminController::class,'edit'])->name('admin.tours.edit');
             Route::delete('/remove-tour/{id}',[TourAdminController::class,'destroy'])->name('admin.tours.destroy');
             Route::get('/add-tour',[TourAdminController::class,'create'])->name('admin.tours.create');
             Route::get('/tour-location/references',[TourAdminController::class,'searchTourLocationReferences'])->name('tour-location.references');
             Route::post('/tour-location/resolve-coordinates',[TourAdminController::class,'resolveTourLocationCoordinates'])->name('tour-location.resolve-coordinates');
-            Route::post('/fadd-tour-price-{id}',[TourPriceAdminController::class,'store'])->name('admin.tours.prices.store');
-            Route::put('/fedit-tour-price-{id}',[TourPriceAdminController::class,'update'])->name('admin.tours.prices.update');
-            Route::delete('/fdelete-tour-price-{id}',[TourPriceAdminController::class,'destroy'])->name('admin.tours.prices.destroy');
+            Route::post('/detail-tour-{tour}/prices',[TourPriceAdminController::class,'store'])->name('admin.tours.prices.store');
+            Route::put('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'update'])->name('admin.tours.prices.update');
+            Route::delete('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'destroy'])->name('admin.tours.prices.destroy');
+            Route::post('/detail-tour-{tour}/prices/{tourPrice}/restore',[TourPriceAdminController::class,'restore'])->name('admin.tours.prices.restore');
             
             // ---------------------------------------------------
             //                     ACTIVITIES 
             // ---------------------------------------------------
-            Route::get('/activities-admin',[ActivityAdminController::class,'index'])->name('activities-admin.index');
-            Route::get('/detail-activity-{id}',[ActivityAdminController::class,'show'])->name('admin.activities.show');
+            Route::get('/activities-admin',[ActivityAdminController::class,'index'])->name('admin.activities.index');
+            Route::get('/detail-activity/{id}',[ActivityAdminController::class,'show'])->name('admin.activities.show');
             // ---------------------------------------------------
             //                     TRANSPORTS 
             // ---------------------------------------------------
-            Route::get('/transports-admin',[TransportAdminController::class,'index'])->name('transports-admin.index');
-            Route::get('/detail-transport-{id}',[TransportAdminController::class,'show'])->name('admin.transports.show');
+            Route::get('/transports-admin',[TransportAdminController::class,'index'])->name('admin.transports.index');
+            Route::get('/detail-transport/{id}',[TransportAdminController::class,'show'])->name('admin.transports.show');
             // ---------------------------------------------------
-            //                      PARTNERS 
+            //                      VENDORS 
             // ---------------------------------------------------
-            Route::get('/partners',[PartnersController::class,'index'])->name('partners-admin.index');
-            Route::get('/detail-partner-{id}',[PartnersController::class,'view_partner_detail']);
+            Route::get('/vendors-admin',[PartnersController::class,'index'])->name('admin.vendors.index');
+            Route::get('/detail-vendor/{id}',[PartnersController::class,'view_vendors_detail'])->name('admin.vendors.show');
             // ---------------------------------------------------
             //                        EMAIL 
             // ---------------------------------------------------
@@ -860,16 +885,16 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                        GUIDE
             // ---------------------------------------------------
-            Route::get('/guides-admin',[GuideController::class,'index'])->name('guides-admin.index');
+            Route::get('/guides-admin',[GuideController::class,'index'])->name('admin.guides.index');
             Route::post('/fcreate-guide',[GuideController::class,'create'])->name('create-guide');
-            Route::post('/fedit-guide-{id}',[GuideController::class,'edit'])->name('edit-guide');
+            Route::post('/fedit-guide/{id}',[GuideController::class,'edit'])->name('edit-guide');
             Route::delete('/fdestroy-guide/{id}',[GuideController::class,'destroy'])->name('destroy-guide');
             // ---------------------------------------------------
             //                       DRIVER
             // ---------------------------------------------------
-            Route::get('/drivers-admin',[DriversController::class,'index'])->name('drivers-admin.index');
+            Route::get('/drivers-admin',[DriversController::class,'index'])->name('admin.drivers.index');
             Route::post('/fcreate-driver',[DriversController::class,'create'])->name('create-driver');
-            Route::post('/fedit-driver-{id}',[DriversController::class,'edit'])->name('edit-driver');
+            Route::post('/fedit-driver/{id}',[DriversController::class,'edit'])->name('edit-driver');
             Route::delete('/fdestroy-driver/{id}',[DriversController::class,'destroy'])->name('destroy-driver');
             
             // ---------------------------------------------------
@@ -898,13 +923,18 @@ use Illuminate\Support\Facades\Route;
             Route::post('/spk/{id}/airport-shuttle/add', [SpksController::class, 'func_add_airport_shuttle'])->name('func.spk-airport-shuttle.add');
             Route::delete('/spk/airport-shuttle-delete/{id}', [SpksController::class, 'func_delete_airport_shuttle'])->name('func.spk-airport-shuttle.delete');
             Route::post('/spk/airport-shuttle-update/{id}', [SpksController::class, 'func_update_airport_shuttle'])->name('func.spk-airport-shuttle.update');
+            Route::get('/spks/{id}/detail', [SpksController::class, 'spk_detail'])->name('spks.detail.partials');
 
+            // |--------------------------------------------------------------------------
+            // | RESERVATION
+            // |--------------------------------------------------------------------------
             Route::get('/reservation/{no}', [ReservationController::class, 'detail_reservation'])->name('view.detail-reservation');
             Route::get('/reservation-archive', [ReservationController::class, 'reservationArchive'])->name('reservation.archive');
             Route::resource('reservations', ReservationController::class);
             Route::post('reservations/{reservation}/generate-spk', [ReservationController::class, 'generateSpks'])->name('reservations.generateSpks');
             Route::resource('spks', SpksController::class)->only(['show']);
-            Route::get('/spks/{id}/detail', [SpksController::class, 'spk_detail'])->name('spks.detail.partials');
+
+
 
             // Send WhatsApp melalui web whatsapp
             // |--------------------------------------------------------------------------
@@ -922,18 +952,18 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                      CONTRACT
             // ---------------------------------------------------
-            Route::get('/confirmation-order-{id}', [OrdersAdminController::class, 'confirmation_order']);
-            Route::get('/print-contract-order-{id}', [OrdersAdminController::class, 'print_contract_order']);
-            Route::get('/print-contract-wedding-{id}', [OrdersAdminController::class, 'print_contract_wedding']);
+            Route::get('/confirmation-order/{id}', [OrdersAdminController::class, 'confirmation_order']);
+            Route::get('/print-contract-order/{id}', [OrdersAdminController::class, 'print_contract_order']);
+            Route::get('/print-contract-wedding/{id}', [OrdersAdminController::class, 'print_contract_wedding']);
             // ---------------------------------------------------
             //                       WEDDING
             // ---------------------------------------------------
             Route::get('/weddings-admin',[WeddingsController::class,'index'])->name('weddings-admin.index');
-            Route::get('/weddings-hotel-admin-{id}',[WeddingsController::class,'view_wedding_hotel_admin_detail']);
-            Route::get('/vendors-admin',[VendorController::class,'index'])->name('vendors-admin.index');
-            Route::get('/detail-vendor-{id}',[VendorController::class,'view_vendor_detail']);
+            Route::get('/weddings-hotel-admin/{id}',[WeddingsController::class,'view_wedding_hotel_admin_detail']);
+            // Route::get('/vendors-admin',[VendorController::class,'index'])->name('vendors-admin.index');
+            Route::get('/detail-vendor/{id}',[VendorController::class,'view_vendor_detail']);
             Route::put('/frefresh-wedding-price/{id}',[WeddingsController::class,'func_refresh_wedding_price']);
-            Route::get('/weddings-admin-{id}',[WeddingsController::class,'view_wedding_admin_detail']);
+            Route::get('/weddings-admin/{id}',[WeddingsController::class,'view_wedding_admin_detail']);
         });
         // ========================================================================================================================================> (AGENT)
         Route::group([], function () {
@@ -945,7 +975,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('/hotels/autocomplete-region', [HotelsController::class, 'autocompleteRegion'])->name('hotels.autocompleteRegion');
             Route::get('/hotels/load-more', [HotelsController::class, 'loadMore'])->name('hotels.load-more');
             Route::post('/search-hotels',[HotelsController::class,'search_hotel'])->name('view.hotels-search');
-            Route::post('/order-room-{id}',[HotelsController::class,'order_room'])->name('view.order-room');
+            Route::post('/order-room/{id}',[HotelsController::class,'order_room'])->name('view.order-room');
             Route::post('/fcheck-code',[HotelsController::class,'fcheck_code'])->name('func.hotel-check-code');
             Route::get('/accommodation/price-{code}', function (Request $request, $code) {
                 $checkin = $request->query('checkin') ?: session('booking_dates.checkin');
@@ -959,7 +989,7 @@ use Illuminate\Support\Facades\Route;
                     ]);
                 }
 
-                return redirect()->route('view.accommodation-detail', [
+                return redirect()->route('view.hotel-detail', [
                     'code' => $code,
                     'check_price' => 1,
                 ]);
@@ -973,12 +1003,10 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                           VILLAS
             // ---------------------------------------------------
-            Route::get('/villas',[VillasController::class,'index'])->name('view.villas.index');
+            Route::get('/villas',[VillasController::class,'index'])->name('view.villas-service');
             Route::get('/villas/autocomplete', [VillasController::class, 'autocomplete'])->name('villas.autocomplete');
             Route::get('/villas/autocomplete-region', [VillasController::class, 'autocompleteRegion'])->name('villas.autocompleteRegion');
             Route::get('/villas/load-more', [VillasController::class, 'loadMore'])->name('villas.load-more');
-
-
             Route::get('/villas/{code}',[VillasController::class,'show'])->name('view.villas.show');
             Route::post('/villa-price-{code}',[VillasController::class,'villa_price'])->name('view.villa-prices');
             Route::get('/villas/search', [VillasController::class, 'search_villas'])->name('villas.search-villas');
@@ -990,7 +1018,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                    TOURS PACKAGES AGENT 
             // ---------------------------------------------------
-            Route::get('/tour-packages',[ToursController::class,'index'])->name('view.tours');
+            // Route::get('/tour-packages',[ToursController::class,'index'])->name('view.tours');
             Route::get('/tour-{code}-{bcode}',[ToursController::class,'view_tour_detail_bookingcode'])->name('view.tour-detail-bookingcode');
             Route::get('/tours/load-more', [ToursController::class, 'loadMore'])->name('tours.load-more');
             Route::post('/search-tours',[ToursController::class,'search_tour'])->name('view.tour-search');
@@ -1007,7 +1035,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                      ACTIVITY
             // ---------------------------------------------------
-            Route::get('/activities',[ActivitiesController::class,'index'])->name('view.activities');
+            // Route::get('/activities',[ActivitiesController::class,'index'])->name('view.activities-service');
             Route::get('/activity-{code}-{bcode}',[ActivitiesController::class,'activitydetail_bookingcode'])->name('view.activity-detail-booking-code');
             Route::get('/activity-{code}',[ActivitiesController::class,'activitydetail'])->name('view.activity-detail');
             Route::post('/activity-detail',[ActivitiesController::class,'activity_check_code'])->name('view.activity-check-code');
@@ -1015,7 +1043,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                      TRANSPORT
             // ---------------------------------------------------
-            Route::get('/transports',[transportsController::class,'index'])->name('view.transports');
+            // Route::get('/transports',[transportsController::class,'index'])->name('view.transports-service');
             Route::get('/transport-{code}',[transportsController::class,'transport_detail'])->name('view.transport-detail');
             Route::get('/transport/{code}/{bcode}',[transportsController::class,'transport_detail_bookingcode'])->name('view.transport-detail-booking-code');
             Route::post('/transport-detail',[transportsController::class,'transport_check_code'])->name('view.transport-detail-check-code');
@@ -1028,12 +1056,12 @@ use Illuminate\Support\Facades\Route;
             Route::get('/orders/{id}/invoice/preview', [OrderController::class, 'preview_order_invoice'])->name('orders.invoice.preview');
             Route::get('/orders/{id}/invoice/download', [OrderController::class, 'download_order_invoice'])->name('orders.invoice.download');
 
-            Route::get('/order-{id}',[OrderController::class,'detail_order'])->name('view.detail-order');
+            Route::get('/order/{id}',[OrderController::class,'detail_order'])->name('view.detail-order');
             Route::post('/fadd-order',[OrderController::class,'func_add_order'])->name('func.add-order');
             Route::put('/cancel-order/{id}',[OrderController::class,'func_cancel_order'])->name('func.cancel-order');
             Route::put('/freupload-order/{id}',[OrderController::class,'func_reupload_order'])->name('func.reupload-order');
             Route::put('/fremove-order/{id}',[OrderController::class,'func_remove_order'])->name('func.remove-order');
-            Route::put('/fapprove-order-{id}',[OrderController::class,'func_approve_order'])->name('func.approve-order');
+            Route::put('/fapprove-order/{id}',[OrderController::class,'func_approve_order'])->name('func.approve-order');
             Route::delete('/delete-order/{id}',[OrderController::class,'destroy_order'])->name('func.delete-order');
             // ---------------------------------------------------
             //                      ORDER HOTEL
@@ -1042,13 +1070,13 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fsubmit-order-hotel/{id}',[OrderController::class,'func_submit_order_hotel'])->name('func.submit-order-hotel');
             Route::get('/detail-order-hotel/{id}',[OrderController::class,'detail_order_hotel'])->name('view.detail-order-hotel');
             // PROMO
-            Route::post('/order-hotel-promo-{id}',[orderController::class,'order_hotel_promo'])->name('view.order-hotel-promo');
+            Route::post('/order-hotel-promo/{id}',[orderController::class,'order_hotel_promo'])->name('view.order-hotel-promo');
             Route::post('/fcreate-order-hotel-promo',[orderController::class,'func_create_order_hotel_promo'])->name('func.create.order-hotel-promo');
             // PACKAGEorder
-            Route::post('/order-hotel-package-{id}',[orderController::class,'order_hotel_package'])->name('view.order-hotel-package');
-            Route::post('/fcreate-order-hotel-package-{id}',[orderController::class,'func_create_order_hotel_package'])->name('func.create.order-hotel-package');
+            Route::post('/order-hotel-package/{id}',[orderController::class,'order_hotel_package'])->name('view.order-hotel-package');
+            Route::post('/fcreate-order-hotel-package/{id}',[orderController::class,'func_create_order_hotel_package'])->name('func.create.order-hotel-package');
             // NORMAL
-            Route::post('/order-hotel-normal-{id}',[orderController::class,'order_hotel_normal'])->name('view.order-hotel-normal');
+            Route::post('/order-hotel-normal/{id}',[orderController::class,'order_hotel_normal'])->name('view.order-hotel-normal');
             Route::post('/fcreate-order-hotel-normal',[orderController::class,'func_create_order_hotel_normal'])->name('func.create.order-hotel-normal');
             // ADDITIONAL CHARGE
             Route::get('/edit-order-additional-charge/{id}',[OrderController::class,'edit_order_additional_charge'])->name('view.edit-order-additional-charge');
@@ -1079,9 +1107,15 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fupdate-order-tour/{id}',[OrderController::class,'func_update_order_tour'])->name('func.order-tour.update');
             Route::get('/detail-order-tour/{id}',[OrderController::class,'detail_order_tour'])->name('view.detail-order-tour');
             // ---------------------------------------------------
+            //                   ORDER TOUR ACTIVITY
+            // ---------------------------------------------------
+            Route::get('/edit-order-activity/{id}',[OrderController::class,'edit_order_activity'])->name('view.edit-order-activity');
+            // Route::put('/fupdate-order-activity/{id}',[OrderController::class,'func_update_order_activity'])->name('func.order-activity.update');
+            Route::get('/detail-order-activity/{id}',[OrderController::class,'detail_order_activity'])->name('view.detail-order-activity');
+            // ---------------------------------------------------
             //                   ORDER TRANSPORT
             // ---------------------------------------------------
-            Route::post('/order-transport-{id}',[OrderController::class,'order_transport'])->name('view.order-transport');
+            Route::post('/order-transport/{id}',[OrderController::class,'order_transport'])->name('view.order-transport');
             Route::post('/fcreate-order-transport/{id}',[OrderController::class,'func_create_order_transport'])->name('func.create.order-transport');
             Route::get('/edit-order-transport/{id}',[OrderController::class,'edit_order_transport'])->name('view.edit-order-transport');
             Route::put('/fsubmit-order-transport/{id}',[OrderController::class,'func_submit_order_transport'])->name('func.submit.order-transport');
@@ -1093,7 +1127,7 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fsubmit-order-wedding/{id}',[OrderWeddingController::class,'func_submit_order_wedding'])->name('func.submit-order-wedding');
             Route::get('/detail-order-wedding-{orderno}',[OrderWeddingController::class,'detail_order_wedding'])->name('view.detail-order-wedding');
             Route::get('/edit-order-wedding-{orderno}',[OrderWeddingController::class,'edit_order_wedding'])->name('view.edit-order-wedding');
-            Route::post('/forder-wedding-venue-{id}',[OrderWeddingController::class,'func_create_order_wedding_venue'])->name('func.create-order-weding');
+            Route::post('/forder-wedding-venue/{id}',[OrderWeddingController::class,'func_create_order_wedding_venue'])->name('func.create-order-weding');
             Route::put('/fupdate-wedding-ceremonial-venue/{id}',[OrderWeddingController::class,'func_update_wedding_ceremonial_venue'])->name('func.update-wedding-ceremony-venue');
             Route::post('/fupdate-wedding-order-ceremony-venue/{id}',[OrderWeddingController::class,'func_update_wedding_order_ceremony_venue'])->name('func.update-order-wedding-ceremony-venue');
             Route::put('/fdelete-ceremony-venue/{id}',[OrderWeddingController::class,'func_delete_ceremony_venue'])->name('func.delete-order-wedding-ceremony-venue');
@@ -1104,7 +1138,7 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fuser-update-order-wedding-transport/{id}',[OrderWeddingController::class,'func_user_update_order_wedding_transport'])->name('func.update-order-wedding-transport');
             Route::delete('/fremove-order-wedding-transport/{id}',[OrderWeddingController::class,'func_remove_transport_from_order_wedding'])->name('func-remove-order-wedding-transport');
             Route::delete('/fremove-order-wedding-additional-charge/{id}',[OrderWeddingController::class,'func_remove_request_service_from_order_wedding'])->name('func.remove-request-service-wedding-order');
-            Route::post('/upload-pdf-{id}', [OrderWeddingController::class, 'store_invoice_pdf'])->name('upload.pdf.store');
+            Route::post('/upload-pdf/{id}', [OrderWeddingController::class, 'store_invoice_pdf'])->name('upload.pdf.store');
             Route::put('/fadd-decoration-to-ceremony-venue/{id}',[OrderWeddingController::class,'func_add_decoration_to_ceremony_venue'])->name('func.add-decoration-to-ceremony-venue');
             Route::put('/fupdate-decoration-ceremony-venue/{id}',[OrderWeddingController::class,'func_update_decoration_ceremony_venue'])->name('func.update-decoration-ceremony-venue');
             Route::put('/fdelete-decoration-ceremony-venue/{id}',[OrderWeddingController::class,'func_delete_decoration_ceremony_venue'])->name('func.delete-decoration-ceremony-venue');
@@ -1127,7 +1161,7 @@ use Illuminate\Support\Facades\Route;
             Route::post('/fadd-order-wedding-flight/{id}',[OrderWeddingController::class,'func_add_order_wedding_flight'])->name('func.add-order-wedding-flight');
             Route::post('/fupdate-order-wedding-flight/{id}',[OrderWeddingController::class,'func_update_order_wedding_flight'])->name('func.update-order-wedding-flight');
             Route::delete('/fdelete-order-wedding-flight/{id}',[OrderWeddingController::class,'func_delete_order_wedding_flight'])->name('func.delete-order-wedding-flight');
-            Route::put('/fadd-invitation-to-order-wedding-{id}',[OrderWeddingController::class,'func_add_invitation_to_order_wedding'])->name('func.add-invitation-to-order-wedding');
+            Route::put('/fadd-invitation-to-order-wedding/{id}',[OrderWeddingController::class,'func_add_invitation_to_order_wedding'])->name('func.add-invitation-to-order-wedding');
             Route::post('/fupdate-invitation-order-wedding/{id}',[OrderWeddingController::class,'func_update_invitation_to_order_wedding'])->name('func.update-invitation-to-orders-wedding');
             Route::delete('/func-delete-invitation-order-wedding/{id}',[OrderWeddingController::class,'func_delete_invitation_to_order_wedding'])->name('func.delete-invitation-to-order-wedding');
             Route::delete('/delete-wedding-order/{id}',[OrderWeddingController::class,'func_delete_order_wedding'])->name('func.delete-order-wedding');
@@ -1138,16 +1172,16 @@ use Illuminate\Support\Facades\Route;
             Route::get('/orders/transport/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerTransportReceipt'])->name('orders.transport.payments.receipt');
             Route::get('/orders/tour/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerTourReceipt'])->name('orders.tour.payments.receipt');
             Route::get('/orders/activity/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerActivityReceipt'])->name('orders.activity.payments.receipt');
-            Route::get('/orders/accommodation/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'customerInvoicePreview'])->where('locale', 'en|zh')->name('orders.accommodation.invoice.preview');
-            Route::get('/orders/accommodation/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'customerInvoiceDownload'])->where('locale', 'en|zh')->name('orders.accommodation.invoice.download');
-            Route::post('/fpayment-confirmation-{id}',[PaymentConfirmationController::class,'payment_confirmation'])->name('upload.payment-confirmation');
-            Route::post('/fwedding-payment-confirmation-{id}',[PaymentConfirmationController::class,'wedding_payment_confirmation'])->name('wedding-payment-confirmation');
+            Route::get('/orders/accommodation/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'customerInvoicePreview'])->where('locale', 'en|zh-CN|zh')->name('orders.accommodation.invoice.preview');
+            Route::get('/orders/accommodation/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'customerInvoiceDownload'])->where('locale', 'en|zh-CN|zh')->name('orders.accommodation.invoice.download');
+            Route::post('/fpayment-confirmation/{id}',[PaymentConfirmationController::class,'payment_confirmation'])->name('upload.payment-confirmation');
+            Route::post('/fwedding-payment-confirmation/{id}',[PaymentConfirmationController::class,'wedding_payment_confirmation'])->name('wedding-payment-confirmation');
             Route::put('/fupdate-payment-confirmation/{id}',[PaymentConfirmationController::class,'update_payment_confirmation'])->name('update-payment-confirmation');
             // ---------------------------------------------------
             //                     CONTRACT
             // ---------------------------------------------------
-            Route::get('/zh-print-contract-wedding-{id}', [OrdersAdminController::class, 'zh_print_contract_wedding'])->name('func.print-contract-wedding-zh');
-            Route::get('/en-print-contract-wedding-{id}', [OrdersAdminController::class, 'en_print_contract_wedding'])->name('func.print-contract-wedding-en');
+            Route::get('/zh-print-contract-wedding/{id}', [OrdersAdminController::class, 'zh_print_contract_wedding'])->name('func.print-contract-wedding-zh');
+            Route::get('/en-print-contract-wedding/{id}', [OrdersAdminController::class, 'en_print_contract_wedding'])->name('func.print-contract-wedding-en');
             // ---------------------------------------------------
             //                   DOWNLOAD DATA
             // ---------------------------------------------------
@@ -1176,9 +1210,9 @@ use Illuminate\Support\Facades\Route;
             Route::get('/donwload-file', [WeddingsController::class,'download_pdf'])->name('download.wedding-pdf');
             Route::get('/weddings',[WeddingsController::class,'user_index'])->name('view.weddings');
             Route::post('/wedding-search',[WeddingsController::class,'wedding_search'])->name('view.wedding-search');
-            Route::put('/fadd-package-to-wedding-planner-{id}',[WeddingsController::class,'func_add_package_to_wedding_planner'])->name('func.add-package-to-wedding-planner');
+            Route::put('/fadd-package-to-wedding-planner/{id}',[WeddingsController::class,'func_add_package_to_wedding_planner'])->name('func.add-package-to-wedding-planner');
             Route::put('/fupdate-cancellation-policy/{id}',[WeddingsController::class,'func_update_cancellation_policy'])->name('func.wedding-update-cancelation-policy');
-            Route::get('/edit-wedding-planner-{id}',[WeddingPlannerController::class,'view_edit_wedding_planner'])->name('view.edit-wedding-planner');
+            Route::get('/edit-wedding-planner/{id}',[WeddingPlannerController::class,'view_edit_wedding_planner'])->name('view.edit-wedding-planner');
             // ---------------------------------------------------
             //                   WEDDING PLANNER
             // ---------------------------------------------------
@@ -1206,7 +1240,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/fdelete-wedding-planner-invitation/{id}',[WeddingPlannerController::class,'func_destroy_wedding_planner_invitation'])->name('func.destroy-wedding-planner-invitations');
             Route::put('/fsubmit-wedding-planner/{id}',[WeddingPlannerController::class,'func_submit_wedding_planner'])->name('func.submit-wedding-planner');
             // ACCOMMODATION
-            Route::get('wedding-accommodation-update-{id}',[WeddingPlannerController::class,'view_update_wedding_accommodation'])->name('view.update-wedding-accommodation');
+            Route::get('wedding-accommodation-update/{id}',[WeddingPlannerController::class,'view_update_wedding_accommodation'])->name('view.update-wedding-accommodation');
             Route::post('/fadd-wedding-accommodation/{id}',[WeddingPlannerController::class,'func_add_wedding_accommodations'])->name('func.add-wedding-accommodation');
             Route::post('/fupdate-wedding-accommodation/{id}',[WeddingPlannerController::class,'func_update_wedding_accommodation'])->name('func.update-wedding-accommodation');
             Route::post('/fadd-wedding-planner-accommodation/{id}',[WeddingPlannerController::class,'func_add_wedding_planner_accommodation'])->name('func.add-wedding.planner-accommodation');
@@ -1215,7 +1249,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/fdelete-wedding-accommodation/{id}',[WeddingPlannerController::class,'func_destroy_wedding_accommodation'])->name('func.destroy-wedding-accommodation');
             Route::delete('/fdelete-wedding-planner-bride-accommodation/{id}',[WeddingPlannerController::class,'func_destroy_wedding_planner_bride_accommodation'])->name('func.destroy-wedding-planner-bride-accommodation');
             // INVITATIONS
-            Route::get('wedding-invitations-update-{id}',[WeddingInvitationsController::class,'view_update_wedding_invitations'])->name('view.update-wedding-invitations');
+            Route::get('wedding-invitations-update/{id}',[WeddingInvitationsController::class,'view_update_wedding_invitations'])->name('view.update-wedding-invitations');
             Route::post('/fadd-wedding-invitations/{id}',[WeddingInvitationsController::class,'func_add_wedding_invitations'])->name('func.add-wedding-invitations');
             Route::post('/fupdate-wedding-invitations/{id}',[WeddingInvitationsController::class,'func_update_wedding_invitations'])->name('func.update-wedding-invitations');
             Route::delete('/fdelete-wedding-invitations/{id}',[WeddingInvitationsController::class,'func_destroy_wedding_invitations'])->name('func.destroy-wedding-invitations');
@@ -1260,3 +1294,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('/approval/pending', function () {
         return redirect('/profile');
     })->name('approval.pending');
+    // ALIHKAN JIKA HALAMAN TIDAK DITEMUKAN
+    Route::fallback(function () {
+        return redirect('/');
+    });

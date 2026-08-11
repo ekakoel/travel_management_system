@@ -13,7 +13,7 @@
 @section('content')
     @can('isAdmin')
         <div class="mobile-menu-overlay"></div>
-        <main class="main-container tour-detail-page" data-tour-gallery-base="{{ url('/tours/gallery') }}" data-tour-csrf="{{ csrf_token() }}">
+        <main class="main-container tour-detail-page" data-tour-gallery-base="{{ url('/tours/gallery') }}" data-tour-csrf="{{ csrf_token() }}" data-tour-price-form-context="{{ old('_tour_price_form_context') }}">
             <div class="pd-ltr-20">
                 <x-backend.page-hero
                     class="tour-detail-hero"
@@ -24,7 +24,7 @@
                     @canany(['posDev','posAuthor'])
                         <x-slot name="action">
                             <a href="{{ route('admin.tours.edit', $tour->id) }}" class="backend-page-primary-action">
-                                <i class="fa fa-pencil"></i>
+                                <i class="fa fa-pencil-alt"></i>
                                 Edit Tour
                             </a>
                         </x-slot>
@@ -35,7 +35,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('tours-admin.index') }}">Tour Packages</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.tour-packages.index') }}">Tour Packages</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $tour->name }}</li>
                         </ol>
                     </nav>
@@ -116,7 +116,7 @@
                                 <div><dt>Area</dt><dd>{{ $tour->area ?: '-' }}</dd></div>
                                 <div><dt>Duration</dt><dd>{{ $tourDetail->duration() }}</dd></div>
                                 <div><dt>Status</dt><dd><span class="backend-status-badge backend-status-badge--{{ $tourDetail->statusTone() }}">{{ $tourDetail->status() }}</span></dd></div>
-                                <div><dt>Tax</dt><dd>{{ $tax->tax ?? 0 }}%</dd></div>
+                                <div><dt>Pricing</dt><dd>Versioned policy</dd></div>
                             </dl>
                         </article>
 
@@ -156,7 +156,7 @@
                                             <i class="fa fa-trash-o"></i>
                                         </button>
                                         <button type="button" class="backend-icon-action" data-tour-gallery-update="{{ $tourImage->id }}" aria-label="Update gallery image">
-                                            <i class="fa fa-pencil"></i>
+                                            <i class="fa fa-pencil-alt"></i>
                                         </button>
                                     </figcaption>
                                 @endcanany
@@ -176,6 +176,7 @@
                         <div>
                             <span class="backend-section-header__label">Pricing</span>
                             <h2>Tour Prices</h2>
+                            <p>Prices are activated automatically after valid input is saved. Availability follows the validity dates and pax tier; quotation also requires a fresh USD rate and one effective Tour tax policy.</p>
                         </div>
                         @canany(['posDev','posAuthor'])
                             <button type="button" class="backend-toolbar-action" data-toggle="modal" data-target="#add-price">
@@ -193,6 +194,13 @@
                                 <input id="tourPriceSearchCapacity" class="backend-filter-control" type="search" placeholder="Search capacity" data-tour-price-filter="capacity">
                             </span>
                         </label>
+                        <label class="backend-filter-field">
+                            <span class="backend-filter-label">Review state</span>
+                            <select class="backend-filter-control" data-tour-price-filter="review">
+                                <option value="">All prices</option>
+                                <option value="needs-review">Needs Review</option>
+                            </select>
+                        </label>
                     </section>
 
                     <div class="backend-table-wrap tour-detail-table-wrap">
@@ -200,22 +208,28 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Capacity</th>
-                                    <th>Expired Date</th>
-                                    <th>Public Rate / Pax</th>
-                                    <th>Status</th>
+                                    <th>Pax Tier</th>
+                                    <th>Contract Rate IDR</th>
+                                    <th>Markup Type</th>
+                                    <th>Markup</th>
+                                    <th>Validity</th>
+                                    <th>Availability</th>
+                                    <th>Quoteable</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($tourDetail->priceRows() as $row)
                                     @php($price = $row['model'])
-                                    <tr data-tour-price-row data-tour-price-capacity="{{ strtolower($row['capacity']) }}">
+                                    <tr data-tour-price-row data-tour-price-capacity="{{ strtolower($row['capacity']) }}" data-tour-price-review="{{ $row['needs_review'] ? 'needs-review' : '' }}">
                                         <td data-label="#">{{ $loop->iteration }}</td>
-                                        <td data-label="Capacity">{{ $row['capacity'] }}</td>
-                                        <td data-label="Expired Date">{{ dateFormat($price->expired_date) }}</td>
-                                        <td data-label="Public Rate / Pax">{{ currencyFormatUsd($row['published_rate']) }}</td>
-                                        <td data-label="Status"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $price->status }}</span></td>
+                                        <td data-label="Pax Tier">{{ $row['capacity'] }}</td>
+                                        <td data-label="Contract Rate IDR">{{ $price->contract_rate_idr === null ? '-' : 'IDR '.number_format($price->contract_rate_idr, 0, '.', ',') }}</td>
+                                        <td data-label="Markup Type">{{ $row['markup_type'] }}</td>
+                                        <td data-label="Markup">{{ $row['markup_display'] }}</td>
+                                        <td data-label="Validity">{{ $price->valid_from?->format('Y-m-d') ?? '-' }} — {{ $price->valid_until?->format('Y-m-d') ?? '-' }}</td>
+                                        <td data-label="Availability"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $row['display_status'] }}</span></td>
+                                        <td data-label="Quoteable">{{ $row['quoteable_status'] }}</td>
                                         <td data-label="Action">
                                             <div class="backend-table-actions">
                                                 <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#detail-price-{{ $price->id }}" aria-label="View price detail">
@@ -223,9 +237,9 @@
                                                 </button>
                                                 @canany(['posDev','posAuthor'])
                                                     <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#update-price-{{ $price->id }}" aria-label="Edit price">
-                                                        <i class="fa fa-pencil"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </button>
-                                                    <form action="{{ route('admin.tours.prices.destroy', $price->id) }}" method="post">
+                                                    <form action="{{ route('admin.tours.prices.destroy', [$tour, $price]) }}" method="post">
                                                         @csrf
                                                         @method('delete')
                                                         <button type="submit" class="backend-icon-action is-danger" data-tour-price-delete="{{ $row['capacity'] }}" aria-label="Delete price">
@@ -238,7 +252,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6">
+                                        <td colspan="9">
                                             <div class="backend-table-empty">
                                                 <i class="fa fa-tags"></i>
                                                 <strong>No price rows.</strong>
@@ -287,7 +301,7 @@
                             @canany(['posDev','posAuthor'])
                                 <div class="backend-detail-side-actions">
                                     <a href="{{ route('admin.tours.edit', $tour->id) }}" class="backend-page-primary-action">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-pencil-alt"></i>
                                         Edit Tour
                                     </a>
                                     <button type="button" class="backend-toolbar-action" data-toggle="modal" data-target="#add-price">
@@ -310,16 +324,23 @@
                                         <span class="backend-section-header__label">Price Detail</span>
                                         <h5 id="detail-price-title-{{ $price->id }}">{{ $tour->name }} | {{ $row['capacity'] }}</h5>
                                     </div>
-                                    <span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $price->status }}</span>
+                                    <span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $row['display_status'] }}</span>
                                 </div>
                                 <div class="backend-modal__body">
+                                    @if (! $row['price_available'])
+                                        <div class="alert alert-warning">
+                                             This row is {{ strtolower($row['display_status']) }} and cannot be quoted or used for a new order. Review its canonical values, validity, pax tier, USD rate, tax policy, and overlapping prices.
+                                        </div>
+                                    @endif
                                     <dl class="backend-table-card-grid">
-                                        <div><dt>USD Rate</dt><dd>{{ number_format($usdrates->rate ?? 0) }}</dd></div>
-                                        <div><dt>Contract Rate</dt><dd>{{ currencyFormatUsd($row['contract_rate_usd']) }}</dd></div>
-                                        <div><dt>Markup</dt><dd>{{ currencyFormatUsd($price->markup) }}</dd></div>
-                                        <div><dt>Tax</dt><dd>{{ currencyFormatUsd($row['tax_amount']) }}</dd></div>
-                                        <div><dt>Price / Pax</dt><dd>{{ currencyFormatUsd($row['published_rate']) }}</dd></div>
-                                        <div><dt>Expired Date</dt><dd>{{ dateFormat($price->expired_date) }}</dd></div>
+                                        <div><dt>Availability</dt><dd>{{ $row['display_status'] }}</dd></div>
+                                        <div><dt>Quoteable</dt><dd>{{ $row['quoteable_status'] }}</dd></div>
+                                        <div><dt>Contract Rate</dt><dd>{{ $price->contract_rate_idr === null ? '-' : 'IDR '.number_format($price->contract_rate_idr, 0, '.', ',') }}</dd></div>
+                                        <div><dt>Markup Type</dt><dd>{{ $row['markup_type'] }}</dd></div>
+                                        <div><dt>Markup</dt><dd>{{ $row['markup_display'] }}</dd></div>
+                                        <div><dt>Tax</dt><dd>{{ $row['price_available'] ? currencyFormatUsd($row['tax_amount']) : '-' }}</dd></div>
+                                        <div><dt>Price / Pax</dt><dd>{{ $row['price_available'] ? currencyFormatUsd($row['published_rate']) : '-' }}</dd></div>
+                                        <div><dt>Validity</dt><dd>{{ $price->valid_from?->format('Y-m-d') ?? '-' }} — {{ $price->valid_until?->format('Y-m-d') ?? '-' }}</dd></div>
                                     </dl>
                                 </div>
                                 <div class="backend-modal__footer">
@@ -340,39 +361,10 @@
                                         </div>
                                     </div>
                                     <div class="backend-modal__body">
-                                        <form id="fedit-price-{{ $price->id }}" action="{{ route('admin.tours.prices.update', $price->id) }}" method="post">
-                                            @csrf
-                                            @method('put')
-                                            <div class="tour-detail-form-grid">
-                                                <label class="backend-form-field">
-                                                    <span>Minimum Guests <em>*</em></span>
-                                                    <input name="min_qty" type="number" min="1" class="backend-form-control @error('min_qty') is-invalid @enderror" value="{{ $price->min_qty }}" required>
-                                                </label>
-                                                <label class="backend-form-field">
-                                                    <span>Maximum Guests <em>*</em></span>
-                                                    <input name="max_qty" type="number" min="1" class="backend-form-control @error('max_qty') is-invalid @enderror" value="{{ $price->max_qty }}" required>
-                                                </label>
-                                                <label class="backend-form-field">
-                                                    <span>Status <em>*</em></span>
-                                                    <select name="status" class="backend-form-control @error('status') is-invalid @enderror" required>
-                                                        <option {{ $price->status === 'Draft' ? 'selected' : '' }} value="Draft">Draft</option>
-                                                        <option {{ $price->status === 'Active' ? 'selected' : '' }} value="Active">Active</option>
-                                                    </select>
-                                                </label>
-                                                <label class="backend-form-field">
-                                                    <span>Contract Rate <em>*</em></span>
-                                                    <input name="contract_rate" type="number" min="1" class="backend-form-control @error('contract_rate') is-invalid @enderror" value="{{ $price->contract_rate }}" required>
-                                                </label>
-                                                <label class="backend-form-field">
-                                                    <span>Markup <em>*</em></span>
-                                                    <input name="markup" type="number" min="1" class="backend-form-control @error('markup') is-invalid @enderror" value="{{ $price->markup }}" required>
-                                                </label>
-                                                <label class="backend-form-field">
-                                                    <span>Expired Date <em>*</em></span>
-                                                    <input name="expired_date" class="backend-form-control date-picker @error('expired_date') is-invalid @enderror" value="{{ $price->expired_date }}" required>
-                                                </label>
-                                            </div>
-                                            <input type="hidden" name="tours_id" value="{{ $tour->id }}">
+                                         <form id="fedit-price-{{ $price->id }}" action="{{ route('admin.tours.prices.update', [$tour, $price]) }}" method="post">
+                                             @csrf
+                                             @method('put')
+                                             @include('backend.operations.tours.partials.price-fields', ['price' => $price, 'formContext' => 'update:'.$price->id])
                                         </form>
                                     </div>
                                     <div class="backend-modal__footer">
@@ -396,31 +388,9 @@
                                     </div>
                                 </div>
                                 <div class="backend-modal__body">
-                                    <form id="fadd-price-{{ $tour->id }}" action="{{ route('admin.tours.prices.store', $tour->id) }}" method="post">
-                                        @csrf
-                                        <div class="tour-detail-form-grid">
-                                            <label class="backend-form-field">
-                                                <span>Minimum Guests <em>*</em></span>
-                                                <input name="min_qty" type="number" min="1" class="backend-form-control @error('min_qty') is-invalid @enderror" required>
-                                            </label>
-                                            <label class="backend-form-field">
-                                                <span>Maximum Guests <em>*</em></span>
-                                                <input name="max_qty" type="number" min="1" class="backend-form-control @error('max_qty') is-invalid @enderror" required>
-                                            </label>
-                                            <label class="backend-form-field">
-                                                <span>Contract Rate / Pax <em>*</em></span>
-                                                <input name="contract_rate" type="number" min="1" class="backend-form-control @error('contract_rate') is-invalid @enderror" required>
-                                            </label>
-                                            <label class="backend-form-field">
-                                                <span>Markup <em>*</em></span>
-                                                <input name="markup" type="number" min="1" class="backend-form-control @error('markup') is-invalid @enderror" required>
-                                            </label>
-                                            <label class="backend-form-field">
-                                                <span>Expired Date <em>*</em></span>
-                                                <input name="expired_date" class="backend-form-control date-picker @error('expired_date') is-invalid @enderror" required>
-                                            </label>
-                                        </div>
-                                        <input type="hidden" name="tours_id" value="{{ $tour->id }}">
+                                     <form id="fadd-price-{{ $tour->id }}" action="{{ route('admin.tours.prices.store', $tour) }}" method="post">
+                                         @csrf
+                                         @include('backend.operations.tours.partials.price-fields', ['price' => null, 'formContext' => 'create'])
                                     </form>
                                 </div>
                                 <div class="backend-modal__footer">

@@ -41,7 +41,7 @@ class HotelsAdminController extends Controller
 
     private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
     {
-        return redirect()->route('hotels-admin.index')->with('error', $message);
+        return redirect()->route('admin.hotels.index')->with('error', $message);
     }
 
     private function redirectToHotelDetail($hotelId, ?string $anchor = null)
@@ -58,21 +58,22 @@ class HotelsAdminController extends Controller
 // View Admin Index =========================================================================================>
     public function index() {
     $now = Carbon::now();
+    $queryDate = $now->toDateString();
     $hotels = Hotels::whereNotIn('status', ['Archived', 'Removed'])
-        ->with(['rooms', 'prices' => function($q) use ($now) {
-            $q->where('end_date', '>=', $now);
-        }, 'promos' => function($q) use ($now) {
-            $q->where('book_periode_end', '>=', $now);
-        }, 'packages' => function($q) use ($now) {
-            $q->where('stay_period_end', '>=', $now);
+        ->with(['rooms', 'prices' => function($q) use ($queryDate) {
+            $q->notExpired($queryDate);
+        }, 'promos' => function($q) use ($queryDate) {
+            $q->notExpired($queryDate);
+        }, 'packages' => function($q) use ($queryDate) {
+            $q->notExpired($queryDate);
         }])->get();
     $archivehotels = Hotels::where('status', 'Archived')->get();
     $drafthotels = Hotels::where('status', 'Draft')->get();
     $cactivehotels = Hotels::where('status', 'Active')->get();
     $activerooms = HotelRoom::where('status', 'Active')->get();
-    $normal_prices = HotelPrice::where('end_date', '>=', $now)->orderBy('end_date', 'desc')->get();
-    $promos = HotelPromo::where('book_periode_end', '>=', $now)->orderBy('book_periode_end', 'desc')->get();
-    $packages = HotelPackage::where('stay_period_end', '>=', $now)->orderBy('stay_period_end', 'desc')->get();
+    $normal_prices = HotelPrice::notExpired($queryDate)->orderBy('end_date', 'desc')->get();
+    $promos = HotelPromo::notExpired($queryDate)->orderBy('book_periode_end', 'desc')->get();
+    $packages = HotelPackage::notExpired($queryDate)->orderBy('stay_period_end', 'desc')->get();
 
     foreach ($hotels as $hotel) {
         if ($hotel->prices->isEmpty() && $hotel->promos->isEmpty() && $hotel->packages->isEmpty()) {
