@@ -4302,6 +4302,8 @@ class ProjectStructureStandardTest extends TestCase
         $auditService = file_get_contents(app_path('Services/Activities/ActivityAuditService.php'));
         $indexViewModel = file_get_contents(app_path('ViewModels/Activities/ActivityIndexViewModel.php'));
         $detailViewModel = file_get_contents(app_path('ViewModels/Activities/ActivityDetailViewModel.php'));
+        $quoteRequest = file_get_contents(app_path('Http/Requests/Activities/QuoteActivityRequest.php'));
+        $activityDetailJs = file_get_contents(resource_path('frontend/js/landing-page/activities/detail.js'));
         $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
 
         foreach ([
@@ -4348,7 +4350,12 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringNotContainsString('$publishedRate =', $detailView);
         $this->assertStringContainsString('new ActivityIndexViewModel', $inventoryService);
         $this->assertStringContainsString('new ActivityDetailViewModel', $inventoryService);
-        $this->assertStringContainsString('publishedRate', $pricingService);
+        $this->assertStringContainsString('public function quote', $pricingService);
+        $this->assertStringNotContainsString('public function publishedRate', $pricingService);
+        $this->assertStringNotContainsString('public function contractRateUsd', $pricingService);
+        $this->assertStringContainsString('priceAvailable', $indexViewModel . $detailViewModel);
+        $this->assertStringNotContainsString("'travel_date'", $quoteRequest);
+        $this->assertStringNotContainsString('travel_date: travelDate', $activityDetailJs);
         $this->assertStringContainsString('replaceCover', $assetService);
         $this->assertStringContainsString('uploadGalleryImage', $assetService);
         $this->assertStringContainsString("UserLog::create", $auditService);
@@ -4359,8 +4366,10 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('max-height: 240px;', $activityScss);
         $this->assertStringContainsString('.activity-detail-info-card .backend-table-card__header strong', $activityScss);
         $this->assertStringContainsString('.activity-detail-richtext', $activityScss);
-        $this->assertStringContainsString('- [x] Buat `ActivityInventoryService` untuk index/detail summary.', $roadmap);
-        $this->assertStringContainsString('- [x] Hindari query/kalkulasi berat di Blade.', $roadmap);
+        $this->assertStringContainsString(
+            '- [x] Operations Activities memakai namespace/backend UI modern, Form Request, service, dan view model.',
+            $roadmap
+        );
     }
 
     public function test_activities_phase_6_final_acceptance_structure_is_complete(): void
@@ -5861,10 +5870,12 @@ class ProjectStructureStandardTest extends TestCase
     public function test_currency_controller_returns_backend_currency_view_data_with_cached_external_rates(): void
     {
         Cache::forget('backend.currency.external_rates');
-        config(['app.exchange_rate_api_key' => 'testing-key']);
+        config(['services.exchange_rate.key' => 'testing-key']);
 
         Http::fake([
             'https://v6.exchangerate-api.com/*' => Http::response([
+                'result' => 'success',
+                'base_code' => 'USD',
                 'conversion_rates' => [
                     'IDR' => 15000,
                     'USD' => 1,

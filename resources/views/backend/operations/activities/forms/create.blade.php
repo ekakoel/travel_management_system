@@ -180,8 +180,9 @@
 
                             <div class="col-12 col-md-6">
                                 <div class="backend-form-field">
-                                    <label for="validity" class="backend-form-label">Validity <span>*</span></label>
+                                    <label for="validity" class="backend-form-label">Valid Until <span>*</span></label>
                                     <input type="text" id="validity" name="validity" value="{{ old('validity') }}" class="backend-form-control date-picker @error('validity') is-invalid @enderror" placeholder="Select date" required>
+                                    <p class="backend-form-help">The Activity will automatically return to Draft after this date.</p>
                                     @error('validity')
                                         <span class="invalid-feedback d-block">{{ $message }}</span>
                                     @enderror

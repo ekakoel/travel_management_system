@@ -38,9 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const guestCountPriceTarget = orderForm.querySelector('[data-activity-order-price="guest_count"]');
     const promotionDiscountTarget = orderForm.querySelector('[data-activity-order-price="promotion_discount"]');
     const finalPriceTargets = [...orderForm.querySelectorAll('[data-activity-order-price="final_total"]')];
+    const priceStatusTarget = orderForm.querySelector('[data-activity-order-price-status]');
+    const promotionRow = orderForm.querySelector('[data-activity-order-promotion-row]');
 
-    const pricePerPax = Number(orderForm.dataset.pricePerPax || 0);
-    const promotionDiscount = Number(orderForm.dataset.promotionDiscount || 0);
+    const quoteUrl = orderForm.dataset.quoteUrl || '';
+    const csrfToken = orderForm.querySelector('input[name="_token"]')?.value || '';
     const capacity = Number(orderForm.dataset.capacity || 0);
     const currencyCode = orderForm.dataset.currencyCode || 'USD';
     const locale = (orderForm.dataset.locale || document.documentElement.lang || 'en-US').replace('_', '-');
@@ -82,11 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const addGuestLabel = orderForm.dataset.addGuestLabel || 'Add';
     const updateGuestLabel = orderForm.dataset.updateGuestLabel || 'Update';
     const cancelEditLabel = orderForm.dataset.cancelEditLabel || 'Cancel';
+    const priceUnavailableLabel = orderForm.dataset.priceUnavailableLabel || 'Activity pricing is not available.';
+    const priceLoadingLabel = orderForm.dataset.priceLoadingLabel || 'Processing';
     const initialStep = Number(orderForm.dataset.initialStep || 0);
 
     let activeStep = 0;
     let isSubmitting = false;
     let guests = [];
+    let quoteRequestController = null;
+    let quoteRequestTimer = null;
 
     try {
         guests = JSON.parse(orderForm.dataset.initialGuests || '[]')
@@ -384,26 +390,74 @@ document.addEventListener('DOMContentLoaded', () => {
         renderGuestProgress();
     };
 
+    const renderUnavailablePrice = (message = priceUnavailableLabel) => {
+        if (pricePerPaxTarget) pricePerPaxTarget.textContent = '-';
+        finalPriceTargets.forEach((target) => {
+            target.textContent = '-';
+        });
+        if (promotionRow) promotionRow.hidden = true;
+        if (priceStatusTarget) priceStatusTarget.textContent = message;
+        if (submitButton) submitButton.disabled = true;
+    };
+
+    const requestPriceSummary = async () => {
+        const guestCount = Math.max(Number(guestInput?.value || 0), 0);
+
+        if (!quoteUrl || guestCount < Number(guestInput?.min || 1) || (capacity > 0 && guestCount > capacity)) {
+            renderUnavailablePrice();
+            return;
+        }
+
+        quoteRequestController?.abort();
+        quoteRequestController = new AbortController();
+        renderUnavailablePrice(priceLoadingLabel);
+
+        try {
+            const response = await fetch(quoteUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: new URLSearchParams({
+                    number_of_guests: String(guestCount),
+                    travel_date: travelDateInput?.value || '',
+                }).toString(),
+                signal: quoteRequestController.signal,
+            });
+            const payload = await response.json();
+
+            if (!response.ok || payload.price_available !== true || !payload.display) {
+                renderUnavailablePrice(payload.message || priceUnavailableLabel);
+                return;
+            }
+
+            if (pricePerPaxTarget) pricePerPaxTarget.textContent = formatCurrency(payload.display.unit_price_usd);
+            if (promotionDiscountTarget) promotionDiscountTarget.textContent = `- ${formatCurrency(payload.display.discount_total_usd)}`;
+            if (promotionRow) promotionRow.hidden = Number(payload.quote?.discount_total_usd_minor || 0) <= 0;
+            finalPriceTargets.forEach((target) => {
+                target.textContent = formatCurrency(payload.display.final_total_usd);
+            });
+            if (priceStatusTarget) priceStatusTarget.textContent = '';
+            if (submitButton && !isSubmitting) submitButton.disabled = false;
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                renderUnavailablePrice();
+            }
+        }
+    };
+
     const updatePriceSummary = () => {
         const guestCount = Math.max(Number(guestInput?.value || 0), 0);
-        const subtotal = pricePerPax * guestCount;
-        const finalTotal = Math.max(subtotal - promotionDiscount, 0);
-
-        if (pricePerPaxTarget) {
-            pricePerPaxTarget.textContent = formatCurrency(pricePerPax);
-        }
 
         if (guestCountPriceTarget) {
             guestCountPriceTarget.textContent = `${guestCount} ${paxLabel}`;
         }
 
-        if (promotionDiscountTarget) {
-            promotionDiscountTarget.textContent = `- ${formatCurrency(promotionDiscount)}`;
-        }
-
-        finalPriceTargets.forEach((target) => {
-            target.textContent = formatCurrency(finalTotal);
-        });
+        window.clearTimeout(quoteRequestTimer);
+        quoteRequestTimer = window.setTimeout(requestPriceSummary, 250);
     };
 
     const renderGuestManifestTable = () => {
@@ -477,7 +531,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         renderGuestManifestTable();
-        updatePriceSummary();
         renderGuestProgress();
     };
 
@@ -584,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (button === submitButton) {
                     button.innerHTML = isSubmitting
-                        ? `<span class="transport-reservation-submit-overlay__spinner transport-reservation-submit-overlay__spinner--button" aria-hidden="true"></span><span>${processingLabel}</span>`
+                        ? `<span class="frontend-action-spinner" aria-hidden="true"></span><span>${processingLabel}</span>`
                         : originalLabel;
                 }
             });
@@ -704,13 +757,20 @@ document.addEventListener('DOMContentLoaded', () => {
     guestInput?.addEventListener('input', () => {
         renderGuestProgress();
         updateReview();
+        updatePriceSummary();
         validateGuestManifest(false);
     });
 
     guestInput?.addEventListener('change', () => {
         renderGuestProgress();
         updateReview();
+        updatePriceSummary();
         validateGuestManifest(false);
+    });
+
+    travelDateInput?.addEventListener('change', () => {
+        updateReview();
+        updatePriceSummary();
     });
 
     nextButtons.forEach((button) => {
@@ -783,5 +843,6 @@ document.addEventListener('DOMContentLoaded', () => {
     resetGuestForm();
     renderGuestTable();
     updateReview();
+    updatePriceSummary();
     showStep(Number.isFinite(initialStep) ? initialStep : 0);
 });

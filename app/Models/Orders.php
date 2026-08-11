@@ -171,8 +171,17 @@ class Orders extends Model
     {
         return $this->belongsTo(OrderPricingSnapshot::class, 'pricing_snapshot_id');
     }
-    public function reservations(){
+    public function reservation()
+    {
         return $this->belongsTo(Reservation::class,'rsv_id');
+    }
+
+    /**
+     * @deprecated Use reservation() for the singular belongs-to relation.
+     */
+    public function reservations()
+    {
+        return $this->reservation();
     }
     public function order_notes(){
         return $this->hasMany(OrderNote::class, 'order_id');

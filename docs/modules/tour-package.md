@@ -1,7 +1,7 @@
 # Tour Package Module
 
 Status: active
-Updated: 2026-08-03
+Updated: 2026-08-11
 
 Dokumen ini adalah pintu masuk modul Tour Packages, termasuk aturan data lokasi dan map yang sudah aktif.
 
@@ -56,9 +56,11 @@ Lokasi harus disimpan sebagai data terstruktur, bukan hanya teks bebas di Blade.
 - Daftar dan detail inventory Tour Package dapat dibaca oleh admin berposisi
   developer, author, atau reservation; mutation tetap dibatasi untuk developer
   dan author.
-- Navigasi Services memakai pemetaan route eksplisit. Slug database `tours`
-  tidak boleh dirangkai menjadi nama route karena route canonical daftar admin
-  adalah `admin.tour-packages.index`.
+- Navigasi Services memakai `ServiceNavigationRegistry`. Slug canonical
+  `tour-packages` dan alias legacy `tours`, `tour`, serta `tour-package`
+  mengarah ke `view.tour-packages-service` dan
+  `admin.tour-packages.index`; Blade tidak boleh merangkai nama route dari
+  slug. Hanya registry berstatus `Active` dengan named route valid yang tampil.
 - Location repeater behavior berada di JS domain Tours, bukan inline script.
 - Validasi koordinat, urutan itinerary, nama lokasi, dan referensi lokasi dilakukan sebelum sync.
 - Cover/marker/gambar mengikuti upload validation domain tour.

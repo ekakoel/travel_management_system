@@ -47,4 +47,22 @@ class UpdateActivityAdminRequest extends FormRequest
             'author' => ['required', 'integer', 'exists:users,id'],
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            if ($this->input('status') !== 'Active' || $validator->errors()->has('validity')) {
+                return;
+            }
+
+            $validityTimestamp = strtotime((string) $this->input('validity'));
+
+            if ($validityTimestamp !== false && $validityTimestamp < now()->startOfDay()->timestamp) {
+                $validator->errors()->add(
+                    'validity',
+                    'An expired Activity cannot be published as Active.'
+                );
+            }
+        });
+    }
 }

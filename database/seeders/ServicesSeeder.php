@@ -15,9 +15,9 @@ class ServicesSeeder extends Seeder
         DB::table('services')->insert(
             [
                 [
-                    'name' => 'Tours',
-                    'nicname' => 'tours',
-                    'icon' => '<i class="icon-copy fa fa-briefcase" aria-hidden="true"></i>',
+                    'name' => 'Tour Packages',
+                    'nicname' => 'tour-packages',
+                    'icon' => 'icon-copy fa fa-briefcase',
                     'status' => 'Active',
                 ],
                 [

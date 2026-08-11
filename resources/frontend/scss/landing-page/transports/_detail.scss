@@ -1085,14 +1085,6 @@
         animation: transportReservationSpin 0.8s linear infinite;
     }
 
-    .transport-reservation-submit-overlay__spinner--button {
-        width: 18px;
-        height: 18px;
-        margin: 0 0.45rem 0 0;
-        vertical-align: middle;
-        border-width: 2px;
-    }
-
     .btn.is-processing {
         pointer-events: none;
         opacity: 0.95;

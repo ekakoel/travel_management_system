@@ -125,8 +125,17 @@
                                         <div><dt>Duration</dt><dd>{{ $activity->duration ?: '-' }}</dd></div>
                                         <div><dt>Contract Rate</dt><dd>{{ currencyFormatIdr($activity->contract_rate) }}</dd></div>
                                         <div><dt>Markup</dt><dd>{{ currencyFormatUsd($activity->markup) }}</dd></div>
-                                        <div><dt>Tax</dt><dd>{{ currencyFormatUsd($activityDetail->taxAmount()) }} ({{ $taxes->tax ?? 0 }}%)</dd></div>
-                                        <div><dt>Validity</dt><dd>{{ $activity->validity ? dateFormat($activity->validity) : '-' }}</dd></div>
+                                        <div>
+                                            <dt>Tax</dt>
+                                            <dd>
+                                                @if ($activityDetail->priceAvailable())
+                                                    {{ currencyFormatUsd($activityDetail->taxAmount()) }} ({{ $activityDetail->taxPercentage() }}%)
+                                                @else
+                                                    Unavailable
+                                                @endif
+                                            </dd>
+                                        </div>
+                                        <div><dt>Valid Until</dt><dd>{{ $activity->validity ? dateFormat($activity->validity) : '-' }}</dd></div>
                                         <div><dt>Status</dt><dd><span class="backend-status-badge backend-status-badge--{{ $activityDetail->statusTone() }}">{{ $activityDetail->status() }}</span></dd></div>
                                     </dl>
                                 </article>
@@ -200,14 +209,22 @@
                                     <small>Operational supplier.</small>
                                 </li>
                                 <li>
-                                    <span>Validity</span>
+                                    <span>Valid Until</span>
                                     <strong>{{ $activity->validity ? dateFormat($activity->validity) : '-' }}</strong>
-                                    <small>Contract or selling validity.</small>
+                                    <small>The Activity automatically returns to Draft after this date.</small>
                                 </li>
                                 <li>
                                     <span>Published Price</span>
-                                    <strong>{{ currencyFormatUsd($activityDetail->publishedRate()) }}</strong>
-                                    <small>Calculated selling rate including markup and tax.</small>
+                                    <strong>
+                                        {{ $activityDetail->priceAvailable() ? currencyFormatUsd($activityDetail->publishedRate()) : 'Unavailable' }}
+                                    </strong>
+                                    <small>
+                                        @if ($activityDetail->priceAvailable())
+                                            Current price per pax, including markup and tax.
+                                        @else
+                                            Pricing requirements are not met ({{ $activityDetail->pricingUnavailableCode() }}).
+                                        @endif
+                                    </small>
                                 </li>
                             </ul>
                             @canany(['posDev','posAuthor'])

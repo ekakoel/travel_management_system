@@ -252,7 +252,7 @@
                                             @method('delete')
                                             <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                             <button type="submit" class="backend-icon-action is-danger" data-hotel-delete="{{ $hotel->name }}" aria-label="Delete {{ $hotel->name }}">
-                                                <i class="fa fa-trash-o"></i>
+                                                <i class="fa fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     @endcanany

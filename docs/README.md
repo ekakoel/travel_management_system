@@ -89,6 +89,12 @@ Active backend operations decisions:
 * `decisions/backend-invoice-index-standard.md` — canonical active invoice
   work queue, query projection, filtering, responsive UI, and performance
   contract.
+* `decisions/service-registry-navigation-standard.md` — canonical service
+  registry visibility, slug alias, route-safety, metadata, and shared
+  navigation view-model contract.
+* `decisions/currency-rate-refresh-standard.md` — canonical USD/CNY/TWD market
+  refresh command, midnight schedule, provider validation, atomic update,
+  manual override, cache, and deployment-scheduler contract.
 
 ## Documentation Rule
 

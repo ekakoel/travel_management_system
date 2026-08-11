@@ -8,7 +8,6 @@
 @section('content')
     @can('isAdmin')
         @php
-            $userId = Auth::id();
             $currencyNames = ['USD', 'CNY', 'TWD'];
             $trafficSeries = $trafficAnalytics['series'];
             $trafficPeriods = $trafficAnalytics['periods'];
@@ -231,16 +230,12 @@
                                             <form action="{{ route('f-disable-service', $service['id']) }}" method="post" data-confirm="Disable this service?">
                                                 @csrf
                                                 @method('PUT')
-                                                <input type="hidden" name="author" value="{{ $userId }}">
-                                                <input type="hidden" name="status" value="Draft">
                                                 <button type="submit">Disable</button>
                                             </form>
                                         @else
                                             <form action="{{ route('f-enable-service', $service['id']) }}" method="post" data-confirm="Enable this service?">
                                                 @csrf
                                                 @method('PUT')
-                                                <input type="hidden" name="author" value="{{ $userId }}">
-                                                <input type="hidden" name="status" value="Active">
                                                 <button type="submit">Enable</button>
                                             </form>
                                         @endif
@@ -248,8 +243,6 @@
                                         <form action="{{ route('f-remove-service', $service['id']) }}" method="post" data-confirm="Remove this service permanently?">
                                             @csrf
                                             @method('DELETE')
-                                            <input type="hidden" name="author" value="{{ $userId }}">
-                                            <input type="hidden" name="service" value="{{ $service['name'] }}">
                                             <button type="submit" class="admin-action-danger">Remove</button>
                                         </form>
                                     </div>
@@ -266,7 +259,6 @@
                                                 <h4 class="modal-title" id="edit-service-title-{{ $service['id'] }}">Edit {{ $service['name'] }}</h4>
                                             </div>
                                             <div class="modal-body">
-                                                <input type="hidden" name="author" value="{{ $userId }}">
                                                 <div class="admin-panel-form-grid">
                                                     <label class="backend-form-field">
                                                         <span>Service Name <b>*</b></span>
@@ -369,7 +361,6 @@
                         <h4 class="modal-title" id="add-service-title">Add Service</h4>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" name="author" value="{{ $userId }}">
                         <div class="admin-panel-form-grid">
                             <label class="backend-form-field">
                                 <span>Service Name <b>*</b></span>

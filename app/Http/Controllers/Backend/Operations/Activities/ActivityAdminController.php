@@ -37,12 +37,13 @@ class ActivityAdminController extends Controller
             return redirect()->route('admin.activities.index')->with('error', 'Akses ditolak');
         }
 
+        $inventoryData = $inventory->indexData();
         $activities = Activities::findOrFail($id);
         $partner = Partners::where('id', $activities->partners_id)->first();
 
         return view('backend.operations.activities.forms.edit', array_merge(
             $inventory->formOptions(),
-            $inventory->indexData(),
+            $inventoryData,
             ['partner' => $partner],
         ))->with('activities', $activities);
     }

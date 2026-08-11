@@ -81,14 +81,25 @@
                         <li class="breadcrumb-item active" aria-current="page">Currency</li>
                     </ol>
                 </nav>
-                <div class="currency-admin-source currency-admin-source--{{ $externalStatus === 'available' ? 'ok' : 'warning' }}">
-                    <i class="fa {{ $externalStatus === 'available' ? 'fa-check-circle' : 'fa-exclamation-circle' }}"></i>
-                    <span>
-                        External rates {{ $externalStatus === 'available' ? 'available' : 'using local fallback' }}
-                        @if ($externalUpdatedAt)
-                            <small>{{ $externalUpdatedAt->format('d M Y H:i') }}</small>
-                        @endif
-                    </span>
+                <div class="currency-admin-toolbar__actions">
+                    <div class="currency-admin-source currency-admin-source--{{ $externalStatus === 'available' ? 'ok' : 'warning' }}">
+                        <i class="fa {{ $externalStatus === 'available' ? 'fa-check-circle' : 'fa-exclamation-circle' }}"></i>
+                        <span>
+                            External rates {{ $externalStatus === 'available' ? 'available' : 'using local fallback' }}
+                            @if ($externalUpdatedAt)
+                                <small>{{ $externalUpdatedAt->format('d M Y H:i') }}</small>
+                            @endif
+                        </span>
+                    </div>
+                    @canany(['posDev','posAuthor'])
+                        <form action="{{ route('admin.currency.refresh-rates') }}" method="post">
+                            @csrf
+                            <button type="submit" class="backend-button backend-button-primary">
+                                <i class="fa fa-refresh"></i>
+                                {{ __('currency-rates.actions.refresh_now') }}
+                            </button>
+                        </form>
+                    @endcanany
                 </div>
             </section>
 

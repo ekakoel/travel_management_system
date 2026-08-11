@@ -27,6 +27,9 @@ Tracker ringkas standardisasi UI backend/internal.
 - [x] Mutation form backend memakai shared `initBackendSubmitGuards`, spinner
   inline sejak fase click, associated-button lock, double-submit prevention,
   validation/cancel reset, history reset, serta hook reusable action non-form.
+- [x] Spinner action distandarkan sebagai centered overlay yang mempertahankan
+  ukuran control dan menyembunyikan konten lama; renderer spinner lokal pada
+  Transport Management, Reviews, Footer Manager, dan legacy SPK dihapus.
 - [x] Canonical backend modal memakai satu `<x-backend.modal-close>` di header
   dan shared Bootstrap 4/5 compatibility adapter `showBackendModal` /
   `closeBackendModal`; informational modal tidak menduplikasi Close di footer.
@@ -62,6 +65,12 @@ Tracker ringkas standardisasi UI backend/internal.
   shared hero/KPI/filter/table/card/status/action, projection service dengan
   constrained eager loading, shared payment-state resolver, dan tanpa modal
   invoice duplikatif atau query/perhitungan di Blade.
+- [x] Left navbar mengelompokkan Orders, Reservations, dan Invoices dalam
+  dropdown Operations yang localized, role-aware, mempertahankan pending badge,
+  dan terbuka otomatis pada halaman list maupun detail.
+- [x] Data notification header, pending badge Operations, service menu, dan
+  promotion sidebar diproyeksikan oleh shared navigation view composer; Blade
+  navigation tidak menjalankan query dan hasil dipakai ulang satu kali per request.
 - [x] Transport Management/SPK memakai shared backend components pada index/detail aktif.
 
 ## Current Focus

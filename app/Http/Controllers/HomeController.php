@@ -253,7 +253,7 @@ class HomeController extends Controller
                     ];
                 }),
             'activities' => Activities::query()
-                ->where('status', 'Active')
+                ->published()
                 ->select(['id', 'name', 'code', 'type', 'location', 'cover', 'updated_at'])
                 ->latest('updated_at')
                 ->take(3)

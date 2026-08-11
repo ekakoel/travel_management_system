@@ -33,8 +33,6 @@ return [
     'app_status' =>env('APP_STATUS', "Online"),
     'app_version' => env('APP_VERSION', "5.6"),
     'app_key' => env('APP_KEY', "base64:xg2GjTsNwRh59HUV11ZdrzHnVY+esAW0wkKw1xAWQhk="),
-    'exchange_rate_api_key' => env('EXCHANGE_RATE_API_KEY', "6bf13447595262dab3f2d6c1"),
-
     'alt_logo' => env('ALT_LOGO', "Logo Bali Kami Group"),
     'logo_dark' => env('LOGO_DARK', "storage/logo/logo-white-bali-kami.png"),
     'logo_img_color' => env('LOGO_IMG_COLOR', "logo-color-bali-kami.png"),

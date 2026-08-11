@@ -215,7 +215,7 @@
                     button.dataset.originalHtml = button.dataset.originalHtml || button.innerHTML;
                     button.disabled = true;
                     button.classList.add('is-processing');
-                    button.innerHTML = '<span class="booking-submit-button__spinner" aria-hidden="true"></span><span>'
+                    button.innerHTML = '<span class="frontend-action-spinner" aria-hidden="true"></span><span>'
                         + (button.getAttribute('data-processing-label') || 'Processing...')
                         + '</span>';
                 });

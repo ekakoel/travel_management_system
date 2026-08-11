@@ -148,7 +148,7 @@
                                                         @method('put')
                                                         <input type="hidden" name="author" value="{{ Auth::id() }}">
                                                         <button type="submit" class="backend-icon-action is-danger" data-transport-delete="{{ $transport->name }}" aria-label="Delete {{ $transport->name }}">
-                                                            <i class="fa fa-trash-o"></i>
+                                                            <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 @endcanany

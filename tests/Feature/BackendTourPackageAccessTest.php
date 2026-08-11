@@ -20,11 +20,18 @@ class BackendTourPackageAccessTest extends TestCase
     public function test_sidebar_maps_tour_routes_explicitly_instead_of_guessing_from_service_slug(): void
     {
         $sidebar = file_get_contents(resource_path('views/backend/partials/left-navbar.blade.php'));
+        $frontendNavbar = file_get_contents(resource_path('views/frontend/layouts/navbar.blade.php'));
+        $registry = file_get_contents(app_path('Services/Navigation/ServiceNavigationRegistry.php'));
 
-        $this->assertStringContainsString("'public_route' => 'view.tour-packages-service'", $sidebar);
-        $this->assertStringContainsString("'admin_route' => 'admin.tour-packages.index'", $sidebar);
+        $this->assertStringContainsString("'tour-packages' => [", $registry);
+        $this->assertStringContainsString("'aliases' => ['tour-packages', 'tour-package', 'tours', 'tour']", $registry);
+        $this->assertStringContainsString("'public_route' => 'view.tour-packages-service'", $registry);
+        $this->assertStringContainsString("'admin_route' => 'admin.tour-packages.index'", $registry);
+        $this->assertStringContainsString("route(\$serviceItem['admin_route'])", $sidebar);
+        $this->assertStringContainsString("route(\$item['public_route'])", $frontendNavbar);
         $this->assertStringNotContainsString("route(\"admin.\".\"\$menuadmin->nicname\".\".index\")", $sidebar);
         $this->assertStringNotContainsString("route('view.'.\$femenu->nicname.'-service')", $sidebar);
+        $this->assertStringNotContainsString("route(\"view.\".\$item->nicname.\"-service\")", $frontendNavbar);
     }
 
     public function test_tour_inventory_read_is_not_restricted_to_authoring_positions(): void

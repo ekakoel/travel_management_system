@@ -673,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 button.innerHTML = isSubmitting
-                    ? '<span class="booking-submit-button__spinner" aria-hidden="true"></span><span>' + processingLabel + '</span>'
+                    ? '<span class="frontend-action-spinner" aria-hidden="true"></span><span>' + processingLabel + '</span>'
                     : originalHtml;
             });
     };

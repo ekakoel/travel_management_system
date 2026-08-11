@@ -72,6 +72,18 @@
   margin-bottom: 16px;
 }
 
+.currency-admin-toolbar__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.currency-admin-toolbar__actions form {
+  margin: 0;
+}
+
 .currency-admin-toolbar .breadcrumb {
   background: transparent;
   margin: 0;
@@ -323,7 +335,6 @@
   display: block;
   font-size: 12px;
   font-weight: 800;
-  margin-bottom: 6px;
 }
 
 .currency-admin-current strong {

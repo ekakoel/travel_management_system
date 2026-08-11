@@ -1,58 +1,17 @@
 
-<?php
-    use App\Models\Services;
-    use App\Models\Promotion;
-    use App\Models\Orders;
-    use App\Models\OrderWedding;
-    use Carbon\Carbon;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Facades\File;
-    use Illuminate\Support\Facades\Input;
-    use App\Http\Requests\StoremenuRequest;
-    use App\Http\Requests\UpdatemenuRequest;
-    use Illuminate\Support\Facades\Route;
-    use Illuminate\Support\Facades\Schema;
-    // Services =======================================================================================================
-    $services_menu = Schema::hasTable('services')
-        ? Services::where('status','Active')->orderBy('name', 'asc')->get()
-        : collect();
-    $services_admin = Schema::hasTable('services')
-        ? Services::orderBy('name', 'asc')->get()
-        : collect();
-    $serviceNavigation = [
-        'hotels' => ['public' => 'view.hotels-service', 'admin' => 'admin.hotels.index', 'active' => 'admin.hotels.*'],
-        'tours' => ['public' => 'view.tour-packages-service', 'admin' => 'admin.tour-packages.index', 'active' => ['admin.tour-packages.*', 'admin.tours.*']],
-        'activities' => ['public' => 'view.activities-service', 'admin' => 'admin.activities.index', 'active' => 'admin.activities.*'],
-        'transports' => ['public' => 'view.transports-service', 'admin' => 'admin.transports.index', 'active' => 'admin.transports.*'],
-        'weddings' => ['public' => 'view.weddings', 'admin' => 'weddings-admin.index', 'active' => 'weddings-admin.*'],
-    ];
-    $now = Carbon::now();
-    $left_orders_pending = Schema::hasTable('orders')
-        ? Orders::where('status','Pending')->where('checkin','>=',$now)->get()
-        : collect();
-    $left_orders_wedding_pending = Schema::hasTable('order_weddings')
-        ? OrderWedding::where('status','Pending')->where('wedding_date','>=',$now)->get()
-        : collect();
-    $c_left_orders_pending = count($left_orders_pending);
-    $c_left_orders_wedding_pending = count($left_orders_wedding_pending);
-    $c_o_pending = $c_left_orders_pending+$c_left_orders_wedding_pending;
-    $o_wedding_pending = $c_left_orders_wedding_pending;
-    $o_tour_pending = $c_left_orders_pending;
-
-    //USER
-    $user = Auth::user();
-    // PROMOTION
-    $promotions = Schema::hasTable('promotions')
-        ? Promotion::where('periode_start','<', $now)
-            ->where('periode_end','>',$now)
-            ->where('status','Active')->get()
-        : collect();
-    $isApprovedUser = ! Schema::hasColumn('users', 'is_approved') || (bool) $user->is_approved;
-    $logoColor = config('app.logo_img_color');
-    $logoWhite = config('app.logo_img_white');
-    $logoBlack = config('app.logo_img_black');
-?>
+@php
+    $user = $backendNavigation['user'];
+    $servicesMenu = $backendNavigation['services'];
+    $promotions = $backendNavigation['promotions'];
+    $isApprovedUser = $backendNavigation['isApprovedUser'];
+    $operationsPendingCount = $backendNavigation['pendingCounts']['operations'];
+    $ordersNavigationActive = $backendNavigation['active']['orders'];
+    $reservationsNavigationActive = $backendNavigation['active']['reservations'];
+    $invoicesNavigationActive = $backendNavigation['active']['invoices'];
+    $operationsNavigationActive = $backendNavigation['active']['operations'];
+    $logoColor = $backendNavigation['logos']['color'];
+    $logoWhite = $backendNavigation['logos']['white'];
+@endphp
 <div class="left-side-bar backend-sidebar d-print-none">
     <div class="brand-logo backend-sidebar__brand">
         <a href="{{ $user->canAccessAdminDashboard() ? route('admin.dashboard') : route('home') }}">
@@ -99,12 +58,11 @@
                                 <i class="fas fa-home"></i>@lang('messages.Home')
                             </a>
                         </li>
-                        @foreach ($services_menu as $femenu)
-                            @php($serviceNav = $serviceNavigation[$femenu->nicname] ?? null)
-                            @if ($serviceNav && Route::has($serviceNav['public']))
+                        @foreach ($servicesMenu as $serviceItem)
+                            @if ($serviceItem['public_route'])
                                 <li>
-                                    <a href="{{ route($serviceNav['public']) }}">
-                                        <i class="{!! $femenu->icon !!}"></i> {{ __("messages.".$femenu->name) }}
+                                    <a href="{{ route($serviceItem['public_route']) }}">
+                                        <i class="{{ $serviceItem['icon'] }}"></i> {{ $serviceItem['label'] }}
                                     </a>
                                 </li>
                             @endif
@@ -208,12 +166,11 @@
                                     <i class="fas fa-bars"></i>@lang("messages.Services")</span>
                                 </a>
                                 <ul class="submenu">
-                                        @foreach ($services_menu as $menuadmin)
-                                            @php($serviceNav = $serviceNavigation[$menuadmin->nicname] ?? null)
-                                            @if ($serviceNav && Route::has($serviceNav['admin']))
+                                        @foreach ($servicesMenu as $serviceItem)
+                                            @if ($serviceItem['admin_route'])
                                                 <li>
-                                                    <a href="{{ route($serviceNav['admin']) }}" class="{{ request()->routeIs(...(array) $serviceNav['active']) ? 'active' : '' }}">
-                                                        <i class="{!! $menuadmin->icon !!}"></i> {{ __("messages.".$menuadmin->name) }}
+                                                    <a href="{{ route($serviceItem['admin_route']) }}" class="{{ request()->routeIs(...$serviceItem['admin_active']) ? 'active' : '' }}">
+                                                        <i class="{{ $serviceItem['icon'] }}"></i> {{ $serviceItem['label'] }}
                                                     </a>
                                                 </li>
                                             @endif
@@ -271,45 +228,42 @@
                                 </li> --}}
                             @endcanany
                             @canany(['posDev','posRsv'])
-                                {{-- SPK --}}
                                 <li>
                                     <a href="{{ route('view.transport-management.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.transport-management.index') ? 'active' : '' }}">
                                         <i class="fas fa-car"></i> @lang("messages.Transport Management")
                                     </a>
                                 </li>
-                                @can('posDev')
-                                    <li class="order-count">
-                                        <a href="{{ route('admin.order.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('admin.order.index') ? 'active' : '' }}">
-                                            <i class="fas fa-shopping-cart"></i> @lang("messages.Orders")
-                                            <div class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
-                                                <i class="icon-copy ti-alarm-clock"></i> <span>{{ $c_o_pending }}</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                @endcan
-                                @canany(['posAuthor','posRsv'])
-                                    <li class="order-count">
-                                        <a href="{{ route('admin.order.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('admin.order.index') ? 'active' : '' }}">
-                                            <i class="fas fa-shopping-cart"></i> @lang("messages.Orders")
-                                            <div class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="Pending Orders" >
-                                                @if ($o_tour_pending > 0)
-                                                    <p>
-                                                        <i class="icon-copy ti-alarm-clock"></i> <span>{{ $o_tour_pending }}</span>
-                                                    </p>
-                                                @endif
-                                            </div>
-                                        </a>
-                                    </li>
-                                @endcanany
-                                @canany(['posDev','posRsv'])
-                                    <li>
-                                        <a href="{{ route('view.reservation') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.reservation', 'view.reservation.detail', 'spks.show') ? 'active' : '' }}">
-                                            <i class="fas fa-calendar-check"></i> @lang("messages.Reservations")
-                                        </a>
-                                    </li>
-                                @endcan
                             @endcanany
-                            
+
+                            @canany(['posDev','posRsv','weddingRsv'])
+                                <li class="dropdown {{ $operationsNavigationActive ? 'show' : '' }}">
+                                    <a href="javascript:;" class="dropdown-toggle">
+                                        <i class="fas fa-briefcase"></i><span class="mtext">@lang('messages.Operations')</span>
+                                    </a>
+                                    <ul id="operations-submenu" class="submenu">
+                                        <li class="order-count">
+                                            <a href="{{ route('admin.order.index') }}" class="{{ $ordersNavigationActive ? 'active' : '' }}">
+                                                <i class="fas fa-shopping-cart"></i> @lang('messages.Orders')
+                                                @if ($operationsPendingCount > 0)
+                                                    <span class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="{{ __('messages.Pending Orders') }}">
+                                                        <i class="icon-copy ti-alarm-clock"></i><span>{{ $operationsPendingCount }}</span>
+                                                    </span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('view.reservation') }}" class="{{ $reservationsNavigationActive ? 'active' : '' }}">
+                                                <i class="fas fa-calendar-check"></i> @lang('messages.Reservations')
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('admin.invoices.index') }}" class="{{ $invoicesNavigationActive ? 'active' : '' }}">
+                                                <i class="fas fa-file-invoice-dollar"></i> @lang('messages.Invoices')
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endcanany
 
                         @endcanany
                     </ul>

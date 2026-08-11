@@ -24,6 +24,16 @@ Standar ini berlaku untuk form create/update penting seperti order, booking, res
 - Backend shared guard: `resources/backend/js/app.js`; form mutasi otomatis
   mendapat spinner sejak klik, sedangkan action non-form memakai
   `data-backend-action-loading` dan `window.setBackendActionLoading`.
+- Spinner action backend canonical adalah `backend-action-spinner`: diposisikan
+  sebagai overlay tepat di tengah control, mempertahankan dimensi tombol, dan
+  menyembunyikan ikon/label lama selama state `is-submitting` agar tidak overlap.
+- Spinner action frontend canonical adalah `frontend-action-spinner` dengan
+  state `is-processing`. Spinner fullscreen/content tetap memakai komponen
+  loading sesuai konteks dan tidak boleh ditempatkan berdampingan dengan ikon
+  action yang masih terlihat.
+- Loading content backend memakai `<x-backend.loading-spinner>`; halaman tidak
+  boleh membuat spinner Bootstrap/Font Awesome atau mengganti `innerHTML`
+  tombol secara lokal jika shared submit guard sudah aktif.
 
 ## Checklist Implementasi
 

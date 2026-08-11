@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\FooterLink;
 use App\Models\FooterSetting;
+use App\Services\Navigation\BackendNavigationService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -136,18 +137,17 @@ class FooterContentService
         ],
     ];
 
-    protected BusinessProfileService $businessProfileService;
-
-    public function __construct(BusinessProfileService $businessProfileService)
-    {
-        $this->businessProfileService = $businessProfileService;
+    public function __construct(
+        protected BusinessProfileService $businessProfileService,
+        protected BackendNavigationService $navigation,
+    ) {
     }
 
     public function data(): array
     {
         $locale = app()->getLocale();
 
-        return Cache::remember("footer_content.$locale", 3600, function () use ($locale) {
+        $footerData = Cache::remember("footer_content.$locale", 3600, function () use ($locale) {
             $businessProfile = $this->businessProfileService->primary();
             $settings = FooterSetting::query()
                 ->where('status', true)
@@ -155,6 +155,7 @@ class FooterContentService
                 ->keyBy('key');
             $links = FooterLink::query()
                 ->where('status', true)
+                ->where('group', '!=', 'services')
                 ->orderBy('group')
                 ->orderBy('sort_order')
                 ->orderBy('label')
@@ -207,16 +208,19 @@ class FooterContentService
                 ],
                 'link_sections' => [
                     [
+                        'key' => 'services',
                         'title' => $setting('services_title', 'Our Services'),
                         'aria' => $setting('services_aria', 'Footer services'),
-                        'links' => $this->footerLinks($links->get('services', collect()), $locale),
+                        'links' => [],
                     ],
                     [
+                        'key' => 'quick_links',
                         'title' => $setting('quick_links_title', 'Quick Links'),
                         'aria' => $setting('quick_links_aria', 'Footer quick links'),
                         'links' => $this->footerLinks($links->get('quick_links', collect()), $locale),
                     ],
                     [
+                        'key' => 'policies',
                         'title' => $setting('policies_title', 'Policies'),
                         'aria' => $setting('policies_aria', 'Footer policies'),
                         'links' => $this->footerLinks($links->get('policies', collect()), $locale),
@@ -234,6 +238,19 @@ class FooterContentService
                 ],
             ];
         });
+
+        foreach ($footerData['link_sections'] as $index => &$section) {
+            $sectionKey = $section['key'] ?? ($index === 0 ? 'services' : null);
+
+            if ($sectionKey === 'services') {
+                $section['key'] = 'services';
+                $section['links'] = $this->activeServiceLinks();
+                break;
+            }
+        }
+        unset($section);
+
+        return $footerData;
     }
 
     public function forget(): void
@@ -326,6 +343,21 @@ class FooterContentService
                 'rel' => $link->open_new_tab ? 'noopener noreferrer' : null,
             ];
         })->filter(fn ($link) => filled($link['url']))->values()->all();
+    }
+
+    protected function activeServiceLinks(): array
+    {
+        return $this->navigation
+            ->navigationItems()
+            ->filter(fn (array $service) => filled($service['public_route']))
+            ->map(fn (array $service) => [
+                'label' => $service['label'],
+                'url' => route($service['public_route']),
+                'target' => null,
+                'rel' => null,
+            ])
+            ->values()
+            ->all();
     }
 
     protected function resolveLinkUrl($link): ?string

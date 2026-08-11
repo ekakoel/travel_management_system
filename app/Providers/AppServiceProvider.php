@@ -2,21 +2,21 @@
 
 namespace App\Providers;
 
-use App\Models\Services;
 use App\Services\BusinessProfileService;
 use App\Services\FooterContentService;
+use App\Services\Navigation\BackendNavigationService;
 use App\Services\RegistrationAccessService;
+use App\View\Composers\BackendNavigationComposer;
 use Illuminate\Support\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Cache;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        //
+        $this->app->scoped(BackendNavigationService::class);
     }
     public function boot()
     {
@@ -46,13 +46,20 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('registrationEnabled', app(RegistrationAccessService::class)->enabled());
         });
-        View::composer('*', function ($view) {
-            $services = Services::query()
-                ->where('status', 'Active')
-                ->orderBy('name')
-                ->get();
+        View::composer([
+            'component.menu',
+            'backend.partials.left-navbar',
+        ], BackendNavigationComposer::class);
 
-            $view->with('globalServices', $services);
+        View::composer('frontend.layouts.navbar', function ($view) {
+            if (array_key_exists('globalServices', $view->getData())) {
+                return;
+            }
+
+            $view->with(
+                'globalServices',
+                app(BackendNavigationService::class)->navigationItems()
+            );
         });
     }
 }

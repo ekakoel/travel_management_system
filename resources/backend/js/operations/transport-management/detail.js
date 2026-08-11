@@ -26,29 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const submitLoading = () => {
-        document.addEventListener('submit', (event) => {
-            const form = event.target.closest('form');
-            if (!form) {
-                return;
-            }
-
-            let button = form.querySelector('[type="submit"]');
-            if (!button && form.id) {
-                button = document.querySelector(`[type="submit"][form="${form.id}"]`);
-            }
-
-            if (!button) {
-                return;
-            }
-
-            button.disabled = true;
-            button.setAttribute('aria-disabled', 'true');
-            button.dataset.originalHtml = button.innerHTML;
-            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-        }, true);
-    };
-
     const initTimePicker = () => {
         const picker = document.getElementById('transportSpkTimePicker');
         if (!picker) {
@@ -292,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     confirmForms();
-    submitLoading();
     initTimePicker();
     initWhatsAppSend();
     initWhatsAppStatus();

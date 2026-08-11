@@ -100,7 +100,7 @@
                                     <th>Partner</th>
                                     <th>Location</th>
                                     <th>Price/Pax</th>
-                                    <th>Validity</th>
+                                    <th>Valid Until</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -114,8 +114,14 @@
                                         <td data-label="Name"><strong>{{ $activity->name }}</strong><span>{{ $activity->type ?: '-' }}</span></td>
                                         <td data-label="Partner">{{ $row['partner_name'] }}</td>
                                         <td data-label="Location">{{ $activity->location ?: '-' }}</td>
-                                        <td data-label="Price/Pax">{!! currencyFormatUsd($row['published_rate']) !!}</td>
-                                        <td data-label="Validity">{{ $activity->validity ? dateFormat($activity->validity) : '-' }}</td>
+                                        <td data-label="Price/Pax">
+                                            @if ($row['price_available'])
+                                                {!! currencyFormatUsd($row['published_rate']) !!}
+                                            @else
+                                                <span class="backend-status-badge backend-status-badge--muted" title="{{ $row['price_unavailable_code'] }}">Unavailable</span>
+                                            @endif
+                                        </td>
+                                        <td data-label="Valid Until">{{ $activity->validity ? dateFormat($activity->validity) : '-' }}</td>
                                         <td data-label="Status"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $activity->status }}</span></td>
                                         <td data-label="Action">
                                             <div class="backend-table-actions">
@@ -131,7 +137,7 @@
                                                         @method('delete')
                                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                         <button type="submit" class="backend-icon-action is-danger" data-activity-delete="{{ $activity->name }}" aria-label="Delete {{ $activity->name }}">
-                                                            <i class="fa fa-trash-o"></i>
+                                                            <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 @endcanany
@@ -181,10 +187,16 @@
                                     </div>
                                     <div>
                                         <dt>Price/Pax</dt>
-                                        <dd>{!! currencyFormatUsd($row['published_rate']) !!}</dd>
+                                        <dd>
+                                            @if ($row['price_available'])
+                                                {!! currencyFormatUsd($row['published_rate']) !!}
+                                            @else
+                                                <span class="backend-status-badge backend-status-badge--muted" title="{{ $row['price_unavailable_code'] }}">Unavailable</span>
+                                            @endif
+                                        </dd>
                                     </div>
                                     <div>
-                                        <dt>Validity</dt>
+                                        <dt>Valid Until</dt>
                                         <dd>{{ $activity->validity ? dateFormat($activity->validity) : '-' }}</dd>
                                     </div>
                                     <div>

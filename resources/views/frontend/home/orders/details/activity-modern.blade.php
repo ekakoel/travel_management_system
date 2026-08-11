@@ -27,13 +27,9 @@
     $statusTone = $statusToneMap[$order->status] ?? 'default';
     $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
     $serviceLabel = __('messages.' . $order->service) !== 'messages.' . $order->service ? __('messages.' . $order->service) : $order->service;
-    $packageName = trim((string) (($activity->$langName ?: $activity->name) ?: ($order->servicename ?: $order->subservice)));
-    $packageType = trim((string) ($activity->type?->$langType ?: $activity->type?->type));
-    $durationLabel = $activity->duration_days
-        ? ($activity->duration_nights > 0
-            ? __('messages.duration_days_nights', ['days' => $activity->duration_days, 'nights' => $activity->duration_nights])
-            : __('messages.duration_days', ['days' => $activity->duration_days]))
-        : '';
+    $packageName = trim((string) ((data_get($activity, $langName) ?: $activity?->name) ?: ($order->servicename ?: $order->subservice)));
+    $packageType = trim((string) ($activity?->type ?: $order->service_type));
+    $durationLabel = trim((string) ($activity?->duration ?: $order->duration));
     $profileIncomplete = Auth::user()->email == '';
     $isEditable = in_array($order->status, ['Draft', 'Invalid'], true);
     $canDelete = in_array($order->status, ['Draft', 'Invalid', 'Rejected'], true);

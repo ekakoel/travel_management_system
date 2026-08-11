@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Http\Middleware\LogActivityMiddleware;
 use App\Http\Middleware\TrackWebsiteVisit;
 use App\Http\Middleware\UserActivity;
+use App\Http\Requests\UpdateActivityAdminRequest;
 use App\Models\InvoiceAdmin;
 use App\Models\Orders;
 use App\Models\PaymentConfirmation;
@@ -12,6 +13,7 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Services\AccommodationFinancialFileService;
 use App\Services\ActivityOrderLifecycleService;
+use App\Services\Activities\ActivityInventoryService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -20,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
 class PublicActivityFlowTest extends TestCase
@@ -61,7 +64,7 @@ class PublicActivityFlowTest extends TestCase
                 'price_total' => 1,
                 'final_price' => 1,
             ]))
-            ->assertRedirect(route('view.detail-order-hotel', ['id' => 1]));
+            ->assertRedirect(route('view.detail-order-activity', ['id' => 1]));
 
         $order = DB::table('orders')->where('service', 'Activity')->first();
 
@@ -80,6 +83,286 @@ class PublicActivityFlowTest extends TestCase
             'status' => 'Pending',
         ]);
         $this->assertSame(2, DB::table('guests')->where('order_id', $order->id)->where('rsv_id', $order->rsv_id)->count());
+
+        $this->actingAs($user)
+            ->get(route('view.detail-order-activity', ['id' => $order->id]))
+            ->assertOk()
+            ->assertSee('$150,00')
+            ->assertSee('$300,00');
+    }
+
+    public function test_activity_quote_uses_sell_rate_and_current_promotions_for_selected_travel_date(): void
+    {
+        DB::table('usd_rates')->where('name', 'USD')->update([
+            'rate' => 1,
+            'sell' => 15000,
+            'updated_at' => now(),
+        ]);
+        DB::table('promotions')->insert([
+            'name' => 'Current Activity Promotion',
+            'discounts' => 10,
+            'periode_start' => '2026-07-26',
+            'periode_end' => '2026-07-28',
+            'status' => 'Active',
+        ]);
+        $user = $this->actingUser();
+
+        $this->actingAs($user)
+            ->postJson(route('activity.quote', ['code' => 'ACT-001']), [
+                'number_of_guests' => 2,
+                'travel_date' => '2026-08-10 09:00:00',
+            ])
+            ->assertOk()
+            ->assertJsonPath('price_available', true)
+            ->assertJsonPath('quote.rate_side', 'sell')
+            ->assertJsonPath('quote.unit_price_usd_minor', 15000)
+            ->assertJsonPath('quote.gross_total_usd_minor', 30000)
+            ->assertJsonPath('quote.discount_total_usd_minor', 1000)
+            ->assertJsonPath('quote.final_total_usd_minor', 29000)
+            ->assertJsonPath('display.unit_price_usd', '150.00')
+            ->assertJsonPath('display.final_total_usd', '290.00');
+
+        $this->actingAs($user)
+            ->post(route('view.activity-order.store', ['code' => 'ACT-001']), $this->activityPayload())
+            ->assertRedirect();
+
+        $order = DB::table('orders')->where('service', 'Activity')->first();
+
+        $this->assertSame('150', (string) $order->price_pax);
+        $this->assertSame('300', (string) $order->price_total);
+        $this->assertSame('290', (string) $order->final_price);
+        $this->assertSame('15000', (string) $order->usd_rate);
+    }
+
+    public function test_activity_price_rounds_up_to_the_next_whole_usd(): void
+    {
+        DB::table('usd_rates')->where('name', 'USD')->update([
+            'rate' => 100,
+            'sell' => 100,
+            'updated_at' => now(),
+        ]);
+        $user = $this->actingUser();
+
+        foreach ([
+            1100 => 1100,
+            1101 => 1200,
+            1120 => 1200,
+            1199 => 1200,
+            1200 => 1200,
+        ] as $contractRate => $expectedUsdMinor) {
+            DB::table('activities')->where('id', 1)->update([
+                'contract_rate' => $contractRate,
+                'markup' => 0,
+            ]);
+
+            $this->actingAs($user)
+                ->postJson(route('activity.quote', ['code' => 'ACT-001']), [
+                    'number_of_guests' => 2,
+                    'travel_date' => '2026-08-10 09:00:00',
+                ])
+                ->assertOk()
+                ->assertJsonPath('quote.rounding_policy', 'ceiling-whole-usd-v1')
+                ->assertJsonPath('quote.unit_price_usd_minor', $expectedUsdMinor)
+                ->assertJsonPath('quote.gross_total_usd_minor', $expectedUsdMinor * 2);
+        }
+    }
+
+    public function test_activity_pricing_uses_precise_intermediate_calculation_before_whole_usd_ceiling(): void
+    {
+        DB::table('activities')->where('id', 1)->update([
+            'contract_rate' => 10995,
+            'markup' => 0,
+        ]);
+        DB::table('usd_rates')->where('name', 'USD')->update([
+            'rate' => 1000,
+            'sell' => 1000,
+            'updated_at' => now(),
+        ]);
+        DB::table('taxes')->where('name', 'tax')->update([
+            'tax' => 0.04,
+        ]);
+
+        $this->actingAs($this->actingUser())
+            ->postJson(route('activity.quote', ['code' => 'ACT-001']), [
+                'number_of_guests' => 2,
+                'travel_date' => '2026-08-10 09:00:00',
+            ])
+            ->assertOk()
+            ->assertJsonPath('quote.rounding_policy', 'ceiling-whole-usd-v1')
+            ->assertJsonPath('quote.unit_price_usd_minor', 1100)
+            ->assertJsonPath('quote.gross_total_usd_minor', 2200)
+            ->assertJsonPath('display.unit_price_usd', '11.00');
+    }
+
+    public function test_activity_price_validity_uses_selected_activity_date(): void
+    {
+        DB::table('activities')->where('id', 1)->update([
+            'validity' => '2026-08-31',
+        ]);
+        $user = $this->actingUser();
+
+        foreach (['2026-08-30 09:00:00', '2026-08-31 09:00:00'] as $travelDate) {
+            $this->actingAs($user)
+                ->postJson(route('activity.quote', ['code' => 'ACT-001']), [
+                    'number_of_guests' => 2,
+                    'travel_date' => $travelDate,
+                ])
+                ->assertOk()
+                ->assertJsonPath('price_available', true)
+                ->assertJsonPath('quote.valid_until', '2026-08-31');
+        }
+
+        $this->actingAs($user)
+            ->postJson(route('activity.quote', ['code' => 'ACT-001']), [
+                'number_of_guests' => 2,
+                'travel_date' => '2026-09-01 09:00:00',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath('price_available', false)
+            ->assertJsonPath('code', 'ACTIVITY_PRICE_DATE_OUT_OF_VALIDITY');
+
+        $this->actingAs($user)
+            ->from(route('view.activity-public-detail', ['code' => 'ACT-001']))
+            ->post(route('view.activity-order.store', ['code' => 'ACT-001']), $this->activityPayload([
+                'travel_date' => '2026-09-01 09:00:00',
+                'price_total' => 1,
+                'final_price' => 1,
+            ]))
+            ->assertSessionHasErrors('travel_date');
+
+        $this->assertSame(0, DB::table('orders')->where('service', 'Activity')->count());
+    }
+
+    public function test_expired_activity_is_hidden_and_automatically_moved_to_draft(): void
+    {
+        DB::table('activities')->where('id', 1)->update([
+            'validity' => '2026-07-27',
+        ]);
+        DB::table('activities')->insert([
+            'id' => 2,
+            'partners_id' => 1,
+            'name' => 'Expired Activity',
+            'code' => 'ACT-EXPIRED',
+            'type' => 'Water',
+            'location' => 'Bali',
+            'duration' => '2 Hours',
+            'contract_rate' => 1000000,
+            'markup' => 10,
+            'qty' => '5',
+            'min_pax' => '2',
+            'status' => 'Active',
+            'validity' => '2026-07-26',
+        ]);
+
+        $this->get(route('view.activities-service'))
+            ->assertOk()
+            ->assertSee('Test Activity')
+            ->assertDontSee('Expired Activity');
+        $this->get(route('view.activity-public-detail', ['code' => 'ACT-EXPIRED']))
+            ->assertNotFound();
+
+        $inventory = app(ActivityInventoryService::class)->indexData();
+        $expiredRow = $inventory['activityIndex']->rows()
+            ->first(fn (array $row) => $row['model']->code === 'ACT-EXPIRED');
+
+        $this->assertSame('Draft', $expiredRow['model']->status);
+        $this->assertFalse($expiredRow['price_available']);
+        $this->assertDatabaseHas('activities', [
+            'id' => 2,
+            'status' => 'Draft',
+        ]);
+        $this->assertDatabaseHas('activities', [
+            'id' => 1,
+            'status' => 'Active',
+        ]);
+
+        $this->artisan('activities:draft-expired')
+            ->expectsOutput('Moved 0 expired Activity record(s) to Draft.')
+            ->assertSuccessful();
+    }
+
+    public function test_backend_cannot_publish_an_expired_activity_as_active(): void
+    {
+        $request = UpdateActivityAdminRequest::create('/admin/activities/1', 'PUT', [
+            'status' => 'Active',
+            'validity' => '2026-07-26',
+        ]);
+        $validator = Validator::make($request->all(), $request->rules());
+        $request->withValidator($validator);
+
+        $this->assertTrue($validator->fails());
+        $this->assertArrayHasKey('validity', $validator->errors()->toArray());
+        $this->assertSame(
+            'An expired Activity cannot be published as Active.',
+            $validator->errors()->first('validity')
+        );
+    }
+
+    public function test_backend_and_frontend_price_per_pax_use_the_same_activity_quote(): void
+    {
+        $user = $this->actingUser();
+        $quoteResponse = $this->actingAs($user)
+            ->postJson(route('activity.quote', ['code' => 'ACT-001']), [
+                'number_of_guests' => 2,
+                'travel_date' => '2026-07-28 09:00:00',
+            ])
+            ->assertOk()
+            ->assertJsonPath('display.unit_price_usd', '150.00');
+
+        $inventory = app(ActivityInventoryService::class);
+        $indexData = $inventory->indexData();
+        $detailData = $inventory->detailData(1);
+        $backendRow = $indexData['activityIndex']->rows()->first();
+        $frontendUnitPrice = $quoteResponse->json('display.unit_price_usd');
+
+        $this->assertTrue($backendRow['price_available']);
+        $this->assertSame($frontendUnitPrice, $backendRow['published_rate']);
+        $this->assertTrue($detailData['activityDetail']->priceAvailable());
+        $this->assertSame($frontendUnitPrice, $detailData['activityDetail']->publishedRate());
+        $this->assertSame('0', $detailData['activityDetail']->taxPercentage());
+
+        $this->actingAs($user)
+            ->post(route('view.activity-order.store', ['code' => 'ACT-001']), $this->activityPayload([
+                'travel_date' => '2026-07-28 09:00:00',
+                'price_total' => 1,
+                'final_price' => 1,
+            ]))
+            ->assertRedirect();
+
+        $order = DB::table('orders')->where('service', 'Activity')->first();
+
+        $this->assertSame($frontendUnitPrice, number_format((float) $order->price_pax, 2, '.', ''));
+    }
+
+    public function test_legacy_activity_detail_url_redirects_to_the_canonical_pricing_page(): void
+    {
+        $this->actingAs($this->actingUser())
+            ->get(route('view.activity-detail', ['code' => 'ACT-001']))
+            ->assertRedirect(route('view.activity-public-detail', ['code' => 'ACT-001']));
+    }
+
+    public function test_activity_quote_and_order_fail_closed_when_usd_sell_rate_is_stale(): void
+    {
+        DB::table('usd_rates')->where('name', 'USD')->update([
+            'updated_at' => now()->subHours(25),
+        ]);
+        $user = $this->actingUser();
+
+        $this->actingAs($user)
+            ->postJson(route('activity.quote', ['code' => 'ACT-001']), [
+                'number_of_guests' => 2,
+                'travel_date' => '2026-08-10 09:00:00',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath('price_available', false)
+            ->assertJsonPath('code', 'PRICING_RATE_STALE');
+
+        $this->actingAs($user)
+            ->from(route('view.activity-public-detail', ['code' => 'ACT-001']))
+            ->post(route('view.activity-order.store', ['code' => 'ACT-001']), $this->activityPayload())
+            ->assertSessionHasErrors('number_of_guests');
+
+        $this->assertSame(0, DB::table('orders')->where('service', 'Activity')->count());
     }
 
     public function test_public_activity_listing_and_detail_only_use_active_records(): void
@@ -146,7 +429,7 @@ class PublicActivityFlowTest extends TestCase
         $this->actingAs($user)->post(route('view.activity-order.store', ['code' => 'ACT-001']), $payload);
         $this->actingAs($user)
             ->post(route('view.activity-order.store', ['code' => 'ACT-001']), $payload)
-            ->assertRedirect(route('view.detail-order-hotel', ['id' => 1]));
+            ->assertRedirect(route('view.detail-order-activity', ['id' => 1]));
 
         $this->assertSame(1, DB::table('orders')->where('service', 'Activity')->count());
         $this->assertSame(1, DB::table('reservations')->count());
@@ -598,7 +881,14 @@ class PublicActivityFlowTest extends TestCase
     {
         DB::table('taxes')->insert(['id' => 1, 'name' => 'tax', 'tax' => 0]);
         foreach ([['USD', 15000], ['CNY', 2000], ['TWD', 500]] as $index => [$name, $rate]) {
-            DB::table('usd_rates')->insert(['id' => $index + 1, 'name' => $name, 'rate' => $rate, 'sell' => $rate]);
+            DB::table('usd_rates')->insert([
+                'id' => $index + 1,
+                'name' => $name,
+                'rate' => $rate,
+                'sell' => $rate,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
         DB::table('bank_accounts')->insert(['id' => 1, 'bank' => 'Test Bank', 'currency' => 'USD']);
         DB::table('business_profiles')->insert(['id' => 1, 'profile_key' => 'primary', 'name' => 'Bali Kami Tour', 'caption' => 'Travel']);

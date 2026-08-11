@@ -148,7 +148,7 @@
                                                         @method('delete')
                                                         <input type="hidden" name="author" value="{{ Auth::id() }}">
                                                         <button type="submit" class="backend-icon-action is-danger" data-tour-delete="{{ $tour->name }}" aria-label="Delete {{ $tour->name }}">
-                                                            <i class="fa fa-trash-o"></i>
+                                                            <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 @endcanany

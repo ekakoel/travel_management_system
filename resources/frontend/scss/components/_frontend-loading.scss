@@ -1,0 +1,38 @@
+.is-processing {
+    pointer-events: none;
+}
+
+button.is-processing,
+a.is-processing,
+.btn.is-processing,
+.ui-btn.is-processing {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.55rem;
+    justify-content: center;
+}
+
+.frontend-action-spinner {
+    animation: frontend-action-spin 700ms linear infinite;
+    border: 2px solid currentColor;
+    border-radius: 999px;
+    border-right-color: transparent;
+    display: inline-block;
+    flex: 0 0 16px;
+    height: 16px;
+    margin: 0;
+    pointer-events: none;
+    width: 16px;
+}
+
+@keyframes frontend-action-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .frontend-action-spinner {
+        animation-duration: 1400ms;
+    }
+}

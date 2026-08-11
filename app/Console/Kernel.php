@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use App\Jobs\UpdateCurrencyRates;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -25,8 +24,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->job(new UpdateCurrencyRates)->hourly();
+        $schedule->command('currency:refresh-rates')
+            ->dailyAt('00:00')
+            ->timezone(config('app.timezone'))
+            ->withoutOverlapping(60)
+            ->name('currency:refresh-rates');
+        $schedule->command('activities:draft-expired')
+            ->dailyAt('00:00')
+            ->timezone(config('app.timezone'))
+            ->withoutOverlapping(60)
+            ->name('activities:draft-expired');
         $schedule->command('orders:auto-cancel-expired-payments')
             ->everyFifteenMinutes()
             ->withoutOverlapping()

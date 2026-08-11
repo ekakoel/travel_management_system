@@ -2,6 +2,7 @@
 
 namespace App\ViewModels\Activities;
 
+use App\Exceptions\PricingException;
 use App\Services\Activities\ActivityPricingService;
 use Illuminate\Support\Collection;
 
@@ -12,8 +13,6 @@ class ActivityIndexViewModel
         public readonly Collection $activeActivities,
         public readonly Collection $draftActivities,
         public readonly Collection $archivedActivities,
-        public readonly object|null $usdRate,
-        public readonly object|null $tax,
         private readonly ActivityPricingService $pricingService,
     ) {
     }
@@ -31,10 +30,26 @@ class ActivityIndexViewModel
     public function rows(): Collection
     {
         return $this->activities->map(function ($activity) {
+            try {
+                $quote = $this->pricingService->quote(
+                    $activity,
+                    max((int) ($activity->min_pax ?: 1), 1),
+                );
+                $publishedRate = $quote->unitPriceUsd();
+                $priceAvailable = true;
+                $priceUnavailableCode = null;
+            } catch (PricingException $exception) {
+                $publishedRate = null;
+                $priceAvailable = false;
+                $priceUnavailableCode = $exception->pricingCode;
+            }
+
             return [
                 'model' => $activity,
                 'partner_name' => $activity->partners?->name ?: '-',
-                'published_rate' => $this->pricingService->publishedRate($activity->contract_rate, $activity->markup, $this->usdRate, $this->tax),
+                'published_rate' => $publishedRate,
+                'price_available' => $priceAvailable,
+                'price_unavailable_code' => $priceUnavailableCode,
                 'status_tone' => $this->statusTone($activity->status),
             ];
         });

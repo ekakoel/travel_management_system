@@ -234,8 +234,7 @@
         line-height: 1.6;
     }
 
-    .booking-submit-overlay__spinner,
-    .booking-submit-button__spinner {
+    .booking-submit-overlay__spinner {
         display: inline-block;
         width: 18px;
         height: 18px;
@@ -255,11 +254,6 @@
     .btn.is-processing {
         pointer-events: none;
         opacity: 0.95;
-    }
-
-    .btn.is-processing .booking-submit-button__spinner {
-        margin-right: 0.45rem;
-        vertical-align: middle;
     }
 
     @keyframes transportBookingSpin {

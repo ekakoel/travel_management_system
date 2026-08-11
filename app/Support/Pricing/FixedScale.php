@@ -128,6 +128,32 @@ final class FixedScale
             : $quotient;
     }
 
+    public static function multiplyDivideUp(int $left, int $right, int $divisor): int
+    {
+        if ($left < 0 || $right < 0 || $divisor <= 0) {
+            throw PricingException::arithmetic('Invalid multiply/divide operands.');
+        }
+
+        if ($left === 0 || $right === 0) {
+            return 0;
+        }
+
+        $leftDivisorGcd = self::greatestCommonDivisor($left, $divisor);
+        $left = intdiv($left, $leftDivisorGcd);
+        $divisor = intdiv($divisor, $leftDivisorGcd);
+
+        $rightDivisorGcd = self::greatestCommonDivisor($right, $divisor);
+        $right = intdiv($right, $rightDivisorGcd);
+        $divisor = intdiv($divisor, $rightDivisorGcd);
+
+        $numerator = self::checkedMultiply($left, $right);
+        $quotient = intdiv($numerator, $divisor);
+
+        return $numerator % $divisor === 0
+            ? $quotient
+            : self::checkedAdd($quotient, 1);
+    }
+
     public static function greatestCommonDivisor(int $left, int $right): int
     {
         $left = abs($left);

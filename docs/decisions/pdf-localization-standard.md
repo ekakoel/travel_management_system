@@ -39,6 +39,11 @@ diarahkan ke English karena dapat membuat user mengunduh dokumen yang salah.
 
 - Satu aksi generate/regenerate invoice Tour menghasilkan `_en.pdf`,
   `_zh-CN.pdf`, dan `_zh.pdf` dalam satu rangkaian.
+- Form generate/regenerate pada workflow admin wajib memakai named route dengan
+  method `PUT`; URL action tidak boleh dirangkai manual di Blade.
+- Invoice untuk regenerate wajib diambil melalui relasi canonical
+  `Order -> Reservation -> InvoiceAdmin`. Query invoice terpisah berdasarkan
+  urutan record tidak boleh digunakan karena invoice adalah milik reservation.
 - Semua file finansial tetap di private storage dan hanya dikirim melalui
   controller terproteksi dengan ownership/role guard, `nosniff`, serta private
   no-store cache policy.

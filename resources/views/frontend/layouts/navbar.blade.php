@@ -138,7 +138,9 @@
                 </div>
                 <div class="dropdown-menu shadow-sm m-0">
                     @foreach ($globalServices as $item)
-                        <a class="dropdown-item" href="{{ route("view.".$item->nicname."-service") }}"><i class="{{ $item->icon }}"></i> {{ __('messages.'.$item->name) }}</a>
+                        @if ($item['public_route'])
+                            <a class="dropdown-item" href="{{ route($item['public_route']) }}"><i class="{{ $item['icon'] }}"></i> {{ $item['label'] }}</a>
+                        @endif
                     @endforeach
                 </div>
             </div>

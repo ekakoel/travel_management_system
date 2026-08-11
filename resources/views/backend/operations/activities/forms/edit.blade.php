@@ -202,8 +202,9 @@
 
                             <div class="col-12 col-md-6">
                                 <div class="backend-form-field">
-                                    <label for="validity" class="backend-form-label">Validity <span>*</span></label>
-                                    <input class="backend-form-control" type="text" id="validity" name="validity" value="{{ old('validity', $activities->validity ? date('d M Y', strtotime($activities->validity)) : '') }}" class="backend-form-control date-picker @error('validity') is-invalid @enderror" placeholder="Select date" required>
+                                    <label for="validity" class="backend-form-label">Valid Until <span>*</span></label>
+                                    <input type="text" id="validity" name="validity" value="{{ old('validity', $activities->validity ? date('d M Y', strtotime($activities->validity)) : '') }}" class="backend-form-control date-picker @error('validity') is-invalid @enderror" placeholder="Select date" required>
+                                    <p class="backend-form-help">Expired Activities cannot be published and automatically return to Draft.</p>
                                     @error('validity')
                                         <span class="invalid-feedback d-block">{{ $message }}</span>
                                     @enderror

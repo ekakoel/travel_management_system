@@ -661,39 +661,6 @@
     </div>
 
     <script>
-        document.addEventListener("submit", function(e) {
-            const form = e.target.closest("form");
-            if (!form) return;
-
-            // Cari tombol submit yang ada di dalam form
-            let submitBtn = form.querySelector("[type=submit]");
-
-            // Kalau nggak ada, coba cari tombol di luar form yang pakai atribut form="idForm"
-            if (!submitBtn && form.id) {
-                submitBtn = document.querySelector(`[type=submit][form="${form.id}"]`);
-            }
-
-            if (submitBtn) {
-                // Disable tombol
-                submitBtn.disabled = true;
-
-                // Simpan teks asli
-                const originalText = submitBtn.innerHTML;
-
-                // Ganti dengan spinner
-                submitBtn.innerHTML = `
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                `;
-
-                // Kalau butuh restore (misalnya request AJAX gagal)
-                form.addEventListener("ajaxError", function() {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                });
-            }
-        }, true);
-    </script>
-    <script>
         function initMap() {
             var destinations = {!! $destinationsJson !!};
             if (!destinations.length) return;

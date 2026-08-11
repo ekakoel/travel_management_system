@@ -1,7 +1,7 @@
 # Database Rules and Data Model
 
 Status: active
-Updated: 2026-07-31
+Updated: 2026-08-11
 
 Dokumen ini adalah pintu masuk kanonik untuk pekerjaan yang menyentuh database project `balikamitour`. Project memakai database aktif; keselamatan data lebih penting daripada kecepatan perubahan schema.
 
@@ -53,6 +53,27 @@ Dokumen ini adalah pintu masuk kanonik untuk pekerjaan yang menyentuh database p
 - Mutation wajib menjaga ownership, authorization, mass-assignment protection, dan status transition.
 - Duplicate submission harus ditangani dengan idempotency atau guard unik yang sesuai domain.
 - File finansial dan record database terkait harus dikelola sebagai satu lifecycle yang konsisten.
+
+## Invoice dan Reservation
+
+- Relasi canonical invoice adalah `orders.rsv_id -> reservations.id ->
+  invoice_admins.rsv_id`. Kolom legacy `reservations.inv_id` bukan sumber
+  kebenaran relasi invoice.
+- Satu reservation hanya boleh memiliki satu record `invoice_admins`. Aturan
+  ini dijamin oleh unique index `invoice_admins_rsv_id_unique` setelah
+  migration integritas dijalankan.
+- Foreign key canonical adalah `invoice_admins.rsv_id -> reservations.id`
+  dengan constraint `invoice_admins_rsv_id_foreign`. Child column wajib
+  `BIGINT UNSIGNED NOT NULL`, mengikuti tipe `reservations.id`.
+- Foreign key invoice memakai `ON DELETE RESTRICT` dan `ON UPDATE RESTRICT`.
+  Reservation yang sudah memiliki invoice adalah record finansial dan tidak
+  boleh menghapus invoice secara cascade.
+- Sebelum memasang atau memulihkan constraint, audit wajib memastikan tidak
+  ada `rsv_id` duplikat, null, negatif, atau orphan. Migration harus gagal
+  tertutup bila kondisi data berubah setelah audit. Rollback tipe juga wajib
+  menolak narrowing bila terdapat nilai di luar rentang signed `INT`.
+- Payment confirmation tetap menunjuk invoice melalui
+  `payment_confirmations.inv_id -> invoice_admins.id`.
 
 ## Tour Package Price Markup
 

@@ -413,7 +413,7 @@
                                     </div>
                                 </div>
                                 @if($canConfirmOrder)
-                                    <form id="factivate-order-{{ $order->id }}" action="{{ url('/factivate-order/' . $order->id) }}" method="post">
+                                    <form id="factivate-order-{{ $order->id }}" action="{{ route('admin.orders.workflow.activate', $order) }}" method="post">
                                         @csrf
                                         @method('put')
                                         <div class="orders-admin-detail-form-grid orders-admin-detail-form-grid--single">
@@ -438,19 +438,19 @@
                                         </div>
                                     </form>
                                 @endif
-                                <form id="generateInvoice" action="{{ url('/fgenerate-invoice-' . $order->id) }}" method="post">
+                                <form id="generateInvoice" action="{{ route('admin.orders.invoice.generate', $order) }}" method="post">
                                     @csrf
                                     @method('put')
                                     <input type="hidden" name="bank" value="{{ $banks->firstWhere('currency', 'USD')?->id ?? $banks->first()?->id }}">
                                     <input type="hidden" name="currency" value="{{ $workflowRates->firstWhere('name', 'USD')?->id ?? $workflowRates->first()?->id }}">
                                 </form>
-                                <form id="regenerateInvoice" action="{{ url('/fregenerate-invoice-pdf-' . $order->id) }}" method="post">
+                                <form id="regenerateInvoice" action="{{ route('admin.orders.invoice.regenerate', $order) }}" method="post">
                                     @csrf
                                     @method('put')
                                 </form>
-                                <form id="sendConfirmation" action="{{ url('/fsend-confirmation-' . $order->id) }}" method="post">@csrf @method('put')</form>
-                                <form id="resendConfirmation" action="{{ url('/fresend-confirmation-order-' . $order->id) }}" method="post">@csrf @method('put')</form>
-                                <form id="sendApprovalEmail" action="{{ url('/fsend-approval-email-' . $order->id) }}" method="post">@csrf @method('put')</form>
+                                <form id="sendConfirmation" action="{{ route('admin.orders.confirmation.send', $order) }}" method="post">@csrf @method('put')</form>
+                                <form id="resendConfirmation" action="{{ route('admin.orders.confirmation.resend', $order) }}" method="post">@csrf @method('put')</form>
+                                <form id="sendApprovalEmail" action="{{ route('admin.orders.approval-email.send', $order) }}" method="post">@csrf @method('put')</form>
                                 <form id="finalizationOrder" action="{{ route('func.admin-finalization-order', $order->id) }}" method="post">@csrf @method('PUT')</form>
 
                                 <div class="orders-admin-detail-action-list">
@@ -479,7 +479,7 @@
                                         </button>
                                     @endif
                                     @if($hasInvoicePdf)
-                                        <a class="backend-button backend-button-secondary" href="{{ url('/print-contract-order-' . $order->id) }}" target="_blank">
+                                        <a class="backend-button backend-button-secondary" href="{{ route('admin.orders.document.print', $order) }}" target="_blank">
                                             <i class="fa fa-print" aria-hidden="true"></i> Print Document
                                         </a>
                                     @endif

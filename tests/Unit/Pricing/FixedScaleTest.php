@@ -22,6 +22,13 @@ class FixedScaleTest extends TestCase
         $this->assertSame(1, FixedScale::multiplyDivideHalfUp(1, 51, 100));
     }
 
+    public function test_it_rounds_multiply_divide_up_to_the_next_integer(): void
+    {
+        $this->assertSame(1, FixedScale::multiplyDivideUp(1, 1, 100));
+        $this->assertSame(1, FixedScale::multiplyDivideUp(1, 100, 100));
+        $this->assertSame(2, FixedScale::multiplyDivideUp(1, 101, 100));
+    }
+
     public function test_it_rejects_malformed_decimal_and_overflow(): void
     {
         foreach ([' 1.00', '1e3', '-1', '1,000', 'abc'] as $value) {

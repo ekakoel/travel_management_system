@@ -384,7 +384,7 @@
                             <input type="hidden" name="status" value="Removed">
                             <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                         </form>
-                        <button type="submit" form="removeOrder" class="btn btn-danger"><i class="icon-copy fa fa-trash-o" aria-hidden="true"></i> @lang('messages.Delete')</button>
+                        <button type="submit" form="removeOrder" class="btn btn-danger"><i class="icon-copy fa fa-trash-alt" aria-hidden="true"></i> @lang('messages.Delete')</button>
                     @elseif ($order->status == "Invalid")
                         <button type="button" class="btn btn-light"><i class="icon-copy fa fa-info" aria-hidden="true"> </i> @lang('messages.You cannot submit this order')</button>
                     @else

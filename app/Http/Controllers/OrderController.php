@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use PDF;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use App\Http\Controllers\Concerns\BuildsTourLocationItinerary;
 use App\Http\Controllers\Concerns\InteractsWithFormSubmissions;
 use App\Http\Requests\Tours\StoreTourPackageOrderRequest;
@@ -53,6 +54,8 @@ use App\Models\OptionalRateOrder;
 use App\Models\Activities;
 use App\Services\ActivityOrderLifecycleService;
 use App\Services\ActivityReservationService;
+use App\Services\Activities\ActivityPricingService;
+use App\Services\Activities\ActivityOrderPricingReader;
 use App\Services\AccommodationBookingGuardService;
 use App\Services\AccommodationFinancialFileService;
 use App\Services\AccommodationOrderLifecycleService;
@@ -6208,7 +6211,6 @@ class OrderController extends Controller
             'activity_order_source' => ['nullable', 'string'],
             'terms_accepted' => ['accepted'],
         ]);
-        // dd($validated);
         $user = Auth::user();
         $existingOrder = $this->findProcessedActivityOrderBySubmissionToken($validated['submission_token']);
 
@@ -6218,16 +6220,11 @@ class OrderController extends Controller
         }
 
         $activity = Activities::with('partners')
-            ->where('status', 'Active')
+            ->published()
             ->where('code', $code)
             ->firstOrFail();
 
         $travelDate = Carbon::parse($validated['travel_date']);
-        if (filled($activity->validity) && Carbon::parse($activity->validity)->lt($travelDate->copy()->startOfDay())) {
-            throw ValidationException::withMessages([
-                'travel_date' => __('messages.The selected activity is no longer valid for this date.'),
-            ]);
-        }
 
         $guestCount = (int) $validated['number_of_guests'];
         $minimumPax = max((int) ($activity->min_pax ?: 1), 1);
@@ -6259,24 +6256,37 @@ class OrderController extends Controller
 
         $durationHours = $this->extractActivityDurationHours($activity->duration);
         $checkout = $travelDate->copy()->addHours(max($durationHours, 1));
-        $usdrates = UsdRates::where('name', 'USD')->first();
         $cnyrates = UsdRates::where('name', 'CNY')->first();
         $twdrates = UsdRates::where('name', 'TWD')->first();
-        $tax = Tax::where('name', 'tax')->first() ?: Tax::find(1);
-        $promotions = Promotion::where('status', 'Active')
-            ->where('periode_start', '<=', $travelDate)
-            ->where('periode_end', '>=', $travelDate)
-            ->get();
 
-        $promotionDiscounts = $promotions->pluck('discounts')->map(fn ($value) => (float) $value)->values();
-        $promotionTotalDiscount = (float) $promotionDiscounts->sum();
-        $priceNonTax = $usdrates
-            ? ceil(((float) $activity->contract_rate) / max((float) $usdrates->rate, 1)) + (float) $activity->markup
-            : ((float) $activity->contract_rate + (float) $activity->markup);
-        $taxAmount = $tax ? ceil(((float) $tax->tax / 100) * $priceNonTax) : 0;
-        $pricePerPax = max($priceNonTax + $taxAmount, 0);
-        $normalPrice = $pricePerPax * $guestCount;
-        $finalPrice = max($normalPrice - $promotionTotalDiscount, 0);
+        try {
+            $activityQuote = app(ActivityPricingService::class)->quote(
+                activity: $activity,
+                guestCount: $guestCount,
+                activityDate: CarbonImmutable::parse($travelDate->format('Y-m-d H:i:s')),
+            );
+        } catch (PricingException $exception) {
+            report($exception);
+
+            if ($exception->pricingCode === 'ACTIVITY_PRICE_DATE_OUT_OF_VALIDITY') {
+                throw ValidationException::withMessages([
+                    'travel_date' => __('messages.The selected activity date is outside the current price validity period.'),
+                ]);
+            }
+
+            throw ValidationException::withMessages([
+                'number_of_guests' => __('messages.Activity pricing is not available.'),
+            ]);
+        }
+
+        $promotionDiscounts = collect($activityQuote->promotions)
+            ->map(fn (array $promotion) => app(MoneyFormatter::class)->decimal(
+                Money::usdCents((int) $promotion['amount_usd_minor'])
+            ))
+            ->values();
+        $pricePerPax = $activityQuote->unitPriceUsd();
+        $normalPrice = $activityQuote->grossTotalUsd();
+        $finalPrice = $activityQuote->finalTotalUsd();
         $guestLeader = collect($activityGuests)->first(fn ($guest) => $guest['is_leader'] && $guest['phone']);
 
         if (!$guestLeader) {
@@ -6320,11 +6330,13 @@ class OrderController extends Controller
             'normal_price' => $normalPrice,
             'price_pax' => $pricePerPax,
             'final_price' => $finalPrice,
-            'promotion' => $promotions->isNotEmpty() ? json_encode($promotions->pluck('name')->values()->all()) : null,
-            'promotion_disc' => $promotions->isNotEmpty() ? json_encode($promotionDiscounts->all()) : null,
-            'usd_rate' => $usdrates?->rate,
-            'cny_rate' => $cnyrates?->rate,
-            'twd_rate' => $twdrates?->rate,
+            'promotion' => $activityQuote->promotions !== []
+                ? json_encode(collect($activityQuote->promotions)->pluck('name')->values()->all())
+                : null,
+            'promotion_disc' => $activityQuote->promotions !== [] ? json_encode($promotionDiscounts->all()) : null,
+            'usd_rate' => FixedScale::formatDecimal($activityQuote->rate->valueScaled, $activityQuote->rate->scale),
+            'cny_rate' => $cnyrates?->sell ?: $cnyrates?->rate,
+            'twd_rate' => $twdrates?->sell ?: $twdrates?->rate,
             'status' => 'Pending',
         ];
 
@@ -6376,7 +6388,7 @@ class OrderController extends Controller
         if (!$order) {
             return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
         }
-        $activity = Tours::with('activeLocations')->find($order->service_id);
+        $activity = Activities::with(['partners', 'images'])->find($order->service_id);
         $business = BusinessProfile::where('id','=',1)->first();
         $reservation = Reservation::find($order->rsv_id)??null;
         $promotion_discounts = json_decode($order->promotion_disc, true);
@@ -6422,7 +6434,7 @@ class OrderController extends Controller
         ];
         $filteredDiscounts = array_filter($discounts, fn($value) => !is_null($value));
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
-        $activityPricing = app(OrderPricingSnapshotReader::class)->historicalValues($order, $invoice);
+        $activityPricing = app(ActivityOrderPricingReader::class)->historicalValues($order, $invoice);
         $order = $this->autoCancelExpiredApprovedOrder($order, $invoice);
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
         $receipts = $invoice ? $invoice->payment : null;
@@ -6484,12 +6496,7 @@ class OrderController extends Controller
             'zh-CN' => 'cancellation_policy_simplified',
             default => 'cancellation_policy',
         };
-        $generatedTourItinerary = $activity
-            ? $this->buildTourLocationItineraryHtml(
-                $activity,
-                trim((string) ($activity->$langItinerary ?: $activity->itinerary))
-            )
-            : '';
+        $generatedTourItinerary = trim((string) ($activity?->$langItinerary ?: $activity?->itinerary));
         $usesLocalizedTourContent = in_array(config('app.locale'), ['zh', 'zh-CN'], true);
         $localizedTourItinerary = trim((string) ($activity?->$langItinerary));
         $localizedTourAdditionalInfo = trim((string) ($activity?->$langAdditionalInfo));

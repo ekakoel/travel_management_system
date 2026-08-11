@@ -2061,8 +2061,7 @@ body.tour-submit-locked {
     box-shadow: 0 24px 70px rgba(15, 23, 42, 0.20);
 }
 
-.tour-reservation-modal .booking-submit-overlay__spinner,
-.tour-reservation-modal .booking-submit-button__spinner {
+.tour-reservation-modal .booking-submit-overlay__spinner {
     border-radius: 999px;
     border-style: solid;
     animation: booking-submit-spin 0.75s linear infinite;
@@ -2092,14 +2091,6 @@ body.tour-submit-locked {
     margin: 0.35rem 0 0;
     color: #475569;
     line-height: 1.65;
-}
-
-.tour-reservation-modal .booking-submit-button__spinner {
-    width: 16px;
-    height: 16px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.38);
-    border-top-color: #ffffff;
 }
 
 @keyframes booking-submit-spin {

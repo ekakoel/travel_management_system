@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\FooterLink;
 use App\Models\FooterSetting;
+use App\Models\Services;
 use App\Services\FooterContentService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -53,6 +54,15 @@ class FooterContentLocalizationTest extends TestCase
                 'sort_order' => 10,
                 'open_new_tab' => false,
                 'status' => true,
+            ]
+        );
+
+        Services::query()->updateOrCreate(
+            ['nicname' => 'hotels'],
+            [
+                'name' => 'Accommodations',
+                'icon' => 'fas fa-hotel',
+                'status' => 'Active',
             ]
         );
 

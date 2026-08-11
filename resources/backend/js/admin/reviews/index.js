@@ -30,11 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            if (button) {
-                button.disabled = true;
-                button.dataset.originalText = button.innerHTML;
-                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing';
-            }
         });
     });
 
@@ -147,16 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     window.addEventListener('afterprint', clearPrintState);
-
-    document.querySelectorAll('form').forEach(function (form) {
-        form.addEventListener('submit', function () {
-            form.querySelectorAll('[data-review-submit]').forEach(function (button) {
-                button.disabled = true;
-                button.dataset.originalText = button.innerHTML;
-                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Generating';
-            });
-        });
-    });
 
     document.querySelectorAll('[data-uppercase-input]').forEach(function (input) {
         input.addEventListener('input', function () {

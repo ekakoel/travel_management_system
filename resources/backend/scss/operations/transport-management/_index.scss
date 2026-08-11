@@ -79,10 +79,6 @@
   width: 100%;
 }
 
-.transport-management-submit-action .fa-spinner {
-  animation: transport-management-spin 850ms linear infinite;
-}
-
 .transport-management-form {
   display: grid;
   gap: 14px;
@@ -237,12 +233,6 @@
 .transport-management-timeline span {
   display: block;
   margin-top: 2px;
-}
-
-@keyframes transport-management-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 1199px) {

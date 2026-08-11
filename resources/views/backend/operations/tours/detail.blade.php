@@ -153,7 +153,7 @@
                                 @canany(['posDev','posAuthor'])
                                     <figcaption class="backend-table-actions">
                                         <button type="button" class="backend-icon-action is-danger" data-tour-gallery-delete="{{ $tourImage->id }}" aria-label="Delete gallery image">
-                                            <i class="fa fa-trash-o"></i>
+                                            <i class="fa fa-trash-alt"></i>
                                         </button>
                                         <button type="button" class="backend-icon-action" data-tour-gallery-update="{{ $tourImage->id }}" aria-label="Update gallery image">
                                             <i class="fa fa-pencil-alt"></i>
@@ -243,7 +243,7 @@
                                                         @csrf
                                                         @method('delete')
                                                         <button type="submit" class="backend-icon-action is-danger" data-tour-price-delete="{{ $row['capacity'] }}" aria-label="Delete price">
-                                                            <i class="fa fa-trash-o"></i>
+                                                            <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 @endcanany

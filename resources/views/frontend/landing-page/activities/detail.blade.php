@@ -210,8 +210,8 @@
 
         @if ($canUseActivityOrderFlow)
             @php
-                $priceBeforeDiscount = max(($activityOrderForm['price_per_pax'] ?? 0) * ($activityOrderForm['prefill']['number_of_guests'] ?? 1), 0);
-                $priceAfterDiscount = max($priceBeforeDiscount - ($activityOrderForm['promotion_discount'] ?? 0), 0);
+                $activityPriceAvailable = (bool) ($activityOrderForm['price_available'] ?? false);
+                $priceAfterDiscount = $activityOrderForm['final_total'] ?? null;
             @endphp
             <div
                 class="modal fade activity-order-modal frontend-order-modal"
@@ -232,8 +232,12 @@
                             class="activity-reservation-wizard frontend-order-modal__form"
                             data-activity-order-form
                             data-open-on-load="{{ ($activityOrderForm['open_on_load'] ?? false) ? 'true' : 'false' }}"
-                            data-price-per-pax="{{ $activityOrderForm['price_per_pax'] }}"
-                            data-promotion-discount="{{ $activityOrderForm['promotion_discount'] }}"
+                            data-quote-url="{{ $activityOrderForm['quote_url'] }}"
+                            data-price-available="{{ $activityPriceAvailable ? 'true' : 'false' }}"
+                            data-price-per-pax-minor="{{ $activityOrderForm['price_per_pax_minor'] ?? 0 }}"
+                            data-promotion-discount-minor="{{ $activityOrderForm['promotion_discount_minor'] ?? 0 }}"
+                            data-price-unavailable-label="@lang('messages.Activity pricing is not available.')"
+                            data-price-loading-label="@lang('messages.Processing')"
                             data-capacity="{{ $activityOrderForm['capacity'] }}"
                             data-currency-code="USD"
                             data-initial-step="{{ $activityOrderForm['initial_step'] ?? 0 }}"
@@ -312,7 +316,8 @@
                                     </div>
                                     <div class="activity-reservation-modal__hero-card frontend-order-modal__price-card">
                                         <span>@lang('messages.Estimated Total')</span>
-                                        <strong data-activity-order-price="final_total">{{ currencyFormatUsd($priceAfterDiscount) }}</strong>
+                                        <strong data-activity-order-price="final_total">{{ $activityPriceAvailable ? currencyFormatUsd($priceAfterDiscount) : '-' }}</strong>
+                                        <small data-activity-order-price-status>{{ $activityPriceAvailable ? '' : __('messages.Activity pricing is not available.') }}</small>
                                     </div>
                                 </div>
                             </div>
@@ -561,21 +566,19 @@
                                 <div class="activity-reservation-price-breakdown">
                                     <div class="activity-reservation-price-breakdown__row">
                                         <span>@lang('messages.Price/Pax')</span>
-                                        <strong data-activity-order-price="per_pax">{{ currencyFormatUsd($activityOrderForm['price_per_pax']) }}</strong>
+                                        <strong data-activity-order-price="per_pax">{{ $activityPriceAvailable ? currencyFormatUsd($activityOrderForm['price_per_pax']) : '-' }}</strong>
                                     </div>
                                     <div class="activity-reservation-price-breakdown__row">
                                         <span>@lang('messages.Number of Guests')</span>
                                         <strong data-activity-order-price="guest_count">{{ $activityOrderForm['prefill']['number_of_guests'] }} @lang('messages.pax')</strong>
                                     </div>
-                                    @if (($activityOrderForm['promotion_discount'] ?? 0) > 0)
-                                        <div class="activity-reservation-price-breakdown__row">
-                                            <span>@lang('messages.Promotion')</span>
-                                            <strong data-activity-order-price="promotion_discount">- {{ currencyFormatUsd($activityOrderForm['promotion_discount']) }}</strong>
-                                        </div>
-                                    @endif
+                                    <div class="activity-reservation-price-breakdown__row" data-activity-order-promotion-row @if (($activityOrderForm['promotion_discount_minor'] ?? 0) <= 0) hidden @endif>
+                                        <span>@lang('messages.Promotion')</span>
+                                        <strong data-activity-order-price="promotion_discount">- {{ currencyFormatUsd($activityOrderForm['promotion_discount'] ?? 0) }}</strong>
+                                    </div>
                                     <div class="activity-reservation-price-breakdown__row activity-reservation-price-breakdown__row--total">
                                         <span>@lang('messages.Total Price')</span>
-                                        <strong data-activity-order-price="final_total">{{ currencyFormatUsd($priceAfterDiscount) }}</strong>
+                                        <strong data-activity-order-price="final_total">{{ $activityPriceAvailable ? currencyFormatUsd($priceAfterDiscount) : '-' }}</strong>
                                     </div>
                                 </div>
 
@@ -590,7 +593,7 @@
                                 <div class="activity-reservation-wizard__actions frontend-order-modal__actions">
                                     <button type="button" class="btn btn-light" data-activity-order-prev>@lang('messages.Previous')</button>
                                     <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">@lang('messages.Cancel')</button>
-                                    <button type="submit" class="btn btn-primary" data-activity-order-submit data-processing-label="@lang('messages.Processing')">@lang('messages.Continue to Order')</button>
+                                    <button type="submit" class="btn btn-primary" data-activity-order-submit data-processing-label="@lang('messages.Processing')" @disabled(!$activityPriceAvailable)>@lang('messages.Continue to Order')</button>
                                 </div>
                             </section>
                         </form>

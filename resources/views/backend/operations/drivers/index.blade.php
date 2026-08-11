@@ -196,7 +196,7 @@
                                                         @csrf
                                                         @method('delete')
                                                         <button type="submit" class="backend-icon-action is-danger" data-driver-delete="{{ $driver->name }}" aria-label="Delete {{ $driver->name }}">
-                                                            <i class="fa fa-trash-o"></i>
+                                                            <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 @endcanany

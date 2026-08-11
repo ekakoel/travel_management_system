@@ -216,7 +216,7 @@
                                                         <input type="hidden" name="transport_id" value="{{ $transport->id }}">
                                                         <input type="hidden" name="author" value="{{ Auth::id() }}">
                                                         <button type="submit" class="backend-icon-action is-danger" data-transport-price-delete="{{ $price->type }} {{ $row['duration_label'] }}" aria-label="Delete price">
-                                                            <i class="fa fa-trash-o"></i>
+                                                            <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
                                                 @endcanany

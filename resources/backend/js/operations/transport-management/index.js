@@ -47,30 +47,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.initTransportManagementArchiveTable = initArchiveTable;
     initArchiveTable();
 
-    document.querySelectorAll('[data-transport-management-form]').forEach((form) => {
-        form.addEventListener('submit', () => {
-            const submitButton = form.querySelector('button[type="submit"]');
-
-            if (!submitButton) {
-                return;
-            }
-
-            const label = submitButton.querySelector('span');
-            const processingLabel = submitButton.dataset.processingLabel;
-
-            submitButton.disabled = true;
-            submitButton.setAttribute('aria-disabled', 'true');
-
-            if (label && processingLabel) {
-                label.textContent = processingLabel;
-            }
-
-            const icon = submitButton.querySelector('i');
-
-            if (icon) {
-                icon.className = 'icon-copy fa fa-spinner';
-                icon.setAttribute('aria-hidden', 'true');
-            }
-        });
-    });
 });

@@ -1,76 +1,10 @@
-<?php
-    use App\Models\Orders;
-    use App\Models\OrderWedding;
-    use Carbon\Carbon;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Facades\File;
-    use Illuminate\Support\Facades\Input;
-    use Illuminate\Support\Facades\Schema;
-    use App\Http\Requests\StoremenuRequest;
-    use App\Http\Requests\UpdatemenuRequest;
-    // USER =======================================================================================================
-    $now = Carbon::now();
-    $currentUser = Auth::user();
-    $canAccessAdminDashboard = $currentUser && $currentUser->canAccessAdminDashboard();
-    $hasOrdersTable = Schema::hasTable('orders');
-    $hasWeddingOrdersTable = Schema::hasTable('order_weddings');
-    $ordersForUser = function (?string $status = null) use ($hasOrdersTable, $currentUser, $now) {
-        if (! $hasOrdersTable || ! $currentUser) {
-            return collect();
-        }
-
-        $query = Orders::where('user_id', $currentUser->id);
-
-        if ($status) {
-            $query->where('status', $status)->where('checkin', '>=', $now);
-        }
-
-        return $query->get();
-    };
-    $weddingOrdersForUser = function (string $status) use ($hasWeddingOrdersTable, $currentUser, $now) {
-        if (! $hasWeddingOrdersTable || ! $currentUser) {
-            return collect();
-        }
-
-        return OrderWedding::where('agent_id', $currentUser->id)
-            ->where('status', $status)
-            ->where('checkin', '>=', $now)
-            ->get();
-    };
-    $menu_order = $ordersForUser();
-    $order_active = $ordersForUser('Active');
-    $order_rejected = $ordersForUser('Rejected');
-    $order_invalid = $ordersForUser('Invalid');
-    $order_waiting = $ordersForUser('Waiting');
-    $order_draft = $ordersForUser('Draft');
-    $order_confirmed = $ordersForUser('Confirmed');
-    $order_approved = $ordersForUser('Approved');
-    $order_wedding_draft = $weddingOrdersForUser('Draft');
-    $order_wedding_pending = $weddingOrdersForUser('Pending');
-    $order_wedding_approved = $weddingOrdersForUser('Approved');
-    // Admin =======================================================================================================
-    $adm_menu_order = $ordersForUser();
-    $adm_order_active = $ordersForUser('Active');
-    $adm_order_rejected = $ordersForUser('Rejected');
-    $adm_order_invalid = $ordersForUser('Invalid');
-    $adm_order_waiting = $ordersForUser('Waiting');
-    $adm_order_draft = $ordersForUser('Draft');
-    $adm_order_confirmed = $ordersForUser('Confirmed');
-    $adm_order_approved = $ordersForUser('Approved');
-    $adm_order_wedding_draft = $weddingOrdersForUser('Draft');
-    $adm_order_wedding_pending = $weddingOrdersForUser('Pending');
-    $adm_order_wedding_approved = $weddingOrdersForUser('Approved');
-    $ord_pend = $hasOrdersTable
-        ? Orders::where('status','Pending')->where('checkin','>',$now)->get()
-        : collect();
-    $ord_wedding_pend = $hasWeddingOrdersTable
-        ? OrderWedding::where('status','Pending')->where('checkin','>=',$now)->get()
-        : collect();
-    $cord_pend = count($ord_pend)+count($ord_wedding_pend);
-    $cord_tour_pend = count($ord_pend);
-    $cord_wedding_pend = count($ord_wedding_pend);
-?>
+@php
+    $currentUser = $backendNavigation['user'];
+    $canAccessAdminDashboard = $backendNavigation['canAccessAdminDashboard'];
+    $orderCounts = $backendNavigation['orderCounts'];
+    $weddingOrderCounts = $backendNavigation['weddingOrderCounts'];
+    $pendingCounts = $backendNavigation['pendingCounts'];
+@endphp
 <div class="d-print-none header">
     <div class="header-left">
         <div class="menu-icon dw dw-menu"></div>
@@ -100,73 +34,73 @@
             </a>
         @endif
         @can('isUser')
-            @if (count($order_wedding_draft) > 0 or count($order_draft) > 0 or count($order_active) > 0 or count($order_invalid) > 0 or count($order_rejected) > 0 or count($order_confirmed)>0or count($order_approved)>0)
+            @if ($weddingOrderCounts['Draft'] > 0 || $orderCounts['Draft'] > 0 || $orderCounts['Active'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0 || $orderCounts['Confirmed'] > 0 || $orderCounts['Approved'] > 0)
                 <div class="user-notification m-r-18">
                     <div class="dropdown">
                         <a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown">
                             <i class="icon-copy fa fa-tags" aria-hidden="true"></i>
-                            @if (count($order_draft) > 0 || count($order_wedding_draft)>0 || count($order_invalid)>0 || count($order_rejected)>0)
-                                <span class="badge notification-active">{{ count($order_draft) + count($order_invalid) + count($order_rejected) + count($order_wedding_draft)}}</span>
+                            @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0)
+                                <span class="badge notification-active">{{ $orderCounts['Draft'] + $orderCounts['Invalid'] + $orderCounts['Rejected'] + $weddingOrderCounts['Draft'] }}</span>
                             @endif
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <div class="notification-list mx-h-350 customscroll">
                                 <ul>
-                                    @if (count($order_draft)>0)
+                                    @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ count($order_draft) + count($order_wedding_draft) }}</span>
+                                                <span>{{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }}</span>
                                                 <i class="draft icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Draft Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($order_draft) + count($order_wedding_draft) }} @lang('messages.unsubmitted orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }} @lang('messages.unsubmitted orders')</p>
                                             </a>
                                         </li> 
                                     </form>
                                     @endif
-                                    @if (count($order_approved)>0)
+                                    @if ($orderCounts['Approved'] > 0)
                                         <li>
                                             <a href="/orders">
                                                 <i class="approved icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Approved Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($order_approved) }} @lang('messages.approved orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Approved'] }} @lang('messages.approved orders')</p>
                                             </a>
                                         </li>
                                     @endif
-                                    @if (count($order_confirmed)>0)
+                                    @if ($orderCounts['Confirmed'] > 0)
                                         <li>
                                             <a href="/orders">
                                                 <i class="confirmed icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Confirmed Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($order_confirmed) }} @lang('messages.confirmed orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Confirmed'] }} @lang('messages.confirmed orders')</p>
                                             </a>
                                         </li>
                                     @endif
-                                    @if (count($order_active)>0)
+                                    @if ($orderCounts['Active'] > 0)
                                         <li>
                                             <a href="/orders">
                                                 <i class="active icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Active Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($order_active) }} @lang('messages.active orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Active'] }} @lang('messages.active orders')</p>
                                             </a>
                                         </li>
                                     @endif
-                                    @if (count($order_rejected)>0)
+                                    @if ($orderCounts['Rejected'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ count($order_rejected) }}</span>
+                                                <span>{{ $orderCounts['Rejected'] }}</span>
                                                 <i class="rejected icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Rejected Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($order_rejected) }} @lang('messages.rejected orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Rejected'] }} @lang('messages.rejected orders')</p>
                                             </a>
                                         </li>
                                     @endif
-                                    @if (count($order_invalid)>0)
+                                    @if ($orderCounts['Invalid'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ count($order_invalid) }}</span>
+                                                <span>{{ $orderCounts['Invalid'] }}</span>
                                                 <i class="invalid icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Invalid Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($order_invalid) }} @lang('messages.invalid orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Invalid'] }} @lang('messages.invalid orders')</p>
                                             </a>
                                         </li>
                                     @endif
@@ -178,81 +112,81 @@
             @endif
         @endcan
         @can('posDev')
-            @if ($cord_pend > 0)
+            @if ($pendingCounts['all'] > 0)
                 <a href="/orders-admin#pending-orders">
                     <div class="notif-order blink_me m-r-18">
-                        {{ $cord_pend }}
+                        {{ $pendingCounts['all'] }}
                     </div>
                 </a>
             @endif
         @endcan
         @canany(['posAuthor','posRsv'])
-            @if ($cord_tour_pend > 0)
+            @if ($pendingCounts['tour'] > 0)
                 <a href="/orders-admin#pending-orders">
                     <div class="notif-order blink_me">
-                        {{ $cord_tour_pend }}
+                        {{ $pendingCounts['tour'] }}
                     </div>
                 </a>
             @endif
         @endcanany
         @canany(['weddingDvl','weddingAuthor','weddingRsv','weddingSls'])
-            @if ($cord_wedding_pend > 0)
+            @if ($pendingCounts['wedding'] > 0)
                 <a href="/orders-admin#pending-orders">
                     <div class="notif-order blink_me">
-                        {{ $cord_wedding_pend }}
+                        {{ $pendingCounts['wedding'] }}
                     </div>
                 </a>
             @endif
         @endcanany
         @can('isAdmin')
-            @if (count($adm_order_draft) > 0 || count($adm_order_active) > 0 || count($adm_order_invalid) > 0 || count($adm_order_rejected) > 0 || count($adm_order_wedding_draft))
+            @if ($orderCounts['Draft'] > 0 || $orderCounts['Active'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0 || $weddingOrderCounts['Draft'] > 0)
                 <div class="user-notification">
                     <div class="dropdown">
                         <a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown">
                             <i class="icon-copy fa fa-tags" aria-hidden="true"></i>
-                            @if (count($adm_order_draft) > 0 || count($adm_order_wedding_draft)>0 || count($adm_order_invalid)>0 || count($adm_order_rejected)>0)
-                                <span class="badge notification-active">{{ count($adm_order_draft) + count($adm_order_invalid) + count($adm_order_rejected) + count($adm_order_wedding_draft)}}</span>
+                            @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0)
+                                <span class="badge notification-active">{{ $orderCounts['Draft'] + $orderCounts['Invalid'] + $orderCounts['Rejected'] + $weddingOrderCounts['Draft'] }}</span>
                             @endif
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <div class="notification-list mx-h-350 customscroll">
                                 <ul>
-                                    @if (count($adm_order_draft)>0 or count($adm_order_wedding_draft)>0)
+                                    @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ count($adm_order_draft) + count($adm_order_wedding_draft) }}</span>
+                                                <span>{{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }}</span>
                                                 <i class="draft icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Draft Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($adm_order_draft) + count($adm_order_wedding_draft) }} @lang('messages.unsubmitted order')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }} @lang('messages.unsubmitted order')</p>
                                             </a>
                                         </li> 
                                     @endif
-                                    @if (count($adm_order_active)>0)
+                                    @if ($orderCounts['Active'] > 0)
                                         <li>
                                             <a href="/orders">
                                                 <i class="active icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Active Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($adm_order_active) }} @lang('messages.active orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Active'] }} @lang('messages.active orders')</p>
                                             </a>
                                         </li>
                                     @endif
-                                    @if (count($adm_order_rejected)>0)
+                                    @if ($orderCounts['Rejected'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ count($adm_order_rejected) }}</span>
+                                                <span>{{ $orderCounts['Rejected'] }}</span>
                                                 <i class="rejected icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Rejected Order') </p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($adm_order_rejected) }} @lang('messages.rejected orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Rejected'] }} @lang('messages.rejected orders')</p>
                                             </a>
                                         </li>
                                     @endif
-                                    @if (count($adm_order_invalid)>0)
+                                    @if ($orderCounts['Invalid'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ count($adm_order_invalid) }}</span>
+                                                <span>{{ $orderCounts['Invalid'] }}</span>
                                                 <i class="invalid icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Invalid Order') </p>
-                                                <p class="description-notif">@lang('messages.You have') {{ count($adm_order_invalid) }} @lang('messages.Invalid orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Invalid'] }} @lang('messages.Invalid orders')</p>
                                             </a>
                                         </li>
                                     @endif

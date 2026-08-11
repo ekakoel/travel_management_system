@@ -19,12 +19,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\RegistrationAccessService;
+use App\Services\Navigation\ServiceNavigationRegistry;
 use App\Http\Requests\StoreAdminPanelRequest;
 use App\Http\Requests\UpdateAdminPanelRequest;
 
 class AdminPanelController extends Controller
 {
-    public function __construct()
+    public function __construct(
+        private readonly ServiceNavigationRegistry $serviceNavigationRegistry,
+    )
     {
         $this->middleware(['auth','verified','type:admin']);
     }
@@ -85,14 +88,19 @@ class AdminPanelController extends Controller
             ->orderBy('name')
             ->get()
             ->map(function ($service) use ($serviceCounts) {
-                $counts = $serviceCounts[$service->name] ?? ['active' => 0, 'draft' => 0];
+                $navigation = $this->serviceNavigationRegistry->item($service);
+                $counts = $serviceCounts[$navigation['content_key']] ?? ['active' => 0, 'draft' => 0];
 
                 return [
                     'id' => $service->id,
                     'name' => $service->name,
                     'nicname' => $service->nicname,
-                    'icon' => $service->icon,
+                    'icon' => $navigation['icon'],
                     'status' => $service->status,
+                    'canonical_slug' => $navigation['canonical_slug'],
+                    'public_route' => $navigation['public_route'],
+                    'admin_route' => $navigation['admin_route'],
+                    'navigation_ready' => $navigation['navigation_ready'],
                     'active_count' => $counts['active'],
                     'draft_count' => $counts['draft'],
                     'total_count' => $counts['active'] + $counts['draft'],
@@ -111,16 +119,20 @@ class AdminPanelController extends Controller
             ->reject(fn ($currency) => $currencyRates->has($currency))
             ->values();
         $servicesMissingMetadata = $services
-            ->filter(fn ($service) => empty($service['nicname']) || empty($service['icon']))
+            ->filter(fn ($service) => empty($service['nicname'])
+                || empty($service['icon'])
+                || ($service['status'] === 'Active' && ! $service['navigation_ready']))
             ->values();
 
         $developerHealthChecks = collect([
             [
                 'label' => 'Service Registry',
-                'status' => $servicesMissingMetadata->isEmpty() ? 'Healthy' : 'Needs Review',
+                'status' => $servicesMissingMetadata->isEmpty()
+                    ? __('service-registry.health.healthy')
+                    : __('service-registry.health.needs_review'),
                 'meta' => $servicesMissingMetadata->isEmpty()
-                    ? 'All registered services have slug and icon metadata.'
-                    : $servicesMissingMetadata->count() . ' services are missing slug or icon metadata.',
+                    ? __('service-registry.health.ready')
+                    : __('service-registry.health.review', ['count' => $servicesMissingMetadata->count()]),
                 'tone' => $servicesMissingMetadata->isEmpty() ? 'healthy' : 'warning',
             ],
             [
@@ -438,149 +450,83 @@ class AdminPanelController extends Controller
     }
 
 // FUNCTION ADD SERVICE =============================================================================================================>
-    public function func_add_service(Request $request)
-        {
-            $status = "Draft";
-            $service =new Services([
-                "name"=>$request->name,
-                "nicname"=>$request->nicname,
-                "icon"=>$request->icon,
-                "status"=>$status,
+    public function func_add_service(StoreAdminPanelRequest $request)
+    {
+        DB::transaction(function () use ($request) {
+            $service = Services::query()->create([
+                ...$request->safe()->only(['name', 'nicname', 'icon']),
+                'status' => 'Draft',
             ]);
-            $service->save();
-            
-            // USER LOG
-            $service_id = 1;
-            $action = "Add";
-            $service = "Service";
-            $subservice = $request->name;
-            $page = "admin-panel";
-            $note = "Add Service";
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$service_id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/admin-panel")->with('success','Service has been added!');
-        }
+
+            $this->writeServiceLog($request, 'Add', $service, 'Add Service');
+        });
+
+        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.created'));
+    }
 
 // FUNCTION EDIT SERVICE =============================================================================================================>
-    public function func_edit_service(Request $request,$id)
+    public function func_edit_service(UpdateAdminPanelRequest $request, $id)
     {
-        $service=Services::findOrFail($id);
-        $service->update([
-            "name"=>$request->name,
-            "nicname"=>$request->nicname,
-            "icon"=>$request->icon,
-            "status"=>$request->status,
-        ]);
+        DB::transaction(function () use ($request, $id) {
+            $service = Services::query()->findOrFail($id);
+            $service->update($request->validated());
 
-        // USER LOG
-        $action = "Edit Service";
-        $service = "Service";
-        $subservice = "Disable Service";
-        $page = "admin-panel";
-        $note = "Update Service: ".$id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        return redirect("/admin-panel")->with('success','Service has been Updated!');
+            $this->writeServiceLog($request, 'Edit Service', $service, "Update Service: {$id}");
+        });
+
+        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.updated'));
     }
 
 // FUNCTION DISABLE SERVICE =============================================================================================================>
     public function func_disable_service(Request $request,$id)
     {
-        $service=Services::findOrFail($id);
-        $service->update([
-            "status"=>$request->status,
-        ]);
+        DB::transaction(function () use ($request, $id) {
+            $service = Services::query()->findOrFail($id);
+            $service->update(['status' => 'Draft']);
 
-        // USER LOG
-        $action = "Update Service";
-        $service = "Service";
-        $subservice = "Disable Service";
-        $page = "admin-panel";
-        $note = "Update Service: ".$id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        return redirect("/admin-panel")->with('success','Service has been disable!');
+            $this->writeServiceLog($request, 'Update Service', $service, "Disable Service: {$id}");
+        });
+
+        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.disabled'));
     }
 
 // FUNCTION ENNABLE SERVICE =============================================================================================================>
     public function func_enable_service(Request $request,$id)
     {
-        $service=Services::findOrFail($id);
-        $service->update([
-            "status"=>$request->status,
-        ]);
+        DB::transaction(function () use ($request, $id) {
+            $service = Services::query()->findOrFail($id);
+            $service->update(['status' => 'Active']);
 
-        // USER LOG
-        $action = "Update Service";
-        $service = "Service";
-        $subservice = "Enable Service";
-        $page = "admin-panel";
-        $note = "Update Service: ".$id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        return redirect("/admin-panel")->with('success','Service has been activated!');
+            $this->writeServiceLog($request, 'Update Service', $service, "Enable Service: {$id}");
+        });
+
+        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.activated'));
     }
 
 // FUNCTION REMOVE SERVICE =============================================================================================================>
     public function func_remove_service(Request $request,$id)
     {
-        $service=Services::findOrFail($id);
-        $service->delete();
-       
-        // USER LOG
-        $action = "Remove Service";
-        $service = "Service";
-        $subservice = $request->service;
-        $page = "admin-panel";
-        $note = "Remove service: ".$id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
+        DB::transaction(function () use ($request, $id) {
+            $service = Services::query()->findOrFail($id);
+            $this->writeServiceLog($request, 'Remove Service', $service, "Remove Service: {$id}");
+            $service->delete();
+        });
+
+        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.removed'));
+    }
+
+    private function writeServiceLog(Request $request, string $action, Services $service, string $note): void
+    {
+        UserLog::query()->create([
+            'action' => $action,
+            'service' => 'Service',
+            'subservice' => $service->name,
+            'subservice_id' => $service->getKey(),
+            'page' => 'admin-panel',
+            'user_id' => $request->user()->getKey(),
+            'user_ip' => $request->ip(),
+            'note' => $note,
         ]);
-        $user_log->save();
-        return redirect("/admin-panel")->with('success','Service has been Removed!');
     }
     
 }

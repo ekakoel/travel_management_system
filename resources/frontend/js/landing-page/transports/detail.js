@@ -916,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function () {
             button.classList.toggle('is-processing', submitting);
             button.setAttribute('aria-disabled', submitting ? 'true' : 'false');
             button.innerHTML = submitting
-                ? '<span class="transport-reservation-submit-overlay__spinner transport-reservation-submit-overlay__spinner--button" aria-hidden="true"></span><span>' + processingLabel + '</span>'
+                ? '<span class="frontend-action-spinner" aria-hidden="true"></span><span>' + processingLabel + '</span>'
                 : originalHtml;
         });
     }

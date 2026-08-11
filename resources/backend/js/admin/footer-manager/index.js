@@ -6,14 +6,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-
-    document.querySelectorAll('form').forEach(function (form) {
-        form.addEventListener('submit', function () {
-            form.querySelectorAll('[data-footer-submit]').forEach(function (button) {
-                button.disabled = true;
-                button.dataset.originalText = button.innerHTML;
-                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving';
-            });
-        });
-    });
 });

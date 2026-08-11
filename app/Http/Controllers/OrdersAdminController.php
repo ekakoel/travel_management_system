@@ -3888,10 +3888,10 @@ class OrdersAdminController extends Controller
         return redirect()->back()->with('success','Invoice generate successfuly');
     }
 
-    public function fregenerate_invoice_pdf(Request $request, $id)
+    public function fregenerate_invoice_pdf(Request $request, Orders $order)
     {
-        $order = Orders::with(['optional_rate_orders'])->find($id);
-        $invoice = $order ? InvoiceAdmin::where('rsv_id', $order->rsv_id)->latest('id')->first() : null;
+        $order->loadMissing(['optional_rate_orders', 'reservation.invoice']);
+        $invoice = $order->reservation?->invoice;
 
         if (!$this->canRegenerateStandardInvoice($order, $invoice)) {
             return redirect()->back()->with('error', 'Invoice PDF can only be regenerated for approved orders with an existing invoice.');
@@ -3908,7 +3908,9 @@ class OrdersAdminController extends Controller
             'admin' => Auth::id(),
         ]);
 
-        return redirect()->back()->with('success', 'Invoice PDF regenerated successfully.');
+        return redirect()
+            ->route('admin.order.show', $order)
+            ->with('success', 'Invoice PDF regenerated successfully.');
     }
 
     public function test_contrat(Request $request,$id){

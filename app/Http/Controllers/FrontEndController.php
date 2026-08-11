@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\Exceptions\InvalidFormatException;
+use App\Exceptions\PricingException;
 use App\Models\Activities;
 use App\Models\Promotion;
 use App\Models\Tours;
@@ -17,6 +20,7 @@ use App\Models\UsdRates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Services\PublicFaqService;
+use App\Services\Activities\ActivityPricingService;
 use App\Services\Tours\TourPackagePricingService;
 use App\Support\MoneyFormatter;
 use App\ValueObjects\Money;
@@ -87,7 +91,7 @@ class FrontEndController extends Controller
                 ),
                 'activities' => $this->resolveHomeServiceImagePath(
                     Activities::query()
-                        ->where('status', 'Active')
+                        ->published()
                         ->whereNotNull('cover')
                         ->where('cover', '!=', '')
                         ->latest('updated_at')
@@ -423,7 +427,7 @@ class FrontEndController extends Controller
         $searchType = trim((string) $request->input('search_type', ''));
 
         $baseActivitiesQuery = Activities::query()
-            ->where('status', 'Active')
+            ->published()
             ->select([
                 'id',
                 'partners_id',
@@ -545,11 +549,15 @@ class FrontEndController extends Controller
         ));
     }
 
-    public function activity_detail(Request $request, $code)
+    public function activity_detail(
+        Request $request,
+        $code,
+        ActivityPricingService $activityPricing,
+    )
     {
         $now = Carbon::now();
         $activity = Activities::query()
-            ->where('status', 'Active')
+            ->published($now)
             ->where('code', $code)
             ->with([
                 'images' => function ($query) {
@@ -720,7 +728,7 @@ class FrontEndController extends Controller
                 'value' => $activity->display_location,
             ],
             [
-                'label' => __('messages.Availability notes'),
+                'label' => __('messages.Valid until'),
                 'value' => $activity->display_validity,
             ],
             [
@@ -763,19 +771,19 @@ class FrontEndController extends Controller
             ];
         }
 
-        $tax = Tax::where('name', 'tax')->first() ?: Tax::find(1);
-        $usdRate = UsdRates::where('name', 'USD')->first();
-        $activePromotions = Promotion::query()
-            ->where('status', 'Active')
-            ->where('periode_start', '<=', $now)
-            ->where('periode_end', '>=', $now)
-            ->get();
-        $promotionDiscount = (float) $activePromotions->sum('discounts');
-        $basePrice = $usdRate
-            ? ceil(((float) $activity->contract_rate) / max((float) $usdRate->rate, 1)) + (float) $activity->markup
-            : ((float) $activity->contract_rate + (float) $activity->markup);
-        $taxAmount = $tax ? ceil(((float) $tax->tax / 100) * $basePrice) : 0;
-        $pricePerPax = max($basePrice + $taxAmount, 0);
+        $defaultGuestCount = (int) old('number_of_guests', max(1, $activity->display_min_pax));
+        $defaultTravelDate = old('travel_date', $now->copy()->addDay()->setTime(9, 0)->format('Y-m-d\TH:i'));
+        $activityQuote = null;
+
+        try {
+            $activityQuote = $activityPricing->quote(
+                activity: $activity,
+                guestCount: $defaultGuestCount,
+                activityDate: CarbonImmutable::parse($defaultTravelDate),
+            );
+        } catch (PricingException|InvalidFormatException $exception) {
+            report($exception);
+        }
         $activityOrderErrors = $request->session()->get('errors', new ViewErrorBag());
         $activityOrderErrorKeys = collect($activityOrderErrors->keys());
         $activityOrderInitialStep = 0;
@@ -788,11 +796,17 @@ class FrontEndController extends Controller
 
         $activityOrderForm = [
             'action' => route('view.activity-order.store', ['code' => $activity->code]),
+            'quote_url' => route('activity.quote', ['code' => $activity->code]),
             'submission_token' => old('submission_token', (string) Str::uuid()),
             'capacity' => (int) ($activity->qty ?: $activity->display_capacity),
             'min_pax' => (int) $activity->display_min_pax,
-            'price_per_pax' => $pricePerPax,
-            'promotion_discount' => $promotionDiscount,
+            'price_available' => $activityQuote !== null,
+            'price_per_pax' => $activityQuote?->unitPriceUsd(),
+            'price_per_pax_minor' => $activityQuote?->unitPriceUsdMinor,
+            'promotion_discount' => $activityQuote?->discountTotalUsd(),
+            'promotion_discount_minor' => $activityQuote?->discountTotalUsdMinor,
+            'final_total' => $activityQuote?->finalTotalUsd(),
+            'final_total_minor' => $activityQuote?->finalTotalUsdMinor,
             'default_guest_count' => (int) max(1, $activity->display_min_pax),
             'default_travel_date' => $now->copy()->addDay()->setTime(9, 0)->format('Y-m-d\TH:i'),
             'minimum_travel_date' => $now->copy()->addHour()->format('Y-m-d\TH:i'),
@@ -802,8 +816,8 @@ class FrontEndController extends Controller
             'open_on_load' => old('activity_order_source') === 'activity-detail-modern' && $activityOrderErrors->any(),
             'initial_step' => $activityOrderInitialStep,
             'prefill' => [
-                'number_of_guests' => (int) old('number_of_guests', max(1, $activity->display_min_pax)),
-                'travel_date' => old('travel_date', $now->copy()->addDay()->setTime(9, 0)->format('Y-m-d\TH:i')),
+                'number_of_guests' => $defaultGuestCount,
+                'travel_date' => $defaultTravelDate,
                 'guests' => collect(old('guests', []))
                     ->map(function ($guest) {
                         return [
@@ -828,7 +842,7 @@ class FrontEndController extends Controller
         ];
 
         $nearActivities = Activities::query()
-            ->where('status', 'Active')
+            ->published($now)
             ->where('id', '!=', $activity->id)
             ->when(filled($activity->location), function ($query) use ($activity) {
                 $query->where('location', $activity->location);
@@ -1085,7 +1099,7 @@ class FrontEndController extends Controller
 
         return [true, [
             'text' => __('messages.Continue to the dedicated activity order page to review price, apply booking code, and place your order.'),
-            'url' => route('view.activity-detail', ['code' => $activityCode]),
+            'url' => route('view.activity-public-detail', ['code' => $activityCode]).'#activity-action-panel',
             'button_label' => __('messages.Continue to Order'),
         ]];
     }

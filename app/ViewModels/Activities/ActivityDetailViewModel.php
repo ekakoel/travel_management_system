@@ -2,16 +2,22 @@
 
 namespace App\ViewModels\Activities;
 
+use App\Data\Pricing\ActivityPricingQuote;
+use App\Exceptions\PricingException;
 use App\Models\Activities;
 use App\Services\Activities\ActivityPricingService;
 
 class ActivityDetailViewModel
 {
+    private bool $pricingResolved = false;
+
+    private ?ActivityPricingQuote $pricingQuote = null;
+
+    private ?string $pricingErrorCode = null;
+
     public function __construct(
         public readonly Activities $activity,
         public readonly object|null $partner,
-        public readonly object|null $usdRate,
-        public readonly object|null $tax,
         private readonly ActivityPricingService $pricingService,
     ) {
     }
@@ -30,20 +36,45 @@ class ActivityDetailViewModel
         };
     }
 
-    public function taxAmount(): int
+    public function priceAvailable(): bool
     {
-        return $this->pricingService->taxAmount($this->activity->contract_rate, $this->activity->markup, $this->usdRate, $this->tax);
+        return $this->quote() !== null;
     }
 
-    public function publishedRate(): int
+    public function taxAmount(): ?string
     {
-        return $this->pricingService->publishedRate($this->activity->contract_rate, $this->activity->markup, $this->usdRate, $this->tax);
+        return $this->quote()?->taxAmountUsd();
+    }
+
+    public function taxPercentage(): ?string
+    {
+        return $this->quote()?->taxPercentage();
+    }
+
+    public function publishedRate(): ?string
+    {
+        return $this->quote()?->unitPriceUsd();
+    }
+
+    public function pricingUnavailableCode(): ?string
+    {
+        $this->quote();
+
+        return $this->pricingErrorCode;
     }
 
     public function stats(): array
     {
         return [
-            ['label' => 'Published Rate', 'value' => currencyFormatUsd($this->publishedRate()), 'meta' => 'Calculated price per pax', 'icon' => 'fa fa-usd', 'tone' => 'blue'],
+            [
+                'label' => 'Published Rate',
+                'value' => $this->priceAvailable() ? currencyFormatUsd($this->publishedRate()) : 'Unavailable',
+                'meta' => $this->priceAvailable()
+                    ? 'Current published price per pax'
+                    : 'Pricing requirements are not met',
+                'icon' => 'fa fa-usd',
+                'tone' => 'blue',
+            ],
             ['label' => 'Capacity', 'value' => number_format((int) $this->activity->qty), 'meta' => 'Maximum pax', 'icon' => 'fa fa-users', 'tone' => 'teal'],
             ['label' => 'Minimum Pax', 'value' => number_format((int) $this->activity->min_pax), 'meta' => 'Minimum booking pax', 'icon' => 'fa fa-user-plus', 'tone' => 'amber'],
             ['label' => 'Type', 'value' => $this->activity->type ?: '-', 'meta' => $this->activity->location ?: 'No location', 'icon' => 'fa fa-tags', 'tone' => 'green'],
@@ -59,5 +90,25 @@ class ActivityDetailViewModel
             'Additional Information' => $this->activity->additional_info,
             'Cancellation Policy' => $this->activity->cancellation_policy,
         ];
+    }
+
+    private function quote(): ?ActivityPricingQuote
+    {
+        if ($this->pricingResolved) {
+            return $this->pricingQuote;
+        }
+
+        $this->pricingResolved = true;
+
+        try {
+            return $this->pricingQuote = $this->pricingService->quote(
+                $this->activity,
+                max((int) ($this->activity->min_pax ?: 1), 1),
+            );
+        } catch (PricingException $exception) {
+            $this->pricingErrorCode = $exception->pricingCode;
+
+            return null;
+        }
     }
 }

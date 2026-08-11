@@ -39,4 +39,9 @@ return [
     'accommodation' => [
         'default_room_inventory' => (int) env('ACCOMMODATION_DEFAULT_ROOM_INVENTORY', 1),
     ],
+
+    'exchange_rate' => [
+        'key' => env('EXCHANGE_RATE_API_KEY'),
+        'base_url' => env('EXCHANGE_RATE_API_URL', 'https://v6.exchangerate-api.com/v6'),
+    ],
 ];

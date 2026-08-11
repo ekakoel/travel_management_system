@@ -37,8 +37,17 @@ class InvoiceAdmin extends Model
         'currency_id',
     ];
 
-    public function reservations(){
+    public function reservation()
+    {
         return $this->belongsTo(Reservation::class, 'rsv_id');
+    }
+
+    /**
+     * @deprecated Use reservation() for the singular belongs-to relation.
+     */
+    public function reservations()
+    {
+        return $this->reservation();
     }
     public function additionalinv(){
         return $this->hasMany(AdditionalInvoice::class,'inv_id'); //good

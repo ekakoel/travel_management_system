@@ -65,7 +65,7 @@
                                                     @csrf
                                                     @method('delete')
                                                     <button type="submit" class="backend-icon-action is-danger" data-transport-gallery-delete="{{ $transports->name }}" aria-label="Delete gallery image for {{ $transports->name }}">
-                                                        <i class="fa fa-trash-o"></i>
+                                                        <i class="fa fa-trash-alt"></i>
                                                     </button>
                                                 </form>
                                             </div>

@@ -136,6 +136,8 @@ function setBackendActionLoading(control, loading = true) {
       spinner.remove();
     }
 
+    control.style.removeProperty('--backend-action-spinner-color');
+
     if (control.tagName === 'INPUT' && control.dataset.backendOriginalValue !== undefined) {
       control.value = control.dataset.backendOriginalValue;
       delete control.dataset.backendOriginalValue;
@@ -146,6 +148,13 @@ function setBackendActionLoading(control, loading = true) {
 
   control.setAttribute('aria-disabled', 'true');
   control.setAttribute('aria-busy', 'true');
+
+  if (window.getComputedStyle) {
+    control.style.setProperty(
+      '--backend-action-spinner-color',
+      window.getComputedStyle(control).color
+    );
+  }
 
   if (control.tagName === 'INPUT') {
     if (control.dataset.backendOriginalValue === undefined) {
@@ -160,7 +169,7 @@ function setBackendActionLoading(control, loading = true) {
     spinner.className = 'backend-action-spinner';
     spinner.setAttribute('aria-hidden', 'true');
     spinner.setAttribute('data-backend-action-spinner', 'true');
-    control.prepend(spinner);
+    control.append(spinner);
   }
 }
 

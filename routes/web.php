@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\ActivitiesAdminController;
 use App\Http\Controllers\ActivitiesController;
+use App\Http\Controllers\ActivityQuoteController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AccommodationFinancialFileController;
 use App\Http\Controllers\AdminDashboardController;
@@ -259,6 +260,7 @@ use Illuminate\Support\Facades\Route;
         Route::put('/fupdate-password',[UsersController::class,'updatePassword'])->name('update-password');
     });
     Route::middleware(['auth','profile.complete','approve'])->group(function () {
+        Route::post('/activity/{code}/quote', ActivityQuoteController::class)->name('activity.quote');
         Route::post('/activity/{code}/order', [OrderController::class, 'storeFrontendActivityOrder'])->name('view.activity-order.store');
         // Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index');
 
@@ -586,6 +588,7 @@ use Illuminate\Support\Facades\Route;
             //                        CURRENCY
             // ---------------------------------------------------
             Route::get('/currency',[UsdRatesController::class,'index'])->name('currency');
+            Route::post('/currency/refresh-rates',[UsdRatesController::class,'refreshRates'])->name('admin.currency.refresh-rates');
             Route::put('/update-usdrates/{id}',[UsdRatesController::class,'func_update_usdrates'])->name('f-update-usd-rates');
             Route::put('/update-cnyrates/{id}',[UsdRatesController::class,'func_update_cnyrates'])->name('f-update-cny-rates');
             Route::put('/update-twdrates/{id}',[UsdRatesController::class,'func_update_twdrates'])->name('f-update-twd-rates');
@@ -614,14 +617,14 @@ use Illuminate\Support\Facades\Route;
             Route::get('/orders-admin/{id}',[OrdersAdminController::class,'view_order_admin_detail'])->name('admin.order.show');
             Route::put('/fupdate-confirmation-number/{id}',[OrdersAdminController::class,'func_update_confirmation_number']);
             Route::post('/fadd-order-note/{id}',[OrdersAdminController::class,'func_add_order_note']);
-            Route::put('/fsend-confirmation/{id}',[OrdersAdminController::class,'func_send_confirmation']);
-            Route::put('/fresend-confirmation-order/{id}',[OrdersAdminController::class,'resend_confirmation_order']);
-            Route::put('/fgenerate-invoice/{id}',[OrdersAdminController::class,'fgenerate_invoice']);
-            Route::put('/fregenerate-invoice-pdf/{id}',[OrdersAdminController::class,'fregenerate_invoice_pdf']);
-            Route::put('/fsend-approval-email/{id}',[OrdersAdminController::class,'fsend_approval_email']);
+            Route::put('/fsend-confirmation/{id}',[OrdersAdminController::class,'func_send_confirmation'])->name('admin.orders.confirmation.send');
+            Route::put('/fresend-confirmation-order/{id}',[OrdersAdminController::class,'resend_confirmation_order'])->name('admin.orders.confirmation.resend');
+            Route::put('/fgenerate-invoice/{id}',[OrdersAdminController::class,'fgenerate_invoice'])->name('admin.orders.invoice.generate');
+            Route::put('/fregenerate-invoice-pdf/{order}',[OrdersAdminController::class,'fregenerate_invoice_pdf'])->whereNumber('order')->name('admin.orders.invoice.regenerate');
+            Route::put('/fsend-approval-email/{id}',[OrdersAdminController::class,'fsend_approval_email'])->name('admin.orders.approval-email.send');
             Route::put('/fedit-confirmation-order/{id}',[OrdersAdminController::class,'func_edit_confirmation_order']);
             Route::put('/fadd-confirmation-order/{id}',[OrdersAdminController::class,'func_add_confirmation_order']);
-            Route::put('/factivate-order/{id}',[OrdersAdminController::class,'func_activate_order']);
+            Route::put('/factivate-order/{id}',[OrdersAdminController::class,'func_activate_order'])->name('admin.orders.workflow.activate');
             Route::get('/add-optional-rate-order/{id}',[OrdersAdminController::class,'add_optional_rate_order'])->name('view.add-optional-rate-order');
             Route::post('/fadmin-add-optional-service-order/{id}',[OrdersAdminController::class,'func_add_optional_service_order'])->name('func.admin-add-optional-service-order');
             Route::put('/fadmin-update-optional-service-order/{id}',[OrdersAdminController::class,'func_update_optional_service_order'])->name('func.admin-update-optional-service-order');
@@ -953,7 +956,7 @@ use Illuminate\Support\Facades\Route;
             //                      CONTRACT
             // ---------------------------------------------------
             Route::get('/confirmation-order/{id}', [OrdersAdminController::class, 'confirmation_order']);
-            Route::get('/print-contract-order/{id}', [OrdersAdminController::class, 'print_contract_order']);
+            Route::get('/print-contract-order/{id}', [OrdersAdminController::class, 'print_contract_order'])->name('admin.orders.document.print');
             Route::get('/print-contract-wedding/{id}', [OrdersAdminController::class, 'print_contract_wedding']);
             // ---------------------------------------------------
             //                       WEDDING
@@ -1036,7 +1039,7 @@ use Illuminate\Support\Facades\Route;
             //                      ACTIVITY
             // ---------------------------------------------------
             // Route::get('/activities',[ActivitiesController::class,'index'])->name('view.activities-service');
-            Route::get('/activity-{code}-{bcode}',[ActivitiesController::class,'activitydetail_bookingcode'])->name('view.activity-detail-booking-code');
+            Route::get('/activity-{code}/booking-code/{bcode}',[ActivitiesController::class,'activitydetail_bookingcode'])->name('view.activity-detail-booking-code');
             Route::get('/activity-{code}',[ActivitiesController::class,'activitydetail'])->name('view.activity-detail');
             Route::post('/activity-detail',[ActivitiesController::class,'activity_check_code'])->name('view.activity-check-code');
             Route::post('/search-activities',[ActivitiesController::class,'search_activities'])->name('view.search-activity');

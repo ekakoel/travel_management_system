@@ -6,10 +6,7 @@
                     <strong>SPK Information</strong>
                 </div>
                 <div class="card-box-body" id="spk-detail-body">
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary"></div>
-                        <p>Loading...</p>
-                    </div>
+                    <x-backend.loading-spinner class="p-4" />
                 </div>
                 <div class="modal-footer">
                     <button class="backend-button backend-button-danger" data-dismiss="modal">

@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use App\Exceptions\CurrencyRateRefreshException;
 use App\Models\Tax;
 use App\Models\Tours;
 use App\Models\UserLog;
 use App\Models\UsdRates;
 use App\Models\BankAccount;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Http;
-use App\Http\Requests\StoreUsdRatesRequest;
+use Illuminate\Support\Facades\Log;
+use App\Services\Pricing\CurrencyRateRefreshService;
 use App\Services\Pricing\TourTaxPolicyActivationService;
-use AmrShawky\LaravelCurrency\Facade\Currency;
 use InvalidArgumentException;
+use Throwable;
 
 class UsdRatesController extends Controller
 {
-    public function __construct()
+    public function __construct(
+        private readonly CurrencyRateRefreshService $currencyRateRefresh,
+    )
     {
         $this->middleware(['auth','verified']);
     }
@@ -127,27 +128,28 @@ class UsdRatesController extends Controller
         );
     }
 
-    public function showRates()
+    public function refreshRates(Request $request)
     {
-        $apiKey = config('exchange_rate_api_key');
-        $baseUrl = "https://v6.exchangerate-api.com/v6/{$apiKey}/latest/USD";
-
-        $response = Http::get($baseUrl);
-        $rates = $response->json();
-
-        if ($response->successful()) {
-            $usdRate = $rates['conversion_rates']['USD'];
-            $twdRate = $rates['conversion_rates']['TWD'];
-            $cnyRate = $rates['conversion_rates']['CNY'];
-
-            return view('currency-rates', [
-                'usdRate' => $usdRate,
-                'twdRate' => $twdRate,
-                'cnyRate' => $cnyRate,
-            ]);
-        } else {
-            return view('currency-rates')->withErrors('Unable to retrieve exchange rates.');
+        if (! Gate::any(['posDev', 'posAuthor'])) {
+            return redirect()->route('currency')->with('error', __('currency-rates.flash.unauthorized'));
         }
+
+        try {
+            $this->currencyRateRefresh->refresh();
+        } catch (CurrencyRateRefreshException $exception) {
+            Log::warning('Manual currency refresh failed.', [
+                'reason' => $exception->getMessage(),
+                'user_id' => $request->user()->getKey(),
+            ]);
+
+            return redirect()->route('currency')->with('error', __('currency-rates.flash.refresh_failed'));
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()->route('currency')->with('error', __('currency-rates.flash.refresh_failed'));
+        }
+
+        return redirect()->route('currency')->with('success', __('currency-rates.flash.refreshed'));
     }
 
     private function updateRate(Request $request, int $id, string $code, string $action)
@@ -164,30 +166,34 @@ class UsdRatesController extends Controller
         $sell = (float) $validated['sell'];
         $difference = (float) $validated['difference'];
         $buy = max($sell - $difference, 0);
-        $rate = UsdRates::findOrFail($id);
+        DB::transaction(function () use ($request, $id, $code, $action, $sell, $buy, $difference) {
+            $rate = UsdRates::query()
+                ->whereKey($id)
+                ->where('name', $code)
+                ->firstOrFail();
 
-        $rate->update([
-            'rate' => $sell,
-            'sell' => $sell,
-            'buy' => $buy,
-            'difference' => $difference,
-            'retrieved_at' => now(),
-            'retrieval_source' => 'manual-admin',
-        ]);
+            $rate->update([
+                'rate' => $sell,
+                'sell' => $sell,
+                'buy' => $buy,
+                'difference' => $difference,
+                'retrieved_at' => now(),
+                'retrieval_source' => 'manual-admin',
+            ]);
 
-        Cache::forget('usd_rates');
-        Cache::forget('pricing.usd_sell');
+            UserLog::create([
+                'action' => $action,
+                'service' => 'Currency',
+                'subservice' => $code,
+                'subservice_id' => $id,
+                'page' => 'currency',
+                'user_id' => $request->user()->id,
+                'user_ip' => $request->getClientIp(),
+                'note' => "{$action}: {$id}",
+            ]);
+        });
 
-        UserLog::create([
-            'action' => $action,
-            'service' => 'Currency',
-            'subservice' => $code,
-            'subservice_id' => $id,
-            'page' => 'currency',
-            'user_id' => $request->user()->id,
-            'user_ip' => $request->getClientIp(),
-            'note' => "{$action}: {$id}",
-        ]);
+        $this->currencyRateRefresh->clearRateCaches();
 
         return redirect()->route('currency')->with('success', "{$code} rate has been updated.");
     }
@@ -195,48 +201,21 @@ class UsdRatesController extends Controller
     private function externalRates(): array
     {
         return Cache::remember('backend.currency.external_rates', now()->addMinutes(30), function () {
-            $apiKey = config('app.exchange_rate_api_key');
-
-            if (! $apiKey) {
-                return [
-                    'rates' => [],
-                    'retrieved_at' => null,
-                    'status' => 'missing_api_key',
-                ];
-            }
-
             try {
-                $response = Http::timeout(4)->get("https://v6.exchangerate-api.com/v6/{$apiKey}/latest/USD");
-
-                if (! $response->successful()) {
-                    return [
-                        'rates' => [],
-                        'retrieved_at' => null,
-                        'status' => 'unavailable',
-                    ];
-                }
-
-                $conversionRates = $response->json('conversion_rates', []);
-                $idrRate = (float) ($conversionRates['IDR'] ?? 0);
+                $rates = $this->currencyRateRefresh->fetchReferenceRates();
 
                 return [
-                    'rates' => [
-                        'USD' => $idrRate ?: null,
-                        'CNY' => isset($conversionRates['CNY']) && (float) $conversionRates['CNY'] > 0
-                            ? $idrRate / (float) $conversionRates['CNY']
-                            : null,
-                        'TWD' => isset($conversionRates['TWD']) && (float) $conversionRates['TWD'] > 0
-                            ? $idrRate / (float) $conversionRates['TWD']
-                            : null,
-                    ],
+                    'rates' => $rates,
                     'retrieved_at' => now(),
                     'status' => 'available',
                 ];
-            } catch (\Throwable $exception) {
+            } catch (CurrencyRateRefreshException $exception) {
                 return [
                     'rates' => [],
                     'retrieved_at' => null,
-                    'status' => 'unavailable',
+                    'status' => str_contains($exception->getMessage(), 'not configured')
+                        ? 'missing_api_key'
+                        : 'unavailable',
                 ];
             }
         });

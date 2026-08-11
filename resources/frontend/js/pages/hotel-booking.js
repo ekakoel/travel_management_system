@@ -245,7 +245,7 @@
 
             $button.html(
                 submitting
-                    ? '<span class="booking-submit-button__spinner" aria-hidden="true"></span><span>' + escapeHtml(buttonProcessingLabel) + '</span>'
+                    ? '<span class="frontend-action-spinner" aria-hidden="true"></span><span>' + escapeHtml(buttonProcessingLabel) + '</span>'
                     : originalHtml
             );
         });

@@ -396,8 +396,7 @@ body.booking-submit-scroll-locked {
     box-shadow: 0 24px 70px rgba(15, 23, 42, 0.20);
 }
 
-.booking-submit-overlay__spinner,
-.booking-submit-button__spinner {
+.booking-submit-overlay__spinner {
     border-radius: 999px;
     border-style: solid;
     animation: booking-submit-spin 0.75s linear infinite;
@@ -469,14 +468,6 @@ body.booking-submit-scroll-locked {
     margin-bottom: 0.75rem;
     color: #0f5fa8;
     font-weight: 800;
-}
-
-.booking-submit-button__spinner {
-    width: 16px;
-    height: 16px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.38);
-    border-top-color: #ffffff;
 }
 
 @keyframes booking-submit-spin {
