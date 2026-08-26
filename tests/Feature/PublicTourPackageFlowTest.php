@@ -295,6 +295,20 @@ class PublicTourPackageFlowTest extends TestCase
         $this->assertStringContainsString('Amount Due ({{ $currencyCode }})', file_get_contents(resource_path('views/emails/invoiceTourEn.blade.php')));
     }
 
+    public function test_admin_order_detail_confirmation_form_uses_supported_put_route(): void
+    {
+        $template = file_get_contents(resource_path('views/admin/ordersadmindetail.blade.php'));
+
+        $this->assertStringContainsString("route('admin.orders.confirmation-number.update'", $template);
+        $this->assertStringContainsString("route('admin.orders.notes.store'", $template);
+        $this->assertStringContainsString('$canArchiveOrder = in_array($order->status', $template);
+        $this->assertStringContainsString("route('admin.orders.workflow.archive'", $template);
+        $this->assertStringContainsString("@method('PUT')", $template);
+        $this->assertStringNotContainsString("url('/fupdate-confirmation-number-' . \$order->id)", $template);
+        $this->assertStringNotContainsString("url('/fadd-order-note-' . \$order->id)", $template);
+        $this->assertStringNotContainsString("url('/farchive-order/' . \$order->id)", $template);
+    }
+
     public function test_tour_confirmation_email_uses_professional_international_contract(): void
     {
         $agent = $this->actingUser();
@@ -420,6 +434,17 @@ class PublicTourPackageFlowTest extends TestCase
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,
             'confirmation_order' => 'TOUR-CONF-001',
+            'handled_by' => $admin->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('admin.orders.confirmation-number.update', ['id' => $order->id]), [
+                'confirmation_order' => 'TOUR-CONF-002',
+            ])
+            ->assertRedirect();
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'confirmation_order' => 'TOUR-CONF-002',
             'handled_by' => $admin->id,
         ]);
 
@@ -1054,12 +1079,46 @@ class PublicTourPackageFlowTest extends TestCase
         $this->actingAs($owner)
             ->get(route('view.detail-order-tour', ['id' => $order->id]))
             ->assertOk()
-            ->assertSee('ui-btn ui-btn--primary ui-btn--block', false)
+            ->assertSee('class="btn btn-primary"', false)
+            ->assertSee('modal-dialog modal-dialog-centered modal-lg', false)
+            ->assertSee('data-payment-confirmation-form', false)
             ->assertSee('name="payment_standard_version" value="1"', false)
             ->assertSee('name="payment_date"', false)
             ->assertSee('name="amount_paid"', false)
             ->assertSee('name="receipt_file"', false)
             ->assertDontSee('name="order_id"', false);
+    }
+
+    public function test_tour_order_detail_uses_snapshot_when_master_tour_is_missing(): void
+    {
+        $owner = $this->actingUser(14, 'tour-history@example.test');
+        $order = $this->insertApprovedTourOrder($owner, [
+            'servicename' => 'Historical Tour Snapshot',
+            'duration' => '2 Days',
+            'destinations' => 'Historical highlight',
+            'pickup_location' => 'Historical Pickup',
+            'dropoff_location' => 'Historical Dropoff',
+        ]);
+
+        InvoiceAdmin::create([
+            'rsv_id' => $order->rsv_id,
+            'inv_no' => 'TOUR-INV-HISTORY',
+            'due_date' => now()->addDay(),
+            'balance' => 300,
+            'bank_id' => 1,
+            'currency_id' => 1,
+            'total_usd' => 300,
+        ]);
+
+        DB::table('tours')->where('id', $order->service_id)->delete();
+
+        $this->actingAs($owner)
+            ->get(route('view.detail-order-tour', ['id' => $order->id]))
+            ->assertOk()
+            ->assertSee('Historical Tour Snapshot')
+            ->assertSee('Historical highlight')
+            ->assertSee('Historical Pickup')
+            ->assertSee('Historical Dropoff');
     }
 
     public function test_customer_delete_tour_uses_deleted_lifecycle_and_audit_log(): void

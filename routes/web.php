@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\ActivitiesAdminController;
 use App\Http\Controllers\ActivitiesController;
+use App\Http\Controllers\ActivityGuestListTemplateController;
 use App\Http\Controllers\ActivityQuoteController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AccommodationFinancialFileController;
@@ -38,7 +39,6 @@ use App\Http\Controllers\Backend\Operations\Hotels\HotelPackageAdminController;
 use App\Http\Controllers\Backend\Operations\Hotels\HotelNormalPriceAdminController;
 use App\Http\Controllers\Backend\Operations\Hotels\HotelRoomAdminController;
 use App\Http\Controllers\Backend\Operations\Tours\TourAdminController;
-use App\Http\Controllers\Backend\Operations\Tours\TourGalleryAdminController;
 use App\Http\Controllers\Backend\Operations\Tours\TourPriceAdminController;
 use App\Http\Controllers\Backend\Operations\Transports\TransportAdminController;
 use App\Http\Controllers\Backend\Operations\Transports\TransportGalleryAdminController;
@@ -103,14 +103,6 @@ use Illuminate\Support\Facades\Route;
     Route::get('/activity/{code}', [FrontEndController::class, 'activity_detail'])->name('view.activity-public-detail');
     Route::get('/hotel/{code}', [FrontEndController::class, 'hotel_detail'])->where('code', '^(?!price-).+$')->name('view.hotel-detail');
     Route::post('/booking-code/remove', [FrontEndController::class, 'remove_booking_code'])->name('bookingcode.remove');
-    // Route::get('/hotel/{code}', function (Request $request, $code) {
-    //     $parameters = ['code' => $code];
-    //     if ($request->boolean('check_price')) {
-    //         $parameters['check_price'] = 1;
-    //     }
-
-    //     return redirect()->route('view.hotel-detail', $parameters);
-    // })->name('view.hotel-detail');
     Route::get('/hotel-{code}', function (Request $request, $code) {
         $parameters = ['code' => $code];
 
@@ -120,7 +112,6 @@ use Illuminate\Support\Facades\Route;
         return redirect()->route('view.hotel-detail', $parameters);
 
     })->where('code', '^(?!price-).+$')->name('view.hotel-detail-flyer');
-    // Route::get('/accommodation/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.accommodation-check-price');
     Route::get('/hotel/{code}/check-price', [HotelsController::class, 'checkPriceEntry'])->name('view.hotel-check-price');
     Route::get('/transportations',[FrontEndController::class,'transport_service'])->name('view.transports-service');
     Route::get('/tour-packages',[FrontEndController::class,'tour_package_services'])->name('view.tour-packages-service');
@@ -155,7 +146,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('/agent/register', [AgentRegistrationController::class, 'showForm'])->name('agent.register');
     Route::post('/agent-register', [AgentRegistrationController::class, 'submitForm'])->name('agent.register.submit');
     Route::get('/registration-mail', [AgentRegistrationController::class, 'test_view_email']);
-    
+
     // ---------------------------------------------------
     //                    TRANSPORT MANAJEMEN
     // ---------------------------------------------------
@@ -194,30 +185,7 @@ use Illuminate\Support\Facades\Route;
         SpkReportController::class,
         'show',
     ])->name('spks.public-report');
-    // Route::post('/spk/{id}/send-whatsapp', [WhatsAppController::class, 'send'])->name('spk.send.whatsapp');
-    // Route::post('/send-whatsapp-both', [WhatsAppController::class, 'send_wa_both'])->name('send.whatsapp-both');
-    // Route::post('/send-whatsapp-driver', [WhatsAppController::class, 'send_wa_driver'])->name('send.whatsapp-driver');
-    // Route::post('/send-whatsapp-operator', [WhatsAppController::class, 'send_wa_operator'])->name('send.whatsapp-operator');
-    // Route::get('/spk-report/{id}', [WhatsAppController::class, 'spk_report'])->name('view.spk-report');
-    // Route::middleware('apikey')->group(function () {
-    //     Route::post('/wa/send-driver', [WhatsAppController::class, 'send_wa_driver']);
-    //     Route::post('/wa/send-operator', [WhatsAppController::class, 'send_wa_operator']);
-    // });
-    // Route::prefix('whatsapp')->group(function () {
-    //     Route::get('/status', [WhatsAppController::class, 'status'])->name('wa.status');
-    //     Route::post('/connect', [WhatsAppController::class, 'connect'])->name('wa.connect');
-    //     Route::get('/qr', [WhatsAppController::class, 'qr'])->name('wa.qr');
-    //     Route::post('/disconnect', [WhatsAppController::class, 'disconnect'])->name('wa.disconnect');
-    //     Route::post('/restart', [WhatsAppController::class, 'restart'])->name('wa.restart');
-    //     Route::post('/reset', [WhatsAppController::class, 'reset'])->name('wa.reset');
-    // });
-    // Route::get('/test-wa', function () {
-    //     return Http::timeout(5)->get("http://127.0.0.1:3000/status")->json();
-    // });
-    // Route::post('/wa/status/update', [WhatsAppController::class, 'updateStatus']);
 
-
-    
     // ---------------------------------------------------
     //                    TEST SYSTEM
     // ---------------------------------------------------
@@ -242,7 +210,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('f-forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->middleware('throttle:5,1')->name('f-forget.password.post');
     Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->middleware('throttle:5,1')->name('reset.password.post');
     Route::get('/terms-and-conditions', [TermAndConditionController::class, 'terms_and_conditions'])->name('terms-and-conditions');
-    
+
     Route::get('/privacy-policy', [TermAndConditionController::class, 'privacy_policy'])->name('privacy-policy');
     Route::get('/faq', [TermAndConditionController::class, 'faq'])->name('faq');
     Route::get('/help', [TermAndConditionController::class, 'faq'])->name('help');
@@ -261,15 +229,140 @@ use Illuminate\Support\Facades\Route;
     });
     Route::middleware(['auth','profile.complete','approve'])->group(function () {
         Route::post('/activity/{code}/quote', ActivityQuoteController::class)->name('activity.quote');
+        Route::get('/activity/guest-list-template/{format}', ActivityGuestListTemplateController::class)
+            ->whereIn('format', ['csv', 'xlsx'])
+            ->name('activity.guest-list-template');
         Route::post('/activity/{code}/order', [OrderController::class, 'storeFrontendActivityOrder'])->name('view.activity-order.store');
         // Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index');
 
-        // ========================================================================================================================================> (DEVELOPER)
-        Route::middleware(['checkPosition:developer'])->group(function () {
-            Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        // DEVELOPER | ADMINISTRATOR =========================================================================================================
+        Route::middleware(['checkPosition:developer,administrator'])->prefix('admin')->name('admin.')->group(function () {
+            // ---------------------------------------------------
+            //                  COMPANY PROFILE
+            // ---------------------------------------------------
+            Route::get('/company-profile', [BusinessProfileController::class, 'edit'])->name('company-profile.edit');
+            Route::put('/company-profile', [BusinessProfileController::class, 'update'])->name('company-profile.update');
+            // ---------------------------------------------------
+            //                   FOOTER MANAGER
+            // ---------------------------------------------------
+            Route::get('/footer-manager', [FooterManagerController::class, 'index'])->name('footer-manager.index');
+            Route::put('/footer-manager/settings', [FooterManagerController::class, 'updateSettings'])->name('footer-manager.settings.update');
+            Route::post('/footer-manager/links', [FooterManagerController::class, 'storeLink'])->name('footer-manager.links.store');
+            Route::put('/footer-manager/links/{footerLink}', [FooterManagerController::class, 'updateLink'])->name('footer-manager.links.update');
+            Route::delete('/footer-manager/links/{footerLink}', [FooterManagerController::class, 'destroyLink'])->name('footer-manager.links.destroy');
+        });
+
+        // DEVELOPER | ADMINISTRATOR | AUTHOR ================================================================================================
+        Route::middleware(['checkPosition:developer,administrator,reservation,author'])->prefix('admin')->name('admin.')->group(function () {
+            // ---------------------------------------------------
+            //                     DEVELOPER
+            // ---------------------------------------------------
+            Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+            // ---------------------------------------------------
+            //                      AUTHOR
+            // ---------------------------------------------------
+            Route::get('/panel-main', [AdminPanelController::class, 'admin_panel_main'])->name('panel-main.view');
+            Route::get('/panel',[AdminPanelController::class,'index'])->name('panel.index');
+            // ---------------------------------------------------
+            //                    RESERVATION
+            // ---------------------------------------------------
+
+            // ---------------------------------------------------
+            //                      PARTNERS
+            // ---------------------------------------------------
+            Route::get('/partners',[PartnersController::class,'index'])->name('partners.index');
+            Route::post('/fcreate-partner',[PartnersController::class,'store'])->name('partner.create');
+            Route::put('/fupdate-partner/{id}',[PartnersController::class,'update'])->name('partner.edit');
+            Route::put('/fremove-partner/{id}',[PartnersController::class,'destroy'])->name('partner.destroy');
+            // ---------------------------------------------------
+            //                       GUIDE
+            // ---------------------------------------------------
+            Route::get('/guides',[GuideController::class,'index'])->name('guides.index');
+            Route::post('/fcreate-guide',[GuideController::class,'create'])->name('guide.create');
+            Route::post('/fedit-guide/{id}',[GuideController::class,'edit'])->name('guide.edit');
+            Route::delete('/fdestroy-guide/{id}',[GuideController::class,'destroy'])->name('guide.destroy');
+            // ---------------------------------------------------
+            //                       DRIVER
+            // ---------------------------------------------------
+            Route::get('/drivers',[DriversController::class,'index'])->name('drivers.index');
+            Route::post('/fcreate-driver',[DriversController::class,'create'])->name('driver.create');
+            Route::post('/fedit-driver/{id}',[DriversController::class,'edit'])->name('driver.edit');
+            Route::delete('/fdestroy-driver/{id}',[DriversController::class,'destroy'])->name('driver.destroy');
+            // ---------------------------------------------------
+            //                     ACTIVITIES
+            // ---------------------------------------------------
+            Route::get('/activities',[ActivityAdminController::class,'index'])->name('activities.index');
+            Route::get('/detail-activity/{id}',[ActivityAdminController::class,'show'])->name('activities.show');
+            Route::get('/add-activity',[ActivityAdminController::class,'create'])->name('activities.create');
+            Route::get('/edit-activity/{id}',[ActivityAdminController::class,'edit'])->name('activities.edit');
+            Route::get('/edit-galery-activity/{id}',[ActivityGalleryAdminController::class,'edit'])->name('activities.gallery.edit');
+            Route::put('/activities/{activity}/gallery',[ActivityGalleryAdminController::class, 'update_gallery'])->name('gallery-activities.update');
+            Route::post('/fadd-activity',[ActivityAdminController::class,'store'])->name('activities.store');
+            Route::put('/fupdate-activity/{id}',[ActivityAdminController::class,'update'])->name('activities.update');
+            Route::delete('/remove-activity/{id}',[ActivityGalleryAdminController::class,'destroy'])->name('activities.destroy');
+            Route::delete('/fdelete-activity-cover/{id}',[ActivityGalleryAdminController::class,'destroyCover'])->name('activities.cover.destroy');
+            Route::delete('/fdelete-activity-img/{id}',[ActivityGalleryAdminController::class,'destroyImage'])->name('activities.images.destroy');
+            // ---------------------------------------------------
+            //                       HOTELS
+            // ---------------------------------------------------
+            Route::get('/hotels',[HotelAdminController::class,'index'])->name('hotels.index');
+            Route::post('/hotels/status-audit/refresh',[HotelAdminController::class,'refreshStatuses'])->name('hotels.status-audit.refresh');
+            Route::get('/detail-hotel/{id}',[HotelAdminController::class,'show'])->name('hotels.show');
+            Route::get('/edit-hotel/{id}',[HotelAdminController::class,'edit'])->name('hotels.edit');
+            Route::get('/add-hotel',[HotelAdminController::class,'create'])->name('hotels.create');
+            Route::get('/add-hotel-price/{id}',[HotelNormalPriceAdminController::class,'create'])->name('hotels.prices.create');
+            Route::get('/add-hotel-promo/{id}',[HotelPromoAdminController::class,'create'])->name('hotels.promos.create');
+            Route::get('/edit-galery-hotel/{id}',[HotelGalleryAdminController::class,'edit'])->name('hotels.gallery.edit');
+            Route::post('/edit-galery-hotel/{id}/images',[HotelGalleryAdminController::class,'store'])->name('hotels.gallery.store');
+            Route::post('/fadd-hotel',[HotelAdminController::class,'store'])->name('hotel.store');
+            Route::post('/fadd-hotel-contract',[HotelContractAdminController::class,'store'])->name('hotels.contracts.store');
+            Route::put('/fupdate-hotel-contract/{id}',[HotelContractAdminController::class,'update'])->name('hotels.contracts.update');
+            Route::delete('/fdelete-hotel-cover/{id}',[HotelGalleryAdminController::class,'destroyCover'])->name('hotels.cover.destroy');
+            Route::delete('/hotels/{hotel}/gallery-images/{image}',[HotelGalleryAdminController::class,'destroyImage'])->name('hotels.images.destroy');
+            Route::delete('/fdelete-contract/{id}',[HotelContractAdminController::class,'destroy'])->name('hotels.contracts.destroy');
+            Route::delete('/remove-hotel/{id}',[HotelAdminController::class,'destroy'])->name('hotels.destroy');
+            // ---------------------------------------------------
+            //                HOTELS OPTIONAL RATE
+            // ---------------------------------------------------
+            Route::post('/fadd-optionalrate',[HotelsAdminController::class,'func_add_optionalrate'])->name('hotels.optional_rate.add');
+            Route::put('/fupdate-optionalrate/{id}',[HotelsAdminController::class,'func_edit_optionalrate'])->name('hotels.optional_rate.update');
+            Route::delete('/fdelete-optionalrate/{id}',[HotelsAdminController::class,'delete_optionalrate'])->name('hotels.optional_rate.delete');
+            // ---------------------------------------------------
+            //                    HOTELS ROOM
+            // ---------------------------------------------------
+            Route::get('/add-room/{id}',[HotelRoomAdminController::class,'create'])->name('hotels.room.create');
+            Route::get('/edit-room/{id}',[HotelRoomAdminController::class,'edit'])->name('hotels.room.edit');
+            Route::post('/fadd-room',[HotelRoomAdminController::class,'store'])->name('hotels.room.store');
+            Route::put('/fedit-room/{id}',[HotelRoomAdminController::class,'update'])->name('hotels.room.update');
+            Route::patch('/hotel-rooms/{room}/status',[HotelRoomAdminController::class,'updateStatus'])->name('hotels.room.status.update');
+            Route::delete('/fdelete-room/{id}',[HotelRoomAdminController::class,'destroy'])->name('hotels.room.delete');
+            Route::get('/autocomplete/room-view', [RoomViewController::class, 'autocomplete'])->name('autocomplate.hotels.room_view');
+            Route::get('/autocomplete/bed-type', [BedTypeController::class, 'autocomplete'])->name('autocomplate.hotels.room.bed_type');
+
+        });
+
+        // DEVELOPER | ADMINISTRATOR | RESERVATION | AUTHOR ==================================================================================
+        Route::middleware(['checkPosition:developer,administrator,reservation,author'])->prefix('admin')->name('admin.')->group(function () {
+            // ---------------------------------------------------
+            //                   HOTELS PACKAGE
+            // ---------------------------------------------------
+            Route::get('/add-hotel-package/{id}',[HotelPackageAdminController::class,'create'])->name('hotels.packages.create');
+            Route::get('/edit-hotel-package/{id}',[HotelPackageAdminController::class,'edit'])->name('hotels.packages.edit');
+            Route::post('/fadd-package',[HotelPackageAdminController::class,'store'])->name('hotels.packages.store');
+            Route::put('/fedit-package/{id}',[HotelPackageAdminController::class,'update'])->name('hotels.packages.update');
+            Route::patch('/hotel-packages/{package}/status',[HotelPackageAdminController::class,'updateStatus'])->name('hotels.packages.status.update');
+            Route::delete('/delete-package/{id}',[HotelPackageAdminController::class, 'destroy'])->name('hotels.packages.destroy');
+            // ---------------------------------------------------
+            //                HOTEL ADDITIONAL CHARGE
+            // ---------------------------------------------------
+            Route::delete('/fdelete-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'destroy'])->name('hotels.additional-charges.destroy');
+            Route::post('/fadd-additional-charge',[HotelAdditionalChargeAdminController::class,'store'])->name('hotels.additional-charges.store');
+            Route::put('/fupdate-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'update'])->name('hotels.additional-charges.update');
+        });
+
+        Route::middleware(['checkPosition:developer,administrator,author'])->group(function () {
             Route::get('/users',[UsersController::class,'index']);
             Route::get('/user-detail/{id}',[UsersController::class,'userdetail']);
-            Route::get('/admin-panel',[AdminPanelController::class,'index'])->name('admin-panel');
             Route::post('/fadd-service',[AdminPanelController::class,'func_add_service'])->name('f-add-service');
             Route::put('/fdisable-service/{id}',[AdminPanelController::class,'func_disable_service'])->name('f-disable-service');
             Route::put('/fedit-service/{id}',[AdminPanelController::class,'func_edit_service'])->name('f-edit-service');
@@ -277,13 +370,6 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/fremove-service/{id}',[AdminPanelController::class,'func_remove_service'])->name('f-remove-service');
             Route::put('/admin-panel/registration-access',[AdminPanelController::class,'updateRegistrationAccess'])->name('admin-panel.registration-access.update');
 
-            Route::get('/admin/company-profile', [BusinessProfileController::class, 'edit'])->name('admin.company-profile.edit');
-            Route::put('/admin/company-profile', [BusinessProfileController::class, 'update'])->name('admin.company-profile.update');
-            Route::get('/admin/footer-manager', [FooterManagerController::class, 'index'])->name('admin.footer-manager.index');
-            Route::put('/admin/footer-manager/settings', [FooterManagerController::class, 'updateSettings'])->name('admin.footer-manager.settings.update');
-            Route::post('/admin/footer-manager/links', [FooterManagerController::class, 'storeLink'])->name('admin.footer-manager.links.store');
-            Route::put('/admin/footer-manager/links/{footerLink}', [FooterManagerController::class, 'updateLink'])->name('admin.footer-manager.links.update');
-            Route::delete('/admin/footer-manager/links/{footerLink}', [FooterManagerController::class, 'destroyLink'])->name('admin.footer-manager.links.destroy');
             Route::get('/dashboard/hotel-price-chart', [DashboardController::class, 'hotelPriceChart']);
 
 
@@ -327,13 +413,11 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fadd-policy',[TermAndConditionController::class,'func_add_policy'])->name('term-and-condition.policy.store');
             Route::delete('/fdestroy-policy/{id}',[TermAndConditionController::class,'fdestroy_policy'])->name('term-and-condition.policy.destroy');
 
-        });
-        // ========================================================================================================================================> (AUTHOR)
-        Route::middleware(['checkPosition:developer,author'])->group(function () {
             // ---------------------------------------------------
             //                     CURRENCY
             // ---------------------------------------------------
             Route::put('/update-tax/{id}',[UsdRatesController::class,'func_update_tax'])->name('f-update-tax');
+            Route::put('/add-tax',[UsdRatesController::class,'func_add_tax'])->name('f-add-tax');
             // ---------------------------------------------------
             //                      HOTELS
             // ---------------------------------------------------
@@ -344,20 +428,10 @@ use Illuminate\Support\Facades\Route;
             Route::post('/fadd-e-b',[ExtraBedController::class,'func_add_extra_bed'])->name('func.extrabed.add');
             Route::put('/fedit-e-b/{id}',[ExtraBedController::class,'fedit_extra_bed'])->name('func.extrabed.edit');
             Route::delete('/fdelete-e-b/{id}',[ExtraBedController::class,'fdelete_extra_bed'])->name('func.extrabed.delete');
-            // ---------------------------------------------------
-            //                    HOTELS ROOM
-            // ---------------------------------------------------
-            Route::get('/add-room/{id}',[HotelRoomAdminController::class,'create'])->name('admin.hotels.rooms.create');
-            Route::get('/edit-room/{id}',[HotelRoomAdminController::class,'edit'])->name('admin.hotels.rooms.edit');
-            Route::post('/fadd-room',[HotelRoomAdminController::class,'store'])->name('func.room.add');
-            Route::put('/fedit-room/{id}',[HotelRoomAdminController::class,'update'])->name('func.room.update');
-            Route::delete('/delete-room/{id}',[HotelRoomAdminController::class,'destroy'])->name('func.room.delete');
-            Route::get('/autocomplete/room-view', [RoomViewController::class, 'autocomplete'])->name('autocomplate.room_view');
-            Route::get('/autocomplete/bed-type', [BedTypeController::class, 'autocomplete'])->name('autocomplate.bed_type');
+
             // ---------------------------------------------------
             //                   HOTELS PRICES
             // ---------------------------------------------------
-            Route::get('/edit-hotel-price/{id}',[HotelNormalPriceAdminController::class,'edit'])->name('admin.hotels.prices.edit');
             Route::post('/fadd-price',[HotelNormalPriceAdminController::class,'store'])->name('admin.hotels.normal-prices.store');
             Route::put('/fedit-price/{id}',[HotelNormalPriceAdminController::class,'update'])->name('admin.hotels.normal-prices.update');
             Route::delete('/delete-price/{id}',[HotelNormalPriceAdminController::class,'destroy'])->name('admin.hotels.normal-prices.destroy');
@@ -367,35 +441,18 @@ use Illuminate\Support\Facades\Route;
             Route::get('/edit-hotel-promo/{id}',[HotelPromoAdminController::class,'edit'])->name('admin.hotels.promos.edit');
             Route::post('/fadd-promo',[HotelPromoAdminController::class,'store'])->name('admin.hotels.promos.store');
             Route::put('/fedit-promo/{id}',[HotelPromoAdminController::class,'update'])->name('admin.hotels.promos.update');
+            Route::patch('/hotel-promos/{promo}/status',[HotelPromoAdminController::class,'updateStatus'])->name('admin.hotels.promos.status.update');
             Route::delete('/delete-promo/{id}',[HotelPromoAdminController::class, 'destroy'])->name('admin.hotels.promos.destroy');
+
 
             // ---------------------------------------------------
             //                 ADDITIONAL SERVICE
             // ---------------------------------------------------
             Route::post('/add-additional-service',[ReservationController::class,'func_add_additional_service']);
             Route::put('/update-additional-service/{id}',[ReservationController::class,'func_update_additional_service']);
-            Route::delete('/delete-additional-service/{id}',[ReservationController::class,'destroy_additional_service']);    
-            // ---------------------------------------------------
-            //                     ACTIVITIES
-            // ---------------------------------------------------
-            Route::get('/add-activity',[ActivityAdminController::class,'create'])->name('admin.activities.create');
-            Route::get('/edit-activity/{id}',[ActivityAdminController::class,'edit'])->name('admin.activities.edit');
-            Route::get('/edit-galery-activity/{id}',[ActivityGalleryAdminController::class,'edit'])->name('admin.activities.gallery.edit');
-            Route::put('/activities/{activity}/gallery',[ActivityGalleryAdminController::class, 'update_gallery'])->name('admin.gallery-activities.update');
-            Route::post('/fadd-activity',[ActivityAdminController::class,'store'])->name('admin.activities.store');
-            Route::put('/fupdate-activity/{id}',[ActivityAdminController::class,'update'])->name('admin.activities.update');
-            Route::delete('/remove-activity/{id}',[ActivityGalleryAdminController::class,'destroy'])->name('admin.activities.destroy');
-            Route::delete('/fdelete-activity-cover/{id}',[ActivityGalleryAdminController::class,'destroyCover'])->name('admin.activities.cover.destroy');
-            Route::delete('/fdelete-activity-img/{id}',[ActivityGalleryAdminController::class,'destroyImage'])->name('admin.activities.images.destroy');
+            Route::delete('/delete-additional-service/{id}',[ReservationController::class,'destroy_additional_service']);
 
 
-            // Route::middleware(['auth'])->prefix('admin')->name('admin.')
-            //     ->group(function () {
-            //         Route::put(
-            //             '/activities/{activity}/images',
-            //             [ActivityGalleryAdminController::class, 'update']
-            //         )->name('images-activity.update');
-            //     });
             // ---------------------------------------------------
             //                     TRANSPORTS
             // ---------------------------------------------------
@@ -410,16 +467,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/fdelete-transport-price/{id}',[TransportPriceAdminController::class,'destroy'])->name('admin.transports.prices.destroy');
             Route::delete('/fdelete-transport-cover/{id}',[TransportGalleryAdminController::class,'destroyCover'])->name('admin.transports.cover.destroy');
             Route::delete('/fdelete-transport-img/{id}',[TransportGalleryAdminController::class,'destroyImage'])->name('admin.transports.images.destroy');
-            // ---------------------------------------------------
-            //                      PARTNER
-            // ---------------------------------------------------
-            Route::get('/partner-add-activity/{id}',[PartnersController::class,'view_partner_add_activity']);
-            Route::get('/partner-add-tour/{id}',[PartnersController::class,'view_partner_add_tour']);
-            Route::post('/fadd-partner',[PartnersController::class,'func_add_partner']);
-            Route::post('/fpartner-add-activity',[PartnersController::class,'func_partner_add_activity']);
-            Route::post('/fpartner-add-tour',[PartnersController::class,'func_partner_add_tour']);
-            Route::put('/fupdate-partner/{id}',[PartnersController::class,'func_update_partner']);
-            Route::put('/fremove-partner/{id}',[PartnersController::class,'func_remove_partner']);
+
             // ---------------------------------------------------
             //                       EMAIL
             // ---------------------------------------------------
@@ -443,7 +491,7 @@ use Illuminate\Support\Facades\Route;
             Route::post('/fremove-promotion/{id}',[PromotionController::class,'destroy'])->name('fremove-promotion');
         });
         // ========================================================================================================================================> (WEDDING AUTHOR)
-        Route::middleware(['checkPosition:developer,weddingAuthor'])->group(function () {
+        Route::middleware(['checkPosition:developer,administrator,weddingAuthor'])->group(function () {
             // ---------------------------------------------------
             //                       VENDORS
             // ---------------------------------------------------
@@ -575,14 +623,10 @@ use Illuminate\Support\Facades\Route;
             // Route::post('/fadd-food-and-beverage/{id}',[WeddingMenuController::class,'func_add_food_and_beverage']);
         });
         // ========================================================================================================================================> (WEDDING SALES)
-        Route::middleware(['checkPosition:developer,weddingSls'])->group(function () {
+        Route::middleware(['checkPosition:developer,administrator'])->group(function () {
         });
         // ========================================================================================================================================> (RESERVATION)
-        Route::middleware(['checkPosition:developer,reservation,weddingRsv'])->group(function () {
-            // ---------------------------------------------------
-            //                      ADMIN PANEL
-            // ---------------------------------------------------
-            Route::get('/admin-panel', [AdminPanelController::class, 'admin_panel_main'])->name('view.admin-panel-main');
+        Route::middleware(['checkPosition:developer,administrator,reservation'])->group(function () {
 
             /// ---------------------------------------------------
             //                        CURRENCY
@@ -601,7 +645,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/admin/reviews/{review}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
             Route::get('/generate-review-link', [ReviewController::class, 'showForm'])->name('view.generate-review-link');
             Route::post('/generate-review-link', [ReviewController::class, 'generate'])->name('generate.review-link');
-            
+
             // ---------------------------------------------------
             //                       REVIEWS WEDDING
             // ---------------------------------------------------
@@ -615,10 +659,25 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/orders-admin',[OrdersAdminController::class,'index'])->name('admin.order.index');
             Route::get('/orders-admin/{id}',[OrdersAdminController::class,'view_order_admin_detail'])->name('admin.order.show');
-            Route::put('/fupdate-confirmation-number/{id}',[OrdersAdminController::class,'func_update_confirmation_number']);
-            Route::post('/fadd-order-note/{id}',[OrdersAdminController::class,'func_add_order_note']);
-            Route::put('/fsend-confirmation/{id}',[OrdersAdminController::class,'func_send_confirmation'])->name('admin.orders.confirmation.send');
-            Route::put('/fresend-confirmation-order/{id}',[OrdersAdminController::class,'resend_confirmation_order'])->name('admin.orders.confirmation.resend');
+            Route::get('/orders-admin-{id}', fn ($id) => redirect()->route('admin.order.show', ['id' => $id]))
+                ->whereNumber('id')
+                ->name('admin.order.show.legacy');
+            Route::put('/fupdate-confirmation-number/{id}',[OrdersAdminController::class,'func_update_confirmation_number'])
+                ->whereNumber('id')
+                ->name('admin.orders.confirmation-number.update');
+            Route::put('/fupdate-confirmation-number-{id}',[OrdersAdminController::class,'func_update_confirmation_number'])
+                ->whereNumber('id')
+                ->name('admin.orders.confirmation-number.update.legacy');
+            Route::post('/fadd-order-note/{id}',[OrdersAdminController::class,'func_add_order_note'])
+                ->whereNumber('id')
+                ->name('admin.orders.notes.store');
+            Route::post('/fadd-order-note-{id}',[OrdersAdminController::class,'func_add_order_note'])
+                ->whereNumber('id')
+                ->name('admin.orders.notes.store.legacy');
+            Route::put('/fsend-confirmation/{id}',[OrdersAdminController::class,'func_send_confirmation'])->whereNumber('id')->name('admin.orders.confirmation.send');
+            Route::put('/fsend-confirmation-{id}',[OrdersAdminController::class,'func_send_confirmation'])->whereNumber('id')->name('admin.orders.confirmation.send.legacy');
+            Route::put('/fresend-confirmation-order/{id}',[OrdersAdminController::class,'resend_confirmation_order'])->whereNumber('id')->name('admin.orders.confirmation.resend');
+            Route::put('/fresend-confirmation-order-{id}',[OrdersAdminController::class,'resend_confirmation_order'])->whereNumber('id')->name('admin.orders.confirmation.resend.legacy');
             Route::put('/fgenerate-invoice/{id}',[OrdersAdminController::class,'fgenerate_invoice'])->name('admin.orders.invoice.generate');
             Route::put('/fregenerate-invoice-pdf/{order}',[OrdersAdminController::class,'fregenerate_invoice_pdf'])->whereNumber('order')->name('admin.orders.invoice.regenerate');
             Route::put('/fsend-approval-email/{id}',[OrdersAdminController::class,'fsend_approval_email'])->name('admin.orders.approval-email.send');
@@ -643,11 +702,13 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fedit-driver-order/{id}',[OrdersAdminController::class,'func_edit_driver_order']);
             Route::put('/fdelete-driver-order/{id}',[OrdersAdminController::class,'func_delete_driver_order']);
             Route::put('/fadmin-update-order/{id}',[OrdersAdminController::class,'fadmin_update_order'])->name('func.order-admin.update');
-            Route::put('/farchive-order/{id}',[OrdersAdminController::class,'func_archive_order']);
+            Route::put('/farchive-order/{id}',[OrdersAdminController::class,'func_archive_order'])
+                ->whereNumber('id')
+                ->name('admin.orders.workflow.archive');
             Route::put('/fupdate-order-invalid/{id}',[OrdersAdminController::class,'func_update_order_invalid']);
             Route::put('/fupdate-order-rejected/{id}',[OrdersAdminController::class,'func_update_order_rejected']);
             Route::put('/fupdate-order-discounts/{id}',[OrdersAdminController::class,'func_update_order_discounts'])->name('func.admin-update-order-dicounts');
-            
+
             Route::put('/ffinalization-order/{id}',[OrdersAdminController::class,'func_finalization_order'])->name('func.admin-finalization-order');
             Route::delete('/optional-rate-order/{id}', [OrdersAdminController::class, 'remove_optional_rate_order'])->name('optional-rate-order.destroy');
 
@@ -678,9 +739,11 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fadd-invitation-order-wedding/{id}',[OrdersAdminController::class,'func_add_order_wedding_invitation']);
             Route::put('/fedit-invitation-order-wedding/{id}',[OrdersAdminController::class,'func_edit_order_wedding_invitation']);
             Route::delete('/func-delete-order-wedding-invitation-admin/{id}',[OrdersAdminController::class,'func_delete_order_wedding_invitation']);
+
             Route::put('/admin-fadd-additional-charge/{id}',[OrdersAdminController::class,'func_admin_add_request_service']);
             Route::put('/admin-fupdate-additional-charge/{id}',[OrdersAdminController::class,'func_admin_update_request_service']);
             Route::put('/admin-fdelete-additional-charge/{id}',[OrdersAdminController::class,'func_admin_delete_request_service']);
+
             Route::put('/fadmin-add-order-wedding-accommodation/{id}',[OrdersAdminController::class,'func_admin_add_order_wedding_accommodation']);
             Route::get('/admin-validate-order-wedding-accommodation/{id}',[OrdersAdminController::class,'view_validate_order_wedding_accommodation']);
             Route::put('/admin-fupdate-accommodation-wedding-order/{id}',[OrdersAdminController::class,'func_update_wedding_order_accommodation']);
@@ -771,44 +834,10 @@ use Illuminate\Support\Facades\Route;
         // ========================================================================================================================================> (ADMIN)
         Route::middleware(['adminType'])->group(function () {
             Route::prefix('admin')->group(function () {
-                // ---------------------------------------------------
-                //                       HOTELS
-                // ---------------------------------------------------
-                Route::get('/hotels',[HotelAdminController::class,'index'])->name('admin.hotels.index');
-                Route::get('/detail-hotel/{id}',[HotelAdminController::class,'show'])->name('admin.hotels.show');
-                Route::get('/edit-hotel/{id}',[HotelAdminController::class,'edit'])->name('admin.hotels.edit');
-                Route::get('/add-hotel-price/{id}',[HotelNormalPriceAdminController::class,'create'])->name('admin.hotels.prices.create');
-                Route::get('/add-hotel-promo/{id}',[HotelPromoAdminController::class,'create'])->name('admin.hotels.promos.create');
-                Route::get('/add-hotel',[HotelAdminController::class,'create'])->name('admin.hotels.create');
-                Route::get('/edit-galery-hotel/{id}',[HotelGalleryAdminController::class,'edit'])->name('admin.hotels.gallery.edit');
-                Route::post('/fadd-hotel',[HotelAdminController::class,'store'])->name('func.hotel.add');
-                Route::post('/fadd-optionalrate',[HotelsAdminController::class,'func_add_optionalrate'])->name('func.optional_rate.add');
-                Route::post('/fadd-hotel-contract',[HotelContractAdminController::class,'store'])->name('admin.hotels.contracts.store');
-                Route::put('/fupdate-hotel-contract/{id}',[HotelContractAdminController::class,'update'])->name('admin.hotels.contracts.update');
-                Route::delete('/fdelete-contract/{id}',[HotelContractAdminController::class,'destroy'])->name('admin.hotels.contracts.destroy');
-                Route::put('/fupdate-optionalrate/{id}',[HotelsAdminController::class,'func_edit_optionalrate'])->name('func.optional_rate.update');
-                Route::delete('/remove-hotel/{id}',[HotelAdminController::class,'destroy'])->name('admin.hotels.destroy');
-                Route::delete('/fdelete-hotel-cover/{id}',[HotelGalleryAdminController::class,'destroyCover'])->name('admin.hotels.cover.destroy');
-                Route::delete('/fdelete-hotel-img/{id}',[HotelGalleryAdminController::class,'destroyImage'])->name('admin.hotels.images.destroy');
-                Route::delete('/fdelete-optionalrate/{id}',[HotelsAdminController::class,'delete_optionalrate'])->name('func.optional_rate.delete');
 
             });
-            // ---------------------------------------------------
-            //                   HOTELS PACKAGE
-            // ---------------------------------------------------
-            Route::get('/add-hotel-package/{id}',[HotelPackageAdminController::class,'create'])->name('admin.hotels.packages.create');
-            Route::get('/edit-hotel-package/{id}',[HotelPackageAdminController::class,'edit'])->name('admin.hotels.packages.edit');
-            Route::post('/fadd-package',[HotelPackageAdminController::class,'store'])->name('admin.hotels.packages.store');
-            Route::put('/fedit-package/{id}',[HotelPackageAdminController::class,'update'])->name('admin.hotels.packages.update');
-            Route::delete('/delete-package/{id}',[HotelPackageAdminController::class, 'destroy'])->name('admin.hotels.packages.destroy');
-            // ---------------------------------------------------
-            //                ADDITIONAL CHARGE HOTEL
-            // ---------------------------------------------------
-            Route::get('/add-hotel-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'create'])->name('admin.hotels.additional-charges.create');
-            Route::get('/edit-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'edit'])->name('admin.hotels.additional-charges.edit');
-            Route::delete('/fdelete-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'destroy'])->name('admin.hotels.additional-charges.destroy');
-            Route::post('/fadd-additional-charge',[HotelAdditionalChargeAdminController::class,'store'])->name('admin.hotels.additional-charges.store');
-            Route::put('/fupdate-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'update'])->name('admin.hotels.additional-charges.update');
+
+
             // ---------------------------------------------------
             //                        VILLAS
             // ---------------------------------------------------
@@ -826,7 +855,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('/edit-villa-room/{id}',[VillasController::class,'admin_edit_villa_room'])->name('view.edit-villa-room');
             Route::post('/fadd-villa-room',[VillasController::class,'func_add_villa_room'])->name('func.add-villa-room');
             Route::get('/edit-villa-room/{id}',[VillasController::class,'admin_edit_villa_room'])->name('view.edit-villa-room');
-            
+
             Route::get('/add-villa-price/{id}',[VillasController::class,'view_admin_add_villa_price'])->name('view.add-villa-price');
             Route::post('/fadd-villa-price/{id}',[VillasController::class,'func_add_villa_price'])->name('func.villa-price.add');
             Route::put('/fupdate-villa-price/{id}',[VillasController::class,'func_edit_villa_price'])->name('func.villa-price.update');
@@ -841,11 +870,6 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::post('/fadd-tour',[TourAdminController::class,'store'])->name('admin.tours.store');
             Route::put('/fupdate-tour/{id}',[TourAdminController::class,'update'])->name('admin.tours.update');
-            Route::post('/tours/gallery/upload', [TourGalleryAdminController::class, 'upload'])->name('func.tour-gallery.upload');
-            Route::delete('/tours/gallery/{id}', [TourGalleryAdminController::class, 'destroy'])->name('func.tour-gallery.destroy');
-            Route::post('/tours/gallery/{id}/update', [TourGalleryAdminController::class, 'update'])->name('func.tour-gallery.update');
-
-
             Route::get('/tour-package-admin',[TourAdminController::class,'index'])->name('admin.tour-packages.index');
             Route::get('/detail-tour/{id}',[TourAdminController::class,'show'])->name('admin.tours.show');
             Route::get('/edit-tour/{id}',[TourAdminController::class,'edit'])->name('admin.tours.edit');
@@ -857,49 +881,26 @@ use Illuminate\Support\Facades\Route;
             Route::put('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'update'])->name('admin.tours.prices.update');
             Route::delete('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'destroy'])->name('admin.tours.prices.destroy');
             Route::post('/detail-tour-{tour}/prices/{tourPrice}/restore',[TourPriceAdminController::class,'restore'])->name('admin.tours.prices.restore');
-            
+
             // ---------------------------------------------------
-            //                     ACTIVITIES 
-            // ---------------------------------------------------
-            Route::get('/activities-admin',[ActivityAdminController::class,'index'])->name('admin.activities.index');
-            Route::get('/detail-activity/{id}',[ActivityAdminController::class,'show'])->name('admin.activities.show');
-            // ---------------------------------------------------
-            //                     TRANSPORTS 
+            //                     TRANSPORTS
             // ---------------------------------------------------
             Route::get('/transports-admin',[TransportAdminController::class,'index'])->name('admin.transports.index');
             Route::get('/detail-transport/{id}',[TransportAdminController::class,'show'])->name('admin.transports.show');
+
             // ---------------------------------------------------
-            //                      VENDORS 
-            // ---------------------------------------------------
-            Route::get('/vendors-admin',[PartnersController::class,'index'])->name('admin.vendors.index');
-            Route::get('/detail-vendor/{id}',[PartnersController::class,'view_vendors_detail'])->name('admin.vendors.show');
-            // ---------------------------------------------------
-            //                        EMAIL 
+            //                        EMAIL
             // ---------------------------------------------------
             Route::get('/email-reservation', [MailController::class, 'index']);
             // ---------------------------------------------------
-            //                     BOOKING CODE 
+            //                     BOOKING CODE
             // ---------------------------------------------------
             Route::get('/booking-code',[BookingCodeController::class,'index'])->name('booking-code');
             // ---------------------------------------------------
             //                      PROMOTION
             // ---------------------------------------------------
             Route::get('/promotion',[PromotionController::class,'index'])->name('promotion');
-            // ---------------------------------------------------
-            //                        GUIDE
-            // ---------------------------------------------------
-            Route::get('/guides-admin',[GuideController::class,'index'])->name('admin.guides.index');
-            Route::post('/fcreate-guide',[GuideController::class,'create'])->name('create-guide');
-            Route::post('/fedit-guide/{id}',[GuideController::class,'edit'])->name('edit-guide');
-            Route::delete('/fdestroy-guide/{id}',[GuideController::class,'destroy'])->name('destroy-guide');
-            // ---------------------------------------------------
-            //                       DRIVER
-            // ---------------------------------------------------
-            Route::get('/drivers-admin',[DriversController::class,'index'])->name('admin.drivers.index');
-            Route::post('/fcreate-driver',[DriversController::class,'create'])->name('create-driver');
-            Route::post('/fedit-driver/{id}',[DriversController::class,'edit'])->name('edit-driver');
-            Route::delete('/fdestroy-driver/{id}',[DriversController::class,'destroy'])->name('destroy-driver');
-            
+
             // ---------------------------------------------------
             //                MANAGEMENT TRANSPORT
             // ---------------------------------------------------
@@ -917,7 +918,7 @@ use Illuminate\Support\Facades\Route;
             Route::post('/spks/fupdate-spk-destination/{id}', [SpksController::class, 'func_update_spk_destination'])->name('func.spk-destinations.update');
             Route::delete('/spks/fdelete-spk-destination/{id}', [SpksController::class, 'func_delete_spk_destination'])->name('func.spk-destination.delete');
             Route::post('/reservation/fupdate-reservation/{id}', [ReservationController::class, 'func_update_transport_management_reservation'])->name('func.transport-management-reservation.update');
-            
+
             // Print SPK (PDF atau langsung view untuk print)
             Route::get('/spks/{id}/print', [SpksController::class, 'print'])->name('spks.print');
             Route::post('/spk/{id}/guest/add', [SpksController::class, 'func_add_guest'])->name('func.spk-guest.add');
@@ -946,7 +947,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('/spks/{spk}/send-whatsapp', [SpkWhatsAppController::class,'send',])->name('spks.send-whatsapp');
             Route::get('/spks/{spk}/send-whatsapp-driver', [SpkWhatsAppController::class,'send_to_driver',])->name('spks.send-whatsapp-driver');
 
-            
+
             // ---------------------------------------------------
             //                        CHAT
             // ---------------------------------------------------
@@ -963,7 +964,6 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/weddings-admin',[WeddingsController::class,'index'])->name('weddings-admin.index');
             Route::get('/weddings-hotel-admin/{id}',[WeddingsController::class,'view_wedding_hotel_admin_detail']);
-            // Route::get('/vendors-admin',[VendorController::class,'index'])->name('vendors-admin.index');
             Route::get('/detail-vendor/{id}',[VendorController::class,'view_vendor_detail']);
             Route::put('/frefresh-wedding-price/{id}',[WeddingsController::class,'func_refresh_wedding_price']);
             Route::get('/weddings-admin/{id}',[WeddingsController::class,'view_wedding_admin_detail']);
@@ -971,7 +971,7 @@ use Illuminate\Support\Facades\Route;
         // ========================================================================================================================================> (AGENT)
         Route::group([], function () {
             // ---------------------------------------------------
-            //                      HOTELS 
+            //                      HOTELS
             // ---------------------------------------------------
             // Route::get('/hotels',[HotelsController::class,'index'])->name('view.hotels');
             Route::get('/hotels/autocomplete', [HotelsController::class, 'autocomplete'])->name('hotels.autocomplete');
@@ -1014,12 +1014,12 @@ use Illuminate\Support\Facades\Route;
             Route::post('/villa-price-{code}',[VillasController::class,'villa_price'])->name('view.villa-prices');
             Route::get('/villas/search', [VillasController::class, 'search_villas'])->name('villas.search-villas');
             // ---------------------------------------------------
-            //                    HOTELS PROMO 
+            //                    HOTELS PROMO
             // ---------------------------------------------------
             Route::get('/hotel-promo/{id}/{checkin}/{checkout}',[HotelPromoController::class,'index'])->name('view.hotel-promo-detail');
             Route::post('/hotel-promo',[HotelPromoController::class,'hotelpromo'])->name('view.hotel-promo');
             // ---------------------------------------------------
-            //                    TOURS PACKAGES AGENT 
+            //                    TOURS PACKAGES AGENT
             // ---------------------------------------------------
             // Route::get('/tour-packages',[ToursController::class,'index'])->name('view.tours');
             Route::get('/tour-{code}-{bcode}',[ToursController::class,'view_tour_detail_bookingcode'])->name('view.tour-detail-bookingcode');
@@ -1031,7 +1031,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('/get-tour-prices/{tour_id}', [TourPricesController::class, 'getPrices'])->name('get-tour-prices');
             Route::post('/fcreate-order-tour-package/{id}',[OrderController::class,'func_create_order_tour_package'])->name('func.order-tour-package.create');
             // ---------------------------------------------------
-            //                 HOTEL PROMO FLYER 
+            //                 HOTEL PROMO FLYER
             // ---------------------------------------------------
             // Route::get('/promotion-flyer/{id}', [FlyerGeneratorController::class, 'flyer_detail'])->name('view.flyers-detail');
             // Route::get('/flyers', [FlyerGeneratorController::class, 'index'])->name('index.flyers');
@@ -1102,7 +1102,7 @@ use Illuminate\Support\Facades\Route;
             Route::put('/checkout-order-villa/{id}',[OrderController::class,'func_checkout_order_villa'])->name('func.checkout-order-villa');
             Route::delete('/remove-guests/{id}', [GuestsController::class, 'remove'])->name('guests.remove');
             Route::get('/detail-order-villa/{id}',[OrderController::class,'detail_order_villa'])->name('view.detail-order-villa');
-            
+
             // ---------------------------------------------------
             //                   ORDER TOUR PACKAGE
             // ---------------------------------------------------
@@ -1148,7 +1148,7 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fupdate-decoration-reception-venue/{id}',[OrderWeddingController::class,'func_update_decoration_reception_venue'])->name('func.update-decoration-reception-venue');
             Route::put('/fdelete-decoration-reception-venue/{id}',[OrderWeddingController::class,'func_delete_decoration_reception_venue'])->name('func.delete-decoration-reception-venue');
             Route::put('/fadd-order-wedding-remark/{id}',[OrderWeddingController::class,'func_add_order_wedding_remark'])->name('func.add-order-wedding-remark');
-            
+
             Route::put('/fdelete-order-wedding-remark/{id}',[OrderWeddingController::class,'func_delete_order_wedding_remark'])->name('func.delete-order-wedding-remark');
             Route::put('/fadd-order-wedding-accommodation/{id}',[OrderWeddingController::class,'func_add_order_wedding_accommodation'])->name('func.add-order-wedding-accommodation');
             Route::put('/fupdate-order-wedding-accommodation/{id}',[OrderWeddingController::class,'func_update_order_wedding_accommodation'])->name('func.update-order-wedding-accommodation');
@@ -1177,7 +1177,14 @@ use Illuminate\Support\Facades\Route;
             Route::get('/orders/activity/{order}/payments/{payment}/receipt',[AccommodationFinancialFileController::class,'customerActivityReceipt'])->name('orders.activity.payments.receipt');
             Route::get('/orders/accommodation/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'customerInvoicePreview'])->where('locale', 'en|zh-CN|zh')->name('orders.accommodation.invoice.preview');
             Route::get('/orders/accommodation/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'customerInvoiceDownload'])->where('locale', 'en|zh-CN|zh')->name('orders.accommodation.invoice.download');
+            Route::get('/orders/transport/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'customerInvoicePreview'])->where('locale', 'en|zh-CN|zh')->name('orders.transport.invoice.preview');
+            Route::get('/orders/transport/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'customerInvoiceDownload'])->where('locale', 'en|zh-CN|zh')->name('orders.transport.invoice.download');
+            Route::get('/orders/tour/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'customerInvoicePreview'])->where('locale', 'en|zh-CN|zh')->name('orders.tour.invoice.preview');
+            Route::get('/orders/tour/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'customerInvoiceDownload'])->where('locale', 'en|zh-CN|zh')->name('orders.tour.invoice.download');
+            Route::get('/orders/activity/{order}/invoice/{locale}/preview',[AccommodationFinancialFileController::class,'customerInvoicePreview'])->where('locale', 'en|zh-CN|zh')->name('orders.activity.invoice.preview');
+            Route::get('/orders/activity/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'customerInvoiceDownload'])->where('locale', 'en|zh-CN|zh')->name('orders.activity.invoice.download');
             Route::post('/fpayment-confirmation/{id}',[PaymentConfirmationController::class,'payment_confirmation'])->name('upload.payment-confirmation');
+            Route::post('/fpayment-confirmation-{id}',[PaymentConfirmationController::class,'payment_confirmation'])->whereNumber('id')->name('upload.payment-confirmation.legacy');
             Route::post('/fwedding-payment-confirmation/{id}',[PaymentConfirmationController::class,'wedding_payment_confirmation'])->name('wedding-payment-confirmation');
             Route::put('/fupdate-payment-confirmation/{id}',[PaymentConfirmationController::class,'update_payment_confirmation'])->name('update-payment-confirmation');
             // ---------------------------------------------------

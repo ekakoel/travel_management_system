@@ -13,7 +13,7 @@ class StoreManualReservationRequest extends FormRequest
 
         return $user
             && $user->type === 'admin'
-            && in_array($user->position, ['developer', 'reservation', 'weddingRsv'], true);
+            && in_array($this->user()->position, ['developer', 'administrator', 'reservation'], true);
     }
 
     public function rules(): array

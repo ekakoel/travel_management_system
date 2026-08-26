@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId('reservation_id')->constrained()->cascadeOnDelete()->nullable();
             $table->foreignId('driver_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('transport_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('operator_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('operator_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('spk_number')->unique();
             $table->string('plate_number')->nullable();
             $table->tinyInteger('send_report')->nullable();

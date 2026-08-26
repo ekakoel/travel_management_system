@@ -109,13 +109,12 @@
     $invoicePreviewModalId = $invoice ? 'invoice-preview-' . $order->id : null;
     $invoiceIssueAt = $invoice?->inv_date ? Carbon::parse($invoice->inv_date) : null;
     $paymentDeadlineAt = $paymentDeadline ?? ($invoice?->due_date ? Carbon::parse($invoice->due_date) : null);
-    $latestReceipt = ($receipts && count($receipts) > 0) ? collect($receipts)->sortByDesc('created_at')->first() : null;
-    $paymentExpired = $order->status === 'Canceled'
-        || ($order->status === 'Approved' && $paymentDeadlineAt && $paymentDeadlineAt->isPast() && !$paymentSubmissionExists);
-    $canSubmitPayment = $invoice
-        && $order->status === 'Approved'
-        && !$paymentExpired
-        && (!$latestReceipt || $latestReceipt->status === 'Invalid');
+    $latestReceipt = data_get($paymentState ?? [], 'latest_receipt')
+        ?: (($receipts && count($receipts) > 0) ? collect($receipts)->sortByDesc('id')->first() : null);
+    $hasPaymentSubmission = data_get($paymentState ?? [], 'has_submission', $paymentSubmissionExists ?? false);
+    $paymentExpired = data_get($paymentState ?? [], 'expired', false);
+    $canSubmitPayment = data_get($paymentState ?? [], 'can_submit', false);
+    $paymentUnderReview = data_get($paymentState ?? [], 'has_open_review', false);
     $invoiceCurrencyCode = optional($invoice?->currency)->name ?: 'USD';
     $invoiceGrandTotal = match ($invoiceCurrencyCode) {
         'CNY' => 'CNY ' . number_format((float) $invoice?->total_cny, 0),
@@ -492,10 +491,16 @@
                                     @include('frontend.home.orders.details.partials.invoice-action-buttons', ['variant' => 'modern', 'invoicePreviewModalId' => $invoicePreviewModalId])
 
                                     @if ($canSubmitPayment)
-                                        <button type="button" class="order-detail-btn order-detail-btn--soft" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
                                             <i class="fa-solid fa-upload" aria-hidden="true"></i>
                                             @lang('messages.Payment Confirmation')
                                         </button>
+                                    @endif
+
+                                    @if ($paymentUnderReview)
+                                        <div class="order-detail-alert">
+                                            @lang('messages.Your payment proof is under review. A new submission is available after the current review is completed.')
+                                        </div>
                                     @endif
 
                                     <a href="{{ route('view.orders') }}#orderTransport" class="order-detail-btn order-detail-btn--soft">
@@ -510,74 +515,9 @@
             </div>
         </main>
 
-        @if ($canSubmitPayment)
-            <div class="modal fade" id="payment-confirmation-{{ $order->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content order-detail-modal">
-                        <div class="order-detail-modal__header">
-                            <h3>@lang('messages.Payment Confirmation')</h3>
-                            <button type="button" class="order-detail-modal__close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="@lang('messages.Close')">
-                                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                        <div class="order-detail-modal__body">
-                            <form id="payment-confirm-{{ $order->id }}" action="/fpayment-confirmation-{{ $order->id }}" method="POST" enctype="multipart/form-data" class="order-detail-upload-form">
-                                @csrf
-                                <input type="hidden" name="order_id" value="{{ $order->id }}">
-
-                                <div class="order-detail-grid">
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Order Number')</span>
-                                        <strong>{{ $order->orderno }}</strong>
-                                    </div>
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Reservation Number')</span>
-                                        <strong>{{ $reservation->rsv_no ?? '-' }}</strong>
-                                    </div>
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Invoice Number')</span>
-                                        <strong>{{ $invoice->inv_no }}</strong>
-                                    </div>
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Due Date')</span>
-                                        <strong>{{ $paymentDeadlineAt ? dateTimeFormat($paymentDeadlineAt) : '-' }}</strong>
-                                    </div>
-                                    <div class="order-detail-info order-detail-info--quote">
-                                        <span>@lang('messages.Amount')</span>
-                                        <strong>{{ $invoiceGrandTotal }}</strong>
-                                    </div>
-                                </div>
-
-                                <div class="order-detail-alert mt-3">
-                                    @lang('messages.Complete payment and upload the proof within 2 x 24 hours after approval to keep this booking active.')
-                                </div>
-
-                                <div class="order-detail-upload mt-3">
-                                    <label for="receipt_name" class="form-label">@lang('messages.Select Receipt')</label>
-                                    <input type="file" name="receipt_name" id="receipt_name" class="form-control @error('receipt_name') is-invalid @enderror" data-receipt-input="#transport-receipt-preview-{{ $order->id }}" data-receipt-empty="@lang('messages.No preview available')" required>
-                                    @error('receipt_name')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="order-detail-payment-preview mt-3" id="transport-receipt-preview-{{ $order->id }}">
-                                    <span>@lang('messages.No preview available')</span>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="order-detail-modal__footer">
-                            <button type="submit" form="payment-confirm-{{ $order->id }}" class="order-detail-btn order-detail-btn--primary order-detail-btn--auto">
-                                <i class="fa-solid fa-upload" aria-hidden="true"></i>
-                                @lang('messages.Send')
-                            </button>
-                            <button type="button" class="order-detail-btn order-detail-btn--soft order-detail-btn--auto" data-dismiss="modal" data-bs-dismiss="modal">
-                                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                                @lang('messages.Close')
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
+        @include('frontend.home.orders.details.partials.payment-confirmation-modal', [
+            'paymentCanSubmit' => $canSubmitPayment,
+            'paymentAmountDisplay' => $invoiceGrandTotal,
+        ])
     </div>
 @endsection

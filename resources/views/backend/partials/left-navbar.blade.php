@@ -67,83 +67,79 @@
                                 </li>
                             @endif
                         @endforeach
-                        @canany(['posDev','posAuthor','posRsv','weddingRsv','weddingSls','weddingAuthor','weddingDvl'])
-                            <li class="backend-sidebar__section-item">
-                                <div class="backend-sidebar__section-label">@lang('messages.Backend')</div>
-                            </li>
-                            @if ($user->canAccessAdminDashboard())
-                                <ul id="accordion-dashboard-menu" class="backend-sidebar__nav">
-                                    <li>
-                                        <a href="{{ route('admin.dashboard') }}" class="nav-toggle no-arrow {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                                            <i class="fas fa-tachometer-alt"></i>@lang('messages.Dashboard')
-                                        </a>
-                                    </li>
-                                </ul>
-                            @endif
-                            <li class="dropdown">
-                                <a href="javascript:;" class="dropdown-toggle">
-                                    <i class="fas fa-user-shield"></i>@lang("messages.Admin")</span>
-                                </a>
-                                <ul class="submenu">
-                                    @can('posDev')
-                                        <li>
-                                            <a href="{{ route('view.admin-panel-main') }}" class="{{ request()->routeIs('view.admin-panel-main') ? 'active' : '' }}">
-                                                <i class="fas fa-th"></i> @lang("messages.Admin Panel")
-                                            </a>
-                                        </li>
-                                    @endcan
-                                    @canany(['posDev','posAuthor','posRsv','weddingRsv','weddingAuthor','weddingSls','weddingDvl'])
+                        <li class="backend-sidebar__section-item">
+                            <div class="backend-sidebar__section-label">@lang('messages.Backend')</div>
+                        </li>
+                        @if ($user->canAccessAdminDashboard())
+                            <ul id="accordion-dashboard-menu" class="backend-sidebar__nav">
+                                <li>
+                                    <a href="{{ route('admin.dashboard') }}" class="nav-toggle no-arrow {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                                        <i class="fas fa-tachometer-alt"></i>@lang('messages.Dashboard')
+                                    </a>
+                                </li>
+                            </ul>
+                            @canany(['posDev','posAdm','posAuthor','posRsv'])
+                                <li class="dropdown">
+                                    <a href="javascript:;" class="dropdown-toggle">
+                                        <i class="fas fa-user-shield"></i>@lang("messages.Admin")</span>
+                                    </a>
+                                    <ul class="submenu">
+                                        @can('posDev')
+                                            <li>
+                                                <a href="{{ route('admin.panel-main.view') }}" class="{{ request()->routeIs('admin.panel-main.view') ? 'active' : '' }}">
+                                                    <i class="fas fa-th"></i> @lang("messages.Admin Panel")
+                                                </a>
+                                            </li>
+                                        @endcan
                                         <li>
                                             <a href="{{ route('currency') }}" class="{{ request()->routeIs('currency') ? 'active' : '' }}">
                                                 <i class="fas fa-chart-line"></i> @lang("messages.Currency")
                                             </a>
                                         </li>
-                                    @endcanany
-                                    @can('posDev')
-                                        <li>
-                                            <a href="{{ route('user-manager') }}" class="{{ request()->routeIs('user-manager') ? 'active' : '' }}">
-                                                <i class="fas fa-users"></i> @lang("messages.User Manager")
+                                        @canany(['posDev','posAdm'])
+                                            <li>
+                                                <a href="{{ route('user-manager') }}" class="{{ request()->routeIs('user-manager') ? 'active' : '' }}">
+                                                    <i class="fas fa-users"></i> @lang("messages.User Manager")
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('view.term-and-condition') }}" class="{{ request()->routeIs('view.term-and-condition') ? 'active' : '' }}">
+                                                    <i class="fas fa-shield-alt"></i> @lang("messages.Term And Condition")
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('admin.company-profile.edit') }}" class="{{ request()->routeIs('admin.company-profile.*') ? 'active' : '' }}">
+                                                    <i class="fas fa-cog"></i> @lang("messages.Company Profile")
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('admin.footer-manager.index') }}" class="{{ request()->routeIs('admin.footer-manager.*') ? 'active' : '' }}">
+                                                    <span class="icon-copy dw dw-browser2" aria-hidden="true"></span> @lang("messages.Footer Manager")
+                                                </a>
+                                            </li>
+                                        @endcanany
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="javascript:;" class="dropdown-toggle">
+                                        <i class="fas fa-handshake"></i><span class="mtext">@lang("messages.Provider")</span>
+                                    </a>
+                                    <ul class="submenu">
+                                        {{-- <li>
+                                            <a href="/partners">
+                                                <i class="fa fa-handshake-o" aria-hidden="true"></i> @lang("messages.Partners")
                                             </a>
-                                        </li>
+                                        </li> --}}
+                                        {{-- @canany(['posDev'])
+                                            <li>
+                                                <a href="{{ route('partners-admin.index') }}" {{ request()->routeIs('admin-panelpartners-admin.index') ? 'active' : '' }}>
+                                                    <i class="icon-copy fi-torso-business"></i> Wedding Partners
+                                                </a>
+                                            </li>
+                                        @endcanany --}}
                                         <li>
-                                            <a href="{{ route('view.term-and-condition') }}" class="{{ request()->routeIs('view.term-and-condition') ? 'active' : '' }}">
-                                                <i class="fas fa-shield-alt"></i> @lang("messages.Term And Condition")
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('admin.company-profile.edit') }}" class="{{ request()->routeIs('admin.company-profile.*') ? 'active' : '' }}">
-                                                <i class="fas fa-cog"></i> @lang("messages.Company Profile")
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('admin.footer-manager.index') }}" class="{{ request()->routeIs('admin.footer-manager.*') ? 'active' : '' }}">
-                                                <span class="icon-copy dw dw-browser2" aria-hidden="true"></span> @lang("messages.Footer Manager")
-                                            </a>
-                                        </li>
-                                    @endcan
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a href="javascript:;" class="dropdown-toggle">
-                                    <i class="fas fa-handshake"></i><span class="mtext">@lang("messages.Provider")</span>
-                                </a>
-                                <ul class="submenu">
-                                    {{-- <li>
-                                        <a href="/partners">
-                                            <i class="fa fa-handshake-o" aria-hidden="true"></i> @lang("messages.Partners")
-                                        </a>
-                                    </li> --}}
-                                    {{-- @canany(['posDev','weddingDvl','weddingSls','weddingAuthor','weddingRsv'])
-                                        <li>
-                                            <a href="{{ route('vendors-admin.index') }}" {{ request()->routeIs('admin-panelvendors-admin.index') ? 'active' : '' }}>
-                                                <i class="icon-copy fi-torso-business"></i> Wedding Vendors
-                                            </a>
-                                        </li>
-                                    @endcanany --}}
-                                    @canany(['posDev','posAuthor','posRsv'])
-                                        <li>
-                                            <a href="{{ route('admin.vendors.index') }}" {{ request()->routeIs('admin.vendors.index') ? 'active' : '' }}>
-                                                <i class="fa fa-handshake-o" aria-hidden="true"></i> @lang("messages.Vendors")
+                                            <a href="{{ route('admin.partners.index') }}" {{ request()->routeIs('admin.partners.index') ? 'active' : '' }}>
+                                                <i class="fa fa-handshake-o" aria-hidden="true"></i> @lang("messages.Partners")
                                             </a>
                                         </li>
                                         <li>
@@ -156,16 +152,14 @@
                                                 <i class="fas fa-user-tie"></i> @lang("messages.Driver")
                                             </a>
                                         </li>
-                                    @endcanany
-                                </ul>
-                            </li>
-                            {{-- SERVICES --------------------------------------- --}}
-                            @canany(['posDev','posAuthor','posRsv'])
-                            <li class="dropdown">
-                                <a href="javascript:;" class="dropdown-toggle">
-                                    <i class="fas fa-bars"></i>@lang("messages.Services")</span>
-                                </a>
-                                <ul class="submenu">
+                                    </ul>
+                                </li>
+                                {{-- SERVICES --------------------------------------- --}}
+                                <li class="dropdown">
+                                    <a href="javascript:;" class="dropdown-toggle">
+                                        <i class="fas fa-bars"></i>@lang("messages.Services")</span>
+                                    </a>
+                                    <ul class="submenu">
                                         @foreach ($servicesMenu as $serviceItem)
                                             @if ($serviceItem['admin_route'])
                                                 <li>
@@ -177,38 +171,37 @@
                                         @endforeach
                                     </ul>
                                 </li>
-                            @endcanany
-                            {{-- REVIEWS --}}
-                            @canany(['posDev','posRsv','weddingDvl','weddingRsv'])
-                                <li class="dropdown">
-                                    <a href="javascript:;" class="dropdown-toggle">
-                                        <i class="fas fa-star"></i><span class="mtext">@lang("messages.Reviews")</span>
-                                    </a>
-                                    <ul class="submenu">
-                                        <li>
-                                            <a href="{{ route('admin.reviews.index') }}" class="{{ request()->routeIs('admin.reviews.index') ? 'active' : '' }}">
-                                                <i class="fas fa-star"></i> @lang('messages.Tour Reviews')
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('view.generate-review-link') }}" class="{{ request()->routeIs('view.generate-review-link') ? 'active' : '' }}">
-                                                <i class="fas fa-star"></i> @lang('messages.Tour Review Links')
-                                            </a>
-                                        </li>
-                                        {{-- <li>
-                                            <a href="{{ route('admin.wedding-reviews.index') }}" class="{{ request()->routeIs('admin.wedding-reviews.index') ? 'active' : '' }}">
-                                                <i class="fas fa-star"></i> @lang('messages.Wedding Reviews')
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('view.generate-wedding-review-link') }}" class="{{ request()->routeIs('view.generate-wedding-review-link') ? 'active' : '' }}">
-                                                <i class="fas fa-star"></i> @lang('messages.Wedding Review Links')
-                                            </a>
-                                        </li> --}}
-                                    </ul>
-                                </li>
-                            @endcan
-                            @canany(['posDev','posAuthor','posRsv','weddingDvl','weddingSls','weddingAuthor','weddingRsv'])
+                                {{-- REVIEWS --}}
+                                @canany(['posDev','posAdm','posRsv'])
+                                    <li class="dropdown">
+                                        <a href="javascript:;" class="dropdown-toggle">
+                                            <i class="fas fa-star"></i><span class="mtext">@lang("messages.Reviews")</span>
+                                        </a>
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href="{{ route('admin.reviews.index') }}" class="{{ request()->routeIs('admin.reviews.index') ? 'active' : '' }}">
+                                                    <i class="fas fa-star"></i> @lang('messages.Tour Reviews')
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('view.generate-review-link') }}" class="{{ request()->routeIs('view.generate-review-link') ? 'active' : '' }}">
+                                                    <i class="fas fa-star"></i> @lang('messages.Tour Review Links')
+                                                </a>
+                                            </li>
+                                            {{-- <li>
+                                                <a href="{{ route('admin.wedding-reviews.index') }}" class="{{ request()->routeIs('admin.wedding-reviews.index') ? 'active' : '' }}">
+                                                    <i class="fas fa-star"></i> @lang('messages.Wedding Reviews')
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('view.generate-wedding-review-link') }}" class="{{ request()->routeIs('view.generate-wedding-review-link') ? 'active' : '' }}">
+                                                    <i class="fas fa-star"></i> @lang('messages.Wedding Review Links')
+                                                </a>
+                                            </li> --}}
+                                        </ul>
+                                    </li>
+                                @endcan
+                                
                                 {{-- <li class="dropdown">
                                     <a href="javascript:;" class="dropdown-toggle">
                                         <span class="micon icon-copy fa fa-percent"></span><span class="mtext">@lang("messages.Promo")</span>
@@ -226,16 +219,11 @@
                                         </li>
                                     </ul>
                                 </li> --}}
-                            @endcanany
-                            @canany(['posDev','posRsv'])
                                 <li>
                                     <a href="{{ route('view.transport-management.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.transport-management.index') ? 'active' : '' }}">
                                         <i class="fas fa-car"></i> @lang("messages.Transport Management")
                                     </a>
                                 </li>
-                            @endcanany
-
-                            @canany(['posDev','posRsv','weddingRsv'])
                                 <li class="dropdown {{ $operationsNavigationActive ? 'show' : '' }}">
                                     <a href="javascript:;" class="dropdown-toggle">
                                         <i class="fas fa-briefcase"></i><span class="mtext">@lang('messages.Operations')</span>
@@ -264,8 +252,7 @@
                                     </ul>
                                 </li>
                             @endcanany
-
-                        @endcanany
+                        @endif
                     </ul>
                 @else
                     <div class="notifikasi-menu">
@@ -277,8 +264,6 @@
                     @lang('messages.Your account has been disabled because it does not comply with the established terms.')
                 </div>
             @endif
-
         </div>
-
     </div>
 </div>

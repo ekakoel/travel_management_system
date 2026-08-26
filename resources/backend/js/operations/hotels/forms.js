@@ -1,4 +1,121 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const coverPreviewUrls = new WeakMap();
+  const galleryPreviewUrls = new WeakMap();
+
+  const clearCoverPreview = (input, preview) => {
+    const existingUrl = coverPreviewUrls.get(input);
+
+    if (existingUrl) {
+      URL.revokeObjectURL(existingUrl);
+      coverPreviewUrls.delete(input);
+    }
+
+    preview?.replaceChildren();
+  };
+
+  document.addEventListener('change', (event) => {
+    const input = event.target;
+
+    if (!(input instanceof HTMLInputElement) || !input.matches('[data-hotel-cover-input]')) {
+      return;
+    }
+
+    const preview = document.querySelector(input.dataset.hotelCoverPreviewTarget || '[data-hotel-cover-preview]');
+    const status = document.querySelector('[data-hotel-cover-status]');
+    const file = input.files?.[0] || null;
+
+    clearCoverPreview(input, preview);
+
+    if (!file) {
+      if (status) {
+        status.textContent = status.dataset.hotelCoverStatusDefault || 'No cover selected';
+      }
+
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      if (status) {
+        status.textContent = 'Selected file is not a valid image';
+      }
+
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    const image = document.createElement('img');
+
+    image.src = previewUrl;
+    image.alt = file.name;
+    coverPreviewUrls.set(input, previewUrl);
+    preview?.replaceChildren(image);
+
+    if (status) {
+      status.textContent = file.name;
+    }
+  });
+
+  const clearGalleryPreview = (input, preview) => {
+    const existingUrls = galleryPreviewUrls.get(input) || [];
+
+    existingUrls.forEach((url) => URL.revokeObjectURL(url));
+    galleryPreviewUrls.delete(input);
+    preview?.replaceChildren();
+  };
+
+  document.addEventListener('change', (event) => {
+    const input = event.target;
+
+    if (!(input instanceof HTMLInputElement) || !input.matches('[data-hotel-gallery-input]')) {
+      return;
+    }
+
+    const preview = document.querySelector(input.dataset.hotelGalleryPreviewTarget || '[data-hotel-gallery-preview]');
+    const status = document.querySelector(input.dataset.hotelGalleryStatusTarget || '[data-hotel-gallery-status]');
+    const files = Array.from(input.files || []);
+
+    clearGalleryPreview(input, preview);
+
+    if (!files.length) {
+      if (status) {
+        status.textContent = 'No gallery files selected';
+      }
+
+      return;
+    }
+
+    const previewUrls = [];
+    const fragment = document.createDocumentFragment();
+
+    files.slice(0, 12).forEach((file) => {
+      const item = document.createElement('figure');
+      const caption = document.createElement('figcaption');
+
+      item.className = 'hotel-gallery-upload-preview__item';
+      caption.textContent = file.name;
+
+      if (file.type.startsWith('image/')) {
+        const previewUrl = URL.createObjectURL(file);
+        const image = document.createElement('img');
+
+        image.src = previewUrl;
+        image.alt = file.name;
+        previewUrls.push(previewUrl);
+        item.appendChild(image);
+      }
+
+      item.appendChild(caption);
+      fragment.appendChild(item);
+    });
+
+    galleryPreviewUrls.set(input, previewUrls);
+    preview?.replaceChildren(fragment);
+
+    if (status) {
+      status.textContent = `${files.length} file${files.length === 1 ? '' : 's'} selected`;
+    }
+  });
+
   const repeater = document.querySelector('[data-hotel-price-repeater]');
 
   if (repeater) {
@@ -18,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       list.appendChild(clone);
+      window.initBackendRequiredMarkers?.(clone);
+      window.initBackendMoneyInputs?.(clone);
+      window.initBackendDatePickers?.(clone);
     });
 
     list?.addEventListener('click', (event) => {

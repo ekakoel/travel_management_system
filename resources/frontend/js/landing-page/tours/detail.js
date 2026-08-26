@@ -556,9 +556,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const travelDateInput = orderForm.querySelector('[name="travel_date"]');
     const selectedPriceId = orderForm.querySelector('[data-tour-price-id]');
-    const pricePerPax = orderForm.querySelector('[data-tour-price-per-pax]');
-    const totalPrice = orderForm.querySelector('[data-tour-total-price]');
-    const priceNote = orderForm.querySelector('[data-tour-price-note]');
+    const pricePerPaxTargets = [...orderForm.querySelectorAll('[data-tour-price-per-pax]')];
+    const totalPriceTargets = [...orderForm.querySelectorAll('[data-tour-total-price]')];
+    const priceNoteTargets = [...orderForm.querySelectorAll('[data-tour-price-note]')];
+    const priceCardLabel = orderForm.querySelector('[data-tour-price-card-label]');
+    const priceCardValue = orderForm.querySelector('[data-tour-price-card-value]');
     const submitButton = orderForm.querySelector('button[type="submit"]');
     const guestError = orderForm.querySelector('[data-tour-guest-error]');
     const guestTableBody = orderForm.querySelector('[data-tour-guest-table-body]');
@@ -582,6 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wizardNavItems = [...orderForm.querySelectorAll('[data-tour-wizard-nav]')];
     const previousStepButtons = [...orderForm.querySelectorAll('[data-tour-wizard-prev]')];
     const nextStepButtons = [...orderForm.querySelectorAll('[data-tour-wizard-next]')];
+    const priceRequiredNextButtons = [...orderForm.querySelectorAll('[data-tour-requires-price]')];
     const wizardSubmitButtons = [...orderForm.querySelectorAll('[data-tour-wizard-submit]')];
     const wizardSubmitButton = wizardSubmitButtons[0] || null;
     const submitOverlay = orderForm.querySelector('[data-form-submit-overlay]');
@@ -605,11 +608,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const guestSummaryLabel = orderForm.dataset.guestSummaryLabel || '';
     const guestCountMismatchLabel = orderForm.dataset.guestCountMismatchLabel || '';
     const priceUnavailableLabel = orderForm.dataset.priceUnavailableLabel || orderForm.dataset.noRateLabel || '';
+    const priceUnavailableOnDateLabel = orderForm.dataset.priceUnavailableOnDateLabel || priceUnavailableLabel;
+    const priceFromLabel = orderForm.dataset.priceFromLabel || '';
+    const pricePaxSuffix = orderForm.dataset.pricePaxSuffix || '';
     const loadingPriceLabel = orderForm.dataset.loadingPriceLabel || '';
+    const initialPriceCardValue = priceCardValue?.textContent || '-';
     const minGuests = Number(orderForm.dataset.minGuests || 2);
     const maxGuests = Number(orderForm.dataset.maxGuests || 200);
     let guests = [];
     let isSubmitting = false;
+    let quoteState = {
+        fingerprint: '',
+        available: false,
+        loading: false,
+    };
 
     try {
         guests = JSON.parse(orderForm.dataset.initialGuests || '[]')
@@ -691,6 +703,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        if (!hasValidQuoteForCurrentInput()) {
+            showWizardStep(wizardSteps.length - 1);
+            updatePricePreview();
+            return;
+        }
+
         if (wizardSubmitButton?.disabled) {
             showWizardStep(wizardSteps.length - 1);
             return;
@@ -740,6 +758,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (step?.querySelector('[data-tour-guest-table-body]')) {
             isValid = validateGuestManifest(true) && isValid;
+        }
+
+        if (stepIndex === 0 && isValid && !hasValidQuoteForCurrentInput()) {
+            updatePricePreview();
+            isValid = false;
+        }
+
+        if (stepIndex === 1 && isValid && !hasValidQuoteForCurrentInput()) {
+            updatePricePreview();
+            setGuestErrorMessage(quoteState.loading ? loadingPriceLabel : priceUnavailableLabel, true);
+            isValid = false;
         }
 
         if (!isValid && focusInvalid) {
@@ -1053,29 +1082,121 @@ document.addEventListener('DOMContentLoaded', () => {
     let quoteRequestController = null;
     let quoteRequestTimer = null;
 
-    const renderUnavailablePrice = (message = '') => {
-        if (pricePerPax) pricePerPax.textContent = '-';
-        if (totalPrice) totalPrice.textContent = '-';
-        if (priceNote) {
-            priceNote.textContent = message
-                || priceUnavailableLabel;
+    const quotedGuestCount = () => (
+        guests.length >= minGuests ? guests.length : minGuests
+    );
+
+    const quoteFingerprint = () => {
+        const bookingCode = orderForm.querySelector('[name="booking_code"]')?.value || '';
+        const promotionId = orderForm.querySelector('[name="promotion_id"]')?.value || '';
+
+        return [
+            String(quotedGuestCount()),
+            String(travelDateInput?.value || '').trim(),
+            String(bookingCode).trim(),
+            String(promotionId).trim(),
+        ].join('|');
+    };
+
+    const hasValidQuoteForCurrentInput = () => (
+        quoteState.available
+        && !quoteState.loading
+        && quoteState.fingerprint === quoteFingerprint()
+        && Boolean(selectedPriceId?.value)
+    );
+
+    const setTextTargets = (targets, value) => {
+        targets.forEach((target) => {
+            target.textContent = value;
+        });
+    };
+
+    const currentTravelDateLabel = () => {
+        const travelDate = String(travelDateInput?.value || '').trim();
+
+        return travelDate ? formatDateTime(travelDate) : '';
+    };
+
+    const unavailablePriceCardLabel = () => {
+        const travelDate = currentTravelDateLabel();
+
+        if (!travelDate) {
+            return priceFromLabel;
         }
+
+        return priceUnavailableOnDateLabel.replace(':date', travelDate);
+    };
+
+    const renderPriceCardUnavailable = () => {
+        if (priceCardLabel) priceCardLabel.textContent = unavailablePriceCardLabel();
+        if (priceCardValue) priceCardValue.textContent = currentTravelDateLabel() ? '-' : initialPriceCardValue;
+    };
+
+    const renderPriceCardLoading = () => {
+        if (priceCardLabel) {
+            priceCardLabel.textContent = currentTravelDateLabel() ? (loadingPriceLabel || priceFromLabel) : priceFromLabel;
+        }
+        if (priceCardValue) priceCardValue.textContent = currentTravelDateLabel() ? '-' : initialPriceCardValue;
+    };
+
+    const renderPriceCardAvailable = (unitPriceUsd = '') => {
+        if (priceCardLabel) priceCardLabel.textContent = priceFromLabel;
+        if (priceCardValue) priceCardValue.textContent = unitPriceUsd ? `USD ${unitPriceUsd}${pricePaxSuffix}` : initialPriceCardValue;
+    };
+
+    const syncPriceControls = () => {
+        const hasValidQuote = hasValidQuoteForCurrentInput();
+
+        priceRequiredNextButtons.forEach((button) => {
+            button.disabled = isSubmitting || !hasValidQuote;
+        });
+
+        if (submitButton) {
+            submitButton.disabled = isSubmitting || !hasValidQuote;
+        }
+    };
+
+    const setQuoteUnavailable = (message = '') => {
+        quoteState = {
+            fingerprint: quoteFingerprint(),
+            available: false,
+            loading: false,
+        };
+        renderPriceCardUnavailable();
+        renderUnavailablePrice(message);
+    };
+
+    const setQuoteLoading = (message = '') => {
+        quoteState = {
+            fingerprint: quoteFingerprint(),
+            available: false,
+            loading: true,
+        };
+        renderPriceCardLoading();
+        renderUnavailablePrice(message);
+    };
+
+    const renderUnavailablePrice = (message = '') => {
+        setTextTargets(pricePerPaxTargets, '-');
+        setTextTargets(totalPriceTargets, '-');
+        setTextTargets(priceNoteTargets, message || priceUnavailableLabel);
         if (selectedPriceId) selectedPriceId.value = '';
-        if (submitButton) submitButton.disabled = true;
+        syncPriceControls();
     };
 
     const requestPricePreview = async () => {
-        const guestCount = guests.length;
+        const guestCount = quotedGuestCount();
         const travelDate = String(travelDateInput?.value || '').trim();
 
-        if (!quoteUrl || guestCount < minGuests || guestCount > maxGuests || !travelDate) {
-            renderUnavailablePrice(guestCount < minGuests ? guestCountMismatchLabel : '');
+        if (!quoteUrl || guestCount > maxGuests || guests.length > maxGuests || !travelDate) {
+            setQuoteUnavailable(guests.length > maxGuests ? guestCountMismatchLabel : '');
             return;
         }
 
         quoteRequestController?.abort();
         quoteRequestController = new AbortController();
-        renderUnavailablePrice(loadingPriceLabel);
+        const requestFingerprint = quoteFingerprint();
+        setQuoteLoading(loadingPriceLabel);
 
         const requestBody = new URLSearchParams({
             number_of_guests: String(guestCount),
@@ -1104,23 +1225,47 @@ document.addEventListener('DOMContentLoaded', () => {
             const payload = responsePayload?.data || responsePayload;
 
             if (!response.ok || payload.price_available !== true || !payload.quote || !payload.display) {
-                renderUnavailablePrice(payload.message || priceUnavailableLabel);
+                setQuoteUnavailable(payload.message || priceUnavailableLabel);
+                return;
+            }
+
+            if (requestFingerprint !== quoteFingerprint()) {
+                return;
+            }
+
+            if (!payload.quote.price_id) {
+                setQuoteUnavailable(priceUnavailableLabel);
                 return;
             }
 
             if (selectedPriceId) selectedPriceId.value = payload.quote.price_id || '';
-            if (pricePerPax) pricePerPax.textContent = `USD ${payload.display.unit_price_usd}`;
-            if (totalPrice) totalPrice.textContent = `USD ${payload.display.final_total_usd}`;
-            if (priceNote) priceNote.textContent = '';
-            if (submitButton) submitButton.disabled = false;
+            setTextTargets(pricePerPaxTargets, `USD ${payload.display.unit_price_usd}`);
+            setTextTargets(totalPriceTargets, `USD ${payload.display.final_total_usd}`);
+            setTextTargets(priceNoteTargets, '');
+            renderPriceCardAvailable(payload.display.unit_price_usd);
+            setGuestErrorMessage('', false);
+            quoteState = {
+                fingerprint: requestFingerprint,
+                available: Boolean(payload.quote.price_id),
+                loading: false,
+            };
+            syncPriceControls();
         } catch (error) {
             if (error.name !== 'AbortError') {
-                renderUnavailablePrice(priceUnavailableLabel);
+                setQuoteUnavailable(priceUnavailableLabel);
             }
         }
     };
 
     const updatePricePreview = () => {
+        quoteState = {
+            fingerprint: quoteFingerprint(),
+            available: false,
+            loading: false,
+        };
+        if (selectedPriceId) selectedPriceId.value = '';
+        renderPriceCardLoading();
+        renderUnavailablePrice(loadingPriceLabel);
         window.clearTimeout(quoteRequestTimer);
         quoteRequestTimer = window.setTimeout(requestPricePreview, 250);
     };

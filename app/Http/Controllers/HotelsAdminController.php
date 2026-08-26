@@ -39,8 +39,9 @@ class HotelsAdminController extends Controller
         $this->middleware(['auth','verified','type:admin']);
     }
 
-    private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
+    private function redirectToHotelsIndexWithError(string $message = null)
     {
+        $message = $message ?? __('messages.You are not authorized to perform this action.');
         return redirect()->route('admin.hotels.index')->with('error', $message);
     }
 
@@ -74,21 +75,6 @@ class HotelsAdminController extends Controller
     $normal_prices = HotelPrice::notExpired($queryDate)->orderBy('end_date', 'desc')->get();
     $promos = HotelPromo::notExpired($queryDate)->orderBy('book_periode_end', 'desc')->get();
     $packages = HotelPackage::notExpired($queryDate)->orderBy('stay_period_end', 'desc')->get();
-
-    foreach ($hotels as $hotel) {
-        if ($hotel->prices->isEmpty() && $hotel->promos->isEmpty() && $hotel->packages->isEmpty()) {
-            foreach ($hotel->rooms as $room) {
-                if ($room->status == "Active") {
-                    $room->status = "Draft";
-                    $room->save();
-                }
-            }
-            if ($hotel->status == "Active") {
-                $hotel->status = "Draft";
-                $hotel->save();
-            }
-        }
-    }
 
     return view('backend.operations.hotels.index', compact(
         'hotels', 'cactivehotels', 'archivehotels', 'drafthotels', 
@@ -188,7 +174,7 @@ class HotelsAdminController extends Controller
 // View Hotel Edit =============================================================================================================>
     public function view_edit_hotel($id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels=Hotels::findOrFail($id);
             $usdrates=UsdRates::where('name','USD')->first();
             return view('backend.operations.hotels.forms.edit',[
@@ -202,7 +188,7 @@ class HotelsAdminController extends Controller
 // View Add Hotel Price =============================================================================================================>
     public function view_add_hotel_price($id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels=Hotels::findOrFail($id);
             $usdrates=UsdRates::where('name','USD')->first();
             $rooms = HotelRoom::where('hotels_id','=',$id)->orderBy('created_at', 'desc')->get();
@@ -227,7 +213,7 @@ class HotelsAdminController extends Controller
 // View Room Edit =============================================================================================================>
     public function view_edit_room($id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $room=HotelRoom::findOrFail($id);
             $hotel=Hotels::where('id','=', $room->hotels_id)->first();
             $roomViews = RoomView::all();
@@ -242,7 +228,7 @@ class HotelsAdminController extends Controller
 // View Room Edit =============================================================================================================>
     public function view_edit_wedding_venue($id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $wedding_venue=WeddingVenues::findOrFail($id);
             $hotel=Hotels::where('id','=', $wedding_venue->hotels_id)->first();
             return view('backend.operations.weddings.forms.venue-edit',[
@@ -255,7 +241,7 @@ class HotelsAdminController extends Controller
 
 // View Add Hotels =========================================================================================>
     public function view_add_hotel(){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels = Hotels::all();
             return view('backend.operations.hotels.forms.create',[
             ])->with('hotels',$hotels);
@@ -266,7 +252,7 @@ class HotelsAdminController extends Controller
 
 // View Edit Galery =============================================================================================================>
     public function view_edit_galery_hotel($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels=Hotels::findOrFail($id);
             return view('backend.operations.hotels.forms.gallery-edit')->with('hotels',$hotels);
         }else{
@@ -275,7 +261,7 @@ class HotelsAdminController extends Controller
     }
 // View Add Room =========================================================================================>
     public function view_add_room($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels=Hotels::findOrFail($id);
             $usdrates=UsdRates::where('name','USD')->first();
             return view('backend.operations.hotels.forms.room-create',[
@@ -287,7 +273,7 @@ class HotelsAdminController extends Controller
     }
 // View Add Wedding Venue =========================================================================================>
     public function view_add_wedding_venue($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels=Hotels::findOrFail($id);
             $usdrates=UsdRates::where('name','USD')->first();
             return view('backend.operations.weddings.forms.venue-create',[
@@ -300,7 +286,7 @@ class HotelsAdminController extends Controller
 
 // View Add Promo =============================================================================================================>
     public function view_add_promo($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotel=Hotels::findOrFail($id);
             $rooms = HotelRoom::where('hotels_id', $id)->get();
             return view('backend.operations.hotels.forms.promo-create')->with('hotel',$hotel);
@@ -309,28 +295,9 @@ class HotelsAdminController extends Controller
         }
     }
 
-    public function view_edit_hotel_price($id)
-    {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $price = HotelPrice::with(['rooms'])->findOrFail($id);
-            $hotels = Hotels::findOrFail($price->hotels_id);
-            $rooms = HotelRoom::where('hotels_id', $hotels->id)->orderBy('created_at', 'desc')->get();
-            $usdrates = UsdRates::where('name', 'USD')->first();
-
-            return view('backend.operations.hotels.forms.normal-price-edit', [
-                'price' => $price,
-                'hotels' => $hotels,
-                'rooms' => $rooms,
-                'usdrates' => $usdrates,
-            ]);
-        }else{
-            return $this->redirectToHotelsIndexWithError();
-        }
-    }
-
     public function view_edit_promo($id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $promo = HotelPromo::findOrFail($id);
             $hotel = Hotels::with('rooms')->findOrFail($promo->hotels_id);
             $rooms = HotelRoom::where('hotels_id', $hotel->id)->orderBy('created_at', 'desc')->get();
@@ -347,7 +314,7 @@ class HotelsAdminController extends Controller
 
     public function view_add_package($id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotel = Hotels::with('rooms')->findOrFail($id);
             $rooms = HotelRoom::where('hotels_id', $hotel->id)->orderBy('created_at', 'desc')->get();
 
@@ -362,7 +329,7 @@ class HotelsAdminController extends Controller
 
     public function view_edit_package($id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $package = HotelPackage::with(['room'])->findOrFail($id);
             $hotel = Hotels::with('rooms')->findOrFail($package->hotels_id);
             $rooms = HotelRoom::where('hotels_id', $hotel->id)->orderBy('created_at', 'desc')->get();
@@ -377,37 +344,9 @@ class HotelsAdminController extends Controller
         }
     }
 
-    public function view_add_additional_charge($id)
-    {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $hotel = Hotels::findOrFail($id);
-
-            return view('backend.operations.hotels.forms.additional-charge-create', [
-                'hotel' => $hotel,
-            ]);
-        }else{
-            return $this->redirectToHotelsIndexWithError();
-        }
-    }
-
-    public function view_edit_additional_charge($id)
-    {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $additionalCharge = OptionalRate::findOrFail($id);
-            $hotel = Hotels::findOrFail($additionalCharge->service_id ?? $additionalCharge->hotels_id);
-
-            return view('backend.operations.hotels.forms.additional-charge-edit', [
-                'additionalCharge' => $additionalCharge,
-                'hotel' => $hotel,
-            ]);
-        }else{
-            return $this->redirectToHotelsIndexWithError();
-        }
-    }
-    
 // Function Add Hotels =========================================================================================>
     public function func_add_hotel(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $validated = $request->validate([
                 'name' => 'required|max:255',
@@ -485,7 +424,7 @@ class HotelsAdminController extends Controller
     }
 // Function Add Contract =========================================================================================>
 public function func_add_contract(Request $request){
-    if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+    if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
         if ($request->hasFile("file_name")) {
             $userId = auth()->id();
             $request->validate([
@@ -543,7 +482,7 @@ public function func_add_contract(Request $request){
 
 // Function Add Room =========================================================================================>
     public function func_add_room(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             if($request->hasFile("cover")){
                 $file=$request->file("cover");
@@ -612,7 +551,7 @@ public function func_add_contract(Request $request){
 
 // ADD PRICES ==================================================================================================================================================>
     public function func_add_price(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $validated = $request->validate([
                 'hotels_id' => 'required',
@@ -642,73 +581,15 @@ public function func_add_contract(Request $request){
                     "author" =>$userId, 
                 ]);
                 $price->save();
-                // @dd($price);
             }
             return $this->redirectToHotelDetail($request->hotels_id, 'normalPrice')->with('success', 'Price added successfully');
         }else{
             return $this->redirectToHotelsIndexWithError();
         }
     }
-// Function Add Additional Charge =========================================================================================>
-    public function func_add_additional_charge(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $userId = auth()->id();
-            $service = "Hotel";
-            $validated = $request->validate([
-                'hotel_id' => 'required',
-                'type' => 'required',
-                'name' => 'required',
-                'markup' => 'required',
-                'contract_rate' => 'required',
-                'description' => 'nullable',
-            ]);
-            $hotelId = $request->service_id ?? $request->hotel_id;
-            $mandatory = (int) $request->mandatory === 1 ? 1 : 0;
-            $mandatory_start = $mandatory && $request->mandatory_start ? date('Y-m-d', strtotime($request->mandatory_start)) : null;
-            $mandatory_end = $mandatory && $request->mandatory_end ? date('Y-m-d', strtotime($request->mandatory_end)) : null;
-            $optional_rate =new OptionalRate([
-                "type"=>$request->type,
-                "hotels_id"=>$hotelId,
-                "name"=>$request->name,
-                "service"=>$service,
-                "service_id"=>$hotelId,
-                "markup" =>$request->markup,
-                "mandatory" =>$mandatory,
-                "must_buy_start" =>$mandatory_start,
-                "must_buy_end" =>$mandatory_end,
-                "contract_rate" =>$request->contract_rate,
-                "description" =>$request->description,
-                "description_traditional" =>$request->description_traditional,
-                "description_simplified" =>$request->description_simplified,
-            ]);
-            $optional_rate->save();
-
-            // USER LOG
-            $action = "Add Additional Charge";
-            $service = "Hotel";
-            $subservice = "Additional Charge";
-            $page = "detail-hotel#additional-charge";
-            $note = "Add optional rate to Hotel id : ".$hotelId.", Optional rate id: ".$optional_rate->id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$optional_rate->id,
-                "page"=>$page,
-                "user_id"=>$userId,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return $this->redirectToHotelDetail($hotelId, 'additional-charge')->with('success', 'Additional Charge added successfully');
-        }else{
-            return $this->redirectToHotelsIndexWithError();
-        }
-    }
-    
     // Function Add Promo =========================================================================================>
     public function func_add_promo(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $validated = $request->validate([
                 'hotels_id' => 'required',
@@ -770,7 +651,7 @@ public function func_add_contract(Request $request){
     
     // Function Add Package =========================================================================================>
     public function func_add_package(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $status = "Draft";
             $stay_period_start = date('Y-m-d', strtotime($request->stay_period_start));
@@ -797,7 +678,6 @@ public function func_add_contract(Request $request){
                 "author"=>$userId,
                 "status"=>$status,
             ]);
-            //@dd($package);
             $package->save();
             // USER LOG
             $action = "Add Package";
@@ -825,7 +705,7 @@ public function func_add_contract(Request $request){
     
     // Function Update Hotel =============================================================================================================>
     public function func_edit_hotel(Request $request, $id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $hotel=Hotels::findOrFail($id);
             $service="Hotel";
@@ -841,16 +721,6 @@ public function func_add_contract(Request $request){
                 
             }
 
-            if($request->hasFile("contract")){
-                if (File::exists("storage/hotels/hotels-contract/".$hotel->contract)) {
-                    File::delete("storage/hotels/hotels-contract/".$hotel->contract);
-                }
-                $file=$request->file("contract");
-                $hotel->contract=time()."_".$file->getClientOriginalName();
-                $file->move("storage/hotels/hotels-contract/",$hotel->contract);
-                $request['contract']=$hotel->contract;
-            }
-            $max_stay = 360;
             $hotel->update([
                 "name"=>$request->name,
                 "region"=>$request->region,
@@ -868,14 +738,14 @@ public function func_add_contract(Request $request){
                 "additional_info_simplified"=>$request->additional_info_simplified,
                 "status"=>$request->status,
                 "web"=>$request->web,
-                "contract"=>$hotel->contract,
+                "map"=>$request->map,
                 "cover" =>$hotel->cover,
                 "cancellation_policy"=>$request->cancellation_policy,
                 "cancellation_policy_traditional"=>$request->cancellation_policy_traditional,
                 "cancellation_policy_simplified"=>$request->cancellation_policy_simplified,
                 "author_id"=>$userId,
                 "min_stay" =>$request->min_stay,
-                "max_stay" =>$max_stay,
+                "max_stay" =>$request->max_stay,
                 "airport_distance" =>$request->airport_distance,
                 "airport_duration" =>$request->airport_duration,
             ]);
@@ -905,7 +775,7 @@ public function func_add_contract(Request $request){
     
     // Function Edit room =============================================================================================================>
     public function func_edit_room(Request $request, $id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $room=HotelRoom::findOrFail($id);
             $hotel_id=$room->hotels_id;
@@ -970,7 +840,6 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            // return dd($room);
             return $this->redirectToHotelDetail($hotel_id, 'rooms')->with('success','The room has been updated!');
         }else{
             return $this->redirectToHotelsIndexWithError();
@@ -980,7 +849,7 @@ public function func_add_contract(Request $request){
     
     // Function Edit Price =============================================================================================================>
     public function func_edit_price(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $price=HotelPrice::findOrFail($id);
             $hotel_id=$request->hotels_id;
@@ -1021,84 +890,9 @@ public function func_add_contract(Request $request){
             return $this->redirectToHotelsIndexWithError();
         }
     }
-// Function Edit Additional Charge =============================================================================================================>
-    public function func_edit_additional_charge(Request $request, $id)
-    {
-        if (!Gate::allows('posDev') && !Gate::allows('posAuthor')) {
-            return $this->redirectToHotelsIndexWithError();
-        }
-
-        $request->validate([
-            'type' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'service_id' => 'required|integer',
-            'description' => 'nullable|string',
-            'description_traditional' => 'nullable|string',
-            'description_simplified' => 'nullable|string',
-            'mandatory' => 'required|boolean',
-            'mandatory_start' => 'nullable|date',
-            'mandatory_end' => 'nullable|date|after_or_equal:mandatory_start',
-            'markup' => 'nullable|numeric',
-            'contract_rate' => 'nullable|numeric',
-            'author' => 'required|integer',
-        ]);
-        $userId = auth()->id();
-        $optionalRate = OptionalRate::findOrFail($id);
-        $now = Carbon::now()->startOfDay();
-        $service = "Hotel";
-
-        // Penentuan Mandatory
-        $mandatory = 0;
-        $mandatory_start = null;
-        $mandatory_end = null;
-
-        if ($request->mandatory) {
-            $ms_date = Carbon::parse($request->mandatory_start)->startOfDay();
-            $me_date = Carbon::parse($request->mandatory_end)->startOfDay();
-
-            if ($ms_date->greaterThanOrEqualTo($now) && $me_date->greaterThanOrEqualTo($now)) {
-                $mandatory = 1;
-                $mandatory_start = $ms_date->toDateString();
-                $mandatory_end = $me_date->toDateString();
-            }
-        }
-
-        // Update data
-        $optionalRate->update([
-            'type' => $request->type,
-            'name' => $request->name,
-            'service' => $service,
-            'service_id' => $request->service_id,
-            'description' => $request->description,
-            'description_traditional' => $request->description_traditional,
-            'description_simplified' => $request->description_simplified,
-            'mandatory' => $mandatory,
-            'hotels_id' => $request->service_id,
-            'must_buy_start' => $mandatory_start,
-            'must_buy_end' => $mandatory_end,
-            'markup' => $request->markup,
-            'contract_rate' => $request->contract_rate,
-        ]);
-
-        // Logging user
-        UserLog::create([
-            'action' => 'Update Additional Charge',
-            'service' => $service,
-            'subservice' => 'Additional Charge',
-            'subservice_id' => $id,
-            'page' => 'detail-hotel#additional-charge',
-            'user_id' => $userId,
-            'user_ip' => $request->ip(),
-            'note' => 'Update optional rate to Hotel id : ' . $request->service_id,
-        ]);
-
-        return $this->redirectToHotelDetail($request->service_id, 'additional-charge')
-            ->with('success', 'The Additional Charge has been updated!');
-    }
-
     // Function Edit Contract =============================================================================================================>
     public function func_edit_hotel_contract(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $contract=Contract::findOrFail($id);
             $period_start = date('Y-m-d', strtotime($request->period_start));
@@ -1145,7 +939,7 @@ public function func_add_contract(Request $request){
 
 // Function Edit Promo =============================================================================================================>
     public function func_edit_promo(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $promo=HotelPromo::findOrFail($id);
             $hotel_id=$request->hotels_id;
@@ -1198,7 +992,6 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            // return dd($promo);
             return $this->redirectToHotelDetail($hotel_id, 'promo')->with('success','The Promo has been updated!');
         }else{
             return $this->redirectToHotelsIndexWithError();
@@ -1207,7 +1000,7 @@ public function func_add_contract(Request $request){
 
 // Function Edit Package =============================================================================================================>
     public function func_edit_package(Request $request, $id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $userId = auth()->id();
             $package=HotelPackage::findOrFail($id);
             $hotel_id=$request->hotels_id;
@@ -1237,7 +1030,6 @@ public function func_add_contract(Request $request){
                 "author"=>$userId,
                 "status"=>$request->status,
             ]);
-            // dd($package);
             // USER LOG
             $action = "Update Package";
             $service = "Hotel";
@@ -1255,7 +1047,6 @@ public function func_add_contract(Request $request){
                 "note" =>$note, 
             ]);
             $user_log->save();
-            // return dd($package);
             return $this->redirectToHotelDetail($hotel_id, 'package')->with('success','The Package has been updated!');
         }else{
             return $this->redirectToHotelsIndexWithError();
@@ -1265,7 +1056,7 @@ public function func_add_contract(Request $request){
 // function Tour Remove =============================================================================================================>
     public function remove_hotel(Request $request,$id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotel=Hotels::findOrFail($id);
             $userId = auth()->id();
             $status = "Removed";
@@ -1296,7 +1087,7 @@ public function func_add_contract(Request $request){
     }
 // Function Delete Hotel =============================================================================================================>
     public function destroy_hotel($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels=Hotels::findOrFail($id);
             $service="Hotel";
             $action="Delete";
@@ -1327,7 +1118,7 @@ public function func_add_contract(Request $request){
     
 // Function Delete Room =============================================================================================================>
     public function destroy_room(Request $request, $id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $room=HotelRoom::findOrFail($id);
             $userId = auth()->id();
             $hotel= Hotels::where('id','=',$room->hotels_id)->first();
@@ -1362,7 +1153,7 @@ public function func_add_contract(Request $request){
 
 // Function Delete Price =============================================================================================================>
     public function destroy_price(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $price=HotelPrice::findOrFail($id);
             $hotel= Hotels::where('id','=',$price->hotels_id)->first();
             $room=HotelRoom::where('id','=',$price->rooms_id)->first();
@@ -1390,38 +1181,9 @@ public function func_add_contract(Request $request){
             return $this->redirectToHotelsIndexWithError();
         }
     }
-// Function Delete Additional Charge =============================================================================================================>
-    public function delete_additional_charge(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $additional_charge=OptionalRate::findOrFail($id);
-            $userId = auth()->id();
-            // USER LOG
-            $action = "Remove";
-            $service = "Hotel";
-            $subservice = "Additional Charge";
-            $page = "detail-hotel#additional-charge";
-            $note = "Remove optional rate on Hotel id : ".$request->hotels_id.", Optional rate id : ".$id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$id,
-                "page"=>$page,
-                "user_id"=>$userId,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            $additional_charge->delete();
-            return back()->with('success','The Additional Charge has been successfully deleted!');
-        }else{
-            return $this->redirectToHotelsIndexWithError();
-        }
-    }
-
     // Function Delete Promo =============================================================================================================>
     public function destroy_promo(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $promo=HotelPromo::findOrFail($id);
             $userId = auth()->id();
             // USER LOG
@@ -1450,7 +1212,7 @@ public function func_add_contract(Request $request){
 
     // Function Delete Package =============================================================================================================>
     public function destroy_package(Request $request, $id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $package=HotelPackage::findOrFail($id);
             // USER LOG
             $action = "Remove";
@@ -1479,7 +1241,7 @@ public function func_add_contract(Request $request){
 
 // Function Delete Hotel Galery  =============================================================================================================>
     public function delete_image_hotel($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $images=HotelsImages::findOrFail($id);
             if (File::exists("storage/hotels/hotels-galery/".$images->image)) 
             {
@@ -1494,7 +1256,7 @@ public function func_add_contract(Request $request){
 
 // Function Delete Hotel Cover =============================================================================================================>
     public function delete_cover_hotel($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $cover=Hotels::findOrFail($id)->cover;
             if (File::exists("storage/hotels/hotels-cover/".$cover)) 
             {
@@ -1507,7 +1269,7 @@ public function func_add_contract(Request $request){
     }
 // Function Delete Hotel Contract =============================================================================================================>
     public function delete_contract(Request $request, $id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
+        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $contract=Contract::findOrFail($id);
             $userId = auth()->id();
             if (File::exists("storage/hotels/hotels-contract/".$request->file_name)) 

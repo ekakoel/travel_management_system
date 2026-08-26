@@ -19,6 +19,6 @@ class Position
         if ($request->user()->position == $position){
             return $next($request);
         }
-        return redirect("/dashboard")->with('error','Anda Tidak diijinkan mengakses halaman tersebut');
+        return redirect("/dashboard")->with('error_messages',__('messages.You are not authorized to access this page, please contact the system developer for confirmation!'));
     }
 }

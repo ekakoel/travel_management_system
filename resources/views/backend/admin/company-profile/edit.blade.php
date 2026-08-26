@@ -11,7 +11,7 @@
 @endpush
 
 @section('content')
-    @can('posDev')
+    @canany(['posDev','posAdm'])
         <div class="mobile-menu-overlay"></div>
         <main class="main-container company-profile-page">
             <div class="pd-ltr-20">
@@ -25,7 +25,7 @@
                 <section class="backend-page-toolbar company-profile-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Company Profile</li>
                         </ol>
                     </nav>
@@ -233,5 +233,5 @@
                 @include('layouts.footer')
             </div>
         </main>
-    @endcan
+    @endcanany
 @endsection

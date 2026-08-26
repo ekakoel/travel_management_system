@@ -9,7 +9,7 @@
 
     @canany(['posDev','posAuthor'])
         <div class="backend-detail-side-actions">
-            <a href="{{ route('admin.hotels.rooms.create', $hotel->id) }}" class="backend-toolbar-action">
+            <a href="{{ route('admin.hotels.room.create', $hotel->id) }}" class="backend-toolbar-action">
                 <i class="fa fa-bed"></i>
                 Add Room
             </a>
@@ -25,10 +25,10 @@
                 <i class="fa fa-cubes"></i>
                 Add Package
             </a>
-            <a href="{{ route('admin.hotels.additional-charges.create', $hotel->id) }}" class="backend-toolbar-action">
+            <button type="button" class="backend-toolbar-action" data-toggle="modal" data-target="#hotelAdditionalChargeAdd{{ $hotel->id }}">
                 <i class="fa fa-plus-circle"></i>
                 Add Additional Charge
-            </a>
+            </button>
         </div>
     @else
         <div class="backend-empty-state backend-empty-state--compact">

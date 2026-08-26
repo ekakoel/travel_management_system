@@ -3,7 +3,6 @@
 namespace App\Services\Tours;
 
 use App\Models\ActionLog;
-use App\Models\Partners;
 use App\Models\TourType;
 use App\Models\Tours;
 use App\Support\MoneyFormatter;
@@ -51,6 +50,7 @@ class TourInventoryService
         $now = Carbon::now();
         $tour = Tours::with([
             'images',
+            'locations' => fn ($query) => $query->ordered(),
             'type',
             'prices' => fn ($query) => $query->with('verifier')->orderBy('min_qty')->orderBy('valid_from'),
         ])->findOrFail($tourId);
@@ -77,16 +77,16 @@ class TourInventoryService
     public function formOptions(): array
     {
         return [
-            'tours' => Tours::all(),
-            'partners' => Partners::all(),
-            'types' => TourType::all(),
+            'types' => TourType::query()->orderBy('type')->get(),
         ];
     }
 
     public function editData(int $tourId): array
     {
         return array_merge($this->formOptions(), [
-            'tour' => Tours::with(['locations' => fn ($query) => $query->ordered()])->findOrFail($tourId),
+            'tour' => Tours::with(['locations' => fn ($query) => $query->ordered()])
+                ->withCount(['locations', 'prices', 'images'])
+                ->findOrFail($tourId),
             'usdrates' => null,
         ]);
     }

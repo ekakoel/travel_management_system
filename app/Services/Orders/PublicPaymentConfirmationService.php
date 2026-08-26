@@ -90,8 +90,7 @@ class PublicPaymentConfirmationService
 
     public function detailUrl(Orders $order): string
     {
-        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)
-            || $order->service === Orders::PUBLIC_ACTIVITY_SERVICE) {
+        if (in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)) {
             return route('view.detail-order-hotel', ['id' => $order->id]);
         }
 
@@ -99,10 +98,18 @@ class PublicPaymentConfirmationService
             return route('view.detail-order-villa', ['id' => $order->id]);
         }
 
+        if ($order->service === Orders::PUBLIC_ACTIVITY_SERVICE) {
+            return route('view.detail-order-activity', ['id' => $order->id]);
+        }
+
         if ($order->service === Orders::PUBLIC_TRANSPORT_SERVICE) {
             return route('view.detail-order-transport', ['id' => $order->id]);
         }
 
-        return route('view.detail-order-tour', ['id' => $order->id]);
+        if ($order->service === Orders::PUBLIC_TOUR_SERVICE) {
+            return route('view.detail-order-tour', ['id' => $order->id]);
+        }
+
+        return route('view.detail-order', ['id' => $order->id]);
     }
 }

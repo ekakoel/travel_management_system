@@ -27,13 +27,13 @@
     $statusTone = $statusToneMap[$order->status] ?? 'default';
     $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
     $serviceLabel = __('messages.' . $order->service) !== 'messages.' . $order->service ? __('messages.' . $order->service) : $order->service;
-    $packageName = trim((string) ((data_get($activity, $langName) ?: $activity?->name) ?: ($order->servicename ?: $order->subservice)));
+    $packageName = trim((string) ((data_get($activity, $langName) ?: $activity?->name) ?: ($order->subservice ?: $order->servicename)));
     $packageType = trim((string) ($activity?->type ?: $order->service_type));
     $durationLabel = trim((string) ($activity?->duration ?: $order->duration));
     $profileIncomplete = Auth::user()->email == '';
     $isEditable = in_array($order->status, ['Draft', 'Invalid'], true);
     $canDelete = in_array($order->status, ['Draft', 'Invalid', 'Rejected'], true);
-    $guestRows = ($order->relationLoaded('guests') ? $order->guests : $order->guests()->get())
+    $guestRows = ($order->relationLoaded('guests') ? $order->guests : collect())
         ->filter(function ($guest) {
             return collect([
                 $guest->name,
@@ -43,12 +43,13 @@
             ])->contains(fn ($value) => trim((string) $value) !== '');
         })
         ->values();
+    $guestDetailSnapshot = preg_replace('/(<li\b[^>]*>\s*)\d+\.\s*/i', '$1', (string) $order->guest_detail);
     $itineraryContent = trim((string) ($packageOverviewItinerary ?? $order->itinerary ?: ($generatedActivityItinerary ?? '')));
-    $destinationsContent = trim((string) ($order->destinations ?: data_get($activity, $langPackageHighlights) ?: $activity->package_highlights));
-    $includeContent = trim((string) (data_get($order, $langInclude) ?: $order->include ?: data_get($activity, $langInclude) ?: $activity->include));
-    $excludeContent = trim((string) (data_get($order, $langExclude) ?: $order->exclude ?: data_get($activity, $langExclude) ?: $activity->exclude));
-    $additionalInfoContent = trim((string) ($packageOverviewAdditionalInfo ?? $order->additional_info ?: data_get($activity, $langAdditionalInfo) ?: $activity->additional_info));
-    $cancellationPolicyContent = trim((string) ($order->cancellation_policy ?: data_get($activity, $langCancellationPolicy) ?: $activity->cancellation_policy));
+    $destinationsContent = trim((string) ($order->destinations ?: data_get($activity, $langPackageHighlights) ?: $activity?->package_highlights));
+    $includeContent = trim((string) (data_get($order, $langInclude) ?: $order->include ?: data_get($activity, $langInclude) ?: $activity?->include));
+    $excludeContent = trim((string) (data_get($order, $langExclude) ?: $order->exclude ?: data_get($activity, $langExclude) ?: $activity?->exclude));
+    $additionalInfoContent = trim((string) ($packageOverviewAdditionalInfo ?? $order->additional_info ?: data_get($activity, $langAdditionalInfo) ?: $activity?->additional_info));
+    $cancellationPolicyContent = trim((string) ($order->cancellation_policy ?: data_get($activity, $langCancellationPolicy) ?: $activity?->cancellation_policy));
     $orderNotice = match ($order->status) {
         'Pending' => __('messages.We have received your order, we will contact you as soon as possible to validate the order!'),
         'Rejected', 'Invalid' => trim((string) $order->msg) ?: __('messages.Please make sure all the data is correct before you submit the order!'),
@@ -65,21 +66,21 @@
     $bookingInfo = [
         ['label' => __('messages.Order No'), 'value' => $order->orderno],
         ['label' => __('messages.Order Date'), 'value' => dateTimeFormat($order->created_at)],
-        ['label' => __('messages.Activity Package'), 'value' => $packageName ?: '-'],
+        ['label' => __('messages.Activity'), 'value' => $packageName ?: '-'],
         ['label' => __('messages.Type'), 'value' => $packageType ?: '-'],
         ['label' => __('messages.Duration'), 'value' => $durationLabel ?: '-'],
     ];
     $logisticsInfo = [
-        ['label' => __('messages.Activity Start'), 'value' => dateFormat($order->checkin)],
-        ['label' => __('messages.Activity End'), 'value' => dateFormat($order->checkout)],
+        ['label' => __('messages.Activity Start'), 'value' => $order->checkin ? dateTimeFormat($order->checkin) : '-'],
+        ['label' => __('messages.Activity End'), 'value' => $order->checkout ? dateTimeFormat($order->checkout) : '-'],
         ['label' => __('messages.Pick up location'), 'value' => $order->pickup_location ?: '-'],
         ['label' => __('messages.Drop off location'), 'value' => $order->dropoff_location ?: '-'],
-        ['label' => __('messages.Pickup Date'), 'value' => $order->pickup_date ?: '-'],
-        ['label' => __('messages.Dropoff Date'), 'value' => $order->dropoff_date ?: '-'],
+        ['label' => __('messages.Pickup Date'), 'value' => $order->pickup_date ? dateTimeFormat($order->pickup_date) : '-'],
+        ['label' => __('messages.Dropoff Date'), 'value' => $order->dropoff_date ? dateTimeFormat($order->dropoff_date) : '-'],
     ];
     $snapshotSections = [
         ['title' => __('messages.Itinerary'), 'content' => $itineraryContent],
-        ['title' => __('messages.package_highlights'), 'content' => $destinationsContent],
+        ['title' => __('messages.Package Highlights'), 'content' => $destinationsContent],
         ['title' => __('messages.Include'), 'content' => $includeContent],
         ['title' => __('messages.Exclude'), 'content' => $excludeContent],
         ['title' => __('messages.Additional Information'), 'content' => $additionalInfoContent],
@@ -144,7 +145,7 @@
                         </div>
                         <h1 class="order-detail-title">{{ $packageName ?: $order->orderno }}</h1>
                         <p class="order-detail-text">
-                            {{ $packageType ?: __('messages.Activity Package') }}.
+                            {{ $packageType ?: __('messages.Activity') }}.
                             {{ strip_tags((string) $orderNotice) }}
                         </p>
                     </div>
@@ -218,7 +219,7 @@
                         <section class="order-detail-section">
                             <div class="order-detail-section__header">
                                 <div>
-                                    <div class="order-detail-eyebrow">@lang('messages.Activity Package')</div>
+                                    <div class="order-detail-eyebrow">@lang('messages.Activity')</div>
                                     <h2 class="order-detail-section__title">@lang('messages.Package Overview')</h2>
                                 </div>
                             </div>
@@ -279,8 +280,8 @@
                                         </table>
                                     </div>
                                 @else
-                                    @if (trim(strip_tags((string) $order->guest_detail)) !== '')
-                                        <div class="order-detail-rich">{!! $order->guest_detail !!}</div>
+                                    @if (trim(strip_tags((string) $guestDetailSnapshot)) !== '')
+                                        <div class="order-detail-rich">{!! $guestDetailSnapshot !!}</div>
                                     @else
                                         <div class="order-detail-empty">
                                             <i class="fa-solid fa-users" aria-hidden="true"></i>
@@ -564,7 +565,7 @@
                                     @endif
 
                                     @if ($canSubmitPayment)
-                                        <button type="button" class="ui-btn ui-btn--primary ui-btn--block" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
                                             <i class="fa-solid fa-upload" aria-hidden="true"></i>
                                             @lang('messages.Payment Confirmation')
                                         </button>
@@ -599,63 +600,9 @@
             </div>
         </main>
 
-        @if ($canSubmitPayment)
-            <div class="modal fade" id="payment-confirmation-{{ $order->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content order-detail-modal">
-                        <div class="order-detail-modal__header">
-                            <h3>@lang('messages.Payment Confirmation')</h3>
-                            <button type="button" class="order-detail-modal__close ui-btn ui-btn--icon" data-dismiss="modal" data-bs-dismiss="modal" aria-label="@lang('messages.Close')">
-                                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                        <div class="order-detail-modal__body">
-                            <form id="payment-confirm-{{ $order->id }}" action="{{ route('upload.payment-confirmation', ['id' => $order->id]) }}" method="POST" enctype="multipart/form-data" class="order-detail-upload-form" data-payment-confirmation-form>
-                                @csrf
-
-                                <div class="order-detail-grid">
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Order Number')</span>
-                                        <strong>{{ $order->orderno }}</strong>
-                                    </div>
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Reservation Number')</span>
-                                        <strong>{{ $reservation->rsv_no ?? '-' }}</strong>
-                                    </div>
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Invoice Number')</span>
-                                        <strong>{{ $invoice->inv_no }}</strong>
-                                    </div>
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Due Date')</span>
-                                        <strong>{{ $paymentDeadlineAt ? dateTimeFormat($paymentDeadlineAt) : '-' }}</strong>
-                                    </div>
-                                    <div class="order-detail-info order-detail-info--quote">
-                                        <span>@lang('messages.Amount')</span>
-                                        {{-- <strong>{{ $invoiceGrandTotal }}</strong> --}}
-                                    </div>
-                                </div>
-
-                                <div class="order-detail-alert mt-3">
-                                    @lang('messages.Complete payment and upload the proof within 2 x 24 hours after approval to keep this booking active.')
-                                </div>
-
-                                @include('frontend.home.orders.details.partials.payment-confirmation-fields')
-                            </form>
-                        </div>
-                        <div class="order-detail-modal__footer">
-                            <button type="submit" form="payment-confirm-{{ $order->id }}" class="ui-btn ui-btn--primary" data-processing-label="@lang('messages.Submitting...')">
-                                <i class="fa-solid fa-upload" aria-hidden="true"></i>
-                                @lang('messages.Send')
-                            </button>
-                            <button type="button" class="ui-btn ui-btn--secondary" data-dismiss="modal" data-bs-dismiss="modal">
-                                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                                @lang('messages.Close')
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
+        @include('frontend.home.orders.details.partials.payment-confirmation-modal', [
+            'paymentCanSubmit' => $canSubmitPayment,
+            'paymentAmountDisplay' => $invoiceGrandTotal,
+        ])
     </div>
 @endsection

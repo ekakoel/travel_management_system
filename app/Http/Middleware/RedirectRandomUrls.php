@@ -12,7 +12,6 @@ class RedirectRandomUrls
     public function handle($request, Closure $next)
     {
         $allowedUrls = [
-            // Daftar URL yang diperbolehkan
             '/',
             '/dashboard',
             '/gagal-terhubung',

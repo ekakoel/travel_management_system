@@ -6,7 +6,7 @@
         ? asset('storage/user/profile/' . $currentUser->profileimg)
         : asset('storage/user/profile/default_user_img.png');
     $frontendOnlyPositions = ['agent'];
-    $coreOpsPositions = ['developer', 'author', 'reservation'];
+    $coreOpsPositions = ['developer','administrator', 'author', 'reservation'];
     $weddingOpsPositions = ['weddingRsv', 'weddingDvl', 'weddingAuthor', 'weddingSls'];
     $canAccessWorkspace = in_array($currentPosition, array_merge($coreOpsPositions, $weddingOpsPositions), true);
     $canAccessAdminDashboard = $currentUser && $currentUser->canAccessAdminDashboard();
@@ -141,7 +141,7 @@
                             <div class="dropdown-header">@lang('messages.Dashboard')</div>
                             <a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>@lang('messages.Dashboard')</a>
                             @if ($canAccessWorkspace)
-                                <a class="dropdown-item" href="{{ route('view.admin-panel-main') }}"><i class="fas fa-briefcase me-2"></i>@lang('messages.Admin Panel')</a>
+                                <a class="dropdown-item" href="{{ route('admin.panel-main.view') }}"><i class="fas fa-briefcase me-2"></i>@lang('messages.Admin Panel')</a>
                             @endif
                             @if ($canAccessReservations)
                                 <a class="dropdown-item" href="{{ url('/reservation') }}"><i class="fa fa-calendar-check me-2" aria-hidden="true"></i>@lang('messages.Reservations')</a>

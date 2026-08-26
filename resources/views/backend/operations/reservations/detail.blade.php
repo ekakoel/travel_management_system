@@ -49,7 +49,7 @@
                 <section class="backend-page-toolbar reservation-detail-toolbar">
                     <nav aria-label="{{ __('reservations.breadcrumb') }}">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">{{ __('reservations.admin_panel') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">{{ __('reservations.admin_panel') }}</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('view.reservation') }}">{{ __('reservations.title') }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $reservationOverview['reference'] }}</li>
                         </ol>

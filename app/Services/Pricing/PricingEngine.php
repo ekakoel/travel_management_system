@@ -12,8 +12,10 @@ use Carbon\CarbonImmutable;
 
 final class PricingEngine
 {
-    public const VERSION = 'tour-package-v2';
-    public const ROUNDING_POLICY = 'half-up-v1';
+    private const USD_MINOR_SCALE = 100;
+
+    public const VERSION = 'tour-package-v3';
+    public const ROUNDING_POLICY = 'ceiling-whole-usd-v1';
 
     public function calculate(
         string $service,
@@ -60,21 +62,28 @@ final class PricingEngine
             $tax->percentageScaled,
             100 * $tax->percentageScale
         );
-        $unitPriceIdr = FixedScale::checkedAdd($subtotalIdr, $taxAmountIdr);
+        $rawUnitPriceIdr = FixedScale::checkedAdd($subtotalIdr, $taxAmountIdr);
         $contractRateUsdMinor = $this->idrToUsdMinor($contractRateIdr, $rate);
+        $markupUsdMinor = $markup->currency === Money::USD
+            ? $markup->amount
+            : $this->idrToUsdMinor($markupIdr, $rate);
         $taxAmountUsdMinor = $this->idrToUsdMinor($taxAmountIdr, $rate);
-        $unitPriceUsdMinor = $this->idrToUsdMinor($unitPriceIdr, $rate);
+        $rawUnitPriceUsdMinor = $this->idrToUsdMinor($rawUnitPriceIdr, $rate);
+        $unitPriceUsdMinor = $this->roundUsdMinorUpToWhole($rawUnitPriceUsdMinor);
+        $unitPriceIdr = $this->usdMinorToIdr($unitPriceUsdMinor, $rate);
         $grossTotalIdr = FixedScale::checkedMultiply($unitPriceIdr, $quantity);
-        $grossTotalUsdMinor = $this->idrToUsdMinor($grossTotalIdr, $rate);
+        $grossTotalUsdMinor = FixedScale::checkedMultiply($unitPriceUsdMinor, $quantity);
         [$resolvedCandidates, $selectedDiscount] = $this->resolveDiscounts(
             $discountCandidates,
             $grossTotalIdr,
             $rate
         );
         $discountTotalIdr = $selectedDiscount['amount_idr'] ?? 0;
-        $discountTotalUsdMinor = $this->idrToUsdMinor($discountTotalIdr, $rate);
-        $finalTotalIdr = FixedScale::checkedSubtractNonNegative($grossTotalIdr, $discountTotalIdr);
-        $finalTotalUsdMinor = $this->idrToUsdMinor($finalTotalIdr, $rate);
+        $discountTotalUsdMinor = min($selectedDiscount['amount_usd_minor'] ?? 0, $grossTotalUsdMinor);
+        $finalTotalUsdMinor = $this->roundUsdMinorUpToWhole(
+            FixedScale::checkedSubtractNonNegative($grossTotalUsdMinor, $discountTotalUsdMinor)
+        );
+        $finalTotalIdr = $this->usdMinorToIdr($finalTotalUsdMinor, $rate);
         $calculatedAt ??= CarbonImmutable::now();
 
         return new PricingQuote([
@@ -91,6 +100,7 @@ final class PricingEngine
             'markup_type' => $context['markup_type'] ?? strtolower($markup->currency),
             'markup_input_amount' => $context['markup_input_amount'] ?? null,
             'markup_idr' => $markupIdr,
+            'markup_usd_minor' => $markupUsdMinor,
             'subtotal_idr' => $subtotalIdr,
             'tax_policy_id' => $tax->id,
             'tax_name' => $tax->name,
@@ -108,7 +118,9 @@ final class PricingEngine
             'rate_max_age_seconds' => $rate->maxAgeSeconds,
             'rate_age_seconds' => $rate->ageSeconds,
             'quantity' => $quantity,
+            'raw_unit_price_idr' => $rawUnitPriceIdr,
             'unit_price_idr' => $unitPriceIdr,
+            'raw_unit_price_usd_minor' => $rawUnitPriceUsdMinor,
             'unit_price_usd_minor' => $unitPriceUsdMinor,
             'gross_total_idr' => $grossTotalIdr,
             'gross_total_usd_minor' => $grossTotalUsdMinor,
@@ -150,6 +162,21 @@ final class PricingEngine
             $rate->valueScaled,
             100 * $rate->scale
         );
+    }
+
+    private function roundUsdMinorUpToWhole(int $amountUsdMinor): int
+    {
+        if ($amountUsdMinor <= 0) {
+            return 0;
+        }
+
+        $wholeUsd = intdiv($amountUsdMinor, self::USD_MINOR_SCALE);
+
+        if ($amountUsdMinor % self::USD_MINOR_SCALE !== 0) {
+            $wholeUsd = FixedScale::checkedAdd($wholeUsd, 1);
+        }
+
+        return FixedScale::checkedMultiply($wholeUsd, self::USD_MINOR_SCALE);
     }
 
     private function resolveDiscounts(

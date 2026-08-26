@@ -31,12 +31,15 @@ export default class Gate{
     isDev(){
         return this.user.position === 'developer';
     }
+    isAdm(){
+        return this.user.position === 'administrator';
+    }
     isAgent(){
         return this.user.position === 'agent';
     }
     
     isAdminOrUser(){
-        if(this.user.type === 'user' || this.user.type === 'admin' || this.user.position === 'developer' || this.user.position === 'author' || this.user.position === 'reservation' || this.user.position === 'weddingRsv' || this.user.position === 'weddingDvl' || this.user.position === 'weddingSls' || this.user.position === 'weddingAuthor' || this.user.position === 'agent'){
+        if(this.user.type === 'user' || this.user.type === 'admin' || this.user.position === 'developer' || this.user.position === 'administrator' || this.user.position === 'author' || this.user.position === 'reservation' || this.user.position === 'weddingRsv' || this.user.position === 'weddingDvl' || this.user.position === 'weddingSls' || this.user.position === 'weddingAuthor' || this.user.position === 'agent'){
             return true;
         }
     }

@@ -9,6 +9,7 @@ class Tax extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'name',
         'tax',
     ];
 }

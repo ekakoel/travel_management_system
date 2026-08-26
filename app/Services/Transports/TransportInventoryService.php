@@ -3,6 +3,7 @@
 namespace App\Services\Transports;
 
 use App\Models\BusinessProfile;
+use App\Models\Partners;
 use App\Models\Tax;
 use App\Models\TransportBrand;
 use App\Models\TransportPrice;
@@ -24,12 +25,15 @@ class TransportInventoryService
     public function indexData(): array
     {
         $activeTransports = Transports::with(['images', 'prices'])
+            ->with('partner')
             ->where('status', 'Active')
             ->get();
         $draftTransports = Transports::with(['images', 'prices'])
+            ->with('partner')
             ->where('status', 'Draft')
             ->get();
         $archivedTransports = Transports::with(['images', 'prices'])
+            ->with('partner')
             ->where('status', 'Archived')
             ->get();
         $visibleTransports = $activeTransports->concat($draftTransports)->values();
@@ -54,7 +58,7 @@ class TransportInventoryService
     {
         $tax = $this->tax();
         $usdRate = $this->usdRate();
-        $transport = Transports::with('images')->findOrFail($transportId);
+        $transport = Transports::with(['images', 'partner'])->findOrFail($transportId);
         $prices = TransportPrice::where('transports_id', $transportId)->orderBy('created_at', 'desc')->get();
         $viewModel = new TransportDetailViewModel(
             transport: $transport,
@@ -80,6 +84,14 @@ class TransportInventoryService
     {
         return [
             'transports' => Transports::all(),
+            'partners' => Partners::query()
+                ->notRemoved()
+                ->where(function ($query) {
+                    $query->where('type', 'Transport')
+                        ->orWhere('type', 'Activity & Transport');
+                })
+                ->orderBy('name')
+                ->get(),
             'type' => TransportType::all(),
             'brand' => TransportBrand::all(),
         ];

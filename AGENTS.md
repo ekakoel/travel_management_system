@@ -24,6 +24,8 @@ Before making changes:
 1. Read this `AGENTS.md`.
 2. Read `docs/README.md`.
 3. Read the documentation related to the requested module.
+   For backend Create, Edit, or Detail pages, read
+   `docs/decisions/backend-page-layout-standard.md`.
 4. Inspect the current implementation, routes, controllers, services, models, migrations, Blade files, JavaScript, SCSS, tests, and Git history when relevant.
 5. Treat the current database schema and approved documentation as the source of truth.
 
@@ -85,6 +87,30 @@ When discovering an unrelated issue, report it separately without fixing it.
 
 Never execute or generate destructive actions without explicit approval.
 
+### Absolute Database Preservation Rule
+
+The database must never be reset, wiped, dropped, truncated, recreated, or
+silently re-seeded by Codex.
+
+This rule applies to normal implementation work, verification, automated tests,
+test fixtures, test harnesses, migrations, seeders, artisan commands, shell
+commands, SQL snippets, and any generated code.
+
+Codex must not create or run tests that call `Schema::dropIfExists`,
+`Schema::drop`, `Schema::create` for existing application tables,
+`DB::statement('SET FOREIGN_KEY_CHECKS=0')`, destructive SQL, or any table
+rebuild strategy against the project database.
+
+Before running any database-touching test or command, Codex must verify that it
+uses an isolated disposable test database that is not the user's working
+database. If isolation cannot be proven from local configuration, do not run the
+test or command. Use syntax checks, static checks, route/file inspection, or
+other non-destructive verification instead.
+
+Explicit approval to run a destructive command is not enough by itself when the
+target may be the user's working database. The target database must be clearly
+identified as disposable and isolated first.
+
 Prohibited without explicit approval:
 
 * `php artisan migrate:fresh`
@@ -103,6 +129,10 @@ Prohibited without explicit approval:
 * Running seeders against existing production-like data
 
 Never assume that a local database is disposable.
+
+Never assume that `php artisan test`, PHPUnit, Pest, a feature test, or a unit
+test is safe for the database. Tests can be destructive in this project unless
+their database isolation is verified first.
 
 Before any schema or data operation:
 
@@ -199,6 +229,12 @@ For date and time controls:
 ## 10. Testing Rules
 
 Every implementation must include the most relevant verification.
+
+Database-destructive tests are prohibited unless they are proven to run only
+against an isolated disposable test database. Do not add new tests that rebuild
+application tables with `Schema::dropIfExists` / `Schema::create` as a shortcut.
+Prefer non-database regression tests, static structure tests, service tests with
+mocked dependencies, or manual inspection when database isolation is unclear.
 
 Prioritize:
 

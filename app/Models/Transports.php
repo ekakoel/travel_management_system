@@ -17,6 +17,7 @@ class Transports extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'partner_id',
         'code',
         'type',
         'brand',
@@ -37,6 +38,11 @@ class Transports extends Model
 
     public function images(){
         return $this->hasMany(TransportsImages::class,'transports_id');
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partners::class, 'partner_id');
     }
 
     public function prices(){

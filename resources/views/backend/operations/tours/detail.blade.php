@@ -13,13 +13,13 @@
 @section('content')
     @can('isAdmin')
         <div class="mobile-menu-overlay"></div>
-        <main class="main-container tour-detail-page" data-tour-gallery-base="{{ url('/tours/gallery') }}" data-tour-csrf="{{ csrf_token() }}" data-tour-price-form-context="{{ old('_tour_price_form_context') }}">
+        <main class="main-container tour-detail-page" data-tour-price-form-context="{{ old('_tour_price_form_context') }}">
             <div class="pd-ltr-20">
                 <x-backend.page-hero
                     class="tour-detail-hero"
                     eyebrow="Operations Inventory"
                     title="{{ $tour->name }}"
-                    description="Review tour profile, content completeness, gallery assets, and active package pricing."
+                    description="Review tour profile, content completeness, and active package pricing."
                 >
                     @canany(['posDev','posAuthor'])
                         <x-slot name="action">
@@ -34,7 +34,7 @@
                 <section class="backend-page-toolbar tour-detail-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.tour-packages.index') }}">Tour Packages</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $tour->name }}</li>
                         </ol>
@@ -83,7 +83,7 @@
 
                 <x-backend.detail-layout class="tour-detail-layout">
                     <x-slot name="main">
-                <section class="backend-panel tour-detail-panel m-b-18">
+                <section class="backend-panel tour-detail-panel">
                     <div class="backend-section-header tour-detail-panel__heading">
                         <div>
                             <span class="backend-section-header__label">Tour Profile</span>
@@ -91,6 +91,7 @@
                         </div>
                     </div>
                     <div class="tour-detail-summary">
+                        @php($profileDestinations = $tourDetail->destinations())
                         <figure class="backend-table-card tour-detail-cover">
                             <img
                                 src="{{ asset('storage/tours/tours-cover/' . $tour->cover) }}"
@@ -120,6 +121,42 @@
                             </dl>
                         </article>
 
+                        <article class="backend-table-card tour-detail-content-block">
+                            <div class="backend-table-card__header">
+                                <div>
+                                    <span class="backend-table-card__label">Destinations</span>
+                                    <strong>{{ number_format($profileDestinations->count()) }} stop{{ $profileDestinations->count() === 1 ? '' : 's' }}</strong>
+                                </div>
+                            </div>
+                            <div class="tour-detail-richtext">
+                                @if ($profileDestinations->isEmpty())
+                                    <p class="tour-profile-destinations__empty">No route destinations have been added yet.</p>
+                                @else
+                                    <div class="tour-profile-destination-list">
+                                        @foreach ($profileDestinations as $destination)
+                                            <li>
+                                                <span class="tour-profile-destination-list__number">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                                <div class="tour-profile-destination-list__content">
+                                                    <strong>{{ $destination['name'] }}</strong>
+                                                    <small>
+                                                        @if ($destination['day'] > 1)
+                                                            Day {{ $destination['day'] ?: '-' }}
+                                                        @endif
+                                                        @if ($destination['time'])
+                                                            <span>{{ $destination['time'] }}</span>
+                                                        @endif
+                                                        <span>{{ $destination['type'] }}</span>
+                                                        @unless ($destination['is_active'])
+                                                            <span>Draft</span>
+                                                        @endunless
+                                                    </small>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </article>
                         @foreach ($tourDetail->contentBlocks() as $label => $content)
                             @if (filled($content))
                                 <article class="backend-table-card tour-detail-content-block">
@@ -133,41 +170,6 @@
                                 </article>
                             @endif
                         @endforeach
-                    </div>
-                </section>
-
-                <section class="backend-panel tour-detail-panel m-b-18">
-                    <div class="backend-section-header tour-detail-panel__heading">
-                        <div>
-                            <span class="backend-section-header__label">Gallery</span>
-                            <h2>Tour Gallery</h2>
-                        </div>
-                        @canany(['posDev','posAuthor'])
-                            @include('partials.modal-dropzone', compact('tour'))
-                        @endcanany
-                    </div>
-                    <div class="tour-detail-gallery">
-                        @forelse ($tour->images as $tourImage)
-                            <figure class="backend-table-card tour-detail-gallery__item" id="image-{{ $tourImage->id }}">
-                                <img src="{{ getThumbnail('storage/tours/tour-gallery/' . $tourImage->image, 380, 200) }}" alt="{{ $tour->name }} gallery image" loading="lazy">
-                                @canany(['posDev','posAuthor'])
-                                    <figcaption class="backend-table-actions">
-                                        <button type="button" class="backend-icon-action is-danger" data-tour-gallery-delete="{{ $tourImage->id }}" aria-label="Delete gallery image">
-                                            <i class="fa fa-trash-alt"></i>
-                                        </button>
-                                        <button type="button" class="backend-icon-action" data-tour-gallery-update="{{ $tourImage->id }}" aria-label="Update gallery image">
-                                            <i class="fa fa-pencil-alt"></i>
-                                        </button>
-                                    </figcaption>
-                                @endcanany
-                            </figure>
-                        @empty
-                            <div class="backend-empty-state">
-                                <i class="fa fa-picture-o"></i>
-                                <strong>No gallery images.</strong>
-                                <span>Upload images to improve tour package presentation.</span>
-                            </div>
-                        @endforelse
                     </div>
                 </section>
 
@@ -186,55 +188,39 @@
                         @endcanany
                     </div>
 
-                    <section class="backend-filter-panel tour-detail-price-filter backend-filter-panel--flush">
-                        <label class="backend-filter-field">
-                            <span class="backend-filter-label">Filter by capacity</span>
-                            <span class="backend-filter-search">
-                                <i class="fa fa-search" aria-hidden="true"></i>
-                                <input id="tourPriceSearchCapacity" class="backend-filter-control" type="search" placeholder="Search capacity" data-tour-price-filter="capacity">
-                            </span>
-                        </label>
-                        <label class="backend-filter-field">
-                            <span class="backend-filter-label">Review state</span>
-                            <select class="backend-filter-control" data-tour-price-filter="review">
-                                <option value="">All prices</option>
-                                <option value="needs-review">Needs Review</option>
-                            </select>
-                        </label>
-                    </section>
-
                     <div class="backend-table-wrap tour-detail-table-wrap">
                         <table id="tourPriceTable" class="backend-table tour-detail-price-table">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Pax Tier</th>
-                                    <th>Contract Rate IDR</th>
-                                    <th>Markup Type</th>
-                                    <th>Markup</th>
+                                    <th>Published Rate</th>
                                     <th>Validity</th>
                                     <th>Availability</th>
-                                    <th>Quoteable</th>
-                                    <th>Action</th>
+                                    <th class="backend-table-action-column">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($tourDetail->priceRows() as $row)
                                     @php($price = $row['model'])
-                                    <tr data-tour-price-row data-tour-price-capacity="{{ strtolower($row['capacity']) }}" data-tour-price-review="{{ $row['needs_review'] ? 'needs-review' : '' }}">
+                                    <tr>
                                         <td data-label="#">{{ $loop->iteration }}</td>
                                         <td data-label="Pax Tier">{{ $row['capacity'] }}</td>
-                                        <td data-label="Contract Rate IDR">{{ $price->contract_rate_idr === null ? '-' : 'IDR '.number_format($price->contract_rate_idr, 0, '.', ',') }}</td>
-                                        <td data-label="Markup Type">{{ $row['markup_type'] }}</td>
-                                        <td data-label="Markup">{{ $row['markup_display'] }}</td>
-                                        <td data-label="Validity">{{ $price->valid_from?->format('Y-m-d') ?? '-' }} — {{ $price->valid_until?->format('Y-m-d') ?? '-' }}</td>
+                                        <td data-label="Published Rate">
+                                            @if ($row['price_available'])
+                                                <span class="tour-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
+                                                <small class="tour-detail-rate-idr">{{ currencyFormatIdr($row['published_rate_idr']) }}</small>
+                                            @else
+                                                <span class="tour-detail-rate">-</span>
+                                            @endif
+                                            <button type="button" class="tour-price-calculation-action" data-toggle="modal" data-target="#tourPriceCalculation{{ $price->id }}">
+                                                View calculation
+                                            </button>
+                                        </td>
+                                        <td data-label="Validity">{{ $price->valid_from?->format('Y-m-d') ?? '-' }} - {{ $price->valid_until?->format('Y-m-d') ?? '-' }}</td>
                                         <td data-label="Availability"><span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $row['display_status'] }}</span></td>
-                                        <td data-label="Quoteable">{{ $row['quoteable_status'] }}</td>
                                         <td data-label="Action">
                                             <div class="backend-table-actions">
-                                                <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#detail-price-{{ $price->id }}" aria-label="View price detail">
-                                                    <i class="fa fa-eye"></i>
-                                                </button>
                                                 @canany(['posDev','posAuthor'])
                                                     <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#update-price-{{ $price->id }}" aria-label="Edit price">
                                                         <i class="fa fa-pencil-alt"></i>
@@ -246,13 +232,15 @@
                                                             <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
+                                                @else
+                                                    <span>-</span>
                                                 @endcanany
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9">
+                                        <td colspan="6">
                                             <div class="backend-table-empty">
                                                 <i class="fa fa-tags"></i>
                                                 <strong>No price rows.</strong>
@@ -288,11 +276,6 @@
                                     <small>Operational package duration.</small>
                                 </li>
                                 <li>
-                                    <span>Gallery</span>
-                                    <strong>{{ number_format($tour->images->count()) }} images</strong>
-                                    <small>Visual assets attached to this tour.</small>
-                                </li>
-                                <li>
                                     <span>Price Rows</span>
                                     <strong>{{ number_format(count($tourDetail->priceRows())) }} rows</strong>
                                     <small>Active and draft pricing configurations.</small>
@@ -316,35 +299,59 @@
 
                 @foreach ($tourDetail->priceRows() as $row)
                     @php($price = $row['model'])
-                    <div class="modal fade backend-modal tour-detail-modal" id="detail-price-{{ $price->id }}" tabindex="-1" role="dialog" aria-labelledby="detail-price-title-{{ $price->id }}" aria-hidden="true">
+                    <div class="modal fade backend-modal tour-detail-modal tour-price-calculation-modal" id="tourPriceCalculation{{ $price->id }}" tabindex="-1" role="dialog" aria-labelledby="tourPriceCalculationTitle{{ $price->id }}" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="backend-modal__header">
                                     <div>
-                                        <span class="backend-section-header__label">Price Detail</span>
-                                        <h5 id="detail-price-title-{{ $price->id }}">{{ $tour->name }} | {{ $row['capacity'] }}</h5>
+                                        <span class="backend-section-header__label">Price Calculation</span>
+                                        <h2 id="tourPriceCalculationTitle{{ $price->id }}">{{ $tour->name }} | {{ $row['capacity'] }}</h2>
+                                        <p>{{ $price->valid_from?->format('Y-m-d') ?? '-' }} - {{ $price->valid_until?->format('Y-m-d') ?? '-' }}</p>
                                     </div>
-                                    <span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $row['display_status'] }}</span>
+                                    <div class="backend-modal__header-actions">
+                                        <span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $row['display_status'] }}</span>
+                                        <button type="button" class="backend-modal__close" data-dismiss="modal" aria-label="Close">&times;</button>
+                                    </div>
                                 </div>
                                 <div class="backend-modal__body">
                                     @if (! $row['price_available'])
-                                        <div class="alert alert-warning">
-                                             This row is {{ strtolower($row['display_status']) }} and cannot be quoted or used for a new order. Review its canonical values, validity, pax tier, USD rate, tax policy, and overlapping prices.
+                                        <div class="backend-alert backend-alert--warning">
+                                            This row is {{ strtolower($row['display_status']) }} and cannot currently be quoted. Review canonical values, validity, pax tier, USD rate, tax policy, and overlapping prices.
                                         </div>
                                     @endif
-                                    <dl class="backend-table-card-grid">
-                                        <div><dt>Availability</dt><dd>{{ $row['display_status'] }}</dd></div>
-                                        <div><dt>Quoteable</dt><dd>{{ $row['quoteable_status'] }}</dd></div>
-                                        <div><dt>Contract Rate</dt><dd>{{ $price->contract_rate_idr === null ? '-' : 'IDR '.number_format($price->contract_rate_idr, 0, '.', ',') }}</dd></div>
-                                        <div><dt>Markup Type</dt><dd>{{ $row['markup_type'] }}</dd></div>
-                                        <div><dt>Markup</dt><dd>{{ $row['markup_display'] }}</dd></div>
-                                        <div><dt>Tax</dt><dd>{{ $row['price_available'] ? currencyFormatUsd($row['tax_amount']) : '-' }}</dd></div>
-                                        <div><dt>Price / Pax</dt><dd>{{ $row['price_available'] ? currencyFormatUsd($row['published_rate']) : '-' }}</dd></div>
-                                        <div><dt>Validity</dt><dd>{{ $price->valid_from?->format('Y-m-d') ?? '-' }} — {{ $price->valid_until?->format('Y-m-d') ?? '-' }}</dd></div>
-                                    </dl>
-                                </div>
-                                <div class="backend-modal__footer">
-                                    <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Close</button>
+
+                                    <div class="tour-price-calculation-summary" aria-label="Agent rate summary">
+                                        <div>
+                                            <span>Agent Rate / Published Rate</span>
+                                            <strong>{{ $row['price_available'] ? currencyFormatUsd($row['published_rate']) : '-' }}</strong>
+                                            <small>{{ $row['price_available'] && $row['published_rate_idr'] !== null ? currencyFormatIdr($row['published_rate_idr']) : '-' }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="tour-price-calculation" aria-label="Rate calculation breakdown">
+                                        <div>
+                                            <span>Contract</span>
+                                            <strong>{{ currencyFormatIdr($row['contract_rate_idr'] ?? 0) }}</strong>
+                                            <small>{{ $row['price_available'] ? currencyFormatUsd($row['contract_rate_usd']) : 'USD rate unavailable' }}</small>
+                                        </div>
+                                        <div>
+                                            <span>Markup</span>
+                                            <strong>{{ $row['price_available'] ? currencyFormatUsd($row['markup_usd']) : $row['markup_display'] }}</strong>
+                                            <small>Type: {{ $row['markup_type'] }}</small>
+                                            <small>Calculation: {{ $row['markup_calculation'] }}</small>
+                                            <small>{{ $row['price_available'] && $row['markup_idr'] !== null ? currencyFormatIdr($row['markup_idr']) : $row['markup_type'] }}</small>
+                                        </div>
+                                        <div>
+                                            <span>Tax</span>
+                                            <strong>{{ $row['price_available'] ? currencyFormatUsd($row['tax_amount']) : '-' }}</strong>
+                                            <small>{{ $row['price_available'] && $row['tax_amount_idr'] !== null ? currencyFormatIdr($row['tax_amount_idr']) : '-' }}{{ $row['tax_percent'] !== null ? ' - '.number_format((float) $row['tax_percent'], 2).'%' : '' }}</small>
+                                        </div>
+                                        <div>
+                                            <span>Formula</span>
+                                            <strong>Contract + Markup + Tax</strong>
+                                            <small>Calculated server-side by canonical Tour Package pricing.</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -352,27 +359,27 @@
 
                     @canany(['posDev','posAuthor'])
                         <div class="modal fade backend-modal tour-detail-modal" id="update-price-{{ $price->id }}" tabindex="-1" role="dialog" aria-labelledby="update-price-title-{{ $price->id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="backend-modal__header">
-                                        <div>
-                                            <span class="backend-section-header__label">Edit Price</span>
-                                            <h5 id="update-price-title-{{ $price->id }}">{{ $tour->name }} | {{ $row['capacity'] }}</h5>
-                                        </div>
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="backend-modal__header">
+                                    <div>
+                                        <span class="backend-section-header__label">Edit Price</span>
+                                        <h2 id="update-price-title-{{ $price->id }}">{{ $tour->name }} | {{ $row['capacity'] }}</h2>
                                     </div>
-                                    <div class="backend-modal__body">
-                                         <form id="fedit-price-{{ $price->id }}" action="{{ route('admin.tours.prices.update', [$tour, $price]) }}" method="post">
-                                             @csrf
-                                             @method('put')
-                                             @include('backend.operations.tours.partials.price-fields', ['price' => $price, 'formContext' => 'update:'.$price->id])
-                                        </form>
-                                    </div>
-                                    <div class="backend-modal__footer">
-                                        <button type="submit" form="fedit-price-{{ $price->id }}" class="backend-button backend-button-primary">Update</button>
-                                        <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Close</button>
-                                    </div>
+                                    <button type="button" class="backend-modal__close" data-dismiss="modal" aria-label="Close">&times;</button>
+                                </div>
+                                <div class="backend-modal__body">
+                                    <form id="fedit-price-{{ $price->id }}" action="{{ route('admin.tours.prices.update', [$tour, $price]) }}" method="post">
+                                            @csrf
+                                            @method('put')
+                                            @include('backend.operations.tours.partials.price-fields', ['price' => $price, 'formContext' => 'update:'.$price->id])
+                                    </form>
+                                </div>
+                                <div class="backend-modal__footer">
+                                    <button type="submit" form="fedit-price-{{ $price->id }}" class="backend-button backend-button-primary">Update</button>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     @endcanany
                 @endforeach
@@ -384,8 +391,10 @@
                                 <div class="backend-modal__header">
                                     <div>
                                         <span class="backend-section-header__label">Add Price</span>
-                                        <h5 id="add-price-title">{{ $tour->name }}</h5>
+                                        <h2 id="add-price-title">{{ $tour->name }}</h2>
+                                        <p>Create a pax tier with server-authoritative pricing validation.</p>
                                     </div>
+                                    <button type="button" class="backend-modal__close" data-dismiss="modal" aria-label="Close">&times;</button>
                                 </div>
                                 <div class="backend-modal__body">
                                      <form id="fadd-price-{{ $tour->id }}" action="{{ route('admin.tours.prices.store', $tour) }}" method="post">
@@ -395,7 +404,6 @@
                                 </div>
                                 <div class="backend-modal__footer">
                                     <button type="submit" form="fadd-price-{{ $tour->id }}" class="backend-button backend-button-primary">Add</button>
-                                    <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>

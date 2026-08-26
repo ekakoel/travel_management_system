@@ -2,7 +2,7 @@ body.sidebar-light .backend-detail-layout {
   align-items: start;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-columns: minmax(0, 7fr) minmax(260px, 3fr);
 }
 
 body.sidebar-light .backend-detail-main,
@@ -24,13 +24,23 @@ body.sidebar-light .backend-detail-side {
 }
 
 body.sidebar-light .backend-detail-side-card {
+  display: grid;
+  gap: 0;
+  min-width: 0;
   overflow: hidden;
   padding: 0;
 }
 
 body.sidebar-light .backend-detail-side-card .backend-section-header {
-  margin-bottom: 0;
+  margin-bottom: 8px !important;
   padding: 16px;
+}
+
+body.sidebar-light .backend-detail-side-card__body {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px 16px 16px;
 }
 
 body.sidebar-light .backend-detail-side-list {
@@ -41,7 +51,12 @@ body.sidebar-light .backend-detail-side-list {
   padding: 14px 16px 16px;
 }
 
+body.sidebar-light .backend-detail-side-card__body > .backend-detail-side-list {
+  padding: 0;
+}
+
 body.sidebar-light .backend-detail-side-list li,
+body.sidebar-light .backend-detail-side-list > div,
 body.sidebar-light .backend-detail-side-item {
   background: var(--backend-sidebar-bg-soft);
   border: 1px solid var(--backend-line-soft);
@@ -53,6 +68,7 @@ body.sidebar-light .backend-detail-side-item {
 }
 
 body.sidebar-light .backend-detail-side-list span,
+body.sidebar-light .backend-detail-side-list dt,
 body.sidebar-light .backend-detail-side-item span {
   color: var(--backend-muted-link);
   font-size: 11px;
@@ -62,6 +78,7 @@ body.sidebar-light .backend-detail-side-item span {
 }
 
 body.sidebar-light .backend-detail-side-list strong,
+body.sidebar-light .backend-detail-side-list dd,
 body.sidebar-light .backend-detail-side-item strong,
 body.sidebar-light .backend-detail-side-list small,
 body.sidebar-light .backend-detail-side-item small {
@@ -70,10 +87,16 @@ body.sidebar-light .backend-detail-side-item small {
 }
 
 body.sidebar-light .backend-detail-side-list strong,
+body.sidebar-light .backend-detail-side-list dd,
 body.sidebar-light .backend-detail-side-item strong {
   color: var(--backend-ink);
   font-size: 15px;
   font-weight: 800;
+}
+
+body.sidebar-light .backend-detail-side-list dt,
+body.sidebar-light .backend-detail-side-list dd {
+  margin: 0;
 }
 
 body.sidebar-light .backend-detail-side-list small,
@@ -90,7 +113,8 @@ body.sidebar-light .backend-detail-side-actions {
 
 body.sidebar-light .backend-detail-side-actions .backend-toolbar-action,
 body.sidebar-light .backend-detail-side-actions .backend-page-primary-action,
-body.sidebar-light .backend-detail-side-actions .backend-secondary-action {
+body.sidebar-light .backend-detail-side-actions .backend-secondary-action,
+body.sidebar-light .backend-detail-side-actions .backend-button {
   justify-content: center;
   width: 100%;
 }

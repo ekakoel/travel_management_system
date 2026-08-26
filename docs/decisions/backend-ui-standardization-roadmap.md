@@ -1,7 +1,7 @@
 # Backend UI Standardization Roadmap
 
 Status: active
-Updated: 2026-07-27
+Updated: 2026-08-21
 
 Tracker ringkas standardisasi UI backend/internal.
 
@@ -27,6 +27,10 @@ Tracker ringkas standardisasi UI backend/internal.
 - [x] Mutation form backend memakai shared `initBackendSubmitGuards`, spinner
   inline sejak fase click, associated-button lock, double-submit prevention,
   validation/cancel reset, history reset, serta hook reusable action non-form.
+- [x] Canonical backend Create/Edit/Detail layout standard tersedia melalui
+  `docs/decisions/backend-page-layout-standard.md`, termasuk two-column
+  main/sidebar layout, right sidebar wajib, semantic sections, page actions,
+  dan horizontal translation groups.
 - [x] Spinner action distandarkan sebagai centered overlay yang mempertahankan
   ukuran control dan menyembunyikan konten lama; renderer spinner lokal pada
   Transport Management, Reviews, Footer Manager, dan legacy SPK dihapus.
@@ -34,13 +38,41 @@ Tracker ringkas standardisasi UI backend/internal.
   dan shared Bootstrap 4/5 compatibility adapter `showBackendModal` /
   `closeBackendModal`; informational modal tidak menduplikasi Close di footer.
 - [x] Backend Legacy UI Deep Cleanup dimulai.
+- [x] Reusable backend status toggle tersedia melalui
+  `data-backend-status-toggle`, shared AJAX PATCH handler, CSRF header,
+  `setBackendActionLoading`, `backend-status-toggle` styling, optional paired
+  `backend-status-badge` update, dan compact icon-only mode untuk status
+  sederhana seperti `Active` / `Draft`.
+- [x] Kolom action pada shared `backend-table` distandarkan rata kanan melalui
+  `td[data-label="Action"]`, `td[data-label="Actions"]`,
+  `backend-table-actions`, dan optional `backend-table-action-column` untuk
+  header action baru.
 
 ## Domain Status
 
 - [x] Admin Dashboard menjadi baseline visual backend.
 - [x] Admin Panel/User Manager/Company Profile/Footer Manager/Terms/Reviews/Currency memakai shared backend components secara bertahap.
 - [x] Operations Hotels memakai namespace/backend UI modern, Form Request, service, dan view model.
+- [x] Hotel detail Promotion Price memakai reusable backend status toggle untuk
+  update status `Active` / `Draft` via AJAX tanpa refresh halaman, dengan
+  endpoint PATCH, transaction, authorization, validation, UserLog, dan toggle
+  berlabel langsung di kolom Status tanpa badge status terpisah.
+- [x] Hotel detail Package Price memakai reusable backend status toggle untuk
+  update status `Active` / `Draft` via AJAX tanpa refresh halaman, dengan
+  endpoint PATCH, transaction, authorization, validation, dan UserLog.
 - [x] Operations Activities memakai namespace/backend UI modern, Form Request, service, dan view model.
+- [x] Backend Create Activity menjadi reference implementation awal untuk
+  canonical Create/Edit/Detail layout standard dengan main/sidebar layout,
+  contextual Create sidebar, semantic sections, dan translation group
+  horizontal.
+- [x] Backend Edit Activity memakai canonical Create/Edit/Detail page layout,
+  form grid shared, Edit-specific sidebar, translation group horizontal, cover
+  preview compact, date picker canonical, monetary input shared, dan update
+  flow tervalidasi tanpa hidden-field author.
+- [x] Backend Detail Activity memakai canonical Create/Edit/Detail page layout,
+  Detail-specific sidebar, read-only semantic sections sejajar Create/Edit,
+  translation group horizontal, cover/media summary, dan pricing canonical dari
+  ActivityDetailViewModel.
 - [x] Operations Tours memakai namespace/backend UI modern, Form Request, service, dan view model.
 - [x] Operations Transports memakai namespace/backend UI modern, Form Request, service, dan view model.
 - [x] Drivers dan Guides memakai shared backend components.

@@ -10,7 +10,7 @@ class AdminType
     {
         \Log::info('User Position: ' . auth()->user()->type);
         if (auth()->user()->type !== 'admin') {
-            return redirect('/dashboard');
+            return redirect('/dashboard')->with('error_messages',__('messages.You are not authorized to access this page, please contact the system developer for confirmation!'));
         }
         return $next($request);
     }

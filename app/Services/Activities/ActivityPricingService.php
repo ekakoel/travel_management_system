@@ -37,7 +37,7 @@ class ActivityPricingService
         $calculatedAt ??= CarbonImmutable::now();
         $this->assertEligibility($activity, $guestCount, $activityDate, $calculatedAt);
 
-        $rate = $this->resolvedUsdSellRate ??= $this->rateResolver->resolveUsdSell($calculatedAt);
+        $rate = $this->resolvedUsdSellRate ??= $this->rateResolver->resolveStoredUsdSell($calculatedAt);
         $tax = $this->resolveTax();
         $taxPercentageScaled = FixedScale::parseDecimal(
             $this->normaliseDecimal($tax->tax),
@@ -99,9 +99,7 @@ class ActivityPricingService
         CarbonImmutable $calculatedAt
     ): void
     {
-        if ($activity->status !== 'Active') {
-            throw PricingException::unavailable('ACTIVITY_NOT_ACTIVE');
-        }
+        $this->assertPricingDependencies($activity);
 
         $minimumPax = max((int) ($activity->min_pax ?: 1), 1);
         $capacity = max((int) ($activity->qty ?: 0), 0);
@@ -114,16 +112,24 @@ class ActivityPricingService
             ? CarbonImmutable::parse($activity->validity)->startOfDay()
             : null;
 
-        if ($validUntil !== null && $validUntil->lt($calculatedAt->startOfDay())) {
-            throw PricingException::unavailable('ACTIVITY_EXPIRED');
-        }
-
         if ($validUntil !== null && $activityDate !== null && $activityDate->startOfDay()->gt($validUntil)) {
             throw PricingException::unavailable('ACTIVITY_PRICE_DATE_OUT_OF_VALIDITY');
         }
+    }
 
-        if ($this->wholeAmount($activity->contract_rate, 'contract rate', true) <= 0) {
-            throw PricingException::unavailable('ACTIVITY_PRICE_UNAVAILABLE');
+    private function assertPricingDependencies(Activities $activity): void
+    {
+        if (! filled($activity->getAttribute('contract_rate'))
+            || $this->wholeAmount($activity->contract_rate, 'contract rate', true) <= 0) {
+            throw PricingException::unavailable('MISSING_CONTRACT_RATE', 'Activity contract rate is missing.');
+        }
+
+        if (! filled($activity->getAttribute('markup'))) {
+            throw PricingException::unavailable('MISSING_MARKUP', 'Activity markup is missing.');
+        }
+
+        if (! filled($activity->getAttribute('validity'))) {
+            throw PricingException::unavailable('MISSING_VALID_UNTIL', 'Activity valid until date is missing.');
         }
     }
 
@@ -136,10 +142,7 @@ class ActivityPricingService
         $taxes = Tax::query()->where('name', 'tax')->limit(2)->get();
 
         if ($taxes->count() !== 1) {
-            throw PricingException::tax(
-                $taxes->isEmpty() ? 'ACTIVITY_TAX_MISSING' : 'ACTIVITY_TAX_AMBIGUOUS',
-                'Activity tax configuration is unavailable.'
-            );
+            throw PricingException::tax('MISSING_TAX', 'Activity tax configuration is unavailable.');
         }
 
         return $this->resolvedTax = $taxes->first();

@@ -14,7 +14,7 @@ class GuideController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','verified']);
+        $this->middleware(['auth', 'verified', 'type:admin']);
     }
    
     public function index()
@@ -73,12 +73,12 @@ class GuideController extends Controller
     
     public function destroy(Request $request,$id)
     {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posRsv')) {
+        if (Gate::allows('posDev')) {
             $guide=Guide::findOrFail($id);
             $guide->delete();
             return back()->with('success','Guide has been deleted');
         }else{
-            return redirect()->route('admin.guides.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.guides.index')->with('error','Access Denied!');
         }
     }
 }

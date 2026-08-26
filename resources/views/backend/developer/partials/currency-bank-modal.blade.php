@@ -72,8 +72,7 @@
                     </div>
                 </div>
                 <div class="backend-modal__footer currency-admin-modal__footer">
-                    <button type="button" class="currency-admin-ghost-action" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="currency-admin-primary-action">
+                    <button type="submit" class="backend-button backend-button-primary">
                         <i class="fa fa-check"></i>
                         Save Account
                     </button>

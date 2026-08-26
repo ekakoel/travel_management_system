@@ -71,50 +71,51 @@
                         </article>
                     @endforeach
                 </section>
-
-                <section class="backend-panel admin-registration-access">
-                    <div class="backend-section-header">
-                        <div>
-                            <span class="backend-section-header__label">Access Control</span>
-                            <h2>Registration Access</h2>
-                        </div>
-                        <p>Control public registration availability. When disabled, registration pages and direct submit requests are blocked by backend middleware.</p>
-                    </div>
-
-                    <div class="admin-registration-access__body">
-                        <div class="admin-registration-access__state">
-                            <span class="admin-registration-access__indicator {{ $registrationAccess->status ? 'is-enabled' : 'is-disabled' }}"></span>
+                @can('posDev')
+                    <section class="backend-panel admin-registration-access">
+                        <div class="backend-section-header">
                             <div>
-                                <strong>{{ $registrationAccess->status ? 'Registration Enabled' : 'Registration Disabled' }}</strong>
-                                <small>{{ $registrationAccess->status ? 'Visitors can open registration pages and submit requests.' : 'Visitors cannot open or submit registration from any public endpoint.' }}</small>
+                                <span class="backend-section-header__label">Access Control</span>
+                                <h2>Registration Access</h2>
                             </div>
+                            <p>Control public registration availability. When disabled, registration pages and direct submit requests are blocked by backend middleware.</p>
                         </div>
 
-                        <form action="{{ route('admin-panel.registration-access.update') }}" method="post" class="admin-registration-access__form">
-                            @csrf
-                            @method('PUT')
-                            <button
-                                type="submit"
-                                name="enabled"
-                                value="1"
-                                class="admin-registration-access__button {{ $registrationAccess->status ? 'is-active' : '' }}"
-                                {{ $registrationAccess->status ? 'disabled' : '' }}
-                            >
-                                Enable
-                            </button>
-                            <button
-                                type="submit"
-                                name="enabled"
-                                value="0"
-                                class="admin-registration-access__button {{ ! $registrationAccess->status ? 'is-active' : '' }}"
-                                {{ ! $registrationAccess->status ? 'disabled' : '' }}
-                                data-confirm="Disable public registration? Existing users can still log in, but new registration GET and POST requests will be blocked."
-                            >
-                                Disable
-                            </button>
-                        </form>
-                    </div>
-                </section>
+                        <div class="admin-registration-access__body">
+                            <div class="admin-registration-access__state">
+                                <span class="admin-registration-access__indicator {{ $registrationAccess->status ? 'is-enabled' : 'is-disabled' }}"></span>
+                                <div>
+                                    <strong>{{ $registrationAccess->status ? 'Registration Enabled' : 'Registration Disabled' }}</strong>
+                                    <small>{{ $registrationAccess->status ? 'Visitors can open registration pages and submit requests.' : 'Visitors cannot open or submit registration from any public endpoint.' }}</small>
+                                </div>
+                            </div>
+
+                            <form action="{{ route('admin-panel.registration-access.update') }}" method="post" class="admin-registration-access__form">
+                                @csrf
+                                @method('PUT')
+                                <button
+                                    type="submit"
+                                    name="enabled"
+                                    value="1"
+                                    class="admin-registration-access__button {{ $registrationAccess->status ? 'is-active' : '' }}"
+                                    {{ $registrationAccess->status ? 'disabled' : '' }}
+                                >
+                                    Enable
+                                </button>
+                                <button
+                                    type="submit"
+                                    name="enabled"
+                                    value="0"
+                                    class="admin-registration-access__button {{ ! $registrationAccess->status ? 'is-active' : '' }}"
+                                    {{ ! $registrationAccess->status ? 'disabled' : '' }}
+                                    data-confirm="Disable public registration? Existing users can still log in, but new registration GET and POST requests will be blocked."
+                                >
+                                    Disable
+                                </button>
+                            </form>
+                        </div>
+                    </section>
+                @endcan
 
                 <section class="backend-panel admin-analytics-section" data-traffic-analytics='@json($trafficPeriods)'>
                     <div class="backend-section-header">

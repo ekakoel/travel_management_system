@@ -21,6 +21,12 @@
         ->sortBy('unit_price_usd_minor')
         ->values();
     $lowestRate = $availableTourRates->first()['unit_price_usd'] ?? null;
+    $minimumTourPax = $availableTourRates
+        ->pluck('min_qty')
+        ->filter(fn ($minQty) => filled($minQty))
+        ->map(fn ($minQty) => (int) $minQty)
+        ->filter(fn (int $minQty) => $minQty > 0)
+        ->min();
     $tourDurationDays = max((int) $tour->duration_days, 1);
     $showTourRouteDayTabs = $tourDurationDays > 1;
     $tourMapLocationsByDay = collect($tourMapLocations)->groupBy('day');
@@ -535,7 +541,10 @@
                     data-submission-key="tour-order:{{ $tour->id }}"
                     data-no-rate-label="@lang('tour-detail.no_active_price')"
                     data-price-unavailable-label="@lang('tour-detail.price_temporarily_unavailable')"
+                    data-price-unavailable-on-date-label="@lang('tour-detail.price_unavailable_on_date')"
                     data-loading-price-label="@lang('tour-detail.loading_price')"
+                    data-price-from-label="@lang('messages.Price')"
+                    data-price-pax-suffix="@lang('messages./pax')"
                     data-min-guests="2"
                     data-max-guests="200"
                     data-guest-label="@lang('tour-detail.guest')"
@@ -589,9 +598,15 @@
                                     <strong>{{ dateFormat($now) }}</strong>
                                 </div>
                             </div>
-                            <div class="frontend-order-modal__price-card">
-                                <span>@lang('tour-detail.from')</span>
-                                <strong>{{ $lowestRate ? 'USD '.$lowestRate : '-' }}</strong>
+                            <div class="frontend-order-modal__price-card frontend-order-modal__price-card--split">
+                                <div class="frontend-order-modal__price-card-item">
+                                    <span data-tour-price-card-label>@lang('messages.Price')</span>
+                                    <strong data-tour-price-card-value>{{ $lowestRate ? 'USD '.$lowestRate.__('messages./pax') : '-' }}</strong>
+                                </div>
+                                <div class="frontend-order-modal__price-card-item">
+                                    <span>@lang('tour-detail.minimum_order')</span>
+                                    <strong>{{ $minimumTourPax ? $minimumTourPax.' '.__('messages.pax') : '-' }}</strong>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -672,7 +687,7 @@
                                 </div>
 
                                 <div class="tour-reservation-wizard__actions frontend-order-modal__actions">
-                                    <button type="button" class="btn btn-primary" data-tour-wizard-next>@lang('tour-detail.next_step')</button>
+                                    <button type="button" class="btn btn-primary" data-tour-wizard-next data-tour-requires-price disabled>@lang('tour-detail.next_step')</button>
                                 </div>
                             </div>
 

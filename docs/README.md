@@ -29,6 +29,9 @@ Codex must use this file to locate the documentation relevant to each task.
 * `testing.md`
   Test commands, test database requirements, module test coverage, and release verification.
 
+* `developer-activities.md`
+  Developer activities, create, change, delete on this project.
+
 ## Public Service Modules
 
 * `modules/accommodation.md`
@@ -95,6 +98,10 @@ Active backend operations decisions:
 * `decisions/currency-rate-refresh-standard.md` — canonical USD/CNY/TWD market
   refresh command, midnight schedule, provider validation, atomic update,
   manual override, cache, and deployment-scheduler contract.
+
+* `decisions/backend-page-layout-standard.md` — canonical backend Create,
+  Edit, and Detail page layout contract, including mandatory two-column layout,
+  right sidebar, semantic sections, actions, and translation groups.
 
 ## Documentation Rule
 

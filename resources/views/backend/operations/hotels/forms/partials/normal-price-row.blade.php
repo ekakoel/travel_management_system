@@ -7,7 +7,7 @@
     </div>
 
     <div class="backend-form-field">
-        <label>Room <b>*</b></label>
+        <label class="backend-form-label is-required">Room</label>
         <select class="backend-form-control" name="rooms_id[]" required>
             <option selected value="">Select room</option>
             @foreach ($rooms as $sroom)
@@ -17,27 +17,27 @@
     </div>
 
     <div class="backend-form-field">
-        <label>Start Date</label>
-        <input class="backend-form-control" name="start_date[]" type="date" value="{{ old('start_date.0') }}" required>
+        <label class="backend-form-label is-required">Start Date</label>
+        <input class="backend-form-control" name="start_date[]" type="text" value="{{ old('start_date.0') }}" placeholder="YYYY-MM-DD" required data-backend-picker="date" data-backend-picker-format="yyyy-mm-dd">
     </div>
 
     <div class="backend-form-field">
-        <label>End Date</label>
-        <input class="backend-form-control" name="end_date[]" type="date" value="{{ old('end_date.0') }}" required>
+        <label class="backend-form-label is-required">End Date</label>
+        <input class="backend-form-control" name="end_date[]" type="text" value="{{ old('end_date.0') }}" placeholder="YYYY-MM-DD" required data-backend-picker="date" data-backend-picker-format="yyyy-mm-dd">
     </div>
 
     <div class="backend-form-field">
-        <label>Contract Rate</label>
-        <input class="backend-form-control" type="number" name="contract_rate[]" placeholder="Insert contract rate" value="{{ old('contract_rate.0') }}" required>
+        <label class="backend-form-label is-required">Contract Rate</label>
+        <input class="backend-form-control" type="text" inputmode="numeric" name="contract_rate[]" placeholder="Insert contract rate" value="{{ old('contract_rate.0') }}" required data-backend-money-unit="IDR">
     </div>
 
     <div class="backend-form-field">
-        <label>Markup</label>
-        <input class="backend-form-control" type="number" name="markup[]" placeholder="Insert markup" value="{{ old('markup.0', $markups->markup ?? 0) }}" required>
+        <label class="backend-form-label is-required">Markup</label>
+        <input class="backend-form-control" type="text" inputmode="numeric" name="markup[]" placeholder="Insert markup" value="{{ old('markup.0', $markups->markup ?? 0) }}" required data-backend-money-unit="USD">
     </div>
 
     <div class="backend-form-field">
-        <label>Kick Back</label>
-        <input class="backend-form-control" type="number" name="kick_back[]" placeholder="Insert kick back" value="{{ old('kick_back.0', 0) }}">
+        <label class="backend-form-label">Kick Back</label>
+        <input class="backend-form-control" type="text" inputmode="numeric" name="kick_back[]" placeholder="Insert kick back" value="{{ old('kick_back.0', 0) }}" data-backend-money-unit="USD">
     </div>
 </div>

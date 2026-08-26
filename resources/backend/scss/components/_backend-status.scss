@@ -61,3 +61,82 @@ body.sidebar-light .backend-status-badge.is-muted {
   background: #eef2f7;
   color: var(--backend-muted-link);
 }
+
+body.sidebar-light .backend-status-toggle {
+  align-items: center;
+  background: #f8fafc;
+  border: 0.5px solid #9595952b !important;
+  border-radius: 999px;
+  color: var(--backend-muted-link);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 900;
+  gap: 7px;
+  line-height: 1;
+  min-height: 30px;
+  padding: 4px 9px 4px 5px;
+  position: relative;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease;
+  white-space: nowrap;
+}
+
+body.sidebar-light .backend-status-toggle:hover,
+body.sidebar-light .backend-status-toggle:focus-visible {
+  border-color: var(--backend-brand-soft);
+  color: var(--backend-brand-strong);
+  outline: none;
+}
+
+body.sidebar-light .backend-status-toggle.is-active {
+  background: #ecfdf5;
+  border: 0.5px solid #10b9812b !important;
+  color: #047857;
+}
+
+body.sidebar-light .backend-status-toggle.is-submitting {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+body.sidebar-light .backend-status-toggle--icon {
+  gap: 0;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px;
+}
+
+body.sidebar-light .backend-status-toggle__track {
+  background: #cbd5e1;
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 18px;
+  padding: 2px;
+  transition: background 160ms ease;
+  width: 34px;
+}
+
+body.sidebar-light .backend-status-toggle.is-active .backend-status-toggle__track {
+  background: #10b981;
+}
+
+body.sidebar-light .backend-status-toggle__knob {
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.22);
+  display: block;
+  height: 14px;
+  transform: translateX(0);
+  transition: transform 160ms ease;
+  width: 14px;
+}
+
+body.sidebar-light .backend-status-toggle.is-active .backend-status-toggle__knob {
+  transform: translateX(16px);
+}
+
+body.sidebar-light .backend-status-toggle__label {
+  color: currentColor;
+  display: inline-flex;
+}

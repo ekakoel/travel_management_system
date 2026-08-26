@@ -4,7 +4,9 @@ namespace App\Services\Tours;
 
 use App\Models\TourLocationReference;
 use App\Models\Tours;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -67,6 +69,8 @@ class TourLocationService
                 'latitude' => $location->latitude,
                 'longitude' => $location->longitude,
                 'description' => $location->description,
+                'description_traditional' => $location->description_traditional,
+                'description_simplified' => $location->description_simplified,
             ]);
     }
 
@@ -77,7 +81,12 @@ class TourLocationService
         $normalized = [];
 
         foreach ($locations as $inputIndex => $location) {
-            if (collect($location)->filter(fn ($value) => filled($value))->isEmpty() && ! $request->hasFile("locations.{$inputIndex}.marker_image")) {
+            if (! is_array($location)) {
+                $errors["locations.{$inputIndex}"] = 'Each map location must be submitted as a structured location row.';
+                continue;
+            }
+
+            if ($this->isBlankLocation($location, $request->hasFile("locations.{$inputIndex}.marker_image"))) {
                 continue;
             }
 
@@ -139,8 +148,6 @@ class TourLocationService
             if ($markerImageFile) {
                 if (! $markerImageFile->isValid() || ! in_array($markerImageFile->extension(), ['jpg', 'jpeg', 'png', 'webp'], true) || $markerImageFile->getSize() > 2048 * 1024) {
                     $errors["{$prefix}.marker_image"] = 'Marker image must be a valid JPG, PNG, or WEBP image with maximum size 2MB.';
-                } else {
-                    $markerImage = $this->assets->uploadMarker($markerImageFile);
                 }
             }
 
@@ -156,7 +163,10 @@ class TourLocationService
                 'visit_order' => (int) $visitOrder,
                 'visit_time' => filled($visitTime) ? $visitTime : null,
                 'description' => filled($location['description'] ?? null) ? trim((string) $location['description']) : null,
+                'description_traditional' => filled($location['description_traditional'] ?? null) ? trim((string) $location['description_traditional']) : null,
+                'description_simplified' => filled($location['description_simplified'] ?? null) ? trim((string) $location['description_simplified']) : null,
                 'is_active' => true,
+                '_marker_image_file' => $markerImageFile instanceof UploadedFile ? $markerImageFile : null,
             ];
         }
 
@@ -169,12 +179,91 @@ class TourLocationService
 
     public function sync(Tours $tour, array $locations): void
     {
+        $uploadedMarkers = [];
+        $oldMarkers = $tour->locations()
+            ->whereNotNull('marker_image')
+            ->pluck('marker_image')
+            ->filter()
+            ->values()
+            ->all();
+        $retainedMarkers = collect($locations)
+            ->pluck('marker_image')
+            ->filter()
+            ->values()
+            ->all();
+
         $tour->locations()->delete();
 
-        foreach ($locations as $location) {
-            $location['location_reference_id'] = $this->syncReference($location);
-            $tour->locations()->create($location);
+        try {
+            foreach ($locations as $location) {
+                $markerImageFile = $location['_marker_image_file'] ?? null;
+                unset($location['_marker_image_file']);
+
+                if ($markerImageFile instanceof UploadedFile) {
+                    $location['marker_image'] = $this->assets->uploadMarker($markerImageFile);
+                    $uploadedMarkers[] = $location['marker_image'];
+                }
+
+                $location['location_reference_id'] = $this->syncReference($location);
+                $tour->locations()->create($location);
+            }
+
+            $markersToDelete = array_values(array_diff($oldMarkers, $retainedMarkers, $uploadedMarkers));
+
+            if ($markersToDelete) {
+                DB::afterCommit(function () use ($markersToDelete): void {
+                    $referencedMarkers = TourLocationReference::query()
+                        ->whereIn('marker_image', $markersToDelete)
+                        ->pluck('marker_image')
+                        ->all();
+
+                    foreach ($markersToDelete as $marker) {
+                        if (in_array($marker, $referencedMarkers, true)) {
+                            continue;
+                        }
+
+                        $this->assets->deleteMarker($marker);
+                    }
+                });
+            }
+        } catch (\Throwable $exception) {
+            foreach ($uploadedMarkers as $marker) {
+                $this->assets->deleteMarker($marker);
+            }
+
+            throw $exception;
         }
+    }
+
+    private function isBlankLocation(array $location, bool $hasMarkerFile): bool
+    {
+        if ($hasMarkerFile) {
+            return false;
+        }
+
+        $meaningfulFields = [
+            'location_reference_id',
+            'destination_name',
+            'google_maps_url',
+            'marker_image',
+            'existing_marker_image',
+            'latitude',
+            'longitude',
+            'visit_time',
+            'description',
+            'description_traditional',
+            'description_simplified',
+        ];
+
+        foreach ($meaningfulFields as $field) {
+            if (filled($location[$field] ?? null)) {
+                return false;
+            }
+        }
+
+        $locationType = trim((string) ($location['location_type'] ?? ''));
+
+        return $locationType === '' || $locationType === 'Attraction';
     }
 
     private function syncReference(array $location): int
@@ -188,6 +277,12 @@ class TourLocationService
                 && round((float) $reference->latitude, 7) === round((float) $location['latitude'], 7)
                 && round((float) $reference->longitude, 7) === round((float) $location['longitude'], 7)
             ) {
+                $reference->fill([
+                    'description' => $location['description'],
+                    'description_traditional' => $location['description_traditional'],
+                    'description_simplified' => $location['description_simplified'],
+                ])->save();
+
                 return $reference->id;
             }
         }
@@ -209,6 +304,8 @@ class TourLocationService
                 'latitude' => $location['latitude'],
                 'longitude' => $location['longitude'],
                 'description' => $location['description'],
+                'description_traditional' => $location['description_traditional'],
+                'description_simplified' => $location['description_simplified'],
             ]
         );
 

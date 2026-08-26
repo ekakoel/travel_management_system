@@ -25,7 +25,7 @@
                 <section class="backend-page-toolbar invoice-index-toolbar">
                     <nav aria-label="{{ __('invoices.breadcrumb') }}">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">{{ __('invoices.admin_panel') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">{{ __('invoices.admin_panel') }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ __('invoices.invoices') }}</li>
                         </ol>
                     </nav>

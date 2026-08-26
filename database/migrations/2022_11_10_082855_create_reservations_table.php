@@ -36,6 +36,7 @@ class CreateReservationsTable extends Migration
             $table->integer('itinerary_id')->nullable();
             $table->longText('additional_info')->nullable();
             $table->string('status');
+            $table->enum('send',['yes','no'])->default('no');
             $table->softDeletes();
             $table->timestamps();
         });

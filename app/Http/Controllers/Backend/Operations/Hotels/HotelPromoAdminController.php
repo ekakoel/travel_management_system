@@ -9,7 +9,12 @@ use App\Models\HotelPromo;
 use App\Models\HotelRoom;
 use App\Models\Hotels;
 use App\Models\UserLog;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class HotelPromoAdminController extends Controller
 {
@@ -25,8 +30,16 @@ class HotelPromoAdminController extends Controller
         }
 
         $hotel = Hotels::findOrFail($id);
+        $rooms = HotelRoom::where('hotels_id', $hotel->id)
+            ->orderBy('rooms')
+            ->get(['id', 'rooms', 'hotels_id']);
 
-        return view('backend.operations.hotels.forms.promo-create')->with('hotel', $hotel);
+        return view('backend.operations.hotels.forms.promo-create', [
+            'hotel' => $hotel,
+            'rooms' => $rooms,
+            'hotelContext' => Crypt::encryptString((string) $hotel->id),
+            'initialStatus' => 'Draft',
+        ]);
     }
 
     public function edit($id)
@@ -35,14 +48,17 @@ class HotelPromoAdminController extends Controller
             return $this->redirectToHotelsIndexWithError();
         }
 
-        $promo = HotelPromo::findOrFail($id);
-        $hotel = Hotels::with('rooms')->findOrFail($promo->hotels_id);
-        $rooms = HotelRoom::where('hotels_id', $hotel->id)->orderBy('created_at', 'desc')->get();
+        $promo = HotelPromo::with(['hotels', 'rooms'])->findOrFail($id);
+        $hotel = $promo->hotels ?: Hotels::findOrFail($promo->hotels_id);
+        $rooms = HotelRoom::where('hotels_id', $hotel->id)
+            ->orderBy('rooms')
+            ->get(['id', 'rooms', 'hotels_id']);
 
         return view('backend.operations.hotels.forms.promo-edit', [
             'promo' => $promo,
             'hotel' => $hotel,
             'rooms' => $rooms,
+            'hotelContext' => Crypt::encryptString((string) $hotel->id),
         ]);
     }
 
@@ -51,40 +67,55 @@ class HotelPromoAdminController extends Controller
         if (! $this->canManage()) {
             return $this->redirectToHotelsIndexWithError();
         }
-        HotelPromo::create([
-            'promotion_type' => $request->promotion_type,
-            'quotes' => $request->quotes,
-            'hotels_id' => $request->hotels_id,
-            'rooms_id' => $request->rooms_id,
-            'name' => $request->name,
-            'book_periode_start' => date('Y-m-d', strtotime($request->book_periode_start)),
-            'book_periode_end' => date('Y-m-d', strtotime($request->book_periode_end)),
-            'periode_start' => date('Y-m-d', strtotime($request->periode_start)),
-            'periode_end' => date('Y-m-d', strtotime($request->periode_end)),
-            'contract_rate' => $request->contract_rate,
-            'minimum_stay' => $request->minimum_stay,
-            'markup' => $request->markup,
-            'booking_code' => $request->booking_code,
-            'benefits' => $request->benefits,
-            'benefits_traditional' => $request->benefits_traditional,
-            'benefits_simplified' => $request->benefits_simplified,
-            'email_status' => 0,
-            'send_to_specific_email' => 1,
-            'specific_email' => '',
-            'status' => 'Draft',
-            'author' => auth()->id(),
-            'include' => $request->include,
-            'include_traditional' => $request->include_traditional,
-            'include_simplified' => $request->include_simplified,
-            'additional_info' => $request->additional_info,
-            'additional_info_traditional' => $request->additional_info_traditional,
-            'additional_info_simplified' => $request->additional_info_simplified,
-            'cancellation_policy' => $request->cancellation_policy,
-            'cancellation_policy_traditional' => $request->cancellation_policy_traditional,
-            'cancellation_policy_simplified' => $request->cancellation_policy_simplified,
-        ]);
+        $validated = $request->validated();
+        $hotelId = (int) $request->resolvedHotelId();
 
-        return $this->redirectToHotelDetail($request->hotels_id, 'promo')->with('success', 'Promo added successfully');
+        $promo = DB::transaction(function () use ($request, $validated, $hotelId) {
+            $promo = HotelPromo::create([
+                'promotion_type' => $validated['promotion_type'] ?? null,
+                'quotes' => $validated['quotes'] ?? null,
+                'hotels_id' => $hotelId,
+                'rooms_id' => $validated['rooms_id'],
+                'name' => $validated['name'],
+                'book_periode_start' => date('Y-m-d', strtotime($validated['book_periode_start'])),
+                'book_periode_end' => date('Y-m-d', strtotime($validated['book_periode_end'])),
+                'periode_start' => date('Y-m-d', strtotime($validated['periode_start'])),
+                'periode_end' => date('Y-m-d', strtotime($validated['periode_end'])),
+                'contract_rate' => $validated['contract_rate'],
+                'minimum_stay' => $validated['minimum_stay'],
+                'markup' => $validated['markup'],
+                'booking_code' => $validated['booking_code'] ?? null,
+                'benefits' => $validated['benefits'] ?? null,
+                'benefits_traditional' => $validated['benefits_traditional'] ?? null,
+                'benefits_simplified' => $validated['benefits_simplified'] ?? null,
+                'email_status' => 0,
+                'send_to_specific_email' => 1,
+                'specific_email' => '',
+                'status' => 'Draft',
+                'author' => auth()->id(),
+                'include' => $validated['include'] ?? null,
+                'include_traditional' => $validated['include_traditional'] ?? null,
+                'include_simplified' => $validated['include_simplified'] ?? null,
+                'additional_info' => $validated['additional_info'] ?? null,
+                'additional_info_traditional' => $validated['additional_info_traditional'] ?? null,
+                'additional_info_simplified' => $validated['additional_info_simplified'] ?? null,
+            ]);
+
+            UserLog::create([
+                'action' => 'Add Promo',
+                'service' => 'Hotel',
+                'subservice' => 'Promo',
+                'subservice_id' => $promo->id,
+                'page' => 'detail-hotel#promo',
+                'user_id' => auth()->id(),
+                'user_ip' => $request->getClientIp(),
+                'note' => 'Add Promo to Hotel id : '.$hotelId.', Room id : '.$validated['rooms_id'].', Promo id : '.$promo->id,
+            ]);
+
+            return $promo;
+        }, 3);
+
+        return $this->redirectToHotelDetail($promo->hotels_id, 'promo')->with('success', 'Promo added successfully');
     }
 
     public function update(UpdateHotelPromoRequest $request, $id)
@@ -93,55 +124,98 @@ class HotelPromoAdminController extends Controller
             return $this->redirectToHotelsIndexWithError();
         }
 
+        $validated = $request->validated();
         $promo = HotelPromo::findOrFail($id);
-        $hotelId = $request->hotels_id;
-        $bookPeriodeStart = date('Y-m-d', strtotime($request->book_periode_start));
-        $bookPeriodeEnd = date('Y-m-d', strtotime($request->book_periode_end));
-        $periodeStart = date('Y-m-d', strtotime($request->periode_start));
-        $periodeEnd = date('Y-m-d', strtotime($request->periode_end));
+        $hotelId = (int) $promo->hotels_id;
 
-        $promo->update([
-            'hotels_id' => $request->hotels_id,
-            'promotion_type' => $request->promotion_type,
-            'quotes' => $request->quotes,
-            'rooms_id' => $request->rooms_id,
-            'name' => $request->name,
-            'book_periode_start' => $bookPeriodeStart,
-            'book_periode_end' => $bookPeriodeEnd,
-            'periode_start' => $periodeStart,
-            'periode_end' => $periodeEnd,
-            'minimum_stay' => $request->minimum_stay,
-            'contract_rate' => $request->contract_rate,
-            'markup' => $request->markup,
-            'booking_code' => $request->booking_code,
-            'benefits' => $request->benefits,
-            'benefits_traditional' => $request->benefits_traditional,
-            'benefits_simplified' => $request->benefits_simplified,
-            'include' => $request->include,
-            'include_traditional' => $request->include_traditional,
-            'include_simplified' => $request->include_simplified,
-            'additional_info' => $request->additional_info,
-            'additional_info_traditional' => $request->additional_info_traditional,
-            'additional_info_simplified' => $request->additional_info_simplified,
-            'status' => $request->status,
-            'author' => auth()->id(),
-        ]);
+        abort_unless((int) $request->resolvedHotelId() === $hotelId, 404);
 
-        UserLog::create([
-            'action' => 'Update Promo',
-            'service' => 'Hotel',
-            'subservice' => 'Promo',
-            'subservice_id' => $id,
-            'page' => 'detail-hotel#promos',
-            'user_id' => auth()->id(),
-            'user_ip' => $request->getClientIp(),
-            'note' => 'Update Promo on Hotel id : '.$request->hotels_id.', Room id : '.$request->rooms_id.', Promo id : '.$id,
-        ]);
+        DB::transaction(function () use ($request, $validated, $promo, $hotelId, $id): void {
+            $lockedPromo = HotelPromo::query()->lockForUpdate()->findOrFail($promo->id);
+
+            $lockedPromo->update([
+                'hotels_id' => $hotelId,
+                'promotion_type' => $validated['promotion_type'] ?? null,
+                'quotes' => $validated['quotes'] ?? null,
+                'rooms_id' => $validated['rooms_id'],
+                'name' => $validated['name'],
+                'book_periode_start' => date('Y-m-d', strtotime($validated['book_periode_start'])),
+                'book_periode_end' => date('Y-m-d', strtotime($validated['book_periode_end'])),
+                'periode_start' => date('Y-m-d', strtotime($validated['periode_start'])),
+                'periode_end' => date('Y-m-d', strtotime($validated['periode_end'])),
+                'minimum_stay' => $validated['minimum_stay'],
+                'contract_rate' => $validated['contract_rate'],
+                'markup' => $validated['markup'],
+                'booking_code' => $validated['booking_code'] ?? null,
+                'benefits' => $validated['benefits'] ?? null,
+                'benefits_traditional' => $validated['benefits_traditional'] ?? null,
+                'benefits_simplified' => $validated['benefits_simplified'] ?? null,
+                'include' => $validated['include'] ?? null,
+                'include_traditional' => $validated['include_traditional'] ?? null,
+                'include_simplified' => $validated['include_simplified'] ?? null,
+                'additional_info' => $validated['additional_info'] ?? null,
+                'additional_info_traditional' => $validated['additional_info_traditional'] ?? null,
+                'additional_info_simplified' => $validated['additional_info_simplified'] ?? null,
+                'status' => $validated['status'],
+                'author' => auth()->id(),
+            ]);
+
+            UserLog::create([
+                'action' => 'Update Promo',
+                'service' => 'Hotel',
+                'subservice' => 'Promo',
+                'subservice_id' => $id,
+                'page' => 'detail-hotel#promo',
+                'user_id' => auth()->id(),
+                'user_ip' => $request->getClientIp(),
+                'note' => 'Update Promo on Hotel id : '.$hotelId.', Room id : '.$validated['rooms_id'].', Promo id : '.$id,
+            ]);
+        }, 3);
 
         return $this->redirectToHotelDetail($hotelId, 'promo')->with('success', 'The Promo has been updated!');
     }
 
-    public function destroy(\Illuminate\Http\Request $request, $id)
+    public function updateStatus(Request $request, HotelPromo $promo): JsonResponse
+    {
+        if (! $this->canManage()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['Active', 'Draft'])],
+        ]);
+
+        $promo = DB::transaction(function () use ($request, $promo, $validated) {
+            $previousStatus = $promo->status;
+            $promo->forceFill([
+                'status' => $validated['status'],
+                'author' => auth()->id(),
+            ])->save();
+
+            UserLog::create([
+                'action' => 'Update Promo Status',
+                'service' => 'Hotel',
+                'subservice' => 'Promo',
+                'subservice_id' => $promo->id,
+                'page' => 'detail-hotel#promo',
+                'user_id' => auth()->id(),
+                'user_ip' => $request->getClientIp(),
+                'note' => 'Update Promo status on Hotel id : '.$promo->hotels_id.', Room id : '.$promo->rooms_id.', Promo id : '.$promo->id.', Status : '.$previousStatus.' -> '.$promo->status,
+            ]);
+
+            return $promo->refresh();
+        });
+
+        return response()->json([
+            'id' => $promo->id,
+            'status' => $promo->status,
+            'next_status' => $promo->status === 'Active' ? 'Draft' : 'Active',
+            'tone' => $this->promoStatusTone($promo),
+            'message' => 'Promo status updated.',
+        ]);
+    }
+
+    public function destroy(Request $request, $id)
     {
         if (! $this->canManage()) {
             return $this->redirectToHotelsIndexWithError();
@@ -171,8 +245,10 @@ class HotelPromoAdminController extends Controller
         return Gate::allows('posDev') || Gate::allows('posAuthor');
     }
 
-    private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
+    private function redirectToHotelsIndexWithError(?string $message = null)
     {
+        $message = $message ?? __('messages.You are not authorized to perform this action.');
+
         return redirect()->route('admin.hotels.index')->with('error', $message);
     }
 
@@ -185,5 +261,14 @@ class HotelPromoAdminController extends Controller
         }
 
         return redirect($url);
+    }
+
+    private function promoStatusTone(HotelPromo $promo): string
+    {
+        if ($promo->book_periode_end && $promo->book_periode_end < now()->toDateString()) {
+            return 'expired';
+        }
+
+        return strtolower((string) $promo->status) === 'active' ? 'active' : 'draft';
     }
 }

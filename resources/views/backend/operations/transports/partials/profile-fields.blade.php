@@ -54,6 +54,21 @@
 </label>
 
 <label class="backend-form-field">
+    <span>Partner Provider</span>
+    <select name="partner_id" class="backend-form-control @error('partner_id') is-invalid @enderror">
+        <option value="">No partner selected</option>
+        @foreach ($partners as $partnerOption)
+            <option value="{{ $partnerOption->id }}" @selected((string) old('partner_id', $transport?->partner_id) === (string) $partnerOption->id)>
+                {{ $partnerOption->name }}
+            </option>
+        @endforeach
+    </select>
+    @error('partner_id')
+        <small class="backend-form-error">{{ $message }}</small>
+    @enderror
+</label>
+
+<label class="backend-form-field">
     <span>Brand <b>*</b></span>
     <select name="brand" class="backend-form-control @error('brand') is-invalid @enderror" required>
         <option value="">Select brand</option>

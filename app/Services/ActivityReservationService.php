@@ -33,6 +33,8 @@ class ActivityReservationService
             'checkout' => $order->checkout,
             'pickup_date' => $order->pickup_date,
             'dropoff_date' => $order->dropoff_date,
+            'pickup_location' => $order->pickup_location,
+            'dropoff_location' => $order->dropoff_location,
             'status' => 'Pending',
         ]));
 

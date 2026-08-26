@@ -11,7 +11,7 @@
 @endpush
 
 @section('content')
-    @can('isAdmin')
+    @canany(['posDev','posAuthor','posRsv','posAdm'])
         <div class="mobile-menu-overlay"></div>
         <main class="main-container activities-admin-page">
             <div class="pd-ltr-20">
@@ -20,7 +20,7 @@
                     title="Activities"
                     description="Manage activity products, partner ownership, selling status, capacity, validity, and gallery assets from one backend workspace."
                 >
-                    @canany(['posDev','posAuthor'])
+                    @canany(['posDev','posAuthor','posAdm'])
                         <x-slot name="action">
                             <a href="{{ route('admin.activities.create') }}" class="backend-page-primary-action">
                                 <i class="fa fa-plus"></i>
@@ -33,7 +33,7 @@
                 <section class="backend-page-toolbar activities-admin-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Activities</li>
                         </ol>
                     </nav>
@@ -99,7 +99,7 @@
                                     <th>Name</th>
                                     <th>Partner</th>
                                     <th>Location</th>
-                                    <th>Price/Pax</th>
+                                    <th>Calculated Price</th>
                                     <th>Valid Until</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -114,11 +114,13 @@
                                         <td data-label="Name"><strong>{{ $activity->name }}</strong><span>{{ $activity->type ?: '-' }}</span></td>
                                         <td data-label="Partner">{{ $row['partner_name'] }}</td>
                                         <td data-label="Location">{{ $activity->location ?: '-' }}</td>
-                                        <td data-label="Price/Pax">
+                                        <td data-label="Calculated Price">
                                             @if ($row['price_available'])
                                                 {!! currencyFormatUsd($row['published_rate']) !!}
+                                                <small class="d-block text-muted">{{ currencyFormatIdr($row['published_rate_idr']) }}</small>
                                             @else
-                                                <span class="backend-status-badge backend-status-badge--muted" title="{{ $row['price_unavailable_code'] }}">Unavailable</span>
+                                                <span class="backend-status-badge backend-status-badge--muted" title="{{ $row['price_unavailable_code'] }}">{{ __('messages.Price cannot be calculated.') }}</span>
+                                                <small class="d-block text-muted">{{ $row['price_unavailable_message'] }}</small>
                                             @endif
                                         </td>
                                         <td data-label="Valid Until">{{ $activity->validity ? dateFormat($activity->validity) : '-' }}</td>
@@ -128,19 +130,18 @@
                                                 <a href="{{ route('admin.activities.show', $activity->id) }}" class="backend-icon-action" aria-label="View {{ $activity->name }}">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
-                                                @canany(['posDev','posAuthor'])
-                                                    <a href="{{ route('admin.activities.edit', $activity->id) }}" class="backend-icon-action" aria-label="Edit {{ $activity->name }}">
-                                                        <i class="fa fa-pencil-alt"></i>
-                                                    </a>
+                                                <a href="{{ route('admin.activities.edit', $activity->id) }}" class="backend-icon-action" aria-label="Edit {{ $activity->name }}">
+                                                    <i class="fa fa-pencil-alt"></i>
+                                                </a>
+                                                @can('posDev')
                                                     <form action="{{ route('admin.activities.destroy', $activity->id) }}" method="post">
                                                         @csrf
                                                         @method('delete')
-                                                        <input type="hidden" name="author" value="{{ Auth::user()->id }}">
                                                         <button type="submit" class="backend-icon-action is-danger" data-activity-delete="{{ $activity->name }}" aria-label="Delete {{ $activity->name }}">
                                                             <i class="fa fa-trash-alt"></i>
                                                         </button>
                                                     </form>
-                                                @endcanany
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>
@@ -186,12 +187,14 @@
                                         <dd>{{ $activity->type ?: '-' }}</dd>
                                     </div>
                                     <div>
-                                        <dt>Price/Pax</dt>
+                                        <dt>Calculated Price</dt>
                                         <dd>
                                             @if ($row['price_available'])
                                                 {!! currencyFormatUsd($row['published_rate']) !!}
+                                                <small class="d-block text-muted">{{ currencyFormatIdr($row['published_rate_idr']) }}</small>
                                             @else
-                                                <span class="backend-status-badge backend-status-badge--muted" title="{{ $row['price_unavailable_code'] }}">Unavailable</span>
+                                                <span class="backend-status-badge backend-status-badge--muted" title="{{ $row['price_unavailable_code'] }}">{{ __('messages.Price cannot be calculated.') }}</span>
+                                                <small class="d-block text-muted">{{ $row['price_unavailable_message'] }}</small>
                                             @endif
                                         </dd>
                                     </div>
@@ -220,9 +223,7 @@
                         @endforelse
                     </div>
                 </section>
-
-                @include('layouts.footer')
             </div>
         </main>
-    @endcan
+    @endcanany
 @endsection

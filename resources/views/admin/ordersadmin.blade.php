@@ -81,7 +81,7 @@
                 <div class="backend-page-toolbar orders-admin-toolbar">
                     <nav aria-label="{{ __('admin-orders.breadcrumb.label') }}">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">@lang('admin-orders.breadcrumb.admin')</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">@lang('admin-orders.breadcrumb.admin')</a></li>
                             <li class="breadcrumb-item active" aria-current="page">@lang('admin-orders.breadcrumb.orders')</li>
                         </ol>
                     </nav>

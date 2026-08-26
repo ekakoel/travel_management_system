@@ -116,7 +116,7 @@ class VillasController extends Controller
                 'usdrates'=>$usdrates,
                 ])->with('villa',$villa);
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -129,7 +129,7 @@ class VillasController extends Controller
                 'usdrates'=>$usdrates,
             ])->with('villa',$villa);
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     
@@ -185,7 +185,7 @@ class VillasController extends Controller
             $user_log->save();
             return redirect("/admin-villa-detail-$request->villa_id")->with('success', 'Rooms added successfully');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -257,7 +257,7 @@ class VillasController extends Controller
             $user_log->save();
             return redirect("/admin-villa-detail-$villa->id")->with('success','The Villa has been updated!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -314,7 +314,7 @@ class VillasController extends Controller
         
             return redirect("/admin-villa-detail-$villaId")->with('success', 'Hotel contract added successfully');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     
@@ -360,7 +360,7 @@ class VillasController extends Controller
             $user_log->save();
             return redirect("/admin-villa-detail-$request->villa_id")->with('success','Contract has been updated!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -391,7 +391,7 @@ class VillasController extends Controller
             $contract->delete();
             return redirect("/admin-villa-detail-$request->villa_id")->with('success','The Contract has been successfully deleted!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -405,7 +405,7 @@ class VillasController extends Controller
                 'villa'=>$villa,
             ])->with('room',$room);
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -465,7 +465,7 @@ class VillasController extends Controller
             // return dd($room);
             return redirect("/admin-villa-detail-$villa_id#rooms")->with('success','The room has been updated!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -502,7 +502,7 @@ class VillasController extends Controller
             $room->delete();
             return redirect("/admin-villa-detail-$villa->id#rooms")->with('success','The Room has been successfully deleted!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -548,7 +548,7 @@ class VillasController extends Controller
             $user_log->save();
             return redirect("/admin-villa-detail-$request->villa_id#additionalServices")->with('success', 'Additional service added successfully');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -586,7 +586,7 @@ class VillasController extends Controller
             $user_log->save();
             return redirect("/admin-villa-detail-$request->service_id#additionalServices")->with('success','The Optional Rate has been updated!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -616,7 +616,7 @@ class VillasController extends Controller
             $additional_service->delete();
             return redirect("/admin-villa-detail-$villa->id#additionalServices")->with('success','The additional service has been successfully deleted!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -629,14 +629,14 @@ class VillasController extends Controller
                 'villa'=>$villa,
             ]);
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
     // Function ADD VILLA PRICES ==============================================================================================================>
     public function func_add_villa_price(Request $request,$id){
         if (!Gate::allows('posDev') && !Gate::allows('posAuthor')) {
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
         $request->validate([
             'start_date' => 'required|array',
@@ -687,7 +687,7 @@ class VillasController extends Controller
     public function func_edit_villa_price(Request $request, $id)
     {
         if (!Gate::allows('posDev') && !Gate::allows('posAuthor')) {
-            return redirect('/villas-admin')->with('error', 'Akses ditolak');
+            return redirect('/villas-admin')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         $request->validate([
@@ -755,7 +755,7 @@ class VillasController extends Controller
             $price->delete();
             return redirect("/admin-villa-detail-$villa->id#villaPrices")->with('success','The Price has been successfully deleted!');
         }else{
-            return redirect("/villas-admin")->with('error','Akses ditolak');
+            return redirect("/villas-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 

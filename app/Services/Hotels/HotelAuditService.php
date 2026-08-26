@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class HotelAuditService
 {
+    public const GLOBAL_SUBSERVICE_ID = 0;
+
     public function userLog(
         Request $request,
         string $action,
@@ -21,7 +23,7 @@ class HotelAuditService
             'action' => $action,
             'service' => $service,
             'subservice' => $subservice,
-            'subservice_id' => $subserviceId,
+            'subservice_id' => $subserviceId ?? self::GLOBAL_SUBSERVICE_ID,
             'page' => $page,
             'user_id' => auth()->id(),
             'user_ip' => $request->getClientIp(),

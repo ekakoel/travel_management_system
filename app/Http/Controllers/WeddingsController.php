@@ -235,7 +235,7 @@ class WeddingsController extends Controller
             $user_log->save();
             return redirect("/weddings-hotel-admin-$hotels_id")->with('success', 'Wedding contract added successfully');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // Function Edit Wedding Contract =============================================================================================================>
@@ -280,7 +280,7 @@ class WeddingsController extends Controller
             $user_log->save();
             return redirect("/weddings-hotel-admin-$request->hotels_id")->with('success','Wedding Contract has been updated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // Function Edit Wedding Information =============================================================================================================>
@@ -293,7 +293,7 @@ class WeddingsController extends Controller
 
             return redirect("/weddings-hotel-admin-$id#weddingInformation")->with('success','Other Information has been updated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // Function Edit Cancellation Policy =============================================================================================================>
@@ -305,7 +305,7 @@ class WeddingsController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$id#cancellationPolicy")->with('success','Cancelation policy has been updated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // Function Edit Entrance Fee =============================================================================================================>
@@ -317,7 +317,7 @@ class WeddingsController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$id#entranceFee")->with('success','Entrance fee has been updated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
    
@@ -348,7 +348,7 @@ class WeddingsController extends Controller
             $contract->delete();
             return redirect("/weddings-hotel-admin-$request->hotels_id")->with('success','The Wedding Contract has been deleted!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -572,7 +572,7 @@ class WeddingsController extends Controller
             $user_log->save();
             return redirect("/weddings-hotel-admin-$hotel_id#ceremonyVenue")->with('success','The wedding venue has been updated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION DELETE CEREMONY VENUE
@@ -605,7 +605,7 @@ class WeddingsController extends Controller
             $wedding_venue->delete();
             return redirect("/weddings-hotel-admin-$hotel->id#wedding-venues")->with('success','The Wedding Venue has been successfully deleted!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 

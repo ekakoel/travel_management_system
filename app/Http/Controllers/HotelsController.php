@@ -209,6 +209,7 @@ class HotelsController extends Controller
         }
 
         $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
+        $lastStayDate = Carbon::parse($checkout)->subDay()->format('Y-m-d');
         Session::put('booking_dates', [
             'checkin' => $checkin,
             'checkout' => $checkout,
@@ -265,6 +266,7 @@ class HotelsController extends Controller
                 ->route('view.hotel-detail', ['code' => $code, 'check_price' => 1])
                 ->with('error', __('messages.Minimum stay') . ' ' . $hotel->min_stay . ' ' . __('messages.nights'));
         }
+        $activeRoomIds = $hotel->rooms->pluck('id')->all();
         $promo_colors = [
             "Special Offer" => "bg-blue",
             "Best Choice"   => "bg-green",
@@ -280,13 +282,21 @@ class HotelsController extends Controller
                 'hotels',
             ])
             ->where('hotels_id', $hotel->id)
+            ->whereIn('rooms_id', $activeRoomIds)
+            ->whereDate('start_date', '<=', $lastStayDate)
+            ->whereDate('end_date', '>=', $checkin)
+            ->orderBy('start_date')
+            ->orderBy('end_date')
+            ->orderBy('id')
             ->get();
 
         $packages = HotelPackage::with(['hotels', 'room'])
             ->where('hotels_id', $hotel->id)
+            ->whereIn('rooms_id', $activeRoomIds)
             ->where('status', 'Active')
             ->forDuration($duration)
-            ->validForStay($checkin)
+            ->whereDate('stay_period_start', '<=', $checkin)
+            ->whereDate('stay_period_end', '>=', $lastStayDate)
             ->get()
             ->map(function ($package) use ($usdrates, $tax) {
                 $package->calculated_price = $package->calculatePrice($usdrates, $tax);
@@ -296,6 +306,12 @@ class HotelsController extends Controller
         $hotelPromotions = HotelPromo::active()
             ->validForBooking($now)
             ->where('hotels_id', $hotel->id)
+            ->whereIn('rooms_id', $activeRoomIds)
+            ->whereDate('periode_start', '<=', $lastStayDate)
+            ->whereDate('periode_end', '>=', $checkin)
+            ->orderBy('periode_start')
+            ->orderBy('periode_end')
+            ->orderBy('id')
             ->get()
             ->keyBy('id');
 

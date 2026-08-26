@@ -15,7 +15,7 @@ class ActivityAuditService
             'subservice' => 'Activity',
             'subservice_id' => $activityId,
             'page' => $page,
-            'user_id' => $request->input('author', auth()->id()),
+            'user_id' => $request->user()?->id ?? auth()->id(),
             'user_ip' => $request->getClientIp(),
             'note' => $note,
         ]);

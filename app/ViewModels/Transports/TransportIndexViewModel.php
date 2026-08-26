@@ -37,6 +37,7 @@ class TransportIndexViewModel
     {
         return $this->visibleTransports()->map(fn ($transport) => [
             'model' => $transport,
+            'partner' => $transport->partner?->name ?: '-',
             'brand' => $transport->brand ?: 'No brand',
             'type' => $transport->type ?: '-',
             'capacity' => $transport->capacity . ' Seats',
@@ -49,6 +50,7 @@ class TransportIndexViewModel
     {
         return $this->archivedTransports->map(fn ($transport) => [
             'model' => $transport,
+            'partner' => $transport->partner?->name ?: '-',
             'brand' => $transport->brand ?: 'No brand',
             'type' => $transport->type ?: '-',
             'capacity' => $transport->capacity . ' Seats',

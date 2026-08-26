@@ -20,6 +20,8 @@ trait BuildsTourLocationItinerary
                     'destination_name',
                     'location_type',
                     'description',
+                    'description_traditional',
+                    'description_simplified',
                 ]);
 
         if ($locations->isEmpty()) {
@@ -48,7 +50,12 @@ trait BuildsTourLocationItinerary
                             filled($location->destination_name) ? e($location->destination_name) : null,
                             filled($location->location_type) ? '<small>(' . e($location->location_type) . ')</small>' : null,
                         ]);
-                        $description = trim(strip_tags((string) $location->description));
+                        $descriptionField = match (app()->getLocale()) {
+                            'zh' => 'description_traditional',
+                            'zh-CN' => 'description_simplified',
+                            default => 'description',
+                        };
+                        $description = trim(strip_tags((string) ($location->{$descriptionField} ?: $location->description)));
                         $html = '<li><p><strong>' . implode(' - ', $titleParts) . '</strong></p>';
 
                         if ($description !== '') {

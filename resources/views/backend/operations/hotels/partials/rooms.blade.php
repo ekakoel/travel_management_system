@@ -6,7 +6,7 @@
         </div>
         @canany(['posDev','posAuthor'])
             <div class="hotel-detail-section-actions">
-                <a href="{{ route('admin.hotels.rooms.create', $hotel->id) }}" class="backend-toolbar-action">
+                <a href="{{ route('admin.hotels.room.create', $hotel->id) }}" class="backend-toolbar-action">
                     <i class="fa fa-plus"></i>
                     Add Room
                 </a>
@@ -26,23 +26,45 @@
                             <strong>{{ $room->rooms }}</strong>
                             <span>{{ $room->view ?: 'No view data' }}</span>
                         </div>
-                        <span class="backend-status-badge backend-status-badge--{{ $roomStatusTone }}">{{ $room->status }}</span>
+                        <span id="hotelRoomStatusBadge{{ $room->id }}" class="backend-status-badge backend-status-badge--{{ $roomStatusTone }}">{{ $room->status }}</span>
                     </div>
                     <div class="hotel-detail-room-card__meta">
                         <div><small>Capacity</small><b>{{ $room->capacity_adult }} Adult{{ $room->capacity_child > 0 ? ' + ' . $room->capacity_child . ' Child' : '' }}</b></div>
                         <div><small>Bed</small><b>{{ $room->beds ?: '-' }}</b></div>
                         <div><small>Size</small><b>{!! $room->size ? $room->size . ' m²' : '-' !!}</b></div>
-                        <div><small>Status</small><b>{{ $room->status }}</b></div>
+                        <div><small>Inventory</small><b>{{ $room->inventory ?? '-' }}</b></div>
                     </div>
                     <div class="hotel-detail-actions">
+                        @canany(['posDev','posAuthor','posAdm'])
+                            @if (strtolower($room->status) !== 'archived')
+                                <button
+                                    type="button"
+                                    class="backend-status-toggle {{ strtolower($room->status) === 'active' ? 'is-active' : '' }}"
+                                    data-backend-status-toggle
+                                    data-backend-status-url="{{ route('admin.hotels.room.status.update', $room->id) }}"
+                                    data-backend-status-current="{{ $room->status }}"
+                                    data-backend-status-next="{{ strtolower($room->status) === 'active' ? 'Draft' : 'Active' }}"
+                                    data-backend-status-badge-target="#hotelRoomStatusBadge{{ $room->id }}, #hotelRoomModalStatusBadge{{ $room->id }}"
+                                    data-backend-status-label-active="Active"
+                                    data-backend-status-label-draft="Draft"
+                                    aria-pressed="{{ strtolower($room->status) === 'active' ? 'true' : 'false' }}"
+                                    title="{{ $room->status }}"
+                                >
+                                    <span class="backend-status-toggle__track" aria-hidden="true">
+                                        <span class="backend-status-toggle__knob"></span>
+                                    </span>
+                                    <span class="backend-status-toggle__label" data-backend-status-toggle-label>{{ $room->status }}</span>
+                                </button>
+                            @endif
+                        @endcanany
                         <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#hotelRoomDetail{{ $room->id }}" aria-label="View {{ $room->rooms }}">
                             <i class="fa fa-eye"></i>
                         </button>
                         @canany(['posDev','posAuthor'])
-                            <a href="{{ route('admin.hotels.rooms.edit', $room->id) }}" class="backend-icon-action" aria-label="Edit {{ $room->rooms }}">
+                            <a href="{{ route('admin.hotels.room.edit', $room->id) }}" class="backend-icon-action" aria-label="Edit {{ $room->rooms }}">
                                 <i class="fa fa-pencil-alt"></i>
                             </a>
-                            <form action="{{ route('func.room.delete', $room->id) }}" method="post">
+                            <form action="{{ route('admin.hotels.room.delete', $room->id) }}" method="post">
                                 @csrf
                                 @method('delete')
                                 <input type="hidden" name="author" value="{{ Auth::user()->id }}">

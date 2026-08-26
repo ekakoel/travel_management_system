@@ -16,6 +16,7 @@ class StoreTransportAdminRequest extends FormRequest
     {
         return [
             'cover' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'partner_id' => 'nullable|integer|exists:partners,id',
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
             'brand' => 'required|string|max:255',

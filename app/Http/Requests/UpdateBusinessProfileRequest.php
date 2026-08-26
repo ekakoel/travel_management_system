@@ -8,7 +8,7 @@ class UpdateBusinessProfileRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user() !== null && $this->user()->can('posDev');
+        return $this->user() !== null && $this->user()->canany(['posDev','posAdm']);
     }
 
     public function rules()

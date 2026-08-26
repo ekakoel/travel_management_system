@@ -15,6 +15,7 @@ class AccommodationFinancialFileController extends Controller
 
     private const ADMIN_POSITIONS = [
         'developer',
+        'administrator',
         'reservation',
         'weddingRsv',
     ];

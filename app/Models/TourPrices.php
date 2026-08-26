@@ -111,9 +111,6 @@ class TourPrices extends Model
                             ->whereIn('markup_currency', ['USD', 'IDR']);
                     });
             })
-            ->whereNotNull('markup_source')
-            ->whereNotNull('markup_verified_at')
-            ->whereNotNull('markup_verified_by')
             ->whereNotNull('valid_from')
             ->whereDate('valid_from', '<=', $travelDate)
             ->whereNotNull('valid_until')
@@ -147,9 +144,6 @@ class TourPrices extends Model
 
         return (int) $this->contract_rate_idr > 0
             && $validMarkup
-            && ! blank($this->markup_source)
-            && $this->markup_verified_at !== null
-            && $this->markup_verified_by !== null
             && $this->valid_from !== null
             && $this->valid_until !== null
             && $this->valid_from->lte($this->valid_until)

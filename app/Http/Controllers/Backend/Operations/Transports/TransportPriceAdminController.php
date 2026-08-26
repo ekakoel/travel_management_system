@@ -19,7 +19,7 @@ class TransportPriceAdminController extends Controller
     public function store(StoreTransportPriceAdminRequest $request, TransportAuditService $audit, TransportPricingService $pricing)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         $validated = $request->validated();
@@ -33,7 +33,7 @@ class TransportPriceAdminController extends Controller
     public function update(UpdateTransportPriceAdminRequest $request, $id, TransportAuditService $audit, TransportPricingService $pricing)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         $validated = $request->validated();
@@ -47,7 +47,7 @@ class TransportPriceAdminController extends Controller
     public function destroy($id, TransportAuditService $audit, TransportPricingService $pricing)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.transports.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.transports.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         $price = $pricing->deletePrice((int) $id);

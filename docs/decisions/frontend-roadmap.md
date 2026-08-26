@@ -50,6 +50,25 @@ Roadmap ini menyimpan status frontend aktif secara ringkas. Entry historis panja
 
 ## Recent Entries
 
+## 2026-08-12 - Activity Booking Timing Calculation
+
+- Status: done
+- Objective: memperbaiki perhitungan Activity Start/End dan Pickup/Drop-off Date pada order Activity frontend.
+- Flow: `view.activity-order.store`, `ActivityBookingService`, `ActivityTimingService`, reservation snapshot, dan frontend Activity order detail.
+- Summary: Activity Start memakai `travel_date`; Activity End dihitung dari `activities.duration` dengan unit `Minute(s)`, `Hour(s)`, atau `Day(s)`. Jika belum ada input pickup/drop-off time independen, pickup date mengikuti Activity Start dan drop-off date mengikuti Activity End pada order serta reservation. Detail order Activity menampilkan field tersebut dengan formatter datetime canonical.
+- Risk: data historis yang sudah tersimpan sebelum perbaikan tidak diubah dan memerlukan audit/remediasi terpisah bila ingin dikoreksi.
+
+## 2026-08-12 - Activity Booking Wizard Capacity and Guest List Upload
+
+- Status: done
+- Objective: menstandardisasi modal frontend Activity booking menjadi 3 step dengan capacity-aware pax input dan guest manifest hybrid.
+- Flow: `resources/views/frontend/landing-page/activities/detail.blade.php`, route quote `activity.quote`, dan submit `view.activity-order.store`.
+- Summary: Step 1 meminta activity date, pax, Pick-up Location, dan Drop-off Location, menampilkan available until serta maximum capacity, lalu memanggil quote canonical sebelum lanjut. Step 2 memakai mode manual untuk 1-10 pax dengan minimal Guest 1 dan tombol Add More Guest, serta mode upload `.xlsx`/`.csv` untuk booking di atas 10 pax. Manual dan upload sama-sama memakai kolom `Guest Name`, `Age Category`, `Sex`, dan `Phone Number`. Step 3 menampilkan review activity, date, pax, pickup/drop-off, guest manifest, dan price summary dari quote backend.
+- Server guard: Activity order submit tetap menghitung ulang harga via `ActivityPricingService`, menolak travel date melewati validity, menolak guest count di bawah minimum/di atas capacity, mewajibkan pickup/drop-off text, mewajibkan minimal 1 manual guest row untuk 1-10 pax, dan mewajibkan uploaded guest list dengan row count persis `number_of_guests` untuk >10 pax. Parser upload memvalidasi header, `Adult`/`Child`, `Male`/`Female`, phone opsional sebagai string, dan field legacy pickup contact memakai guest pertama/guest pertama ber-phone tanpa mengekspos konsep leader.
+- Files: `app/Http/Controllers/ActivityGuestListTemplateController.php`, `app/Http/Controllers/FrontEndController.php`, `app/Http/Controllers/OrderController.php`, `app/Http/Requests/Activities/StoreActivityOrderRequest.php`, `app/Services/Activities/ActivityBookingService.php`, `app/Services/Activities/ActivityGuestListService.php`, `resources/views/frontend/landing-page/activities/detail.blade.php`, `resources/frontend/js/landing-page/activities/detail.js`, `resources/frontend/scss/landing-page/activities/_detail.scss`, `resources/lang/*/activities.php`, `tests/Feature/PublicActivityFlowTest.php`, dan `public/mix-manifest.json`.
+- Verification: `node --check`, PHP syntax checks, `git diff --check`, `npm run development`, targeted Activity guest-leader tests, dan full `PublicActivityFlowTest` lulus.
+- Risk: browser interactive smoke test desktop/mobile belum dijalankan di sesi ini; webpack build melaporkan 3 child-compilation warnings yang pre-existing/non-fatal karena Mix tetap compiled successfully.
+
 ## 2026-07-29 - Activity Order Edit Picker Migration
 
 - Status: done

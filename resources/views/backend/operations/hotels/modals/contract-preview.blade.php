@@ -105,7 +105,6 @@
                         </div>
                         <div class="backend-modal__footer">
                             <button type="submit" class="backend-page-primary-action">Add Contract</button>
-                            <button type="button" class="backend-toolbar-action" data-dismiss="modal">Cancel</button>
                         </div>
                     </form>
                 </section>

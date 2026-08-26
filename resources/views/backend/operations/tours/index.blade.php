@@ -19,7 +19,7 @@
                     class="tours-admin-hero"
                     eyebrow="Operations Inventory"
                     title="Tour Packages"
-                    description="Manage tour package content, duration, status, selling prices, and gallery assets from the standardized backend workspace."
+                    description="Manage tour package content, duration, status, and selling prices from the standardized backend workspace."
                 >
                     @canany(['posDev','posAuthor'])
                         <x-slot name="action">
@@ -34,7 +34,7 @@
                 <section class="backend-page-toolbar tours-admin-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Tour Packages</li>
                         </ol>
                     </nav>

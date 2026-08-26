@@ -15,6 +15,7 @@ const RICHTEXT_SELECTOR = [
 ].join(', ');
 
 const BACKEND_DATE_PICKER_SELECTOR = '[data-backend-picker="date"]';
+const BACKEND_STATUS_TOGGLE_SELECTOR = '[data-backend-status-toggle]';
 const BACKEND_MONEY_INPUT_SELECTOR = 'input:not([type="hidden"]):not([type="submit"]):not([type="button"])';
 const BACKEND_MONEY_UNIT_BY_NAME = Object.freeze({
   additional_guest_rate: 'USD',
@@ -329,6 +330,106 @@ function handleBackendActionClick(event) {
       setBackendActionLoading(standaloneAction, false);
     }
   });
+}
+
+function backendCsrfToken() {
+  return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
+
+function updateBackendStatusBadge(badge, status, tone) {
+  if (!badge) {
+    return;
+  }
+
+  Array.from(badge.classList)
+    .filter((className) => className.startsWith('backend-status-badge--'))
+    .forEach((className) => badge.classList.remove(className));
+
+  badge.classList.add(`backend-status-badge--${tone || status.toLowerCase()}`);
+  badge.textContent = status;
+}
+
+function updateBackendStatusToggle(toggle, status, nextStatus, tone) {
+  const isActive = status === 'Active';
+  const label = toggle.querySelector('[data-backend-status-toggle-label]');
+  const activeLabel = toggle.dataset.backendStatusLabelActive || 'Active';
+  const draftLabel = toggle.dataset.backendStatusLabelDraft || 'Draft';
+
+  toggle.dataset.backendStatusCurrent = status;
+  toggle.dataset.backendStatusNext = nextStatus || (isActive ? 'Draft' : 'Active');
+  toggle.classList.toggle('is-active', isActive);
+  toggle.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  toggle.setAttribute('title', isActive ? activeLabel : draftLabel);
+
+  if (tone) {
+    toggle.dataset.backendStatusTone = tone;
+  }
+
+  if (label) {
+    label.textContent = isActive ? activeLabel : draftLabel;
+  }
+}
+
+async function handleBackendStatusToggleClick(event) {
+  const toggle = event.target instanceof Element
+    ? event.target.closest(BACKEND_STATUS_TOGGLE_SELECTOR)
+    : null;
+
+  if (!toggle) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (toggle.classList.contains('is-submitting')) {
+    return;
+  }
+
+  const url = toggle.dataset.backendStatusUrl;
+  const nextStatus = toggle.dataset.backendStatusNext;
+
+  if (!url || !nextStatus) {
+    return;
+  }
+
+  setBackendActionLoading(toggle, true);
+
+  try {
+    const response = await window.fetch(url, {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': backendCsrfToken(),
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({ status: nextStatus }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(payload.message || 'Status could not be updated.');
+    }
+
+    updateBackendStatusToggle(toggle, payload.status, payload.next_status, payload.tone);
+
+    const badgeTarget = toggle.dataset.backendStatusBadgeTarget;
+
+    if (badgeTarget) {
+      document.querySelectorAll(badgeTarget).forEach((badge) => {
+        updateBackendStatusBadge(
+          badge,
+          payload.status,
+          payload.tone
+        );
+      });
+    }
+  } catch (error) {
+    window.alert(error.message || 'Status could not be updated.');
+  } finally {
+    setBackendActionLoading(toggle, false);
+  }
 }
 
 function initBackendSubmitGuards(root = document) {
@@ -751,6 +852,7 @@ document.addEventListener('shown.bs.modal', (event) => {
 });
 
 document.addEventListener('click', handleBackendActionClick);
+document.addEventListener('click', handleBackendStatusToggleClick);
 document.addEventListener('click', handleBackendModalClose);
 document.addEventListener('change', (event) => {
   if (event.target instanceof Element && event.target.matches('[data-backend-money-unit-source-target]')) {

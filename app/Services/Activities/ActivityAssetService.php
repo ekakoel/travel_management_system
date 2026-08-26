@@ -3,19 +3,25 @@
 namespace App\Services\Activities;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ActivityAssetService
 {
-    public const COVER_PATH = 'storage/activities/activities-cover/';
-    public const GALLERY_PATH = 'storage/activities/activities-images/';
+    public const COVER_PATH = 'activities/activities-cover';
+    public const GALLERY_PATH = 'activities/activities-images';
 
     public function upload(UploadedFile $file, string $directory): string
     {
-        $fileName = time().'_'.$file->getClientOriginalName();
-        $file->move($directory, $fileName);
+        $fileName = time().'_'.Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)).'.'.$file->getClientOriginalExtension();
+        $file->storeAs($directory, $fileName, 'public');
 
         return $fileName;
+    }
+
+    public function uploadPath(UploadedFile $file, string $directory): string
+    {
+        return $directory.'/'.$this->upload($file, $directory);
     }
 
     public function replace(?string $currentFileName, UploadedFile $file, string $directory): string
@@ -31,13 +37,13 @@ class ActivityAssetService
             return false;
         }
 
-        $path = $directory.$fileName;
+        $path = $this->storagePath($directory, $fileName);
 
-        if (! File::exists($path)) {
+        if (! Storage::disk('public')->exists($path)) {
             return false;
         }
 
-        return File::delete($path);
+        return Storage::disk('public')->delete($path);
     }
 
     public function uploadCover(UploadedFile $file): string
@@ -57,11 +63,35 @@ class ActivityAssetService
 
     public function uploadGalleryImage(UploadedFile $file): string
     {
-        return $this->upload($file, self::GALLERY_PATH);
+        return $this->uploadPath($file, self::GALLERY_PATH);
     }
 
     public function deleteGalleryImage(?string $fileName): bool
     {
         return $this->delete($fileName, self::GALLERY_PATH);
+    }
+
+    public function deleteStoredPath(?string $path): bool
+    {
+        if (! $path) {
+            return false;
+        }
+
+        return Storage::disk('public')->delete(ltrim($path, '/'));
+    }
+
+    private function storagePath(string $directory, string $fileName): string
+    {
+        $fileName = ltrim($fileName, '/');
+
+        if (Str::startsWith($fileName, 'storage/')) {
+            return Str::after($fileName, 'storage/');
+        }
+
+        if (Str::startsWith($fileName, $directory.'/')) {
+            return $fileName;
+        }
+
+        return $directory.'/'.$fileName;
     }
 }

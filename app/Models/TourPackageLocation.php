@@ -22,6 +22,8 @@ class TourPackageLocation extends Model
         'latitude',
         'longitude',
         'description',
+        'description_traditional',
+        'description_simplified',
         'is_active',
     ];
 

@@ -83,7 +83,7 @@ class FooterManagerLinkBooleanTest extends TestCase
         $this->assertStringContainsString('backend-form-grid', $settingPartial . $modalPartial);
         $this->assertStringContainsString('backend-form-actions', $modalPartial);
         $this->assertStringContainsString('backend-page-toolbar footer-manager-toolbar', $view);
-        $this->assertStringContainsString("route('view.admin-panel-main')", $view);
+        $this->assertStringContainsString("route('admin.panel-main.view')", $view);
         $this->assertStringContainsString("mix('build/backend/css/admin/footer-manager/index.css')", $view);
         $this->assertStringContainsString("mix('build/backend/js/admin/footer-manager/index.js')", $view);
         $this->assertStringContainsString('backend-kpi-grid', $view);

@@ -66,7 +66,7 @@
                 <div class="backend-page-toolbar transport-spk-detail-toolbar">
                     <nav aria-label="{{ __('transport-management.breadcrumb.label') }}">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ url('/admin-panel') }}">@lang('transport-management.detail.breadcrumb.admin')</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel.index') }}">@lang('transport-management.detail.breadcrumb.admin')</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('view.transport-management.index') }}">@lang('transport-management.title')</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $spk->order_number ?? '-' }}</li>
                         </ol>

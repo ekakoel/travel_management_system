@@ -7,6 +7,33 @@ body.sidebar-light .modal .backend-table-actions {
   justify-content: flex-end;
 }
 
+body.sidebar-light .main-container .backend-table th.backend-table-action-column,
+body.sidebar-light .main-container .backend-table td[data-label="Action"],
+body.sidebar-light .main-container .backend-table td[data-label="Actions"],
+body.sidebar-light .modal .backend-table th.backend-table-action-column,
+body.sidebar-light .modal .backend-table td[data-label="Action"],
+body.sidebar-light .modal .backend-table td[data-label="Actions"] {
+  text-align: right;
+}
+
+body.sidebar-light .main-container .backend-table td[data-label="Action"] > div,
+body.sidebar-light .main-container .backend-table td[data-label="Actions"] > div,
+body.sidebar-light .modal .backend-table td[data-label="Action"] > div,
+body.sidebar-light .modal .backend-table td[data-label="Actions"] > div {
+  margin-left: auto;
+}
+
+body.sidebar-light .main-container .backend-table td[data-label="Action"] .backend-table-actions,
+body.sidebar-light .main-container .backend-table td[data-label="Action"] .hotel-detail-actions,
+body.sidebar-light .main-container .backend-table td[data-label="Actions"] .backend-table-actions,
+body.sidebar-light .main-container .backend-table td[data-label="Actions"] .hotel-detail-actions,
+body.sidebar-light .modal .backend-table td[data-label="Action"] .backend-table-actions,
+body.sidebar-light .modal .backend-table td[data-label="Action"] .hotel-detail-actions,
+body.sidebar-light .modal .backend-table td[data-label="Actions"] .backend-table-actions,
+body.sidebar-light .modal .backend-table td[data-label="Actions"] .hotel-detail-actions {
+  justify-content: flex-end;
+}
+
 body.sidebar-light .backend-icon-action,
 body.sidebar-light .backend-danger-icon-action,
 body.sidebar-light .user-manager-icon-action,

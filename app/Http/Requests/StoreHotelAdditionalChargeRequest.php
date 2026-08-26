@@ -3,19 +3,19 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreHotelAdditionalChargeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::any(['posDev', 'posAuthor', 'posAdm']);
     }
 
     public function rules(): array
     {
         return [
             'hotel_id' => ['required', 'integer', 'exists:hotels,id'],
-            'service_id' => ['nullable', 'integer', 'exists:hotels,id'],
             'type' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],

@@ -81,4 +81,46 @@ final class CurrencyRateResolver
             ageSeconds: $ageSeconds,
         );
     }
+
+    public function resolveStoredUsdSell(?CarbonImmutable $calculatedAt = null): ResolvedCurrencyRate
+    {
+        $calculatedAt ??= CarbonImmutable::now();
+        $matches = UsdRates::query()->where('name', 'USD')->limit(2)->get();
+
+        if ($matches->count() !== 1) {
+            throw PricingException::rate('MISSING_USD_RATE', 'USD sell rate is unavailable.');
+        }
+
+        $row = $matches->first();
+
+        try {
+            $valueScaled = FixedScale::parseDecimal((string) $row->sell, FixedScale::FX_SCALE);
+        } catch (PricingException $exception) {
+            throw PricingException::rate('MISSING_USD_RATE', 'USD sell rate is invalid.', [
+                'rate_id' => $row->id,
+            ]);
+        }
+
+        if ($valueScaled <= 0) {
+            throw PricingException::rate('MISSING_USD_RATE', 'USD sell rate must be positive.', [
+                'rate_id' => $row->id,
+            ]);
+        }
+
+        $retrievedAt = $row->retrieved_at ?? $row->updated_at ?? $calculatedAt;
+        $retrievedAt = CarbonImmutable::instance($retrievedAt);
+        $ageSeconds = max($retrievedAt->diffInSeconds($calculatedAt, false), 0);
+
+        return new ResolvedCurrencyRate(
+            id: (int) $row->id,
+            pair: 'USD/IDR',
+            side: 'sell',
+            valueScaled: $valueScaled,
+            scale: FixedScale::FX_SCALE,
+            source: (string) ($row->retrieval_source ?: 'legacy_updated_at'),
+            retrievedAt: $retrievedAt->toDateTimeImmutable(),
+            maxAgeSeconds: self::MAX_AGE_SECONDS,
+            ageSeconds: $ageSeconds,
+        );
+    }
 }

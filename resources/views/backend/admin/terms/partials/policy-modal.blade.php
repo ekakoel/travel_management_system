@@ -113,7 +113,6 @@
                 </div>
 
                 <div class="backend-form-actions terms-admin-modal__footer">
-                    <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="backend-button backend-button-primary">
                         <i class="fa fa-floppy-o"></i>
                         Save Policy

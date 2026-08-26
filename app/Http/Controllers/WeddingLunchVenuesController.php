@@ -148,7 +148,7 @@ class WeddingLunchVenuesController extends Controller
                 return redirect("/weddings-hotel-admin-$lunchVenue->hotel_id#lunchVenue")->with('success',"Lunch Venue can't be updated!");
             }
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION ACTIVATE LUNCH VENUE ===============================================================================================================>
@@ -160,7 +160,7 @@ class WeddingLunchVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$lunchVenue->hotel_id#lunchVenue")->with('success','Lunch Venue has been activated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION DEACTIVATE LUNCH VENUE ===============================================================================================================>
@@ -172,7 +172,7 @@ class WeddingLunchVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$lunchVenue->hotel_id#lunchVenue")->with('success','Lunch Venue has been save to draft!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 

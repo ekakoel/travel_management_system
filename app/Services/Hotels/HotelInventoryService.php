@@ -3,7 +3,9 @@
 namespace App\Services\Hotels;
 
 use App\Models\ActionLog;
+use App\Models\HotelPackage;
 use App\Models\HotelPrice;
+use App\Models\HotelPromo;
 use App\Models\Hotels;
 use App\Models\Markup;
 use App\Models\Tax;
@@ -26,6 +28,7 @@ class HotelInventoryService
     {
         $today = Carbon::now();
         $now = $today->toDateString();
+        $yearStart = $today->copy()->startOfYear()->toDateString();
 
         $this->statusService->expirePromosForHotel($hotelId, $today);
         $this->statusService->expirePackagesForHotel($hotelId, $today);
@@ -41,7 +44,7 @@ class HotelInventoryService
             'rooms',
             'prices' => fn ($query) => $query->notExpired($now)->orderByDesc('end_date'),
             'prices.rooms',
-            'promos' => fn ($query) => $query->notExpired($now)->orderByDesc('book_periode_end'),
+            'promos' => fn ($query) => $query->whereDate('book_periode_end', '>=', $now)->orderByDesc('book_periode_end'),
             'promos.rooms',
             'packages' => fn ($query) => $query->notExpired($now)->orderByDesc('stay_period_end'),
             'packages.room',
@@ -58,6 +61,24 @@ class HotelInventoryService
         $normalPrices = $hotel->prices->values();
         $promos = $hotel->promos->values();
         $packages = $hotel->packages->values();
+        $chartNormalPrices = HotelPrice::with('rooms')
+            ->where('hotels_id', $hotelId)
+            ->whereDate('start_date', '<=', $now)
+            ->whereDate('end_date', '>=', $yearStart)
+            ->orderBy('start_date')
+            ->get();
+        $chartPromos = HotelPromo::with('rooms')
+            ->where('hotels_id', $hotelId)
+            ->whereDate('periode_start', '<=', $now)
+            ->whereDate('periode_end', '>=', $yearStart)
+            ->orderBy('periode_start')
+            ->get();
+        $chartPackages = HotelPackage::with('room')
+            ->where('hotels_id', $hotelId)
+            ->whereDate('stay_period_start', '<=', $now)
+            ->whereDate('stay_period_end', '>=', $yearStart)
+            ->orderBy('stay_period_start')
+            ->get();
         $additionalCharges = $hotel->optionalrates->values();
         $contracts = $hotel->contracts->values();
         $viewModel = new HotelDetailViewModel(
@@ -74,6 +95,9 @@ class HotelInventoryService
             latestPrice: $latestPrice,
             author: $author,
             pricingService: $this->pricingService,
+            chartNormalPrices: $chartNormalPrices,
+            chartPromos: $chartPromos,
+            chartPackages: $chartPackages,
         );
 
         return [

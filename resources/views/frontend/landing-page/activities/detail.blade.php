@@ -229,6 +229,7 @@
                         <form
                             method="POST"
                             action="{{ $activityOrderForm['action'] }}"
+                            enctype="multipart/form-data"
                             class="activity-reservation-wizard frontend-order-modal__form"
                             data-activity-order-form
                             data-open-on-load="{{ ($activityOrderForm['open_on_load'] ?? false) ? 'true' : 'false' }}"
@@ -239,14 +240,15 @@
                             data-price-unavailable-label="@lang('messages.Activity pricing is not available.')"
                             data-price-loading-label="@lang('messages.Processing')"
                             data-capacity="{{ $activityOrderForm['capacity'] }}"
+                            data-min-pax="{{ $activityOrderForm['min_pax'] }}"
+                            data-valid-until="{{ $activityOrderForm['valid_until'] }}"
+                            data-valid-until-label="{{ $activityOrderForm['valid_until_label'] }}"
+                            data-manual-guest-threshold="{{ $activityOrderForm['manual_guest_threshold'] }}"
                             data-currency-code="USD"
                             data-initial-step="{{ $activityOrderForm['initial_step'] ?? 0 }}"
                             data-initial-guests='@json($activityOrderForm["prefill"]["guests"] ?? [])'
                             data-locale="{{ str_replace('_', '-', app()->getLocale()) }}"
                             data-guest-label="@lang('tour-detail.guest')"
-                            data-leader-label="@lang('tour-detail.leader')"
-                            data-set-leader-label="@lang('tour-detail.set_guest_leader')"
-                            data-leader-phone-required-label="@lang('tour-detail.phone_required_for_leader')"
                             data-pax-label="@lang('messages.pax')"
                             data-adult-label="@lang('tour-detail.age_adult')"
                             data-child-label="@lang('tour-detail.age_child')"
@@ -261,16 +263,16 @@
                             data-table-age-category-label="@lang('activities.detail.order.table_age_category')"
                             data-table-gender-label="@lang('messages.Gender')"
                             data-table-phone-number-label="@lang('activities.detail.order.table_phone_number')"
-                            data-table-leader-label="@lang('tour-detail.leader')"
+                            data-select-label="@lang('messages.Select')"
                             data-guest-progress-label="@lang('activities.detail.order.guest_progress')"
                             data-guest-count-mismatch-label="@lang('activities.detail.order.guest_count_mismatch')"
-                            data-guest-limit-reached-label="@lang('activities.detail.order.guest_limit_reached')"
+                            data-guest-list-required-label="@lang('activities.detail.order.guest_list_required')"
+                            data-guest-mode-manual-label="@lang('activities.detail.order.manual_mode_label')"
+                            data-guest-mode-upload-label="@lang('activities.detail.order.upload_mode_label')"
+                            data-guest-list-selected-label="@lang('activities.detail.order.guest_list_selected')"
+                            data-guest-list-ready-label="@lang('activities.detail.order.guest_list_ready')"
+                            data-file-size-label="@lang('activities.detail.order.file_size')"
                             data-guest-table-empty-label="@lang('activities.detail.order.guest_table_empty')"
-                            data-edit-label="@lang('messages.Edit')"
-                            data-remove-label="@lang('messages.Remove')"
-                            data-add-guest-label="@lang('messages.Add')"
-                            data-update-guest-label="@lang('messages.Update')"
-                            data-cancel-edit-label="@lang('messages.Cancel')"
                         >
                             @csrf
                             <input type="hidden" name="activity_order_source" value="{{ $activityOrderForm['order_source'] }}">
@@ -366,6 +368,9 @@
                                             autocomplete="off"
                                             data-ui-picker="datetime"
                                             data-ui-picker-min="{{ $activityOrderForm['minimum_travel_date'] }}"
+                                            @if ($activityOrderForm['valid_until'])
+                                                data-ui-picker-max="{{ $activityOrderForm['valid_until'] }} 23:59"
+                                            @endif
                                             data-ui-picker-allow-today="true"
                                             data-ui-picker-format="YYYY-MM-DD HH:mm"
                                             data-ui-picker-parent="body"
@@ -378,6 +383,9 @@
                                         @error('travel_date')
                                             <div class="alert-form">{{ $message }}</div>
                                         @enderror
+                                        <p class="activity-reservation-helper">
+                                            @lang('activities.detail.order.available_until'): {{ $activityOrderForm['valid_until_label'] }}
+                                        </p>
                                     </div>
 
                                     <div class="activity-reservation-field">
@@ -394,6 +402,47 @@
                                             data-activity-order-field="number_of_guests"
                                         >
                                         @error('number_of_guests')
+                                            <div class="alert-form">{{ $message }}</div>
+                                        @enderror
+                                        <p class="activity-reservation-helper">
+                                            @lang('activities.detail.order.minimum_guests'): {{ $activityOrderForm['min_pax'] }}
+                                            &middot;
+                                            @lang('activities.detail.order.maximum_guests'): {{ $activityOrderForm['capacity'] }}
+                                        </p>
+                                    </div>
+
+                                    <div class="activity-reservation-field">
+                                        <label for="activityOrderPickupLocation">@lang('messages.Pick up location') <span class="activity-reservation-required" aria-hidden="true">*</span></label>
+                                        <input
+                                            id="activityOrderPickupLocation"
+                                            type="text"
+                                            name="pickup_location"
+                                            class="form-control @error('pickup_location') is-invalid @enderror"
+                                            value="{{ $activityOrderForm['prefill']['pickup_location'] }}"
+                                            placeholder="@lang('activities.detail.order.pickup_location_placeholder')"
+                                            required
+                                            autocomplete="off"
+                                            data-activity-order-field="pickup_location"
+                                        >
+                                        @error('pickup_location')
+                                            <div class="alert-form">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="activity-reservation-field">
+                                        <label for="activityOrderDropoffLocation">@lang('messages.Drop off location') <span class="activity-reservation-required" aria-hidden="true">*</span></label>
+                                        <input
+                                            id="activityOrderDropoffLocation"
+                                            type="text"
+                                            name="dropoff_location"
+                                            class="form-control @error('dropoff_location') is-invalid @enderror"
+                                            value="{{ $activityOrderForm['prefill']['dropoff_location'] }}"
+                                            placeholder="@lang('activities.detail.order.dropoff_location_placeholder')"
+                                            required
+                                            autocomplete="off"
+                                            data-activity-order-field="dropoff_location"
+                                        >
+                                        @error('dropoff_location')
                                             <div class="alert-form">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -418,80 +467,53 @@
                                             <label class="mb-0">@lang('messages.Guest Detail')</label>
                                             <small data-activity-guest-progress></small>
                                         </div>
+                                        <span class="activity-reservation-mode-badge" data-activity-guest-mode-label></span>
                                     </div>
 
-                                    <div class="activity-reservation-guest-summary">
-                                        <div class="activity-reservation-guest-summary__table-wrap">
-                                            <table class="activity-reservation-guest-summary__table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>@lang('messages.No')</th>
-                                                        <th>@lang('messages.Name')</th>
-                                                        <th>@lang('activities.detail.order.table_age_category')</th>
-                                                        <th>@lang('messages.Gender')</th>
-                                                        <th>@lang('activities.detail.order.table_phone_number')</th>
-                                                        <th>@lang('tour-detail.leader')</th>
-                                                        <th>@lang('messages.Action')</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody data-activity-guest-table-body>
-                                                    <tr data-activity-guest-empty-row>
-                                                        <td colspan="7" class="activity-reservation-guest-summary__empty-row">@lang('activities.detail.order.guest_table_empty')</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                    <div class="activity-reservation-manual-guests" data-activity-manual-guests>
+                                        <div class="activity-reservation-guest-list" data-activity-guest-list></div>
+                                        <button type="button" class="btn btn-light activity-reservation-add-guest" data-activity-add-guest>
+                                            @lang('activities.detail.order.add_more_guest')
+                                        </button>
                                     </div>
 
-                                    <div class="activity-reservation-guest-editor">
-                                        <input type="hidden" data-activity-guest-edit-index value="">
-                                        <div class="activity-reservation-guest-editor__grid">
-                                            <div class="activity-reservation-field activity-reservation-field--compact">
-                                                <label for="activityGuestName">@lang('tour-detail.guest_full_name') <span class="activity-reservation-required" aria-hidden="true">*</span></label>
-                                                <input id="activityGuestName" type="text" class="form-control" data-activity-guest-field="name" placeholder="@lang('tour-detail.guest_full_name_placeholder')" autocomplete="off">
-                                            </div>
-                                            <div class="activity-reservation-field activity-reservation-field--compact">
-                                                <label for="activityGuestPhone">@lang('tour-detail.guest_contact_optional')</label>
-                                                <input id="activityGuestPhone" type="text" class="form-control" data-activity-guest-field="phone" placeholder="@lang('activities.detail.order.contact_placeholder')" autocomplete="off">
-                                            </div>
-                                            <div class="activity-reservation-field activity-reservation-field--compact">
-                                                <label for="activityGuestAge">@lang('tour-detail.guest_age_group') <span class="activity-reservation-required" aria-hidden="true">*</span></label>
-                                                <select id="activityGuestAge" class="form-control" data-activity-guest-field="age">
-                                                    <option value="">@lang('messages.Select')</option>
-                                                    <option value="Adult">@lang('tour-detail.age_adult')</option>
-                                                    <option value="Child">@lang('tour-detail.age_child')</option>
-                                                </select>
-                                            </div>
-                                            <div class="activity-reservation-field activity-reservation-field--compact">
-                                                <label for="activityGuestSex">@lang('tour-detail.guest_sex') <span class="activity-reservation-required" aria-hidden="true">*</span></label>
-                                                <select id="activityGuestSex" class="form-control" data-activity-guest-field="sex">
-                                                    <option value="">@lang('tour-detail.select_sex')</option>
-                                                    <option value="Male">@lang('tour-detail.sex_male')</option>
-                                                    <option value="Female">@lang('tour-detail.sex_female')</option>
-                                                </select>
-                                            </div>
-                                            <div class="activity-reservation-field activity-reservation-field--compact activity-reservation-field--leader">
-                                                <label class="activity-reservation-guest-leader-toggle">
-                                                    <input type="checkbox" value="1" data-activity-guest-field="is_leader">
-                                                    <span> @lang('tour-detail.set_guest_leader')</span>
-                                                </label>
-                                            </div>
-                                            <div class="activity-reservation-guest-editor__actions">
-                                                <button type="button" class="btn btn-primary" data-activity-guest-save>@lang('messages.Add')</button>
-                                                <button type="button" class="btn btn-light" data-activity-guest-cancel hidden>@lang('messages.Cancel')</button>
-                                            </div>
+                                    <div class="activity-reservation-upload-panel" data-activity-upload-panel hidden>
+                                        <p>@lang('activities.detail.order.guest_list_upload_text')</p>
+                                        <div class="activity-reservation-template-actions">
+                                            <a href="{{ $activityOrderForm['template_xlsx_url'] }}" class="btn btn-light">
+                                                @lang('activities.detail.order.download_xlsx_template')
+                                            </a>
+                                            <a href="{{ $activityOrderForm['template_csv_url'] }}" class="btn btn-light">
+                                                @lang('activities.detail.order.download_csv_template')
+                                            </a>
                                         </div>
-
+                                        <div class="activity-reservation-field">
+                                            <label for="activityGuestList">@lang('activities.detail.order.guest_list')</label>
+                                            <input
+                                                id="activityGuestList"
+                                                type="file"
+                                                name="guest_list"
+                                                class="form-control @error('guest_list') is-invalid @enderror"
+                                                accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                                data-activity-guest-list-input
+                                            >
+                                            <small data-activity-guest-list-status>@lang('activities.detail.order.guest_list_formats')</small>
+                                            @error('guest_list')
+                                                <div class="alert-form">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
 
                                     <div
                                         class="activity-reservation-guest-error"
                                         data-activity-guest-error
-                                        @if($activityOrderErrors->has('guests') || collect($activityOrderErrors->keys())->contains(fn ($key) => str_starts_with($key, 'guests.')))
+                                        @if($activityOrderErrors->has('guests') || $activityOrderErrors->has('guest_list') || collect($activityOrderErrors->keys())->contains(fn ($key) => str_starts_with($key, 'guests.')))
                                         @else hidden @endif
                                     >
                                         @if ($activityOrderErrors->has('guests'))
                                             {{ $activityOrderErrors->first('guests') }}
+                                        @elseif ($activityOrderErrors->has('guest_list'))
+                                            {{ $activityOrderErrors->first('guest_list') }}
                                         @else
                                             {{ collect($activityOrderErrors->getMessages())
                                                 ->filter(fn ($messages, $key) => str_starts_with($key, 'guests.'))
@@ -499,8 +521,6 @@
                                                 ->first() }}
                                         @endif
                                     </div>
-
-                                    <div data-activity-guest-inputs hidden></div>
                                 </div>
 
                                 <div class="activity-reservation-wizard__actions frontend-order-modal__actions">
@@ -528,16 +548,16 @@
                                         <strong data-activity-order-review="number_of_guests">{{ $activityOrderForm['prefill']['number_of_guests'] }}</strong>
                                     </div>
                                     <div class="activity-reservation-review-card">
-                                        <span>@lang('tour-detail.leader')</span>
-                                        <strong data-activity-order-review="leader">-</strong>
+                                        <span>@lang('messages.Pick up location')</span>
+                                        <strong data-activity-order-review="pickup_location">{{ $activityOrderForm['prefill']['pickup_location'] ?: '-' }}</strong>
                                     </div>
                                     <div class="activity-reservation-review-card">
-                                        <span>@lang('activities.detail.order.adult_guests')</span>
-                                        <strong data-activity-order-review="adult_count">0 @lang('tour-detail.age_adult')</strong>
+                                        <span>@lang('messages.Drop off location')</span>
+                                        <strong data-activity-order-review="dropoff_location">{{ $activityOrderForm['prefill']['dropoff_location'] ?: '-' }}</strong>
                                     </div>
                                     <div class="activity-reservation-review-card">
-                                        <span>@lang('activities.detail.order.child_guests')</span>
-                                        <strong data-activity-order-review="child_count">0 @lang('tour-detail.age_child')</strong>
+                                        <span>@lang('activities.detail.order.guest_information')</span>
+                                        <strong data-activity-order-review="guest_information">-</strong>
                                     </div>
                                 </div>
 
@@ -593,7 +613,7 @@
                                 <div class="activity-reservation-wizard__actions frontend-order-modal__actions">
                                     <button type="button" class="btn btn-light" data-activity-order-prev>@lang('messages.Previous')</button>
                                     <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">@lang('messages.Cancel')</button>
-                                    <button type="submit" class="btn btn-primary" data-activity-order-submit data-processing-label="@lang('messages.Processing')" @disabled(!$activityPriceAvailable)>@lang('messages.Continue to Order')</button>
+                                    <button type="submit" class="btn btn-primary" data-activity-order-submit data-processing-label="@lang('messages.Processing')" @disabled(!$activityPriceAvailable)>@lang('messages.Book Now')</button>
                                 </div>
                             </section>
                         </form>

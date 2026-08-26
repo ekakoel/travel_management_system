@@ -31,7 +31,7 @@
                 <section class="backend-page-toolbar invoice-detail-toolbar">
                     <nav aria-label="{{ __('invoices.invoices') }}">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">{{ __('invoices.admin_panel') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">{{ __('invoices.admin_panel') }}</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.invoices.index') }}">{{ __('invoices.invoices') }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $invoiceOverview['reference'] }}</li>
                         </ol>

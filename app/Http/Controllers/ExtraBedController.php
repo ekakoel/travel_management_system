@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserLog;
-use App\Models\ExtraBed;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreExtraBedRequest;
 use App\Http\Requests\UpdateExtraBedRequest;
+use App\Models\ExtraBed;
+use App\Models\Hotels;
+use App\Services\Hotels\HotelAuditService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class ExtraBedController extends Controller
 {
@@ -15,101 +17,98 @@ class ExtraBedController extends Controller
     {
         $this->middleware(['auth','verified']);
     }
-   // Function Add Optional Rate =========================================================================================>
-   public function func_add_extra_bed(Request $request){
-        $validated = $request->validate([
-            'name'=> 'required',
-            'hotels_id'=> 'required',
-            'type'=> 'required',
-            'contract_rate'=> 'required',
-            'markup'=> 'required',
-        ]);
-        $extra_bed =new ExtraBed([
-            "name"=>$request->name,
-            "hotels_id"=>$request->hotels_id,
-            "type"=>$request->type,
-            "max_age"=>$request->max_age,
-            "min_age" =>$request->min_age, 
-            "description" =>$request->description, 
-            "contract_rate" =>$request->contract_rate, 
-            "markup" =>$request->markup, 
-        ]);
-        $extra_bed->save();
+    public function func_add_extra_bed(StoreExtraBedRequest $request, HotelAuditService $audit)
+    {
+        $validated = $request->validated();
+        $hotel = Hotels::findOrFail((int) $validated['hotels_id']);
 
-        // USER LOG
-        $action = "Add Extra Bed";
-        $service = "Rooms";
-        $subservice = "Extra Bed";
-        $page = "detail-hotel#extra-bed";
-        $note = "Add extra bed to Hotel id : ".$request->hotels_id.", extra bed id: ".$extra_bed->id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$extra_bed->id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        return redirect("/detail-hotel-$request->hotels_id#extra-bed")->with('success', 'Extra bed successfully added');
+        $extraBed = DB::transaction(function () use ($request, $validated, $hotel, $audit): ExtraBed {
+            $extraBed = ExtraBed::create([
+                'name' => 'Extra Bed',
+                'hotels_id' => $hotel->id,
+                'type' => $validated['type'],
+                'min_age' => $validated['min_age'] ?? null,
+                'max_age' => $validated['max_age'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'contract_rate' => $validated['contract_rate'],
+                'markup' => $validated['markup'],
+            ]);
+
+            $audit->userLog(
+                $request,
+                'Add Extra Bed',
+                'Extra Bed',
+                $extraBed->id,
+                'detail-hotel#extra-bed',
+                'Add Extra Bed to Hotel id : '.$hotel->id.', Extra Bed id : '.$extraBed->id
+            );
+
+            return $extraBed;
+        }, 3);
+
+        return $this->redirectToHotelDetail($extraBed->hotels_id)->with('success', 'Extra bed successfully added');
     }
 
-    // Function Edit Extra Bed =============================================================================================================>
-    public function fedit_extra_bed(Request $request,$id){
-        $extra_bed=ExtraBed::findOrFail($id);
-        $extra_bed->update([
-            "type"=>$request->type,
-            "max_age"=>$request->max_age,
-            "min_age" =>$request->min_age, 
-            "description" =>$request->description, 
-            "contract_rate" =>$request->contract_rate, 
-            "markup" =>$request->markup, 
-        ]);
+    public function fedit_extra_bed(UpdateExtraBedRequest $request, $id, HotelAuditService $audit)
+    {
+        $validated = $request->validated();
+        $extraBed = ExtraBed::findOrFail($id);
+        $hotelId = (int) $extraBed->hotels_id;
 
-        // USER LOG
-        $service = "Extra Bed";
-        $action = "Update Extra Bed";
-        $subservice = "Extra Bed";
-        $page = "detail-hotel#extra-bed";
-        $note = "Update extra bed to Hotel id : ".$request->hotels_id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note,
-        ]);
-        $user_log->save();
-        return redirect("/detail-hotel-$request->hotels_id#extra-bed")->with('success','extra bed has been updated!');
+        DB::transaction(function () use ($request, $validated, $extraBed, $hotelId, $audit): void {
+            $lockedExtraBed = ExtraBed::query()->lockForUpdate()->findOrFail($extraBed->id);
+            $lockedExtraBed->update([
+                'type' => $validated['type'],
+                'min_age' => $validated['min_age'] ?? null,
+                'max_age' => $validated['max_age'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'contract_rate' => $validated['contract_rate'],
+                'markup' => $validated['markup'],
+            ]);
+
+            $audit->userLog(
+                $request,
+                'Update Extra Bed',
+                'Extra Bed',
+                $lockedExtraBed->id,
+                'detail-hotel#extra-bed',
+                'Update Extra Bed to Hotel id : '.$hotelId.', Extra Bed id : '.$lockedExtraBed->id
+            );
+        }, 3);
+
+        return $this->redirectToHotelDetail($hotelId)->with('success', 'Extra bed has been updated!');
     }
 
-    // Function Delete Extra Bed =============================================================================================================>
-    public function fdelete_extra_bed(Request $request,$id){
-        $extra_bed=ExtraBed::findOrFail($id);
-        $author= Auth::user()->id;
-        // USER LOG
-        $action = "Remove";
-        $service = "Extra Bed";
-        $subservice = "Extra Bed";
-        $page = "detail-hotel#extra-bed";
-        $note = "Remove extra bed on Hotel id : ".$request->hotels_id.", extra bed id : ".$id;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note, 
-        ]);
-        $user_log->save();
-        $extra_bed->delete();
-        return back()->with('success','Extra bed has been successfully deleted!');
+    public function fdelete_extra_bed(Request $request, $id, HotelAuditService $audit)
+    {
+        if (! Gate::any(['posDev', 'posAuthor'])) {
+            return redirect()
+                ->route('admin.hotels.index')
+                ->with('error', __('messages.You are not authorized to perform this action.'));
+        }
+
+        $extraBed = ExtraBed::findOrFail($id);
+        $hotelId = (int) $extraBed->hotels_id;
+
+        DB::transaction(function () use ($request, $extraBed, $hotelId, $audit): void {
+            $lockedExtraBed = ExtraBed::query()->lockForUpdate()->findOrFail($extraBed->id);
+            $audit->userLog(
+                $request,
+                'Remove',
+                'Extra Bed',
+                $lockedExtraBed->id,
+                'detail-hotel#extra-bed',
+                'Remove Extra Bed on Hotel id : '.$hotelId.', Extra Bed id : '.$lockedExtraBed->id
+            );
+
+            $lockedExtraBed->delete();
+        }, 3);
+
+        return $this->redirectToHotelDetail($hotelId)->with('success', 'Extra bed has been successfully deleted!');
+    }
+
+    private function redirectToHotelDetail(int $hotelId)
+    {
+        return redirect(route('admin.hotels.show', $hotelId).'#extra-bed');
     }
 }

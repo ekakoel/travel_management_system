@@ -600,7 +600,7 @@
 
 
     .activity-reservation-field {
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 
     .activity-reservation-field--compact {
@@ -650,6 +650,70 @@
         line-height: 1.5;
     }
 
+    .activity-reservation-guest-list {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .activity-reservation-mode-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2rem;
+        padding: 0.3rem 0.65rem;
+        border: 1px solid rgba(14, 116, 144, 0.18);
+        border-radius: 8px;
+        background: rgba(236, 254, 255, 0.72);
+        color: #155e75;
+        font-size: 0.78rem;
+        font-weight: 800;
+        line-height: 1.25;
+        text-align: center;
+    }
+
+    .activity-reservation-add-guest {
+        margin-top: 1rem;
+    }
+
+    .activity-reservation-upload-panel {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .activity-reservation-upload-panel p {
+        margin: 0 0 0.85rem;
+        color: var(--frontend-shell-muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .activity-reservation-template-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-bottom: 1rem;
+    }
+
+    .activity-reservation-guest-card {
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .activity-reservation-guest-card h4 {
+        margin: 0 0 0.85rem;
+        color: var(--frontend-shell-text);
+        font-size: 1rem;
+        font-weight: 900;
+    }
+
+    .activity-reservation-guest-card__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem;
+        align-items: start;
+    }
+
     .activity-reservation-guest-editor {
         margin-top: 1rem;
         padding-top: 1rem;
@@ -663,33 +727,6 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.9rem;
         align-items: start;
-    }
-
-    .activity-reservation-field--leader {
-        justify-content: flex-end;
-    }
-
-    .activity-reservation-guest-leader-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
-        margin: 0;
-        color: var(--frontend-shell-text);
-        font-size: 0.82rem;
-        font-weight: 800;
-    }
-
-    .activity-reservation-guest-leader-toggle input {
-        width: 17px;
-        height: 17px;
-        margin: 0;
-        accent-color: #0e7490;
-    }
-
-    .activity-reservation-guest-leader-toggle span {
-        margin: 0 !important;
-        color: inherit !important;
-        font-size: inherit !important;
     }
 
     .activity-reservation-guest-editor__actions {
@@ -1028,7 +1065,8 @@ body > .transport-reservation-submit-overlay[data-activity-order-overlay] .trans
             border-top: 1px solid #e2e8f0;
         }
 
-        .activity-reservation-guest-editor__grid {
+        .activity-reservation-guest-editor__grid,
+        .activity-reservation-guest-card__grid {
             grid-template-columns: 1fr;
         }
 

@@ -20,10 +20,7 @@ class UsersController extends Controller
 {
     private const MANAGER_POSITIONS = [
         'developer' => 'Developer',
-        'weddingDvl' => 'Wedding Developer',
-        'weddingRsv' => 'Wedding Reservation',
-        'weddingSls' => 'Wedding Sales',
-        'weddingAuthor' => 'Wedding Author',
+        'administrator' => 'Administrator',
         'reservation' => 'Reservation',
         'staff' => 'Staff',
         'agent' => 'Agent',
@@ -41,49 +38,51 @@ class UsersController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth','verified']);
+        $this->middleware(['auth', 'verified']);
     }
 
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'min:2','string', 'max:255'],
+            'name' => ['required', 'min:2', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:25', 'unique:users'],
-            'email' => ['required','email','max:255','unique:users'],
-            'password' => ['required','string', 'min:8', 'confirmed'],
+            'email' => ['required', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
 
     public function index()
     {
-        $adminusers=User::where('type', '=','admin')->paginate(8);
-        $userusers=User::where('type', '=','user')->get();
-        return view('backend.admin.users.index', compact('adminusers'),[
-            "userusers" => User::where('type', '=',"user"),
-            "adminusers" => User::where('type', '=',"admin"),
+        $adminusers = User::where('type', '=', 'admin')->paginate(8);
+        $userusers = User::where('type', '=', 'user')->get();
+        return view('backend.admin.users.index', compact('adminusers'), [
+            "userusers" => User::where('type', '=', "user"),
+            "adminusers" => User::where('type', '=', "admin"),
             "adminusers" => $adminusers,
             "userusers" => $userusers,
 
         ]);
     }
     // VIEW PROFILE =============================================================================================================>
-    public function userdetail($id){
+    public function userdetail($id)
+    {
         $duser = User::find($id);
-        return view('backend.admin.users.show',[
-                'dusers'=>$duser,
-            ]);
-        } 
+        return view('backend.admin.users.show', [
+            'dusers' => $duser,
+        ]);
+    }
     // VIEW PROFILE =============================================================================================================>
-    public function new_register(){
+    public function new_register()
+    {
         $now = Carbon::now();
-        $user = User::where('id',1)->first();
-        return view('emails.newUserRegister',[
-                'user'=>$user,
-                'now'=>$now,
-            ]);
-        } 
+        $user = User::where('id', 1)->first();
+        return view('emails.newUserRegister', [
+            'user' => $user,
+            'now' => $now,
+        ]);
+    }
     // FUNCTION UPDATE PROFILE =============================================================================================================>
-    public function func_update_profile(Request $request,$id)
+    public function func_update_profile(Request $request, $id)
     {
         abort_unless((int) $id === (int) Auth::id(), 403);
 
@@ -134,27 +133,27 @@ class UsersController extends Controller
         $contactChannels = User::sanitizeContactChannels($validated['contact_channels'] ?? []);
         unset($validated['contact_channels']);
 
-        $user=User::findOrFail($id);
+        $user = User::findOrFail($id);
         $now = Carbon::now();
         $user->update(array_merge($validated, User::syncLegacyContactChannelAttributes($contactChannels)));
         Mail::to(config('app.reservation_mail'))
-        ->send(new RegistrationUserMail($id,$now));
+            ->send(new RegistrationUserMail($id, $now));
         return redirect("/profile")->with('success', __('messages.Profile has been updated successfully.'));
     }
     // FUNCTION VERIFIED USER =============================================================================================================>
-    public function func_verified_user(Request $request,$id)
+    public function func_verified_user(Request $request, $id)
     {
-        $user=User::findOrFail($id);
+        $user = User::findOrFail($id);
         $ferivied = Carbon::parse($request->verified)->format('Y-m-d H:i:s');
         $user->update([
-            "email_verified_at" =>$ferivied, 
-            "status" =>"Active", 
+            "email_verified_at" => $ferivied,
+            "status" => "Active",
         ]);
-        return redirect()->route('user-manager')->with('success','User has been verified');
+        return redirect()->route('user-manager')->with('success', 'User has been verified');
     }
 
     // FUNCTION UPDATE PROFILE IMAGE =============================================================================================================>
-    public function func_update_profileimg(Request $request,$id)
+    public function func_update_profileimg(Request $request, $id)
     {
         abort_unless((int) $id === (int) Auth::id(), 403);
 
@@ -162,24 +161,25 @@ class UsersController extends Controller
             'profileimg' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
-        $user=User::findOrFail($id);
-        if($request->hasFile("profileimg")){
-            if (File::exists("storage/user/profile/".$user->profileimg)) {
-                File::delete("storage/user/profile/".$user->profileimg);
+        $user = User::findOrFail($id);
+        if ($request->hasFile("profileimg")) {
+            if (File::exists("storage/user/profile/" . $user->profileimg)) {
+                File::delete("storage/user/profile/" . $user->profileimg);
             }
-            $file=$request->file("profileimg");
-            $user->profileimg=time()."_".$file->getClientOriginalName();
-            $file->move("storage/user/profile/",$user->profileimg);
-            $request['profileimg']=$user->profileimg;
+            $file = $request->file("profileimg");
+            $user->profileimg = time() . "_" . $file->getClientOriginalName();
+            $file->move("storage/user/profile/", $user->profileimg);
+            $request['profileimg'] = $user->profileimg;
         }
         $user->update([
-            "profileimg"=>$user->profileimg,
+            "profileimg" => $user->profileimg,
         ]);
         return redirect("/profile")->with('success', __('messages.Profile picture has been updated successfully.'));
     }
 
     // VIEW USER MANAGER =============================================================================================================>
-    public function user_manager(Request $request){
+    public function user_manager(Request $request)
+    {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:120'],
             'position' => ['nullable', Rule::in(array_keys(self::MANAGER_POSITIONS))],
@@ -187,7 +187,13 @@ class UsersController extends Controller
             'approval' => ['nullable', Rule::in(['approved', 'pending'])],
         ]);
 
-        $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
+        $notifications = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if (method_exists($user, 'notifications')) {
+                $notifications = $user->notifications()->latest()->limit(8)->get();
+            }
+        }
         $now = Carbon::now();
         $userQuery = User::query()
             ->select([
@@ -221,8 +227,8 @@ class UsersController extends Controller
                         ->orWhere('office', 'like', "%{$search}%");
                 });
             })
-            ->when($filters['position'] ?? null, fn ($query, string $position) => $query->where('position', $position))
-            ->when($filters['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
+            ->when($filters['position'] ?? null, fn($query, string $position) => $query->where('position', $position))
+            ->when($filters['status'] ?? null, fn($query, string $status) => $query->where('status', $status))
             ->when($filters['approval'] ?? null, function ($query, string $approval) {
                 $approval === 'approved'
                     ? $query->where('is_approved', true)
@@ -241,10 +247,10 @@ class UsersController extends Controller
             'online' => User::whereNotNull('session_id')->where('session_id', '>=', $now->copy()->subMinutes(5))->count(),
         ];
 
-        return view('backend.admin.users.manager',[
-            'users'=>$users,
-            'now'=>$now,
-            'notifications'=>$notifications,
+        return view('backend.admin.users.manager', [
+            'users' => $users,
+            'now' => $now,
+            'notifications' => $notifications,
             'summary' => $summary,
             'filters' => $filters,
             'positions' => self::MANAGER_POSITIONS,
@@ -254,7 +260,7 @@ class UsersController extends Controller
     }
 
     // FUNCTION EDIT USER =============================================================================================================>
-    public function func_edit_user(Request $request,$id)
+    public function func_edit_user(Request $request, $id)
     {
         $targetUserId = (int) $id;
 
@@ -263,7 +269,7 @@ class UsersController extends Controller
         }
 
         $validated = $this->validateManagedUser($request, (int) $id);
-        $users=User::findOrFail($targetUserId);
+        $users = User::findOrFail($targetUserId);
         $status = $validated['status'];
         $isApproved = $status === 'Active' ? (bool) $request->boolean('is_approved') : false;
 
@@ -272,15 +278,15 @@ class UsersController extends Controller
         }
 
         $updates = [
-            "type"=>$validated['type'],
-            "code"=>strtoupper((string) ($validated['code'] ?? '')),
-            "position"=>$validated['position'],
-            "name"=>$validated['name'],
-            "username"=>$validated['username'],
-            "status"=>$status,
-            "is_approved"=>$isApproved,
-            "approved_at"=>$isApproved ? ($users->approved_at ?: now()) : null,
-            "email"=>$validated['email'],
+            "type" => $validated['type'],
+            "code" => strtoupper((string) ($validated['code'] ?? '')),
+            "position" => $validated['position'],
+            "name" => $validated['name'],
+            "username" => $validated['username'],
+            "status" => $status,
+            "is_approved" => $isApproved,
+            "approved_at" => $isApproved ? ($users->approved_at ?: now()) : null,
+            "email" => $validated['email'],
         ];
 
         foreach (['phone', 'office', 'address', 'country', 'comment'] as $optionalProfileField) {
@@ -291,39 +297,40 @@ class UsersController extends Controller
 
         $users->update($updates);
 
-        $this->recordUserManagerLog($request, 'Update User', $id, 'Update User: '.$id);
+        $this->recordUserManagerLog($request, 'Update User', $id, 'Update User: ' . $id);
 
-        return redirect()->route('user-manager')->with('success','User has been successfully updated!');
+        return redirect()->route('user-manager')->with('success', 'User has been successfully updated!');
     }
     // FUNCTION APPROVE USER =============================================================================================================>
-    public function func_approve_user(Request $request,$id)
+    public function func_approve_user(Request $request, $id)
     {
-        $user=User::findOrFail($id);
+        $user = User::findOrFail($id);
         $now = Carbon::now();
-        $is_approved=1;
-        $approved_at= $now->format('Y-m-d H:i:s');
+        $is_approved = 1;
+        $approved_at = $now->format('Y-m-d H:i:s');
         $user->update([
-            "is_approved"=>$is_approved,
-            "approved_at"=>$approved_at,
-            "status"=>"Active",
+            "is_approved" => $is_approved,
+            "approved_at" => $approved_at,
+            "status" => "Active",
         ]);
 
         Mail::to($user->email)
-        ->send(new ApprovalUserMail($id,$now));
-        $this->recordUserManagerLog($request, 'Approve User', $id, 'Approve User: '.$id);
+            ->send(new ApprovalUserMail($id, $now));
+        $this->recordUserManagerLog($request, 'Approve User', $id, 'Approve User: ' . $id);
 
-        return redirect()->route('user-manager')->with('success','User has been approved!');
+        return redirect()->route('user-manager')->with('success', 'User has been approved!');
     }
 
-// FUNCTION UPDATE PASSWORD =============================================================================================================>
-    public function updatePassword(Request $request){
+    // FUNCTION UPDATE PASSWORD =============================================================================================================>
+    public function updatePassword(Request $request)
+    {
         # Validation
         $request->validateWithBag('profilePassword', [
             'old_password' => 'required',
             'new_password' => 'required|min:8|confirmed',
         ]);
         #Match The Old Password
-        if(!Hash::check($request->old_password, auth()->user()->password)){
+        if (!Hash::check($request->old_password, auth()->user()->password)) {
             return redirect("/profile")
                 ->withErrors(['old_password' => "Old Password Doesn't match!"], 'profilePassword')
                 ->withInput();
@@ -335,8 +342,9 @@ class UsersController extends Controller
         return redirect("/profile")->with("status", "Password changed successfully!");
     }
 
-// FUNCTION ADD USER =============================================================================================================>
-    public function func_create_user(Request $request){
+    // FUNCTION ADD USER =============================================================================================================>
+    public function func_create_user(Request $request)
+    {
         $validated = $request->validate([
             'name' => 'required|min:2|string|max:255',
             'username' => 'required|string|max:25|unique:users',
@@ -362,6 +370,8 @@ class UsersController extends Controller
             'position' => $validated['position'],
             'status' => 'Active',
             'is_approved' => true,
+            'is_subscribed' => true,
+            'subscriber' => true,
             'approved_at' => $now,
             'address' => $validated['address'] ?? null,
             'office' => $validated['office'] ?? null,
@@ -371,7 +381,7 @@ class UsersController extends Controller
             'code' => strtoupper((string) ($validated['code'] ?? '')),
         ]);
 
-        $this->recordUserManagerLog($request, 'Create User', $user->id, 'Create User: '.$user->id);
+        $this->recordUserManagerLog($request, 'Create User', $user->id, 'Create User: ' . $user->id);
 
         return redirect()->route('user-manager')->with("success", "New User has been added successfully!");
     }
@@ -390,7 +400,7 @@ class UsersController extends Controller
 
         try {
             $user->delete();
-            $this->recordUserManagerLog($request, 'Delete User', $id, 'Delete User: '.$id);
+            $this->recordUserManagerLog($request, 'Delete User', $id, 'Delete User: ' . $id);
 
             return redirect()->route('user-manager')->with('success', 'User has been removed successfully.');
         } catch (QueryException $exception) {
@@ -401,7 +411,7 @@ class UsersController extends Controller
                 'session_id' => null,
             ]);
 
-            $this->recordUserManagerLog($request, 'Block User', $id, 'Blocked user because permanent delete is protected by related records: '.$id);
+            $this->recordUserManagerLog($request, 'Block User', $id, 'Blocked user because permanent delete is protected by related records: ' . $id);
 
             return redirect()->route('user-manager')->with('success', 'User has related records, so the account was blocked instead of permanently deleted.');
         }
@@ -430,15 +440,14 @@ class UsersController extends Controller
     private function recordUserManagerLog(Request $request, string $action, int $targetUserId, string $note): void
     {
         UserLog::create([
-            "action"=>$action,
-            "service"=>"User Manager",
-            "subservice"=>"User Manager",
-            "subservice_id"=>$targetUserId,
-            "page"=>"user-manager",
-            "user_id"=>Auth::id(),
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note,
+            "action" => $action,
+            "service" => "User Manager",
+            "subservice" => "User Manager",
+            "subservice_id" => $targetUserId,
+            "page" => "user-manager",
+            "user_id" => Auth::id(),
+            "user_ip" => $request->getClientIp(),
+            "note" => $note,
         ]);
     }
-   
 }

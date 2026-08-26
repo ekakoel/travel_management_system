@@ -56,6 +56,68 @@ body.sidebar-light .backend-form-field.is-wide,
 body.sidebar-light .backend-form-grid > .is-wide {
   grid-column: 1 / -1;
 }
+
+body.sidebar-light .backend-translation-group {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+  min-width: 0;
+}
+
+body.sidebar-light .backend-translation-group__header {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+body.sidebar-light .backend-translation-group__title {
+  color: var(--backend-ink);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.35;
+  margin: 0;
+}
+
+body.sidebar-light .backend-translation-group__description {
+  color: var(--backend-muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0;
+}
+
+body.sidebar-light .backend-translation-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
+}
+
+body.sidebar-light .backend-translation-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+body.sidebar-light .backend-translation-field .backend-form-label {
+  color: var(--backend-muted-link);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+body.sidebar-light .backend-translation-field textarea.backend-form-control {
+  min-height: 132px;
+}
+
+body.sidebar-light .backend-translation-field .note-editor.note-frame {
+  min-width: 0;
+}
+
+body.sidebar-light .backend-translation-field .note-editable {
+  min-height: 120px;
+}
+
 body.sidebar-light .backend-form-field.is-half,
 body.sidebar-light .backend-form-grid > .is-half {
   grid-column: 2 / -1;
@@ -283,7 +345,7 @@ body.sidebar-light .hotel-form-actions {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-end;
-  margin-top: 18px;
+  margin-top: 0px;
 }
 
 body.sidebar-light .backend-width-full {
@@ -659,9 +721,16 @@ body.sidebar-light .note-editor.note-frame {
   }
 }
 
+@media (max-width: 1199px) and (min-width: 768px) {
+  body.sidebar-light .backend-translation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 767px) {
   body.sidebar-light .backend-form-grid,
-  body.sidebar-light .backend-form-grid--compact {
+  body.sidebar-light .backend-form-grid--compact,
+  body.sidebar-light .backend-translation-grid {
     grid-template-columns: 1fr;
   }
 

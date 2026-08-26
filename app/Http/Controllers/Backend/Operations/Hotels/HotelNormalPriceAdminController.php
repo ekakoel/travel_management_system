@@ -9,10 +9,10 @@ use App\Models\HotelPrice;
 use App\Models\HotelRoom;
 use App\Models\Hotels;
 use App\Models\UserLog;
-use App\Models\UsdRates;
 use App\Services\Hotels\HotelNormalPriceOverlapValidator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class HotelNormalPriceAdminController extends Controller
@@ -29,32 +29,14 @@ class HotelNormalPriceAdminController extends Controller
         }
 
         $hotels = Hotels::findOrFail($id);
-        $rooms = HotelRoom::where('hotels_id', $id)->orderBy('created_at', 'desc')->get();
-        $usdrates = UsdRates::where('name', 'USD')->first();
+        $rooms = HotelRoom::where('hotels_id', $id)
+            ->orderBy('rooms')
+            ->get(['id', 'hotels_id', 'rooms', 'status']);
 
         return view('backend.operations.hotels.forms.normal-price-create', [
             'hotels' => $hotels,
             'rooms' => $rooms,
-            'usdrates' => $usdrates,
-        ]);
-    }
-
-    public function edit($id)
-    {
-        if (! $this->canManage()) {
-            return $this->redirectToHotelsIndexWithError();
-        }
-
-        $price = HotelPrice::with(['rooms'])->findOrFail($id);
-        $hotels = Hotels::findOrFail($price->hotels_id);
-        $rooms = HotelRoom::where('hotels_id', $hotels->id)->orderBy('created_at', 'desc')->get();
-        $usdrates = UsdRates::where('name', 'USD')->first();
-
-        return view('backend.operations.hotels.forms.normal-price-edit', [
-            'price' => $price,
-            'hotels' => $hotels,
-            'rooms' => $rooms,
-            'usdrates' => $usdrates,
+            'hotelContext' => Crypt::encryptString((string) $hotels->id),
         ]);
     }
 
@@ -65,16 +47,16 @@ class HotelNormalPriceAdminController extends Controller
         }
 
         $validated = $request->validated();
-        $hotelId = (int) $validated['hotels_id'];
+        $hotelId = (int) $request->resolvedHotelId();
 
-        DB::transaction(function () use ($validated, $hotelId, $overlapValidator): void {
+        DB::transaction(function () use ($request, $validated, $hotelId, $overlapValidator): void {
             foreach ($validated['rooms_id'] as $index => $roomId) {
                 $startDate = date('Y-m-d', strtotime($validated['start_date'][$index]));
                 $endDate = date('Y-m-d', strtotime($validated['end_date'][$index]));
 
                 $overlapValidator->ensureAvailable($hotelId, (int) $roomId, $startDate, $endDate);
 
-                HotelPrice::create([
+                $price = HotelPrice::create([
                     'hotels_id' => $hotelId,
                     'rooms_id' => $roomId,
                     'start_date' => $startDate,
@@ -83,6 +65,17 @@ class HotelNormalPriceAdminController extends Controller
                     'markup' => $validated['markup'][$index],
                     'kick_back' => $validated['kick_back'][$index] ?? 0,
                     'author' => auth()->id(),
+                ]);
+
+                UserLog::create([
+                    'action' => 'Add Normal Price',
+                    'service' => 'Hotel',
+                    'subservice' => 'Normal Price',
+                    'subservice_id' => $price->id,
+                    'page' => 'add-hotel-price',
+                    'user_id' => auth()->id(),
+                    'user_ip' => $request->getClientIp(),
+                    'note' => 'Add normal price to Hotel id : '.$hotelId.', Room id : '.$roomId.', Start date : '.$startDate.', End date : '.$endDate.', Markup : '.$validated['markup'][$index].', Contract rate : '.$validated['contract_rate'][$index],
                 ]);
             }
         }, 3);
@@ -169,8 +162,10 @@ class HotelNormalPriceAdminController extends Controller
         return Gate::allows('posDev') || Gate::allows('posAuthor');
     }
 
-    private function redirectToHotelsIndexWithError(string $message = 'Akses ditolak')
+    private function redirectToHotelsIndexWithError(?string $message = null)
     {
+        $message = $message ?? __('messages.You are not authorized to perform this action.');
+
         return redirect()->route('admin.hotels.index')->with('error', $message);
     }
 

@@ -11,7 +11,7 @@
 @endpush
 
 @section('content')
-    @can('posDev')
+    @canany(['posDev','posAdm'])
         @php
             $selectedSearch = $filters['search'] ?? '';
             $selectedPosition = $filters['position'] ?? '';
@@ -69,7 +69,7 @@
                     <section class="backend-page-toolbar user-manager-toolbar">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">User Manager</li>
                             </ol>
                         </nav>
@@ -449,7 +449,7 @@
                                             <div class="is-wide"><dt>Comment</dt><dd>{{ $user->comment ?: '-' }}</dd></div>
                                         </dl>
                                     </div>
-                                    <div class="user-manager-modal__footer">
+                                    <div class="backend-modal__footer user-manager-modal__footer">
                                         @if ($user->status === 'Active' && !$user->is_approved)
                                             <form action="{{ route('approve-user', $user->id) }}" method="POST">
                                                 @csrf
@@ -460,7 +460,6 @@
                                                 </button>
                                             </form>
                                         @endif
-                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
@@ -490,8 +489,7 @@
                                                 'types' => $types,
                                             ])
                                         </div>
-                                        <div class="user-manager-modal__footer">
-                                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
+                                        <div class="backend-modal__footer user-manager-modal__footer">
                                             <button type="submit" class="backend-button backend-button-primary">
                                                 <i class="fa fa-check"></i>
                                                 Save User
@@ -527,8 +525,7 @@
                                         ])
                                         <p class="user-manager-help">Default password is set to 1234567890. Ask the user to change it after first login.</p>
                                     </div>
-                                    <div class="user-manager-modal__footer">
-                                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Close</button>
+                                    <div class="backend-modal__footer user-manager-modal__footer">
                                         <button type="submit" class="backend-button backend-button-primary">
                                             <i class="fa fa-check"></i>
                                             Add User
@@ -541,5 +538,5 @@
                 </div>
             </div>
         </div>
-    @endcan
+    @endcanany
 @endsection

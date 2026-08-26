@@ -34,7 +34,7 @@
                 <section class="backend-page-toolbar transports-admin-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Transportation</li>
                         </ol>
                     </nav>
@@ -128,7 +128,7 @@
                                     @php($transport = $row['model'])
                                     <tr data-transport-row data-transport-name="{{ strtolower($transport->name ?? '') }}" data-transport-type="{{ strtolower($transport->type ?? '') }}">
                                         <td data-label="No">{{ $loop->iteration }}</td>
-                                        <td data-label="Name"><strong>{{ $transport->name }}</strong><span>{{ $row['brand'] }}</span></td>
+                                        <td data-label="Name"><strong>{{ $transport->name }}</strong><span>{{ $row['brand'] }} / {{ $row['partner'] }}</span></td>
                                         <td data-label="Type">{{ $row['type'] }}</td>
                                         <td data-label="Capacity">{{ $row['capacity'] }}</td>
                                         <td data-label="Status">
@@ -183,6 +183,7 @@
                                 </div>
                                 <dl class="backend-table-card-grid">
                                     <div><dt>Brand</dt><dd>{{ $row['brand'] }}</dd></div>
+                                    <div><dt>Partner</dt><dd>{{ $row['partner'] }}</dd></div>
                                     <div><dt>Type</dt><dd>{{ $row['type'] }}</dd></div>
                                     <div><dt>Capacity</dt><dd>{{ $row['capacity'] }}</dd></div>
                                 </dl>
@@ -227,7 +228,7 @@
                                     @foreach ($transportIndex->archivedRows() as $row)
                                         @php($transport = $row['model'])
                                         <tr>
-                                            <td data-label="Name"><strong>{{ $transport->name }}</strong><span>{{ $row['brand'] }}</span></td>
+                                            <td data-label="Name"><strong>{{ $transport->name }}</strong><span>{{ $row['brand'] }} / {{ $row['partner'] }}</span></td>
                                             <td data-label="Status">
                                                 <span class="backend-status-badge backend-status-badge--{{ $row['status_tone'] }}">{{ $transport->status ?: 'Unknown' }}</span>
                                             </td>

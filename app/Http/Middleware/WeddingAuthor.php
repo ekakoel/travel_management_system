@@ -10,7 +10,7 @@ class WeddingAuthor
     {
         \Log::info('User Position: ' . auth()->user()->position);
         if (auth()->user()->position !== 'weddingAuthor') {
-            return redirect('/dashboard')->with('error_messages','You are not authorized to access this page, please contact the system developer for confirmation!');
+            return redirect('/dashboard')->with('error_messages',__('messages.You are not authorized to access this page, please contact the system developer for confirmation!'));
         }
         return $next($request);
     }

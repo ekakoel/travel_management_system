@@ -13,7 +13,7 @@
                         </p>
 
                         <p class="site-footer__description">
-                            {{ data_get($footerData, 'brand.description') }}
+                            {!! data_get($footerData, 'brand.description') !!}
                         </p>
 
                         <div class="site-footer__trust-list" aria-label="{{ data_get($footerData, 'brand.trust_aria') }}">
@@ -31,7 +31,7 @@
                         <ul class="site-footer__contact-list">
                             <li>
                                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                <span>{{ data_get($footerData, 'contact.address') }}</span>
+                                <span>{!! data_get($footerData, 'contact.address') !!}</span>
                             </li>
                             <li>
                                 <i class="fas fa-phone-alt" aria-hidden="true"></i>

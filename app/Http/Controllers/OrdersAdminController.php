@@ -3691,7 +3691,9 @@ class OrdersAdminController extends Controller
                 $message->attach($contract_zh_path);
             }
         });
-        return redirect("/orders-admin-$id");
+        return redirect()
+            ->route('admin.order.show', $order)
+            ->with('success', 'Order has been confirmed successfully.');
     }
 
     public function fgenerate_invoice(Request $request,$id){
@@ -4583,39 +4585,44 @@ class OrdersAdminController extends Controller
                 ['Rejected', 'Invalid', 'Canceled']
             );
         }
+        abort_unless(in_array($order_archive->status, ['Canceled', 'Rejected', 'Invalid'], true), 409);
+
+        $validated = $request->validate([
+            'msg' => ['required', 'string', 'max:2000'],
+        ]);
+        $status = 'Deleted';
         $orderno = $order_archive->orderno;
-        $status = "Archive";
-        $order_archive->update([
-            "status"=>$status,
-            "msg"=>$request->msg,
-        ]);
-        // USER LOG
-        $action = "Archived";
-        $service = "Order";
-        $subservice = $orderno;
-        $page = "order-admin";
-        $note = "Archived order: ".$orderno. " to : ". $status;
-        $user_log =new UserLog([
-            "action"=>$action,
-            "service"=>$service,
-            "subservice"=>$subservice,
-            "subservice_id"=>$id,
-            "page"=>$page,
-            "user_id"=>$request->author,
-            "user_ip"=>$request->getClientIp(),
-            "note" =>$note,
-        ]);
-        $user_log->save();
-        $order_log =new OrderLog([
-            "order_id"=>$id,
-            "action"=>"Archive Order",
-            "url"=>$request->getClientIp(),
-            "method"=>"Archive",
-            "agent"=>$order_archive->name,
-            "admin"=>Auth::user()->id,
-        ]);
-        $order_log->save();
-        return redirect("/orders-admin#invalidorders")->with('success','Order has been successfully archived!');
+
+        DB::transaction(function () use ($request, $order_archive, $status, $orderno, $validated) {
+            $order_archive->update([
+                'status' => $status,
+                'msg' => strip_tags($validated['msg']),
+            ]);
+
+            Reservation::where('id', $order_archive->rsv_id)->update(['status' => 'Canceled']);
+
+            UserLog::create([
+                'action' => 'Archived',
+                'service' => 'Order',
+                'subservice' => $orderno,
+                'subservice_id' => $order_archive->id,
+                'page' => 'order-admin',
+                'user_id' => Auth::id(),
+                'user_ip' => $request->getClientIp(),
+                'note' => 'Archived order: '.$orderno.' to : '.$status,
+            ]);
+
+            OrderLog::create([
+                'order_id' => $order_archive->id,
+                'action' => 'Archive Order',
+                'url' => $request->getClientIp(),
+                'method' => 'Archive',
+                'agent' => $order_archive->name,
+                'admin' => Auth::id(),
+            ]);
+        });
+
+        return redirect('/orders-admin#invalidorders')->with('success','Order has been successfully archived!');
     }
     // Function Add Order Note =========================================================================================>
     public function func_add_order_note(Request $request, $id)

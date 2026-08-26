@@ -8,6 +8,7 @@ use App\Models\ActivitiesImages;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 
 class Activities extends Model
 {
@@ -57,6 +58,40 @@ class Activities extends Model
             ->where('status', 'Active')
             ->whereNotNull('validity')
             ->whereDate('validity', '>=', $asOf);
+    }
+
+    public function coverStoragePath(): ?string
+    {
+        if (! $this->cover) {
+            return null;
+        }
+
+        $cover = ltrim($this->cover, '/');
+
+        if (Str::startsWith($cover, ['http://', 'https://'])) {
+            return null;
+        }
+
+        if (Str::startsWith($cover, 'storage/')) {
+            return Str::after($cover, 'storage/');
+        }
+
+        if (Str::startsWith($cover, 'activities/activities-cover/')) {
+            return $cover;
+        }
+
+        return 'activities/activities-cover/'.$cover;
+    }
+
+    public function coverUrl(): ?string
+    {
+        if (Str::startsWith((string) $this->cover, ['http://', 'https://'])) {
+            return $this->cover;
+        }
+
+        $path = $this->coverStoragePath();
+
+        return $path ? asset('storage/'.$path) : null;
     }
 
     public function user()

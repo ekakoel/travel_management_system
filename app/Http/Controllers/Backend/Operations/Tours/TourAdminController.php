@@ -33,7 +33,7 @@ class TourAdminController extends Controller
     public function create(TourInventoryService $inventory)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         return view('backend.operations.tours.forms.create', $inventory->formOptions());
@@ -42,27 +42,28 @@ class TourAdminController extends Controller
     public function edit($id, TourInventoryService $inventory)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         return view('backend.operations.tours.forms.edit', $inventory->editData((int) $id));
     }
 
-    public function store(StoreTourAdminRequest $request, TourAssetService $assets, TourLocationService $locationsService)
+    public function store(StoreTourAdminRequest $request, TourAssetService $assets, TourLocationService $locationsService, TourAuditService $audit)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         $locations = $locationsService->validateLocations($request);
         $validated = $request->validated();
         $validated['cover'] = $assets->uploadCover($request->file('cover'));
 
-        $tour = DB::transaction(function () use ($validated, $locations, $locationsService) {
+        $tour = DB::transaction(function () use ($validated, $locations, $locationsService, $audit, $request) {
             $tour = new Tours();
             $this->fillTourDetails($tour, $validated);
             $tour->save();
             $locationsService->sync($tour, $locations);
+            $audit->userLog($request, 'Add Tour', 'Tour Package', $tour->id, 'add-tour', 'Create Tour Package: ' . $tour->name);
 
             return $tour;
         });
@@ -73,7 +74,7 @@ class TourAdminController extends Controller
     public function update(UpdateTourAdminRequest $request, $id, TourAssetService $assets, TourLocationService $locationsService)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         $tour = Tours::findOrFail($id);
@@ -87,7 +88,7 @@ class TourAdminController extends Controller
         }
 
         DB::transaction(function () use ($tour, $validated, $locations, $locationsService) {
-            $this->fillTourDetails($tour, $validated, true);
+            $this->fillTourDetails($tour, $validated);
             $tour->save();
             $locationsService->sync($tour, $locations);
         });
@@ -98,7 +99,7 @@ class TourAdminController extends Controller
     public function destroy($id, TourAuditService $audit)
     {
         if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.tour-packages.index')->with('error', 'Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         Tours::findOrFail($id)->update([
@@ -145,12 +146,14 @@ class TourAdminController extends Controller
         return response()->json($locations->searchReferences(trim((string) $request->query('q', ''))));
     }
 
-    private function fillTourDetails(Tours $tour, array $validated, bool $isUpdate = false): void
+    private function fillTourDetails(Tours $tour, array $validated): void
     {
         $tour->cover = $validated['cover'];
 
-        if ($isUpdate) {
+        if (array_key_exists('status', $validated)) {
             $tour->status = $validated['status'];
+        } else {
+            $tour->status = 'Draft';
         }
 
         $tour->type_id = $validated['type'];
@@ -178,9 +181,6 @@ class TourAdminController extends Controller
             'package_highlights',
             'package_highlights_traditional',
             'package_highlights_simplified',
-            'itinerary',
-            'itinerary_traditional',
-            'itinerary_simplified',
             'include',
             'include_traditional',
             'include_simplified',

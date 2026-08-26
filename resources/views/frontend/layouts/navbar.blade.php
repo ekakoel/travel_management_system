@@ -183,7 +183,7 @@
                                 <img src="{{ $currentUserAvatar }}" alt="{{ $currentUser->name }}" class="navbar-user-summary__avatar">
                                 <div>
                                     <div class="fw-semibold text-dark">{{ $currentUser->name }}</div>
-                                    <div class="small text-muted">{{ ucfirst((string) $currentPosition) }}</div>
+                                    <div class="small text-muted">{{ ucfirst((string)__('messages.'.$currentPosition)) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -198,9 +198,9 @@
                             <hr class="dropdown-divider">
                             <div class="dropdown-header">@lang('messages.Dashboard')</div>
                             <a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>@lang('messages.Dashboard')</a>
-                            @if ($canAccessWorkspace)
-                                <a class="dropdown-item" href="{{ route('view.admin-panel-main') }}"><i class="fas fa-briefcase me-2"></i>@lang('messages.Admin Panel')</a>
-                            @endif
+                            @can('posDev')
+                                <a class="dropdown-item" href="{{ route('admin.panel-main.view') }}"><i class="fas fa-briefcase me-2"></i>@lang('messages.Admin Panel')</a>
+                            @endcan
                             @if ($canAccessReservations)
                                 <a class="dropdown-item" href="{{ url('/reservation') }}"><i class="fa fa-calendar-check me-2" aria-hidden="true"></i>@lang('messages.Reservations')</a>
                             @endif

@@ -25,7 +25,7 @@ class UsdRatesController extends Controller
         private readonly CurrencyRateRefreshService $currencyRateRefresh,
     )
     {
-        $this->middleware(['auth','verified']);
+        $this->middleware(['auth', 'verified', 'type:admin']);
     }
     public function index()
     {
@@ -74,14 +74,10 @@ class UsdRatesController extends Controller
         return $this->updateRate($request, $id, 'TWD', 'Update TWD Rate');
     }
 
-    public function func_update_tax(
-        Request $request,
-        $id,
-        TourTaxPolicyActivationService $taxPolicyActivation,
-    )
+    public function func_update_tax(Request $request, $id, TourTaxPolicyActivationService $taxPolicyActivation,)
     {
-        if (! Gate::any(['posDev', 'posAuthor'])) {
-            return redirect()->route('currency')->with('error', 'Tidak dapat merubah data!');
+        if (! Gate::any(['posDev', 'posAuthor', 'posAdm'])) {
+            return redirect()->route('currency')->with('error', 'Unable to modify data!');
         }
 
         $validated = $request->validate([
@@ -126,6 +122,52 @@ class UsdRatesController extends Controller
             'success',
             'Tax and Tour Package pricing policy have been updated.'
         );
+    }
+    public function func_add_tax(Request $request, TourTaxPolicyActivationService $taxPolicyActivation,)
+    {
+        if (! Gate::any(['posDev', 'posAuthor', 'posAdm'])) {
+            return redirect()->route('currency')->with('error', __('messages.unauthorized_access'));
+        }
+
+        $validated = $request->validate([
+            'tax' => ['required', 'numeric', 'min:0', 'max:100'],
+        ]);
+        $actorId = (int) $request->user()->id;
+        $percentage = (string) $validated['tax'];
+
+        try {
+            DB::transaction(function () use (
+                $percentage,
+                $actorId,
+                $request,
+                $taxPolicyActivation,
+            ) {
+                $tax = Tax::create([
+                    'name' => 'Tax',
+                    'tax' => $percentage,
+                ]);
+                $taxPolicyActivation->replaceActivePolicy(
+                    $percentage,
+                    CarbonImmutable::now(),
+                    $actorId,
+                );
+
+                UserLog::create([
+                    'action' => 'Update Tax',
+                    'service' => 'Tax',
+                    'subservice' => $tax->name,
+                    'subservice_id' => $tax->id,
+                    'page' => 'currency',
+                    'user_id' => $actorId,
+                    'user_ip' => $request->getClientIp(),
+                    'note' => "Add Tax: {$percentage}%",
+                ]);
+            });
+        } catch (InvalidArgumentException $exception) {
+            return redirect()->route('currency')->with('error', $exception->getMessage());
+        }
+        Cache::forget('pricing.tour_tax_policy');
+        return redirect()->route('currency')->with('success','Tax have been added.');
     }
 
     public function refreshRates(Request $request)

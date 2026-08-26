@@ -18,6 +18,7 @@ class UpdateTransportAdminRequest extends FormRequest
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:4096',
+            'partner_id' => 'nullable|integer|exists:partners,id',
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
             'brand' => 'required|string|max:255',

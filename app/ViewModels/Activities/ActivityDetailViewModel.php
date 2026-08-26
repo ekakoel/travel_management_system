@@ -46,6 +46,11 @@ class ActivityDetailViewModel
         return $this->quote()?->taxAmountUsd();
     }
 
+    public function taxAmountIdr(): ?int
+    {
+        return $this->quote()?->taxAmountIdr();
+    }
+
     public function taxPercentage(): ?string
     {
         return $this->quote()?->taxPercentage();
@@ -56,6 +61,45 @@ class ActivityDetailViewModel
         return $this->quote()?->unitPriceUsd();
     }
 
+    public function sellingPrice(): ?string
+    {
+        return $this->publishedRate();
+    }
+
+    public function sellingPriceIdr(): ?int
+    {
+        return $this->quote()?->unitPriceIdr();
+    }
+
+    public function contractRateUsd(): ?string
+    {
+        return $this->quote()?->contractRateUsd();
+    }
+
+    public function contractRateIdr(): ?int
+    {
+        return $this->quote()?->contractRateIdr();
+    }
+
+    public function markupUsd(): ?string
+    {
+        return $this->quote()?->markupUsd();
+    }
+
+    public function markupIdr(): ?int
+    {
+        return $this->quote()?->markupIdr();
+    }
+
+    public function dualCurrencyPrice(?string $usdAmount, ?int $idrAmount): string
+    {
+        if ($usdAmount === null || $idrAmount === null) {
+            return __('messages.Price cannot be calculated.');
+        }
+
+        return currencyFormatUsd($usdAmount).' / '.currencyFormatIdr($idrAmount);
+    }
+
     public function pricingUnavailableCode(): ?string
     {
         $this->quote();
@@ -63,15 +107,38 @@ class ActivityDetailViewModel
         return $this->pricingErrorCode;
     }
 
+    public function pricingUnavailableMessage(): string
+    {
+        $code = $this->pricingUnavailableCode();
+
+        return self::pricingUnavailableMessageFor($code);
+    }
+
+    public static function pricingUnavailableMessageFor(?string $code): string
+    {
+        return match ($code) {
+            'MISSING_CONTRACT_RATE' => __('messages.Missing Contract Rate.'),
+            'MISSING_MARKUP' => __('messages.Missing Markup.'),
+            'MISSING_TAX' => __('messages.Tax configuration is not available.'),
+            'MISSING_USD_RATE' => __('messages.USD Rate is not available.'),
+            'MISSING_VALID_UNTIL' => __('messages.Valid Until has not been configured.'),
+            'ACTIVITY_PRICE_DATE_OUT_OF_VALIDITY' => __('messages.The selected activity date is outside the current price validity period.'),
+            'ACTIVITY_PAX_INVALID' => __('messages.Number of guests is outside the Activity pax rules.'),
+            default => __('messages.Activity pricing is not available.'),
+        };
+    }
+
     public function stats(): array
     {
         return [
             [
-                'label' => 'Published Rate',
-                'value' => $this->priceAvailable() ? currencyFormatUsd($this->publishedRate()) : 'Unavailable',
+                'label' => 'Calculated Price',
+                'value' => $this->priceAvailable()
+                    ? $this->dualCurrencyPrice($this->sellingPrice(), $this->sellingPriceIdr())
+                    : __('messages.Price cannot be calculated.'),
                 'meta' => $this->priceAvailable()
-                    ? 'Current published price per pax'
-                    : 'Pricing requirements are not met',
+                    ? 'Current calculated selling price per pax'
+                    : $this->pricingUnavailableMessage(),
                 'icon' => 'fa fa-usd',
                 'tone' => 'blue',
             ],
@@ -89,6 +156,57 @@ class ActivityDetailViewModel
             'Include' => $this->activity->include,
             'Additional Information' => $this->activity->additional_info,
             'Cancellation Policy' => $this->activity->cancellation_policy,
+        ];
+    }
+
+    public function translationGroups(): array
+    {
+        return [
+            [
+                'title' => 'Description',
+                'description' => 'Short overview displayed on the public Activity page.',
+                'fields' => [
+                    ['label' => 'English', 'content' => $this->activity->description],
+                    ['label' => 'Traditional Chinese', 'content' => $this->activity->description_traditional],
+                    ['label' => 'Simplified Chinese', 'content' => $this->activity->description_simplified],
+                ],
+            ],
+            [
+                'title' => 'Itinerary',
+                'description' => 'Sequence or schedule shown to customers before booking.',
+                'fields' => [
+                    ['label' => 'English', 'content' => $this->activity->itinerary],
+                    ['label' => 'Traditional Chinese', 'content' => $this->activity->itinerary_traditional],
+                    ['label' => 'Simplified Chinese', 'content' => $this->activity->itinerary_simplified],
+                ],
+            ],
+            [
+                'title' => 'Include',
+                'description' => 'Services and benefits included in this Activity.',
+                'fields' => [
+                    ['label' => 'English', 'content' => $this->activity->include],
+                    ['label' => 'Traditional Chinese', 'content' => $this->activity->include_traditional],
+                    ['label' => 'Simplified Chinese', 'content' => $this->activity->include_simplified],
+                ],
+            ],
+            [
+                'title' => 'Cancellation Policy',
+                'description' => 'Cancellation conditions shown before customers place an order.',
+                'fields' => [
+                    ['label' => 'English', 'content' => $this->activity->cancellation_policy],
+                    ['label' => 'Traditional Chinese', 'content' => $this->activity->cancellation_policy_traditional],
+                    ['label' => 'Simplified Chinese', 'content' => $this->activity->cancellation_policy_simplified],
+                ],
+            ],
+            [
+                'title' => 'Additional Information',
+                'description' => 'Extra customer-facing notes, restrictions, or preparation details.',
+                'fields' => [
+                    ['label' => 'English', 'content' => $this->activity->additional_info],
+                    ['label' => 'Traditional Chinese', 'content' => $this->activity->additional_info_traditional],
+                    ['label' => 'Simplified Chinese', 'content' => $this->activity->additional_info_simplified],
+                ],
+            ],
         ];
     }
 

@@ -11,7 +11,7 @@
 @endpush
 
 @section('content')
-    @can('posDev')
+    @canany(['posDev','posAdm'])
         @php
             $settingGroups = [
                 'brand' => [
@@ -63,7 +63,7 @@
                 <section class="backend-page-toolbar footer-manager-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Footer Manager</li>
                         </ol>
                     </nav>
@@ -277,5 +277,5 @@
                 ])
             @endforeach
         @endforeach
-    @endcan
+    @endcanany
 @endsection

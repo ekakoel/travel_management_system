@@ -44,7 +44,7 @@ class TourDetailViewModel
         return [
             ['label' => 'Duration', 'value' => $this->duration(), 'meta' => 'Tour itinerary length', 'icon' => 'dw dw-map-6', 'tone' => 'blue'],
             ['label' => 'Price Rows', 'value' => number_format($this->tour->prices->count()), 'meta' => 'Active price validity rows', 'icon' => 'fa fa-tags', 'tone' => 'green'],
-            ['label' => 'Gallery', 'value' => number_format($this->tour->images->count()), 'meta' => 'Uploaded tour images', 'icon' => 'fa fa-picture-o', 'tone' => 'teal'],
+            ['label' => 'Destinations', 'value' => number_format($this->tour->locations->count()), 'meta' => 'Number of destinations', 'icon' => 'fa fa-map', 'tone' => 'teal'],
             ['label' => 'Pricing', 'value' => $this->priceRows()->contains('price_available', true) ? 'Ready' : 'Unavailable', 'meta' => 'Authoritative pricing readiness', 'icon' => 'fa fa-money', 'tone' => 'amber'],
         ];
     }
@@ -60,6 +60,25 @@ class TourDetailViewModel
             'Additional Information' => $this->tour->additional_info,
             'Cancellation Policy' => $this->tour->cancellation_policy,
         ];
+    }
+
+    public function destinations(): Collection
+    {
+        return $this->tour->locations
+            ->sortBy([
+                ['day_number', 'asc'],
+                ['visit_order', 'asc'],
+                ['id', 'asc'],
+            ])
+            ->values()
+            ->map(fn ($location) => [
+                'name' => $location->destination_name ?: 'Untitled destination',
+                'day' => (int) $location->day_number,
+                'order' => (int) $location->visit_order,
+                'time' => $location->visit_time?->format('H:i'),
+                'type' => $location->location_type ?: 'Destination',
+                'is_active' => (bool) $location->is_active,
+            ]);
     }
 
     public function priceRows(): Collection
@@ -94,16 +113,27 @@ class TourDetailViewModel
                         default => '-',
                     },
                     'markup_display' => $this->markupDisplay($price),
+                    'markup_calculation' => $this->markupCalculation($price),
                     'price_available' => $quote !== null,
                     'quoteable_status' => $quote !== null ? 'Quoteable' : 'Not quoteable',
                     'published_rate' => $quote
                         ? $this->formatter->decimal(Money::usdCents($quote->unitPriceUsdMinor()))
                         : null,
+                    'published_rate_idr' => $data['unit_price_idr'] ?? null,
                     'contract_rate_usd' => $data
                         ? $this->formatter->decimal(Money::usdCents($data['contract_rate_usd_minor']))
                         : null,
+                    'contract_rate_idr' => $data['contract_rate_idr'] ?? (int) $price->contract_rate_idr,
+                    'markup_usd' => $data
+                        ? $this->formatter->decimal(Money::usdCents((int) ($data['markup_usd_minor'] ?? 0)))
+                        : null,
+                    'markup_idr' => $data['markup_idr'] ?? null,
                     'tax_amount' => $data
                         ? $this->formatter->decimal(Money::usdCents($data['tax_amount_usd_minor']))
+                        : null,
+                    'tax_amount_idr' => $data['tax_amount_idr'] ?? null,
+                    'tax_percent' => $data
+                        ? ((int) $data['tax_percentage_scaled'] / max(1, (int) $data['tax_percentage_scale']))
                         : null,
                 ];
             })->values();
@@ -133,6 +163,16 @@ class TourDetailViewModel
             'usd' => 'USD '.number_format((float) $price->markup_amount, 2, '.', ','),
             'idr' => 'IDR '.number_format((float) $price->markup_amount, 0, '.', ','),
             default => '-',
+        };
+    }
+
+    private function markupCalculation($price): string
+    {
+        return match ($price->resolvedMarkupType()) {
+            'percentage' => number_format((float) $price->markup_amount, 2, '.', ',').'% x Contract Rate',
+            'usd' => 'USD '.number_format((float) $price->markup_amount, 2, '.', ',').' x Stored USD Sell Rate',
+            'idr' => 'Stored IDR '.number_format((float) $price->markup_amount, 0, '.', ','),
+            default => 'Markup configuration unavailable',
         };
     }
 }

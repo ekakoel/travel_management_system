@@ -812,12 +812,19 @@ class FrontEndController extends Controller
             'minimum_travel_date' => $now->copy()->addHour()->format('Y-m-d\TH:i'),
             'duration_label' => $activity->display_duration,
             'supplier' => $activity->display_supplier,
+            'valid_until' => $activity->validity ? Carbon::parse($activity->validity)->format('Y-m-d') : null,
+            'valid_until_label' => $activity->validity ? dateFormat($activity->validity) : '-',
+            'manual_guest_threshold' => 10,
+            'template_csv_url' => route('activity.guest-list-template', ['format' => 'csv']),
+            'template_xlsx_url' => route('activity.guest-list-template', ['format' => 'xlsx']),
             'order_source' => 'activity-detail-modern',
             'open_on_load' => old('activity_order_source') === 'activity-detail-modern' && $activityOrderErrors->any(),
             'initial_step' => $activityOrderInitialStep,
             'prefill' => [
                 'number_of_guests' => $defaultGuestCount,
                 'travel_date' => $defaultTravelDate,
+                'pickup_location' => old('pickup_location', ''),
+                'dropoff_location' => old('dropoff_location', ''),
                 'guests' => collect(old('guests', []))
                     ->map(function ($guest) {
                         return [
@@ -827,12 +834,10 @@ class FrontEndController extends Controller
                             'sex' => trim((string) ($guest['sex'] ?? '')),
                             'identification_type' => trim((string) ($guest['identification_type'] ?? '')),
                             'identification_no' => trim((string) ($guest['identification_no'] ?? '')),
-                            'is_leader' => (bool) ($guest['is_leader'] ?? false),
                         ];
                     })
                     ->filter(function ($guest) {
                         return collect($guest)
-                            ->except('is_leader')
                             ->contains(fn ($value) => $value !== '');
                     })
                     ->values()

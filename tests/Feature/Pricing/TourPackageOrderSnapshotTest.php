@@ -74,11 +74,11 @@ class TourPackageOrderSnapshotTest extends TestCase
         $this->assertSame($snapshot->id, $order->activePricingSnapshot->id);
 
         DB::table('usd_rates')->where('id', 1)->update(['sell' => '20000']);
-        DB::table('tax_policies')->where('id', 1)->update(['percentage_scaled' => 2_000_000]);
+        DB::table('taxes')->where('id', 1)->update(['tax' => '20']);
         $invoiceValues = app(OrderPricingSnapshotReader::class)->invoiceValues($order);
 
-        $this->assertSame('166.65', $invoiceValues['total_usd']);
-        $this->assertSame(2_666_400, $invoiceValues['total_idr']);
+        $this->assertSame('182.00', $invoiceValues['total_usd']);
+        $this->assertSame(2_912_000, $invoiceValues['total_idr']);
         $this->assertSame('16000.000000', $invoiceValues['rate_usd']);
 
         $this->expectException(LogicException::class);
@@ -185,6 +185,12 @@ class TourPackageOrderSnapshotTest extends TestCase
             $table->string('retrieval_source');
             $table->timestamps();
         });
+        Schema::create('taxes', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('tax');
+            $table->timestamps();
+        });
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
@@ -272,6 +278,13 @@ class TourPackageOrderSnapshotTest extends TestCase
             'sell' => '16000',
             'retrieved_at' => now()->subHour(),
             'retrieval_source' => 'test-fixture',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('taxes')->insert([
+            'id' => 1,
+            'name' => 'tax',
+            'tax' => '10',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -15,7 +15,7 @@ class UpdateAdditionalInvoiceRequest extends FormRequest
     {
         return $this->user()
             && $this->user()->type === 'admin'
-            && in_array($this->user()->position, ['developer', 'reservation', 'weddingRsv'], true);
+            && in_array($this->user()->position, ['developer', 'administrator', 'reservation', 'weddingRsv'], true);
     }
 
     /**

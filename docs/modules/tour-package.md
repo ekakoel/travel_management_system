@@ -65,9 +65,190 @@ Lokasi harus disimpan sebagai data terstruktur, bukan hanya teks bebas di Blade.
 - Validasi koordinat, urutan itinerary, nama lokasi, dan referensi lokasi dilakukan sebelum sync.
 - Cover/marker/gambar mengikuti upload validation domain tour.
 
+## Backend Add Tour Standard
+
+Backend Add Tour adalah Create page untuk master `Tours` saja. Field yang
+dibuat pada tahap ini adalah:
+
+- master data: cover, code, translated name, type, duration days, dan duration
+  nights;
+- structured route map locations melalui `TourLocationService`;
+- setiap structured destination dapat menyimpan customer-facing description
+  dalam English, Traditional Chinese, dan Simplified Chinese melalui kolom
+  `description`, `description_traditional`, dan `description_simplified` pada
+  `tour_package_locations`;
+- translated customer-facing content: short description, description, package
+  highlights, include, exclude, additional information, dan cancellation
+  policy;
+- server-authoritative metadata: initial `status = Draft`, authenticated actor,
+  storage filename, route coordinates, and audit log.
+
+`TourPrice` adalah resource pricing terpisah. Add Tour tidak boleh membuat,
+mengubah, menghitung, atau menampilkan formula TourPrice. Price tiers dikelola
+dari halaman detail Tour setelah master Tour dibuat, sedangkan public quote dan
+order tetap memakai canonical Tour Package pricing service.
+
+Create Tour wajib memakai backend Create/Edit/Detail layout standard dengan
+wizard ringan project-native:
+
+- `x-backend.page-hero`;
+- `x-backend.breadcrumb-toolbar`;
+- `x-backend.detail-layout` dengan main/sidebar 70%/30%;
+- main column berisi wizard 5 step: Basic Information, Route & Itinerary,
+  Content & Translations, Media, dan Review & Create;
+- final persistence tetap satu `POST /fadd-tour`; wizard tidak membuat draft
+  record per step dan tidak memakai autosave;
+- Route & Itinerary bersifat optional pada create. `0` lokasi valid dan tidak
+  boleh dibuat gagal oleh placeholder default seperti `day_number = 1` atau
+  `visit_order = 1`;
+- Create Tour tidak menampilkan atau menerima input manual `itinerary`,
+  `itinerary_traditional`, atau `itinerary_simplified`. Untuk Tour baru,
+  structured route locations adalah source utama itinerary dan
+  `BuildsTourLocationItinerary` menghasilkan output saat data dibaca/render.
+- kolom manual itinerary pada tabel `tours` tetap dipertahankan untuk
+  backward compatibility, Edit Tour legacy, order snapshot historis, dan
+  fallback Tour lama yang belum memiliki route locations;
+- jika lokasi diisi, setiap lokasi nyata tetap harus memiliki nama, tipe, day,
+  order, koordinat valid, dan validasi marker sesuai `TourLocationService`;
+- destination description pada Route & Itinerary bersifat optional tetapi wajib
+  disediakan sebagai tiga textarea locale: English, Traditional Chinese, dan
+  Simplified Chinese. Nilai translation ikut disimpan ke location reference
+  ketika reference lokasi dibuat/diperbarui sehingga autocomplete berikutnya
+  dapat mengisi ulang deskripsi multi-bahasa.
+- location reference autocomplete tetap memakai route
+  `tour-location.references`, sedangkan resolve koordinat tetap memakai
+  `tour-location.resolve-coordinates`. Route & Itinerary tidak menampilkan
+  tombol manual "Resolve Location" atau "Enter Coordinates Manually"; koordinat
+  harus tetap otomatis dibaca saat Google Maps URL diinput atau dipilih dari
+  reference, dengan fallback field koordinat manual hanya muncul saat resolver
+  gagal;
+- marker image divalidasi tanpa upload file permanen. Upload marker dilakukan
+  saat lokasi disinkronkan setelah Tour master tersedia, sehingga validasi
+  tidak menulis file orphan. UI marker cover pada Route & Itinerary memakai dua
+  kolom: preview di kiri dan file input di kanan;
+- right sidebar berisi initial status dan pricing boundary tanpa menduplikasi
+  progress, summary, atau field editable utama yang sudah tampil pada wizard
+  dan Review & Create;
+- Review & Create wajib menampilkan preview terstruktur dari input sebelumnya:
+  master data, nama per bahasa, Route & Itinerary per day, completion content,
+  dan media summary. Preview ini hanya UX helper; server validation dan
+  persistence tetap authoritative.
+- Route & Itinerary tidak boleh menambahkan wrapper card lagi di dalam panel
+  utama. Repeater locations tampil flat/unframed; hanya individual stop editor
+  yang boleh memakai card level kedua agar tidak terjadi card di dalam card
+  berlebihan.
+- Destination card pada Route & Itinerary dapat diurutkan ulang memakai drag
+  handle di header card. Setelah drag/drop, frontend wajib menyusun ulang
+  nomor tampilan, name input `locations[index]`, dan `visit_order` agar submit
+  menyimpan urutan baru.
+- translated fields memakai `backend-translation-group`,
+  `backend-translation-grid`, dan urutan English, Traditional Chinese,
+  Simplified Chinese;
+- pada Create/Edit Tour, `package_highlights`, `include`, `exclude`, dan
+  `additional_info` beserta field Traditional/Simplified bersifat optional.
+  Field tersebut boleh kosong dan tidak boleh memblokir submit; required
+  content tetap `short_description`, `description`, dan `cancellation_policy`
+  dalam tiga bahasa.
+- rich text memakai `data-backend-richtext="true"` dari initializer shared;
+- cover preview memakai JS domain Tour dan upload tetap divalidasi server-side
+  sebagai JPG/JPEG/PNG/WEBP maksimum 2 MB.
+
+## Backend Edit Tour Standard
+
+Edit Tour memakai wizard 5 step yang sama dengan Create Tour:
+
+- Basic Information;
+- Route & Itinerary;
+- Content & Translations;
+- Media;
+- Review & Update.
+
+Perbedaan Edit hanya pada existing data, status saat ini, metadata, current
+cover, contextual actions, dan update behavior. Edit tetap memakai
+`x-backend.detail-layout` 70%/30% dan JS domain Tour yang sama dengan Create;
+tidak boleh dibuat wizard khusus Edit atau inline initializer baru.
+
+Route & Itinerary pada Edit memakai `tour_package_locations` sebagai source
+authoritative ketika structured stops tersedia. Existing stops dimuat melalui
+relasi Tour dengan urutan `day_number`, `visit_order`, lalu `id`, dan disubmit
+kembali melalui `TourLocationService`. Request tidak mempercayai location ID
+client untuk mengikat data ke Tour lain; sync selalu berjalan melalui relasi
+Tour yang sedang diedit.
+
+Update Tour tidak merender input manual `itinerary`,
+`itinerary_traditional`, atau `itinerary_simplified`. Kolom legacy tersebut
+tetap dipertahankan di database untuk fallback historis. Saat Tour lama belum
+memiliki structured locations, Edit hanya menampilkan notice non-editable dan
+menyimpan field lain tanpa mengubah nilai itinerary legacy. Jika admin
+menambahkan structured locations, frontend/detail yang memakai
+`BuildsTourLocationItinerary` dapat memakai structured itinerary sesuai
+precedence yang sudah aktif.
+
+Edit Media menampilkan current cover dan input optional untuk mengganti cover.
+Jika tidak ada file baru, cover lama dipertahankan. Marker image location lama
+dipertahankan melalui `existing_marker_image`; marker baru diupload ketika
+submitted, upload baru dibersihkan saat sync gagal, dan marker lama yang tidak
+lagi dipakai dijadwalkan dihapus setelah commit berhasil.
+
+Sidebar Edit berisi context admin, bukan duplikasi field utama:
+
+- current status dan control status yang tervalidasi server;
+- metadata record;
+- setup progress;
+- route summary dan legacy notice bila relevan;
+- related actions ke detail, pricing, dan index.
+
+## Backend Tour Detail Modal Standard
+
+Backend detail Tour menampilkan structured route destinations langsung di card
+`Tour Profile` sebagai ringkasan author-facing. Data wajib berasal dari relasi
+`locations` yang diurutkan berdasarkan `day_number`, `visit_order`, lalu `id`;
+Blade tidak boleh melakukan query manual atau menyusun ulang itinerary dari
+string legacy. Ringkasan ini hanya menampilkan jumlah stop, nama destination,
+day, jam kunjungan bila tersedia, tipe lokasi, dan status draft bila lokasi
+tidak aktif. Full itinerary/customer-facing copy tetap dikelola dari Route &
+Itinerary dan fallback legacy sesuai aturan di atas.
+
+Backend Tour Detail modal Price wajib mengikuti shared backend modal standard:
+
+- root modal memakai `backend-modal` dan section `backend-modal__header`,
+  `backend-modal__body`, serta `backend-modal__footer`;
+- close control hanya memakai `<x-backend.modal-close>` di header, bukan
+  button footer atau `data-dismiss="modal"` pada modal canonical;
+- footer modal form hanya memuat action submit utama dengan
+  `backend-button backend-button-primary`;
+- Add Price dan Edit Price memakai partial `price-fields` yang sama, dengan
+  `backend-form-grid`, `backend-form-field`, `backend-form-label`,
+  `backend-form-control`, `data-backend-money-unit`, dan
+  `data-backend-picker="date"`;
+- tabel Tour Prices pada detail backend hanya menampilkan `#`, `Pax Tier`,
+  `Published Rate`, `Validity`, `Availability`, dan `Action`. Kolom
+  `Published Rate` menampilkan Agent Rate/Published Rate dari quote canonical
+  dalam urutan USD lalu IDR serta tombol teks `View calculation` yang membuka
+  modal breakdown rate;
+- modal breakdown rate menampilkan markup type dan formula markup di dalam card
+  Markup yang sama; tidak boleh menambah card terpisah untuk metadata markup;
+- pricing behavior tetap server-side melalui `StoreTourPriceAdminRequest`,
+  `UpdateTourPriceAdminRequest`, dan canonical Tour pricing services. Blade dan
+  JavaScript modal tidak boleh menambahkan formula pricing baru.
+
+Backend Tour Gallery management sudah dihapus dari detail Tour. Halaman detail
+admin tidak merender panel, tabel, modal, action, JavaScript manager, stylesheet,
+atau route mutation untuk upload/update/delete gallery. Data dan schema
+`tours_images` tetap dipertahankan untuk kompatibilitas read-only historical dan
+frontend/public display; penghapusan fitur UI backend tidak boleh menghapus data
+existing.
+
 ## Frontend Behavior
 
 - Detail tour menampilkan itinerary/map dari data yang sudah dibentuk controller/service.
+- Jika `activeLocations` tersedia, itinerary frontend Tour Package dihasilkan
+  dari `BuildsTourLocationItinerary` dengan urutan `day_number` lalu
+  `visit_order`. Description tiap stop mengikuti locale aktif:
+  `description_traditional` untuk `zh`, `description_simplified` untuk
+  `zh-CN`, dan fallback ke `description`.
+- Jika Tour lama tidak memiliki `activeLocations`, frontend tetap memakai
+  fallback manual `itinerary` sesuai locale yang tersedia.
 - Blade tidak melakukan geocoding, sorting kompleks, atau query lokasi.
 - Jika peta tidak memiliki koordinat valid, tampilkan fallback/empty state yang diterjemahkan.
 
@@ -79,18 +260,27 @@ Kontrak public Tour Package:
   detail, quote endpoint, dan Create Order. `TourPricingService` menangani
   mutation master price dan tidak menghitung selling price.
 - Harga bookable wajib milik Tour yang diminta, memiliki
-  `deleted_at = null`, canonical IDR contract rate, explicit markup type dan
-  verification metadata yang dibuat server, serta mencakup travel date pada
-  `valid_from`/`valid_until` dan pax pada `min_qty`/`max_qty`.
+  `deleted_at = null`, canonical IDR contract rate, explicit markup type,
+  mencakup travel date pada `valid_from`/`valid_until`, dan pax pada
+  `min_qty`/`max_qty`. Quote Tour Package tidak lagi bergantung pada
+  `markup_source`, `markup_verified_at`, atau `markup_verified_by`.
 - Tepat satu tier harus ditemukan. Tier kosong atau lebih dari satu gagal
-  tertutup. Fresh USD sell rate dan tepat satu tax policy Tour yang efektif
-  tetap wajib pada saat quote/order, tetapi bukan input CRUD master price.
+  tertutup. Quote memakai USD sell rate yang tersimpan di database saat ini
+  tanpa freshness gate 24 jam, dan memakai tax yang tersimpan di tabel `taxes`
+  saat ini tanpa dependency pada effective approved `tax_policies`.
 - ID harga dari form hanya preferred identifier. Server wajib mencari ulang
   record melalui relasi tour dan seluruh filter di atas; ID dari tour lain,
   expired, deleted, incomplete, atau tier pax yang tidak cocok harus ditolak.
 - Contract rate, markup, USD conversion, tax, harga per pax, dan total order
   dihitung server-side. Nilai harga/total dari frontend bukan sumber
   authoritative.
+- Boundary rounding Tour Package mengikuti standar price project
+  `ceiling-whole-usd-v1`: precise unit selling amount diproyeksikan ke USD lalu
+  dibulatkan ke atas ke USD utuh; gross total memakai `CEIL(unit price) x
+  quantity`; final total USD dibulatkan ke atas lagi setelah discount
+  order-level. Field price IDR untuk unit/gross/final dikonversi dari USD yang
+  sudah dibulatkan memakai stored USD sell rate yang sama, sedangkan raw
+  pre-rounding IDR tetap disimpan di breakdown untuk audit.
 - Halaman detail boleh memakai kandidat harga aktif untuk preview dinamis,
   tetapi harus menyaringnya terhadap tanggal perjalanan dan rentang pax yang
   sama. Tidak ada fallback ke tier tertinggi di luar `max_qty`.
@@ -99,18 +289,16 @@ Kontrak public Tour Package:
   periode `valid_from`/`valid_until`, dan selling price USD per pax yang dihitung
   server. Modal mengulang quote berdasarkan tanggal perjalanan dan jumlah pax
   sebelum mengisi `tour_price_id`.
-- `quoteEachTierReport` memeriksa kandidat tier, freshness USD sell rate, dan
-  effective approved Tour tax policy secara independen. Detail frontend
+- `quoteEachTierReport` memeriksa kandidat tier, stored USD sell rate, dan
+  stored tax database secara independen. Detail frontend
   menampilkan checklist tanggal evaluasi, pax tier/validity yang ditemukan,
-  kurs, tax policy, dan final quote. Kegagalan dependency tidak lagi berubah
+  kurs, stored tax, dan final quote. Kegagalan dependency tidak lagi berubah
   menjadi empty state tanpa penjelasan, tetapi selling price dan tombol Order
   tetap fail-closed sampai seluruh requirement valid.
-- Update USD pada halaman Currency mengisi `retrieved_at` dan
-  `retrieval_source`, sehingga penyimpanan ulang rate membuatnya fresh untuk
-  maksimal 24 jam. Update Tax pada halaman yang sama menyinkronkan tabel
-  compatibility `taxes` dengan effective approved `tax_policies` Tour Package
-  menggunakan actor login. Perubahan persentase membuat policy version baru
-  dan menutup periode policy lama tanpa mengubah snapshot order historis.
+- Update USD pada halaman Currency tetap menyimpan nilai rate database yang
+  digunakan Tour Package. Update Tax pada halaman yang sama tetap mengisi tabel
+  compatibility `taxes`; nilai tersebut menjadi tax yang dipakai quote Tour
+  Package.
 - Create Order tetap memakai transaction, snapshot harga order, pending
   reservation, dan duplicate-submission guard yang sudah aktif.
 
@@ -132,6 +320,21 @@ Kontrak public Tour Package:
   Create Order menghitung ulang jumlah tersebut dan melakukan quote authoritative
   di dalam transaction. Dengan demikian preview dan tier order berasal dari
   manifest yang sama tanpa mempercayai total frontend.
+- Pada Step 1, preview harga Trip Details boleh meminta quote menggunakan
+  minimum pax sebelum manifest guest diisi agar `travel_date` langsung
+  tervalidasi terhadap validity harga. Tombol Next pada Step 1 wajib tetap
+  disabled sampai quote canonical untuk tanggal tersebut berhasil.
+- Header price card pada modal Create Order wajib mengikuti state quote Step 1:
+  default menampilkan Price dan unit price USD per pax, sukses menampilkan unit
+  price USD per pax hasil quote, sisi kanan menampilkan minimum order dari
+  `min_qty` terkecil price tiers yang quoteable, dan gagal setelah user memilih
+  tanggal menampilkan pesan "Price unavailable on date :date".
+- Frontend booking wizard wajib menganggap quote sebagai state server-side yang
+  terikat pada fingerprint `travel_date`, jumlah guest manifest, booking code,
+  dan promotion. Perubahan tanggal atau guest membuat quote lama stale,
+  mengosongkan `tour_price_id`, menonaktifkan submit, dan meminta ulang quote.
+  User tidak boleh lanjut ke review/submit sampai quote canonical terbaru
+  berhasil.
 - Endpoint quote sukses memakai kontrak JSON root yang eksplisit:
   `price_available`, `quote`, dan `display`. `display.unit_price_usd` mengisi
   Price/pax dan `display.final_total_usd` mengisi Total Price pada Review.
@@ -162,7 +365,7 @@ Kontrak public Tour Package:
   sama tanpa dianggap sebagai pemakaian ganda. Order lain tetap tunduk pada
   limit dan ownership discount yang berlaku.
 - Jika jumlah guest keluar dari batas 2–200, tidak ada tier/validity yang cocok,
-  exchange rate atau tax policy tidak valid, atau invoice sudah dibuat, mutasi
+  stored USD sell rate atau stored tax database tidak valid, atau invoice sudah dibuat, mutasi
   guest dibatalkan seluruhnya dan harga lama tetap utuh.
 - Manifest dikunci setelah order keluar dari `Draft`/`Pending` atau invoice
   dibuat agar nilai invoice, order, reservation, dan pricing snapshot tidak
@@ -232,8 +435,8 @@ Jenis markup mempunyai arti tunggal:
 
 - `percentage`: persentase dari `contract_rate_idr` per pax; maksimum 100%,
   maksimum dua desimal, dan dihitung fixed-scale dengan pembulatan half-up.
-- `usd`: nominal USD per pax, maksimum dua desimal; dikonversi memakai fresh
-  USD sell rate saat quote.
+- `usd`: nominal USD per pax, maksimum dua desimal; dikonversi memakai USD
+  sell rate yang tersimpan di database saat quote.
 - `idr`: nominal rupiah bulat per pax; tidak menjalani currency round-trip.
 
 Pembuatan/update berjalan dalam transaction. Overlap price dicegah bila pax
@@ -241,8 +444,8 @@ interval dan validity interval sama-sama beririsan untuk Tour yang sama.
 Soft-deleted row tidak memblokir; resolver runtime tetap menolak ambiguity
 sebagai perlindungan lapis kedua.
 
-Admin list menampilkan pax tier, contract IDR, markup type/value, validity,
-derived availability, quoteable state, serta Needs Review filter. Soft-deleted
+Admin list menampilkan pax tier, Agent Rate/Published Rate, validity,
+derived availability, action, serta Needs Review filter. Soft-deleted
 row tidak ditampilkan pada halaman detail Tour; restore
 service dan route tetap dipertahankan untuk kebutuhan recovery terkontrol. Legacy
 `contract_rate`, `markup`, `expired_date`, dan `status` hanya mirror
@@ -252,8 +455,8 @@ fallback quote dan 72 row legacy tidak dipetakan otomatis.
 Validity bersifat inklusif: price dapat dipakai hanya bila
 `valid_from <= travel_date <= valid_until`. Record bertipe `Scheduled` belum
 berlaku, `Expired` sudah tidak berlaku, dan `Valid` berada di dalam periode.
-Quoteability tetap memerlukan tepat satu tier pax, fresh USD rate, dan tepat
-satu effective approved Tour tax policy.
+Quoteability tetap memerlukan tepat satu tier pax, stored USD sell rate yang
+valid, dan stored tax database yang valid.
 
 Implemented: 2026-07-31. Impact hanya berlaku untuk quote dan order baru.
 Existing order, invoice, payment, reservation, email, PDF, report, dan pricing

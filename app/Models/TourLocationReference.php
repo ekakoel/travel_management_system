@@ -18,6 +18,8 @@ class TourLocationReference extends Model
         'latitude',
         'longitude',
         'description',
+        'description_traditional',
+        'description_simplified',
         'lookup_key',
     ];
 

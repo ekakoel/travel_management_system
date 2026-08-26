@@ -31,7 +31,7 @@
                 <section class="backend-page-toolbar transport-form-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.transports.index') }}">Transportation</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.transports.show', $transport->id) }}">{{ $transport->name }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Edit</li>
@@ -59,6 +59,7 @@
                         <div class="backend-form-grid">
                             @include('backend.operations.transports.partials.profile-fields', [
                                 'transport' => $transport,
+                                'partners' => $partners,
                                 'types' => $type,
                                 'brands' => $brand,
                                 'isCreate' => false,

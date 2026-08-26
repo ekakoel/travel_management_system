@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Gate;
 
 class DriversController extends Controller
 {
+    public function __construct(){
+        $this->middleware(['auth', 'verified', 'type:admin']);
+    }
     public function index()
     {
         $now = Carbon::now();
@@ -70,7 +73,7 @@ class DriversController extends Controller
             $driver->delete();
             return back()->with('success','Drivers has been deleted');
         }else{
-            return redirect()->route('admin.drivers.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.drivers.index')->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 }

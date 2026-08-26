@@ -19,12 +19,13 @@
         default => currencyFormatUsd($invoice?->total_usd ?: $order->final_price),
     };
     $paymentStateLabel = $paymentStateLabel ?? ((__('messages.' . $order->status) !== 'messages.' . $order->status) ? __('messages.' . $order->status) : $order->status);
-    $isProtectedPublicInvoice = app(\App\Services\AccommodationFinancialFileService::class)->isProtectedPublicOrder($order);
+    $financialFiles = app(\App\Services\AccommodationFinancialFileService::class);
+    $isProtectedPublicInvoice = $financialFiles->isProtectedPublicOrder($order);
     $invoicePreviewRoute = $invoicePreviewRoute ?? ($isProtectedPublicInvoice
-        ? route('orders.accommodation.invoice.preview', ['order' => $order->id, 'locale' => 'en'])
+        ? route($financialFiles->customerInvoicePreviewRouteName($order), ['order' => $order->id, 'locale' => 'en'])
         : route('orders.invoice.preview', ['id' => $order->id]));
     $invoiceDownloadRoute = $invoiceDownloadRoute ?? ($isProtectedPublicInvoice
-        ? route('orders.accommodation.invoice.download', ['order' => $order->id, 'locale' => 'en'])
+        ? route($financialFiles->customerInvoiceDownloadRouteName($order), ['order' => $order->id, 'locale' => 'en'])
         : route('orders.invoice.download', ['id' => $order->id]));
     $paymentExpired = $paymentExpired ?? ($order->status === 'Canceled');
     $travelDateLabel = $order->travel_date

@@ -6,7 +6,7 @@
 
 <input type="hidden" name="payment_standard_version" value="1">
 
-<div class="order-detail-grid mt-3">
+<div class="order-detail-grid">
     <div class="order-detail-upload">
         <label for="payment_date_{{ $order->id }}" class="form-label">
             @lang('messages.Payment Date') <span class="text-danger" aria-hidden="true">*</span>
@@ -60,7 +60,7 @@
         id="receipt_file_{{ $order->id }}"
         accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         class="form-control @error('receipt_file') is-invalid @enderror"
-        data-receipt-input="#tour-receipt-preview-{{ $order->id }}"
+        data-receipt-input="#payment-receipt-preview-{{ $order->id }}"
         data-receipt-empty="@lang('messages.No preview available')"
         required
     >
@@ -70,6 +70,6 @@
     @enderror
 </div>
 
-<div class="order-detail-payment-preview mt-3" id="tour-receipt-preview-{{ $order->id }}">
+<div class="order-detail-payment-preview mt-3" id="payment-receipt-preview-{{ $order->id }}">
     <span>@lang('messages.No preview available')</span>
 </div>

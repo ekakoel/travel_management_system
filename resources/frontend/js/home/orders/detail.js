@@ -20,8 +20,13 @@
             input.addEventListener('change', function () {
                 var file = input.files && input.files[0];
 
-                if (!file || !file.type || !file.type.match(/^image\//)) {
+                if (!file) {
                     target.innerHTML = '<span>' + (input.getAttribute('data-receipt-empty') || 'No preview available') + '</span>';
+                    return;
+                }
+
+                if (!file.type || !file.type.match(/^image\//)) {
+                    target.innerHTML = '<span>' + file.name + '</span>';
                     return;
                 }
 

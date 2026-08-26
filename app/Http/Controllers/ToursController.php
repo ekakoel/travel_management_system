@@ -406,6 +406,11 @@ class ToursController extends Controller
             ->values()
             ->map(function ($location, $index) use ($markerImage, &$dayCounters) {
                 $markerStyle = $this->tourLocationMarkerStyle($location->location_type);
+                $descriptionField = match (app()->getLocale()) {
+                    'zh' => 'description_traditional',
+                    'zh-CN' => 'description_simplified',
+                    default => 'description',
+                };
                 $dayNumber = (int) $location->day_number;
                 $dayCounters[$dayNumber] = ($dayCounters[$dayNumber] ?? 0) + 1;
                 $locationImage = $location->marker_image
@@ -423,7 +428,7 @@ class ToursController extends Controller
                     'icon' => $markerStyle['icon'],
                     'color' => $markerStyle['color'],
                     'label' => $markerStyle['label'],
-                    'description' => trim(strip_tags((string) $location->description)),
+                    'description' => trim(strip_tags((string) ($location->{$descriptionField} ?: $location->description))),
                     'lat' => (float) $location->latitude,
                     'lng' => (float) $location->longitude,
                     'location_image_url' => $locationImage,

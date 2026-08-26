@@ -1,5 +1,6 @@
 @php
     $additionalChargeRows = $hotelDetail->additionalChargeRows();
+    $canManageAdditionalCharges = \Illuminate\Support\Facades\Gate::any(['posDev', 'posAuthor', 'posAdm']);
 @endphp
 
 <section id="additional-charge" class="backend-panel hotel-detail-panel">
@@ -8,14 +9,14 @@
             <span class="backend-section-header__label">Commercial Rule</span>
             <h2>Additional Charges</h2>
         </div>
-        @canany(['posDev','posAuthor'])
+        @if ($canManageAdditionalCharges)
             <div class="hotel-detail-section-actions">
-                <a href="{{ route('admin.hotels.additional-charges.create', $hotel->id) }}" class="backend-toolbar-action">
+                <button type="button" class="backend-toolbar-action" data-toggle="modal" data-target="#hotelAdditionalChargeAdd{{ $hotel->id }}">
                     <i class="fa fa-plus"></i>
                     Add Charge
-                </a>
+                </button>
             </div>
-        @endcanany
+        @endif
     </div>
     <div class="backend-table-wrap hotel-detail-table-wrap">
         <table class="backend-table hotel-detail-table">
@@ -25,9 +26,9 @@
                     <th>Name</th>
                     <th>Mandatory</th>
                     <th>Published Rate</th>
-                    @canany(['posDev','posAuthor'])
-                        <th>Action</th>
-                    @endcanany
+                    @if ($canManageAdditionalCharges)
+                        <th class="backend-table-action-column">Action</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -45,12 +46,12 @@
                                 View calculation
                             </button>
                         </td>
-                        @canany(['posDev','posAuthor'])
+                        @if ($canManageAdditionalCharges)
                             <td data-label="Action">
-                                <div class="hotel-detail-actions">
-                                    <a href="{{ route('admin.hotels.additional-charges.edit', $additionalCharge->id) }}" class="backend-icon-action" aria-label="Edit {{ $additionalCharge->name }}">
+                                <div class="backend-table-actions hotel-detail-actions">
+                                    <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#hotelAdditionalChargeEdit{{ $additionalCharge->id }}" aria-label="Edit {{ $additionalCharge->name }}">
                                         <i class="fa fa-pencil-alt"></i>
-                                    </a>
+                                    </button>
                                     <form action="{{ route('admin.hotels.additional-charges.destroy', $additionalCharge->id) }}" method="post">
                                         @csrf
                                         @method('delete')
@@ -60,11 +61,11 @@
                                     </form>
                                 </div>
                             </td>
-                        @endcanany
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5">
+                        <td colspan="{{ $canManageAdditionalCharges ? 5 : 4 }}">
                             <div class="backend-table-empty">
                                 <i class="fa fa-asterisk"></i>
                                 <strong>No additional charges.</strong>
@@ -78,6 +79,15 @@
     </div>
 </section>
 
+@if ($canManageAdditionalCharges)
+    @include('backend.operations.hotels.modals.additional-charge-form', [
+        'modalId' => 'hotelAdditionalChargeAdd'.$hotel->id,
+        'mode' => 'create',
+        'hotel' => $hotel,
+        'additionalCharge' => null,
+    ])
+@endif
+
 @foreach ($additionalChargeRows as $row)
     @include('backend.operations.hotels.modals.price-calculation', [
         'modalId' => 'hotelAdditionalChargeCalculation'.$row['model']->id,
@@ -86,4 +96,13 @@
         'subtitle' => $row['model']->type,
         'pricing' => $row['pricing'],
     ])
+
+    @if ($canManageAdditionalCharges)
+        @include('backend.operations.hotels.modals.additional-charge-form', [
+            'modalId' => 'hotelAdditionalChargeEdit'.$row['model']->id,
+            'mode' => 'edit',
+            'hotel' => $hotel,
+            'additionalCharge' => $row['model'],
+        ])
+    @endif
 @endforeach

@@ -635,7 +635,7 @@
                                     <div class="card-box-title text-left">
                                         <div class="title"><i class="icon-copy fa fa-usd" aria-hidden="true"></i>@lang('messages.Payment Confirmation')</div>
                                     </div>
-                                    <form id="payment-confirm-{{ $order->id }}" action="/fpayment-confirmation-{{ $order->id }}" method="post" enctype="multipart/form-data">
+                                    <form id="payment-confirm-{{ $order->id }}" action="{{ route('upload.payment-confirmation', ['id' => $order->id]) }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row text-left">
                                             <div class="col-md-12">

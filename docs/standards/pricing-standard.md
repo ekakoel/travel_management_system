@@ -30,6 +30,23 @@ The implemented historical contract is:
 - the reader rejects non-Tour services, preserving Hotel, Transport, Activity,
   Wedding, Private Villa, and internal SPK pricing isolation.
 
+Current Tour Package quote calculation was adjusted on 2026-08-24:
+
+- price eligibility no longer requires `markup_source`, `markup_verified_at`,
+  or `markup_verified_by`;
+- USD conversion uses the stored USD sell rate from the database without the
+  24-hour freshness gate;
+- Tour Package tax uses the currently stored `taxes` row instead of requiring
+  an active/effective/approved `tax_policies` row.
+
+Current Tour Package USD rounding was adjusted on 2026-08-24 to match the
+project price rounding behavior used by Activity: `ceiling-whole-usd-v1`.
+`PricingEngine` now rounds the projected unit USD price up to the next whole
+USD, calculates gross USD as rounded unit price times quantity, and rounds final
+USD total up again after order-level discount. Unit/gross/final IDR price fields
+are projected back from the rounded USD values with the same stored USD sell
+rate; raw pre-rounding values remain in the quote breakdown for audit.
+
 Admin readiness controls now collect explicit contract rate, USD markup amount,
 source, typed `valid_from`/`valid_until`, reviewer, and readiness status. Ready
 pax/date ranges are protected from overlap. No legacy markup is
@@ -624,16 +641,20 @@ confirmed before implementation; Phase 2 does not approve a new dependency.
 
 Decision status: **Approved for implementation planning**.
 
-- Rounding mode is round half-up.
-- `ceil()` is forbidden for intermediate or final pricing under this contract.
-- Commercial whole-USD rounding is disabled.
-- USD displays two decimal places.
+- Internal component conversion uses fixed-scale round half-up.
+- Commercial Tour Package price boundaries use `ceiling-whole-usd-v1`.
+- Unit USD is rounded up to the next whole USD after contract, markup, and tax.
+- Gross USD is rounded unit USD multiplied by quantity.
+- Final USD is rounded up again after order-level discount.
+- USD still displays two decimal places, but whole-dollar rounded values end in
+  `.00`.
 
 Examples:
 
 ```text
-90.754 -> 90.75
-90.755 -> 90.76
+90.001 -> 91.00
+90.750 -> 91.00
+91.000 -> 91.00
 ```
 
 ### 13.1 Rounding boundaries
@@ -1670,14 +1691,14 @@ Tests must run only against an explicitly isolated database as required by
 
 | Case | Assertion |
 | --- | --- |
-| Required example | Produces IDR 1,452,000 and USD 90.75 exactly. |
+| Required example | Preserves raw IDR 1,452,000 for audit and publishes USD 91.00. |
 | Sell side | Resolver/quote records `sell`; `rate` and `buy` are not read. |
 | Fractional rate | Fixed-scale result is deterministic without float drift. |
 | Tax 1.5% | Applied exclusively to contract plus markup. |
 | Fractional tax | Fixed scale and half-up are correct. |
 | Markup USD | USD cents convert to IDR using quote sell rate. |
 | Contract rate IDR | Preserved as whole IDR. |
-| Quantity | Unit amount times pax is exact in IDR. |
+| Quantity | Gross USD is rounded unit USD times pax. |
 | Promotion fixed | Explicit currency conversion and post-tax order. |
 | Promotion percentage | Correct eligible base and half-up. |
 | Booking code fixed | Explicit currency conversion and post-tax order. |
@@ -1685,9 +1706,9 @@ Tests must run only against an explicitly isolated database as required by
 | Discount stacking | Approved order/limits enforced; invalid stack rejected. |
 | Add-on | Server source, quantity, currency, and final addition are correct. |
 | Lower bound | Final total never becomes negative. |
-| Rounding 90.754 | USD displays 90.75. |
-| Rounding 90.755 | USD displays 90.76. |
-| Other half boundaries | IDR conversion, tax, discount, and display boundaries. |
+| Rounding 90.001 | USD displays 91.00. |
+| Rounding 90.750 | USD displays 91.00. |
+| Other boundaries | IDR conversion, tax, discount, and whole-USD display boundaries. |
 | Overflow | Reject instead of wrapping/truncating. |
 | Currency mismatch | Money operation rejects incompatible currencies. |
 
@@ -1758,7 +1779,7 @@ Tests must run only against an explicitly isolated database as required by
 
 - No direct `buy`, `sell`, or `rate` read in Tour pricing consumers.
 - No direct hardcoded Tax ID in Tour pricing consumers.
-- No financial `ceil()` in the Tour pricing path.
+- No ad hoc financial `ceil()` in Tour pricing consumers; whole-USD rounding is centralized in `PricingEngine`.
 - No binary float casts in Pricing components.
 - No pricing formula in Blade or JavaScript.
 - No current rate/tax query in historical consumers.
@@ -1863,10 +1884,10 @@ remain Phase 4 decisions and additionally require the first two bullets:
 - all blocking data mappings are complete (**Phase 4 production gate**);
 - Tour pricing uses one domain service and one generic engine;
 - all Tour rate reads go through `CurrencyRateResolver` using `sell`;
-- rate older than 24 hours fails closed;
-- Tour tax resolves exactly one active, effective 1.5% exclusive policy;
-- all calculations avoid binary float and intermediate `ceil`;
-- required example produces IDR 1,452,000 and USD 90.75;
+- stored USD sell rate is used without a freshness gate;
+- Tour tax resolves from the stored `taxes` row;
+- all calculations avoid binary float and ad hoc consumer rounding;
+- required example preserves raw IDR 1,452,000 for audit and publishes USD 91.00;
 - preview and Create Order use the same authoritative quote inputs/breakdown;
 - order, reservation, invoice, payment, email, PDF, report, admin, and API use
   the stored snapshot;

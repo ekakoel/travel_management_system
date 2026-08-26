@@ -11,7 +11,7 @@
 @endpush
 
 @section('content')
-    @canany(['posDev','posAuthor','posRsv'])
+    @canany(['posDev','posAuthor','posRsv','posAdm'])
         @php
             $driverCount = $drivers->count();
             $reviewedCount = $drivers->filter(fn ($driver) => (float) ($driver->global_rating ?? 0) > 0)->count();
@@ -34,7 +34,7 @@
                     title="Driver Manager"
                     description="Manage driver profiles, contact details, license information, availability status, and review performance used by transport operations."
                 >
-                    @canany(['posDev','posAuthor','posRsv'])
+                    @canany(['posDev','posAdm','posRsv'])
                         <x-slot name="action">
                             <button type="button" class="backend-page-primary-action" data-toggle="modal" data-target="#driverAddModal">
                                 <i class="fa fa-plus"></i>
@@ -47,7 +47,7 @@
                 <section class="backend-page-toolbar drivers-admin-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Driver Manager</li>
                         </ol>
                     </nav>
@@ -188,17 +188,19 @@
                                                 <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#driverDetail{{ $driver->id }}" aria-label="View {{ $driver->name }}">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                @canany(['posDev','posAuthor'])
+                                                @canany(['posDev','posAdm','posRsv'])
                                                     <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#driverEdit{{ $driver->id }}" aria-label="Edit {{ $driver->name }}">
-                                                        <i class="fa fa-edit"></i>
+                                                        <i class="fa fa-pencil-alt"></i>
                                                     </button>
-                                                    <form id="destroyDriver{{ $driver->id }}" action="{{ route('destroy-driver', $driver->id) }}" method="post">
-                                                        @csrf
-                                                        @method('delete')
-                                                        <button type="submit" class="backend-icon-action is-danger" data-driver-delete="{{ $driver->name }}" aria-label="Delete {{ $driver->name }}">
-                                                            <i class="fa fa-trash-alt"></i>
-                                                        </button>
-                                                    </form>
+                                                    @can('posDev')
+                                                        <form id="destroyDriver{{ $driver->id }}" action="{{ route('admin.driver.destroy', $driver->id) }}" method="post">
+                                                            @csrf
+                                                            @method('delete')
+                                                            <button type="submit" class="backend-icon-action is-danger" data-driver-delete="{{ $driver->name }}" aria-label="Delete {{ $driver->name }}">
+                                                                <i class="fa fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endcan
                                                 @endcanany
                                             </div>
                                         </td>
@@ -217,7 +219,6 @@
                             </tbody>
                         </table>
                     </div>
-
                     <div class="backend-table-card-list drivers-admin-card-list">
                         @forelse ($drivers as $driver)
                             @php
@@ -242,7 +243,7 @@
                                 </dl>
                                 <div class="backend-table-actions drivers-admin-card__actions">
                                     <button type="button" class="backend-button backend-button-secondary" data-toggle="modal" data-target="#driverDetail{{ $driver->id }}">View</button>
-                                    @canany(['posDev','posAuthor'])
+                                    @canany(['posDev','posAdm','posRsv'])
                                         <button type="button" class="backend-button backend-button-primary" data-toggle="modal" data-target="#driverEdit{{ $driver->id }}">Edit</button>
                                     @endcanany
                                 </div>
@@ -293,21 +294,18 @@
                                     <div><dt>Email</dt><dd>{{ $driver->email ?: '-' }}</dd></div>
                                     <div><dt>License</dt><dd>{{ $driver->license ?: '-' }}</dd></div>
                                     <div><dt>Country</dt><dd>{{ $driver->country ?: '-' }}</dd></div>
-                                    <div><dt>Address</dt><dd>{{ $driver->address ?: '-' }}</dd></div>
+                                    <div><dt>Address</dt><dd>{!! $driver->address ?: '-' !!}</dd></div>
                                     <div><dt>Punctuality</dt><dd>{{ number_format((float) ($avg->driver_punctuality ?? 0), 1) }} ★</dd></div>
                                     <div><dt>Driving Skills</dt><dd>{{ number_format((float) ($avg->driver_driving_skills ?? 0), 1) }} ★</dd></div>
                                     <div><dt>Neatness</dt><dd>{{ number_format((float) ($avg->driver_neatness ?? 0), 1) }} ★</dd></div>
                                 </dl>
                             </div>
                         </div>
-                        <div class="backend-modal__footer">
-                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Close</button>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            @canany(['posDev','posAuthor'])
+            @canany(['posDev','posAdm','posRsv'])
                 <div class="modal fade backend-modal drivers-admin-modal" id="driverEdit{{ $driver->id }}" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
@@ -320,7 +318,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form id="updateDriver{{ $driver->id }}" action="{{ route('edit-driver', $driver->id) }}" method="post">
+                            <form id="updateDriver{{ $driver->id }}" action="{{ route('admin.driver.edit', $driver->id) }}" method="post">
                                 @csrf
                                 <div class="backend-modal__body">
                                     @include('backend.operations.drivers.partials.form', ['driver' => $driver])
@@ -331,7 +329,6 @@
                                     <i class="fa fa-check"></i>
                                     Save
                                 </button>
-                                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -339,7 +336,7 @@
             @endcanany
         @endforeach
 
-        @canany(['posDev','posAuthor','posRsv'])
+        @canany(['posDev','posAdm','posRsv'])
             <div class="modal fade backend-modal drivers-admin-modal" id="driverAddModal" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content">
@@ -352,7 +349,7 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <form id="addDriver" method="post" action="{{ route('create-driver') }}">
+                        <form id="addDriver" method="post" action="{{ route('admin.driver.create') }}">
                             @csrf
                             <div class="backend-modal__body">
                                 @include('backend.operations.drivers.partials.form', ['driver' => null])
@@ -363,7 +360,6 @@
                                 <i class="fa fa-check"></i>
                                 Save
                             </button>
-                            <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                 </div>

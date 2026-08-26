@@ -74,11 +74,15 @@ class HotelPricingService
         $effectiveContractRateIdr = (float) $contractRateIdr * $effectiveMultiplier;
         $contractRateUsd = $this->contractRateUsd($effectiveContractRateIdr, $usdRate);
         $markupUsd = (int) ceil((float) $markup);
+        $markupIdr = $this->usdToIdr($markupUsd, $exchangeRate);
         $subtotalUsd = $contractRateUsd + $markupUsd;
         $taxPercent = (float) ($tax->tax ?? 0);
         $taxUsd = (int) ceil($subtotalUsd * ($taxPercent / 100));
+        $taxIdr = $this->usdToIdr($taxUsd, $exchangeRate);
         $publishedRate = $subtotalUsd + $taxUsd;
         $kickBackUsd = max((int) ceil((float) $kickBack), 0);
+        $publishedRateIdr = $this->usdToIdr($publishedRate, $exchangeRate);
+        $netRate = max($publishedRate - $kickBackUsd, 0);
 
         return [
             'contract_rate_idr' => (float) $contractRateIdr,
@@ -88,13 +92,27 @@ class HotelPricingService
             'exchange_rate_valid' => $exchangeRate > 0,
             'contract_rate_usd' => $contractRateUsd,
             'markup_usd' => $markupUsd,
+            'markup_idr' => $markupIdr,
             'subtotal_usd' => $subtotalUsd,
             'tax_percent' => $taxPercent,
             'tax_usd' => $taxUsd,
+            'tax_idr' => $taxIdr,
             'published_rate' => $publishedRate,
+            'published_rate_idr' => $publishedRateIdr,
             'kick_back_usd' => $kickBackUsd,
-            'net_rate' => max($publishedRate - $kickBackUsd, 0),
+            'kick_back_idr' => $this->usdToIdr($kickBackUsd, $exchangeRate),
+            'net_rate' => $netRate,
+            'net_rate_idr' => $this->usdToIdr($netRate, $exchangeRate),
         ];
+    }
+
+    private function usdToIdr(float|int $usdAmount, float $exchangeRate): int
+    {
+        if ($exchangeRate <= 0) {
+            return 0;
+        }
+
+        return (int) ceil((float) $usdAmount * $exchangeRate);
     }
 
     public function normalPricePublishedRate(object $price, object|null $usdRate, object|null $tax): int

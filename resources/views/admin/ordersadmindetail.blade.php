@@ -32,7 +32,8 @@
         $canRegenerateInvoice = in_array($order->status, ['Approved', 'Paid'], true);
         $canSendConfirmation = in_array($order->status, ['Approved', 'Paid'], true);
         $tourCanRejectOrInvalidate = $isTourPackageOrder && in_array($order->status, ['Draft', 'Pending'], true);
-        $tourCanArchive = $isTourPackageOrder && in_array($order->status, ['Rejected', 'Invalid', 'Canceled'], true);
+        $canArchiveOrder = in_array($order->status, ['Rejected', 'Invalid', 'Canceled'], true);
+        $tourCanArchive = $isTourPackageOrder && $canArchiveOrder;
         $isProtectedPublicOrder = app(\App\Services\AccommodationFinancialFileService::class)->isProtectedPublicOrder($order);
         $receiptRoute = match ($order->service) {
             \App\Models\Orders::PUBLIC_TRANSPORT_SERVICE => 'admin.orders.transport.payments.receipt',
@@ -108,7 +109,7 @@
                     <div class="backend-page-toolbar orders-admin-detail-toolbar">
                         <nav aria-label="{{ __('admin-orders.detail.breadcrumb_label') }}">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">@lang('admin-orders.breadcrumb.admin')</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">@lang('admin-orders.breadcrumb.admin')</a></li>
                                 <li class="breadcrumb-item"><a href="{{ route('admin.order.index') }}">@lang('admin-orders.breadcrumb.orders')</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">{{ $order->orderno }}</li>
                             </ol>
@@ -234,7 +235,7 @@
                                         <h2>Confirmation Reference</h2>
                                     </div>
                                 </div>
-                                <form id="updateConfirmationNumber" action="{{ url('/fupdate-confirmation-number-' . $order->id) }}" method="post">
+                                <form id="updateConfirmationNumber" action="{{ route('admin.orders.confirmation-number.update', ['id' => $order->id]) }}" method="post">
                                     @csrf
                                     @method('PUT')
                                     <div class="orders-admin-detail-form-grid">
@@ -555,7 +556,7 @@
                                             <i class="fa fa-exclamation-circle" aria-hidden="true"></i> Mark Invalid
                                         </button>
                                     @endif
-                                    @if(!$isTourPackageOrder || $tourCanArchive)
+                                    @if($canArchiveOrder)
                                         <button type="button" class="backend-button backend-button-danger" data-toggle="modal" data-target="#archiveOrderModal">
                                             <i class="fa fa-archive" aria-hidden="true"></i> Archive
                                         </button>
@@ -631,7 +632,7 @@
                 <div class="modal-content orders-admin-detail-modal">
                     <div class="orders-admin-detail-modal__header"><h3>Add Note</h3></div>
                     <div class="orders-admin-detail-modal__body">
-                        <form id="addOrderNote" action="{{ url('/fadd-order-note-' . $order->id) }}" method="post">
+                        <form id="addOrderNote" action="{{ route('admin.orders.notes.store', ['id' => $order->id]) }}" method="post">
                             @csrf
                             <div class="backend-form-field">
                                 <label for="order_note_status">Type</label>
@@ -690,7 +691,7 @@
             </div>
         @endforeach
 
-        @foreach(['rejectOrderModal' => ['title' => 'Reject Order', 'form' => 'rejectOrder', 'action' => url('/fupdate-order-rejected/' . $order->id), 'button' => 'Reject'], 'invalidOrderModal' => ['title' => 'Mark Invalid', 'form' => 'invalidOrder', 'action' => url('/fupdate-order-invalid/' . $order->id), 'button' => 'Invalid'], 'archiveOrderModal' => ['title' => 'Archive Order', 'form' => 'archiveOrder', 'action' => url('/farchive-order/' . $order->id), 'button' => 'Archive']] as $modalId => $modal)
+        @foreach(['rejectOrderModal' => ['title' => 'Reject Order', 'form' => 'rejectOrder', 'action' => url('/fupdate-order-rejected/' . $order->id), 'button' => 'Reject'], 'invalidOrderModal' => ['title' => 'Mark Invalid', 'form' => 'invalidOrder', 'action' => url('/fupdate-order-invalid/' . $order->id), 'button' => 'Invalid'], 'archiveOrderModal' => ['title' => 'Archive Order', 'form' => 'archiveOrder', 'action' => route('admin.orders.workflow.archive', ['id' => $order->id]), 'button' => 'Archive']] as $modalId => $modal)
             <div class="modal fade" id="{{ $modalId }}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content orders-admin-detail-modal">

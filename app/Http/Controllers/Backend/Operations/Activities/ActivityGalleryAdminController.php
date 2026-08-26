@@ -11,11 +11,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class ActivityGalleryAdminController extends Controller
 {
+    private const MANAGE_GATES = ['posDev', 'posAuthor', 'posAdm'];
+
     public function __construct()
     {
         $this->middleware(['auth', 'verified', 'type:admin']);
@@ -23,8 +24,8 @@ class ActivityGalleryAdminController extends Controller
 
     public function edit($id)
     {
-        if (! Gate::allows('posDev') && ! Gate::allows('posAuthor')) {
-            return redirect()->route('admin.activities.index')->with('error', 'Akses ditolak');
+        if (! Gate::any(self::MANAGE_GATES)) {
+            return redirect()->route('admin.activities.index')->with('error', __('messages.You are not authorized to perform this action.'));
         }
 
         $activities = Activities::with('images')->findOrFail($id);
@@ -32,8 +33,12 @@ class ActivityGalleryAdminController extends Controller
         return view('backend.operations.activities.forms.gallery-edit')->with('activities', $activities);
     }
 
-    public function update_gallery(Request $request, Activities $activity): RedirectResponse
+    public function update_gallery(Request $request, Activities $activity, ActivityAssetService $assets): RedirectResponse
     {
+        if (! Gate::any(self::MANAGE_GATES)) {
+            return redirect()->route('admin.activities.index')->with('error', __('messages.You are not authorized to perform this action.'));
+        }
+
         $validated = $request->validate([
             'images' => ['required', 'array', 'min:1'],
             'images.*' => [
@@ -58,13 +63,11 @@ class ActivityGalleryAdminController extends Controller
             DB::transaction(function () use (
                 $validated,
                 $activity,
+                $assets,
                 &$storedPaths
             ): void {
                 foreach ($validated['images'] as $image) {
-                    $path = $image->store(
-                        "activities/{$activity->id}/gallery",
-                        'public'
-                    );
+                    $path = $assets->uploadGalleryImage($image);
 
                     $storedPaths[] = $path;
 
@@ -76,7 +79,7 @@ class ActivityGalleryAdminController extends Controller
             });
         } catch (Throwable $exception) {
             foreach ($storedPaths as $path) {
-                Storage::disk('public')->delete($path);
+                $assets->deleteGalleryImage($path);
             }
 
             report($exception);
@@ -93,36 +96,57 @@ class ActivityGalleryAdminController extends Controller
 
     public function destroy(Request $request, $id, ActivityAuditService $audit)
     {
+        if (! Gate::any(self::MANAGE_GATES)) {
+            return redirect()->route('admin.activities.index')->with('error', __('messages.You are not authorized to perform this action.'));
+        }
+
         $activity = Activities::findOrFail($id);
-        $activity->update([
-            'status' => 'Removed',
-        ]);
 
-        $audit->userLog(
-            $request,
-            'Remove Activity',
-            $id,
-            'activities-admin',
-            'Remove Activity: ' . $id
-        );
+        DB::transaction(function () use ($request, $activity, $audit, $id): void {
+            $activity->update([
+                'status' => 'Archived',
+            ]);
 
-        return back()->with('success', 'The Activity has been successfully deleted!');
+            $audit->userLog(
+                $request,
+                'Archive Activity',
+                $id,
+                'activities-admin',
+                'Archive Activity: ' . $id
+            );
+        });
+
+        return back()->with('success', 'The Activity has been successfully archived!');
     }
 
     public function destroyImage($id, ActivityAssetService $assets)
     {
-        $image = ActivitiesImages::findOrFail($id);
-        $assets->deleteGalleryImage($image->image);
+        if (! Gate::any(self::MANAGE_GATES)) {
+            return redirect()->route('admin.activities.index')->with('error', __('messages.You are not authorized to perform this action.'));
+        }
 
-        $image->delete();
+        $image = ActivitiesImages::findOrFail($id);
+
+        DB::transaction(function () use ($image, $assets): void {
+            $assets->deleteGalleryImage($image->image);
+            $image->delete();
+        });
 
         return back()->with('success', 'The Activity gallery image has been successfully deleted!');
     }
 
     public function destroyCover($id, ActivityAssetService $assets)
     {
+        if (! Gate::any(self::MANAGE_GATES)) {
+            return redirect()->route('admin.activities.index')->with('error', __('messages.You are not authorized to perform this action.'));
+        }
+
         $activity = Activities::findOrFail($id);
-        $assets->deleteCover($activity->cover);
+
+        DB::transaction(function () use ($activity, $assets): void {
+            $assets->deleteCover($activity->cover);
+            $activity->update(['cover' => '']);
+        });
 
         return back()->with('success', 'The Activity cover image has been successfully deleted!');
     }

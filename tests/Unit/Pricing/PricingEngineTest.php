@@ -30,8 +30,11 @@ class PricingEngineTest extends TestCase
         $this->assertSame(320_000, $quote->data['markup_idr']);
         $this->assertSame(1_320_000, $quote->data['subtotal_idr']);
         $this->assertSame(132_000, $quote->data['tax_amount_idr']);
-        $this->assertSame(1_452_000, $quote->unitPriceIdr());
-        $this->assertSame(9_075, $quote->unitPriceUsdMinor());
+        $this->assertSame(1_452_000, $quote->data['raw_unit_price_idr']);
+        $this->assertSame(1_456_000, $quote->unitPriceIdr());
+        $this->assertSame(9_075, $quote->data['raw_unit_price_usd_minor']);
+        $this->assertSame(9_100, $quote->unitPriceUsdMinor());
+        $this->assertSame('ceiling-whole-usd-v1', $quote->data['rounding_policy']);
     }
 
     public function test_it_multiplies_quantity_and_selects_largest_discount(): void
@@ -63,10 +66,12 @@ class PricingEngineTest extends TestCase
             calculatedAt: CarbonImmutable::parse('2026-07-29 12:00:00'),
         );
 
-        $this->assertSame(2_904_000, $quote->data['gross_total_idr']);
+        $this->assertSame(2_912_000, $quote->data['gross_total_idr']);
+        $this->assertSame(18_200, $quote->data['gross_total_usd_minor']);
+        $this->assertSame(17_000, $quote->finalTotalUsdMinor());
         $this->assertSame(200_000, $quote->data['discount_total_idr']);
         $this->assertSame('booking_code', $quote->data['selected_discount']['source']);
-        $this->assertSame(2_704_000, $quote->finalTotalIdr());
+        $this->assertSame(2_720_000, $quote->finalTotalIdr());
     }
 
     public function test_idr_markup_is_used_without_currency_round_trip(): void
@@ -83,10 +88,11 @@ class PricingEngineTest extends TestCase
             calculatedAt: CarbonImmutable::parse('2026-07-29 12:00:00'),
         );
 
-        $this->assertSame('tour-package-v2', $quote->data['pricing_version']);
+        $this->assertSame('tour-package-v3', $quote->data['pricing_version']);
         $this->assertSame(Money::IDR, $quote->data['markup_currency']);
         $this->assertSame(125_001, $quote->data['markup_idr']);
-        $this->assertSame(1_237_501, $quote->unitPriceIdr());
+        $this->assertSame(1_237_501, $quote->data['raw_unit_price_idr']);
+        $this->assertSame(1_248_000, $quote->unitPriceIdr());
     }
 
     private function rate(string $value): ResolvedCurrencyRate

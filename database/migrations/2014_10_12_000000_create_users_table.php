@@ -30,16 +30,17 @@ class CreateUsersTable extends Migration
             $table->string('office')->nullable();
             $table->string('address')->nullable();
             $table->string('country')->nullable();
-            $table->string('status')->nullable();
-            $table->boolean('is_approved')->default(false)->change();
+            $table->boolean('is_approved')->default(false);
+            $table->timestamp('approved_at')->nullable();
             $table->boolean('is_subscribed');
             $table->boolean('subscriber');
-            $table->longText('comment')->nullable();
-            $table->string('session_id')->nullable();
+            $table->longText('unsubscribe_reason')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->longText('unsubscribe_reason')->nullable();
+            $table->longText('comment')->nullable();
+            $table->string('session_id')->nullable();
             $table->rememberToken();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

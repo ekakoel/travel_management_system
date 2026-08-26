@@ -23,8 +23,18 @@ Satu pola UI backend hanya boleh punya satu sumber style shared. Tidak ada visua
 
 ## Breadcrumb Standard
 
-- Breadcrumb backend memakai wrapper `backend-page-toolbar`.
-- Root Admin Panel memakai `route('view.admin-panel-main')`.
+- Breadcrumb backend memakai component `x-backend.breadcrumb-toolbar` untuk
+  halaman baru atau halaman yang sedang distandardisasi.
+- Component wajib tetap menghasilkan wrapper `backend-page-toolbar`,
+  `backend-breadcrumb-toolbar`, `backend-breadcrumb-nav`, dan
+  `backend-breadcrumb` agar theme global dipakai konsisten.
+- Halaman legacy yang masih memakai markup manual `backend-page-toolbar` +
+  `.breadcrumb` tetap mendapat theme yang sama dari shared SCSS sampai halaman
+  tersebut dimigrasikan.
+- Root Admin Panel memakai `route('admin.panel-main.view')`.
+- Breadcrumb action kanan, seperti status badge atau tombol contextual, harus
+  ditempatkan pada slot `actions`; jangan membuat toolbar page-specific untuk
+  spacing breadcrumb.
 
 ## KPI Standard
 
@@ -150,6 +160,10 @@ Satu pola UI backend hanya boleh punya satu sumber style shared. Tidak ada visua
 ## Table Action Button Standard
 
 - Action table memakai `backend-icon-action--view`, `backend-icon-action--edit`, dan `backend-icon-action--delete`.
+- Semua cell action pada `backend-table` wajib memakai `data-label="Action"`
+  atau `data-label="Actions"` dan isi action harus rata kanan melalui shared
+  `backend-table-actions`; header action baru dapat memakai
+  `backend-table-action-column` agar label header ikut rata kanan.
 
 ## Rich Text Area Standard
 
@@ -164,6 +178,9 @@ Satu pola UI backend hanya boleh punya satu sumber style shared. Tidak ada visua
 ## Detail Layout and Context Side Panel Standard
 
 - Detail page memakai `x-backend.detail-layout` dan `backend-detail-side`.
+- Backend Create/Edit/Detail page memakai kontrak authoritative
+  `docs/decisions/backend-page-layout-standard.md`, termasuk right sidebar
+  wajib, semantic section, page actions, dan translation group horizontal.
 
 ## Komponen Wajib Ringkas
 
@@ -182,7 +199,11 @@ Satu pola UI backend hanya boleh punya satu sumber style shared. Tidak ada visua
 - Monetary input: `data-backend-money-unit`, `backend-money-control`, dan shared `initBackendMoneyInputs`.
 - Required marker: atribut `required` + initializer shared `initBackendRequiredMarkers`; jangan mengandalkan warna/markup page-specific.
 - Action table: `backend-icon-action`, `backend-icon-action--view|edit|delete`.
+- Action table alignment: `td[data-label="Action"]`,
+  `td[data-label="Actions"]`, `backend-table-actions`, dan
+  `backend-table-action-column`.
 - Detail page: `x-backend.detail-layout`, `backend-detail-main`, `backend-detail-side`.
+- Create/Edit/Detail layout: `docs/decisions/backend-page-layout-standard.md`.
 
 ## Rules
 

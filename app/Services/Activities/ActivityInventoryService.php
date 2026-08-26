@@ -22,13 +22,16 @@ class ActivityInventoryService
     {
         $this->validityService->draftExpired();
 
-        $activities = Activities::with('partners')
+        $activities = Activities::query()
+            ->with('partners:id,name')
             ->where('status', '!=', 'Removed')
             ->where('status', '!=', 'Archived')
             ->get();
-        $activeActivities = Activities::where('status', '=', 'Active')->get();
-        $archivedActivities = Activities::where('status', '=', 'Archived')->get();
-        $draftActivities = Activities::where('status', '=', 'Draft')->get();
+        $activeActivities = $activities->where('status', 'Active')->values();
+        $draftActivities = $activities->where('status', 'Draft')->values();
+        $archivedActivities = Activities::query()
+            ->where('status', 'Archived')
+            ->get(['id', 'status']);
         $viewModel = new ActivityIndexViewModel(
             activities: $activities,
             activeActivities: $activeActivities,
@@ -42,7 +45,7 @@ class ActivityInventoryService
             'activeactivities' => $activities,
             'archiveactivities' => $archivedActivities,
             'draftactivities' => $draftActivities,
-            'partners' => Partners::all(),
+            'partners' => Partners::query()->get(['id', 'name']),
             'activityIndex' => $viewModel,
             'viewModel' => $viewModel,
         ];
@@ -54,7 +57,7 @@ class ActivityInventoryService
 
         $now = Carbon::now();
         $business = BusinessProfile::where('id', '=', 1)->first();
-        $activity = Activities::with(['partners', 'images'])->findOrFail($activityId);
+        $activity = Activities::with(['partners:id,name', 'images'])->findOrFail($activityId);
         $partner = $activity->partners;
         $viewModel = new ActivityDetailViewModel(
             activity: $activity,
@@ -75,8 +78,8 @@ class ActivityInventoryService
     public function formOptions(): array
     {
         return [
-            'type' => ActivityType::all(),
-            'partners' => Partners::all(),
+            'type' => ActivityType::query()->get(['id', 'type']),
+            'partners' => Partners::query()->get(['id', 'name']),
         ];
     }
 }

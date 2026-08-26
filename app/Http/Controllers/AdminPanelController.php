@@ -196,7 +196,7 @@ class AdminPanelController extends Controller
         $setting = $registrationAccess->update($request->boolean('enabled'));
 
         return redirect()
-            ->to('/admin-panel')
+            ->to('/admin/panel-main')
             ->with('success', $setting->status
                 ? 'Registration access has been enabled.'
                 : 'Registration access has been disabled.');

@@ -11,458 +11,495 @@
 @endpush
 
 @section('content')
-    <div class="mobile-menu-overlay"></div>
-    @can('isAdmin')
-        <main class="main-container tour-form-page">
+    @canany(['posDev','posAuthor'])
+        @php
+            $wizardSteps = [
+                'basic' => 'Basic Information',
+                'route' => 'Route & Itinerary',
+                'content' => 'Content & Translations',
+                'media' => 'Media',
+                'review' => 'Review & Create',
+            ];
+
+            $errorStep = 'basic';
+            $stepFieldMap = [
+                'basic' => ['name', 'name_traditional', 'name_simplified', 'code', 'type', 'duration_days', 'duration_nights'],
+                'route' => ['locations'],
+                'content' => [
+                    'short_description', 'short_description_traditional', 'short_description_simplified',
+                    'description', 'description_traditional', 'description_simplified',
+                    'package_highlights', 'package_highlights_traditional', 'package_highlights_simplified',
+                    'include', 'include_traditional', 'include_simplified',
+                    'exclude', 'exclude_traditional', 'exclude_simplified',
+                    'additional_info', 'additional_info_traditional', 'additional_info_simplified',
+                    'cancellation_policy', 'cancellation_policy_traditional', 'cancellation_policy_simplified',
+                ],
+                'media' => ['cover'],
+            ];
+
+            foreach ($stepFieldMap as $step => $fields) {
+                foreach ($fields as $field) {
+                    if ($errors->has($field) || $errors->has($field . '.*')) {
+                        $errorStep = $step;
+                        break 2;
+                    }
+                }
+            }
+
+            $nameTranslationGroup = [
+                'title' => 'Tour Name',
+                'description' => 'Public package name in the canonical language order.',
+                'fields' => [
+                    ['name' => 'name', 'label' => 'English', 'placeholder' => 'Insert tour package name'],
+                    ['name' => 'name_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional tour package name'],
+                    ['name' => 'name_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified tour package name'],
+                ],
+            ];
+
+            $contentTranslationGroups = [
+                [
+                    'title' => 'Short Description',
+                    'description' => 'Brief overview used on public listing and detail surfaces.',
+                    'required' => true,
+                    'fields' => [
+                        ['name' => 'short_description', 'label' => 'English', 'placeholder' => 'Insert short description'],
+                        ['name' => 'short_description_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional short description'],
+                        ['name' => 'short_description_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified short description'],
+                    ],
+                ],
+                [
+                    'title' => 'Description',
+                    'description' => 'Full customer-facing package description.',
+                    'required' => true,
+                    'fields' => [
+                        ['name' => 'description', 'label' => 'English', 'placeholder' => 'Insert description'],
+                        ['name' => 'description_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional description'],
+                        ['name' => 'description_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified description'],
+                    ],
+                ],
+                [
+                    'title' => 'Package Highlights',
+                    'description' => 'Optional highlights shown as supporting sales copy.',
+                    'required' => false,
+                    'fields' => [
+                        ['name' => 'package_highlights', 'label' => 'English', 'placeholder' => 'Insert package highlights'],
+                        ['name' => 'package_highlights_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional package highlights'],
+                        ['name' => 'package_highlights_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified package highlights'],
+                    ],
+                ],
+                [
+                    'title' => 'Include',
+                    'description' => 'Services and benefits included in this Tour Package.',
+                    'required' => false,
+                    'fields' => [
+                        ['name' => 'include', 'label' => 'English', 'placeholder' => 'Insert inclusions'],
+                        ['name' => 'include_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional inclusions'],
+                        ['name' => 'include_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified inclusions'],
+                    ],
+                ],
+                [
+                    'title' => 'Exclude',
+                    'description' => 'Items or services excluded from the package.',
+                    'required' => false,
+                    'fields' => [
+                        ['name' => 'exclude', 'label' => 'English', 'placeholder' => 'Insert exclusions'],
+                        ['name' => 'exclude_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional exclusions'],
+                        ['name' => 'exclude_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified exclusions'],
+                    ],
+                ],
+                [
+                    'title' => 'Additional Information',
+                    'description' => 'Extra requirements, preparation notes, or restrictions.',
+                    'required' => false,
+                    'fields' => [
+                        ['name' => 'additional_info', 'label' => 'English', 'placeholder' => 'Insert additional information'],
+                        ['name' => 'additional_info_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional additional information'],
+                        ['name' => 'additional_info_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified additional information'],
+                    ],
+                ],
+                [
+                    'title' => 'Cancellation Policy',
+                    'description' => 'Cancellation rules shown to customers before booking.',
+                    'required' => true,
+                    'fields' => [
+                        ['name' => 'cancellation_policy', 'label' => 'English', 'placeholder' => 'Insert cancellation policy'],
+                        ['name' => 'cancellation_policy_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert traditional cancellation policy'],
+                        ['name' => 'cancellation_policy_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert simplified cancellation policy'],
+                    ],
+                ],
+            ];
+        @endphp
+
+        <div class="mobile-menu-overlay"></div>
+        <main class="main-container tour-form-page tour-form-page--create">
             <div class="pd-ltr-20">
-                <div class="min-height-200px">
-                    <x-backend.page-hero
-                        class="tour-form-hero"
-                        eyebrow="Tour Package"
-                        title="Add Tour Package"
-                        description="Create a tour package using the shared backend form and asset standard."
-                    >
-                        <x-slot name="action">
-                            <a href="{{ route('admin.tour-packages.index') }}" class="backend-page-primary-action">
-                                <i class="fa fa-arrow-left"></i>
-                                Back to Tours
-                            </a>
-                        </x-slot>
-                    </x-backend.page-hero>
+                <x-backend.page-hero
+                    class="tour-form-hero"
+                    eyebrow="Tour Package"
+                    title="Add Tour Package"
+                    description="Create the Tour master profile through a focused wizard before price tiers and public booking availability are managed."
+                >
+                    <x-slot name="action">
+                        <a href="{{ route('admin.tour-packages.index') }}" class="backend-page-primary-action">
+                            <i class="fa fa-arrow-left"></i>
+                            Back to Tours
+                        </a>
+                    </x-slot>
+                </x-backend.page-hero>
 
-                    <section class="backend-page-toolbar tour-form-toolbar">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.tour-packages.index') }}">Tour Packages</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Add Tour Package</li>
-                            </ol>
-                        </nav>
-                        <div class="backend-page-toolbar__actions">
-                            <span class="backend-status-badge backend-status-badge--draft">Draft setup</span>
-                        </div>
-                    </section>
+                <x-backend.breadcrumb-toolbar
+                    class="tour-form-toolbar"
+                    :items="[
+                        ['label' => 'Admin Panel', 'url' => route('admin.panel-main.view')],
+                        ['label' => 'Tour Packages', 'url' => route('admin.tour-packages.index')],
+                    ]"
+                    current="Add Tour Package"
+                >
+                    <x-slot name="actions">
+                        <span class="backend-status-badge backend-status-badge--draft">Draft by default</span>
+                    </x-slot>
+                </x-backend.breadcrumb-toolbar>
 
-                    <div class="backend-feedback tour-form-feedback">
-                        @if (count($errors) > 0)
+                @if ($errors->any() || session()->has('success') || session()->has('error'))
+                    <section class="backend-feedback tour-form-feedback">
+                        @if ($errors->any())
                             <div class="backend-alert backend-alert--danger">
+                                <strong>Action needs attention.</strong>
                                 <ul>
                                     @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
+                                        <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
                             </div>
                         @endif
-                        @if (\Session::has('success'))
+
+                        @if (session()->has('success'))
                             <div class="backend-alert backend-alert--success">
-                                <ul>
-                                    <li>{!! \Session::get('success') !!}</li>
-                                </ul>
+                                <strong>{{ session('success') }}</strong>
                             </div>
                         @endif
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mobile">
-                            <div class="row">
+
+                        @if (session()->has('error'))
+                            <div class="backend-alert backend-alert--danger">
+                                <strong>{{ session('error') }}</strong>
                             </div>
-                        </div>
-                        <div class="col-md-8 m-b-18">
-                            <div class="backend-panel tour-form-panel">
-                                <div class="backend-section-header tour-form-panel__heading">
-                                    <div>
-                                        <span class="backend-section-header__label">Tour Profile</span>
-                                        <h2>Tour Package</h2>
+                        @endif
+                    </section>
+                @endif
+
+                <form id="tourCreateForm" class="backend-form" action="{{ route('admin.tours.store') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+
+                    <x-backend.detail-layout class="tour-create-layout">
+                        <x-slot name="main">
+                            <div class="tour-create-wizard" data-tour-create-wizard data-error-step="{{ $errorStep }}">
+                                <nav class="tour-create-wizard__steps" aria-label="Create Tour steps">
+                                    @foreach ($wizardSteps as $key => $label)
+                                        <button type="button" class="tour-create-wizard__step" data-tour-wizard-step="{{ $key }}" data-step-title="{{ $label }}">
+                                            <span>{{ $loop->iteration }}</span>
+                                            <strong>{{ $label }}</strong>
+                                        </button>
+                                    @endforeach
+                                </nav>
+
+                                <section class="backend-panel tour-form-panel backend-form-panel tour-create-wizard__panel" data-tour-wizard-panel="basic">
+                                    <div class="backend-section-header tour-form-panel__heading">
+                                        <div>
+                                            <span class="backend-section-header__label">Step 1</span>
+                                            <h2>Basic Information</h2>
+                                        </div>
+                                        <p>Master fields used to identify and classify the Tour Package.</p>
                                     </div>
-                                </div>
-                                <form id="add-tour" action="{{ route('admin.tours.store') }}" method="post" enctype="multipart/form-data" id="my-awesome-dropzone">
-                                    @csrf
-                                    <div class="row tour-form-panel__body">
-                                        <div class="col-12 col-sm-12 col-md-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="cover" class="backend-form-label">Cover Image</label>
-                                                        <div class="dropzone">
-                                                            <div class="cover-preview-div">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="backend-form-field">
-                                                                <label for="cover" class="backend-form-label">Cover Image <span> *</span></label><br>
-                                                                <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" placeholder="Choose Cover" value="{{ old('cover') }}" required>
-                                                                @error('cover')
-                                                                    <div class="backend-form-error">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+
+                                    <div class="backend-form-panel__body tour-form-panel__body">
+                                        <section class="backend-translation-group" data-backend-translation-group>
+                                            <div class="backend-translation-group__header">
+                                                <h3 class="backend-translation-group__title">{{ $nameTranslationGroup['title'] }}</h3>
+                                                <p class="backend-translation-group__description">{{ $nameTranslationGroup['description'] }}</p>
                                             </div>
-                                        </div>
-                                        <div class="col-12 col-sm-8">
-                                            <div class="backend-form-field">
-                                                <label for="name" class="backend-form-label">Tour Name</label>
-                                                <input type="text" id="name" name="name" class="backend-form-control @error('name') is-invalid @enderror" placeholder="Insert tour package name" value="{{ old('name') }}" required>
-                                                @error('name')
-                                                    <div class="backend-form-error">{{ $message }}</div>
-                                                @enderror
+
+                                            <div class="backend-translation-grid">
+                                                @foreach ($nameTranslationGroup['fields'] as $field)
+                                                    <div class="backend-translation-field">
+                                                        <label for="{{ $field['name'] }}" class="backend-form-label">{{ $field['label'] }} <span>*</span></label>
+                                                        <input type="text" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="backend-form-control @error($field['name']) is-invalid @enderror" placeholder="{{ $field['placeholder'] }}" value="{{ old($field['name']) }}" required>
+                                                        @error($field['name'])
+                                                            <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                @endforeach
                                             </div>
-                                        </div>
-                                        <div class="col-12 col-sm-4">
+                                        </section>
+
+                                        <div class="backend-form-grid">
                                             <div class="backend-form-field">
-                                                <label for="code" class="backend-form-label">Tour Code</label>
+                                                <label for="code" class="backend-form-label">Tour Code <span>*</span></label>
                                                 <input type="text" id="code" name="code" class="backend-form-control @error('code') is-invalid @enderror" placeholder="Insert tour code" value="{{ old('code') }}" required>
                                                 @error('code')
-                                                    <div class="backend-form-error">{{ $message }}</div>
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
                                                 @enderror
                                             </div>
-                                        </div>
-                                        <div class="col-12 col-sm-8">
+
                                             <div class="backend-form-field">
-                                                <label for="name_traditional" class="backend-form-label">Tour Name Traditional</label>
-                                                <input type="text" id="name_traditional" name="name_traditional" class="backend-form-control @error('name_traditional') is-invalid @enderror" placeholder="Insert tour package name in traditional" value="{{ old('name_traditional') }}" required>
-                                                @error('name_traditional')
-                                                    <div class="backend-form-error">{{ $message }}</div>
+                                                <label for="type" class="backend-form-label">Type <span>*</span></label>
+                                                <select id="type" name="type" class="backend-form-control @error('type') is-invalid @enderror" required>
+                                                    <option value="">Select Type</option>
+                                                    @foreach ($types as $type)
+                                                        <option value="{{ $type->id }}" @selected((string) old('type') === (string) $type->id)>{{ $type->type }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('type')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
                                                 @enderror
                                             </div>
-                                        </div>
-                                        <div class="col-12 col-sm-8">
+
                                             <div class="backend-form-field">
-                                                <label for="name_simplified" class="backend-form-label">Tour Name Simplified</label>
-                                                <input type="text" id="name_simplified" name="name_simplified" class="backend-form-control @error('name_simplified') is-invalid @enderror" placeholder="Insert tour package name in simplified" value="{{ old('name_simplified') }}" required>
-                                                @error('name_simplified')
-                                                    <div class="backend-form-error">{{ $message }}</div>
+                                                <label for="duration_days" class="backend-form-label">Duration Days <span>*</span></label>
+                                                <select id="duration_days" name="duration_days" class="backend-form-control @error('duration_days') is-invalid @enderror" required>
+                                                    @foreach (range(1, 7) as $day)
+                                                        <option value="{{ $day }}" @selected((string) old('duration_days', 1) === (string) $day)>{{ $day }}D</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('duration_days')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+
+                                            <div class="backend-form-field">
+                                                <label for="duration_nights" class="backend-form-label">Duration Nights <span>*</span></label>
+                                                <select id="duration_nights" name="duration_nights" class="backend-form-control @error('duration_nights') is-invalid @enderror" required>
+                                                    @foreach (range(0, 7) as $night)
+                                                        <option value="{{ $night }}" @selected((string) old('duration_nights', 0) === (string) $night)>{{ $night > 0 ? $night.'N' : '-' }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('duration_nights')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-4 col-md-4">
-                                                    <div class="backend-form-field">
-                                                        <label for="type" class="backend-form-label">Type <span> *</span></label>
-                                                        <select id="type" name="type" class="backend-form-control col-12 @error('type') is-invalid @enderror" required>
-                                                            @foreach ($types as $type)
-                                                                <option selected value="{{ $type->id }}">{{ $type->type }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                        @error('type')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-4 col-md-4">
-                                                    <div class="backend-form-field">
-                                                        <label for="duration_days" class="backend-form-label">Duration Days <span> *</span></label>
-                                                        <select id="duration_days" name="duration_days" class="backend-form-control col-12 @error('duration_days') is-invalid @enderror" required>
-                                                            <option value="1">1D</option>
-                                                            <option value="2">2D</option>
-                                                            <option value="3">3D</option>
-                                                            <option value="4">4D</option>
-                                                            <option value="5">5D</option>
-                                                            <option value="6">6D</option>
-                                                            <option value="7">7D</option>
-                                                        </select>
-                                                        @error('duration_days')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-4 col-md-4">
-                                                    <div class="backend-form-field">
-                                                        <label for="duration_nights" class="backend-form-label">Duration Nights <span> *</span></label>
-                                                        <select id="duration_nights" name="duration_nights" class="backend-form-control col-12 @error('duration_nights') is-invalid @enderror" required>
-                                                            <option value="0">-</option>
-                                                            <option value="1">1N</option>
-                                                            <option value="2">2N</option>
-                                                            <option value="3">3N</option>
-                                                            <option value="4">4N</option>
-                                                            <option value="5">5N</option>
-                                                            <option value="6">6N</option>
-                                                            <option value="7">7N</option>
-                                                        </select>
-                                                        @error('duration_nights')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="short_description" class="form-label col-form-label">Short Description<span> *</span></label>
-                                                        <textarea id="short_description" name="short_description" class="textarea_editor backend-form-control @error('short_description') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert short description" value="{{ old('short_description') }}" required>{{ old('short_description') }}</textarea>
-                                                        @error('short_description')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="short_description_traditional" class="form-label col-form-label">Short Description Traditional<span> *</span></label>
-                                                        <textarea id="short_description_traditional" name="short_description_traditional" class="textarea_editor backend-form-control @error('short_description_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert short description in Chinese traditional" value="{{ old('short_description_traditional') }}" required>{{ old('short_description_traditional') }}</textarea>
-                                                        @error('short_description_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="short_description_simplified" class="form-label col-form-label">Short Description Simplified<span> *</span></label>
-                                                        <textarea id="short_description_simplified" name="short_description_simplified" class="textarea_editor backend-form-control @error('short_description_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert short description in Chinese simplified" value="{{ old('short_description_simplified') }}" required>{{ old('short_description_simplified') }}</textarea>
-                                                        @error('short_description_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="description" class="form-label col-form-label">Description <span> *</span></label>
-                                                        <textarea id="description" name="description" class="textarea_editor backend-form-control @error('description') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert description" value="{{ old('description') }}" required>{{ old('description') }}</textarea>
-                                                        @error('description')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="description_traditional" class="form-label col-form-label">Description Traditional <span> *</span></label>
-                                                        <textarea id="description_traditional" name="description_traditional" class="textarea_editor backend-form-control @error('description_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert description in Chinese traditional" value="{{ old('description_traditional') }}" required>{{ old('description_traditional') }}</textarea>
-                                                        @error('description_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="description_simplified" class="form-label col-form-label">Description Simplified<span> *</span></label>
-                                                        <textarea id="description_simplified" name="description_simplified" class="textarea_editor backend-form-control @error('description_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert description in Chinese simplified" value="{{ old('description_simplified') }}" required>{{ old('description_simplified') }}</textarea>
-                                                        @error('description_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="itinerary" class="form-label col-form-label">Itinerary<span> *</span></label>
-                                                        <textarea id="itinerary" name="itinerary" class="textarea_editor backend-form-control @error('itinerary') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert itinerary" value="{{ old('itinerary') }}" required>{{ old('itinerary') }}</textarea>
-                                                        @error('itinerary')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="itinerary_traditional" class="form-label col-form-label">Itinerary Traditional<span> *</span></label>
-                                                        <textarea id="itinerary_traditional" name="itinerary_traditional" class="textarea_editor backend-form-control @error('itinerary_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert itinerary in Chinese traditional" value="{{ old('itinerary_traditional') }}" required>{{ old('itinerary_traditional') }}</textarea>
-                                                        @error('itinerary_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="itinerary_simplified" class="form-label col-form-label">Itinerary Simplified<span> *</span></label>
-                                                        <textarea id="itinerary_simplified" name="itinerary_simplified" class="textarea_editor backend-form-control @error('itinerary_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert itinerary in Chinese simplified" value="{{ old('itinerary_simplified') }}" required>{{ old('itinerary_simplified') }}</textarea>
-                                                        @error('itinerary_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="package_highlights" class="form-label col-form-label">Package Highlights</label>
-                                                        <textarea id="package_highlights" name="package_highlights" class="textarea_editor backend-form-control @error('package_highlights') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert package highlights">{{ old('package_highlights') }}</textarea>
-                                                        @error('package_highlights')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="package_highlights_traditional" class="form-label col-form-label">Package Highlights Traditional</label>
-                                                        <textarea id="package_highlights_traditional" name="package_highlights_traditional" class="textarea_editor backend-form-control @error('package_highlights_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert package highlights in Chinese traditional">{{ old('package_highlights_traditional') }}</textarea>
-                                                        @error('package_highlights_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="package_highlights_simplified" class="form-label col-form-label">Package Highlights Simplified</label>
-                                                        <textarea id="package_highlights_simplified" name="package_highlights_simplified" class="textarea_editor backend-form-control @error('package_highlights_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert package highlights in Chinese simplified">{{ old('package_highlights_simplified') }}</textarea>
-                                                        @error('package_highlights_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="include" class="form-label col-form-label">Include<span> *</span></label>
-                                                        <textarea id="include" name="include" class="textarea_editor backend-form-control @error('include') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert include" value="{{ old('include') }}" required>{{ old('include') }}</textarea>
-                                                        @error('include')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="include_traditional" class="form-label col-form-label">Include Traditional<span> *</span></label>
-                                                        <textarea id="include_traditional" name="include_traditional" class="textarea_editor backend-form-control @error('include_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert include in Chinese traditional" value="{{ old('include_traditional') }}" required>{{ old('include_traditional') }}</textarea>
-                                                        @error('include_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="include_simplified" class="form-label col-form-label">Include Simplified<span> *</span></label>
-                                                        <textarea id="include_simplified" name="include_simplified" class="textarea_editor backend-form-control @error('include_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert include in Chinese simplified" value="{{ old('include_simplified') }}" required>{{ old('include_simplified') }}</textarea>
-                                                        @error('include_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="exclude" class="form-label col-form-label">Exclude<span> *</span></label>
-                                                        <textarea id="exclude" name="exclude" class="textarea_editor backend-form-control @error('exclude') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert exclude" value="{{ old('exclude') }}" required>{{ old('exclude') }}</textarea>
-                                                        @error('exclude')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="exclude_traditional" class="form-label col-form-label">Exclude Traditional<span> *</span></label>
-                                                        <textarea id="exclude_traditional" name="exclude_traditional" class="textarea_editor backend-form-control @error('exclude_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert exclude in Chinese traditional" value="{{ old('exclude_traditional') }}" required>{{ old('exclude_traditional') }}</textarea>
-                                                        @error('exclude_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="exclude_simplified" class="form-label col-form-label">Exclude Simplified<span> *</span></label>
-                                                        <textarea id="exclude_simplified" name="exclude_simplified" class="textarea_editor backend-form-control @error('exclude_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert exclude in Chinese simplified" value="{{ old('exclude_simplified') }}" required>{{ old('exclude_simplified') }}</textarea>
-                                                        @error('exclude_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="additional_info" class="form-label col-form-label">Additional Information<span> *</span></label>
-                                                        <textarea id="additional_info" name="additional_info" class="textarea_editor backend-form-control @error('additional_info') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert additional info" value="{{ old('additional_info') }}" required>{{ old('additional_info') }}</textarea>
-                                                        @error('additional_info')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="additional_info_traditional" class="form-label col-form-label">Additional Information Traditional<span> *</span></label>
-                                                        <textarea id="additional_info_traditional" name="additional_info_traditional" class="textarea_editor backend-form-control @error('additional_info_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert additional info in Chinese traditional" value="{{ old('additional_info_traditional') }}" required>{{ old('additional_info_traditional') }}</textarea>
-                                                        @error('additional_info_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="additional_info_simplified" class="form-label col-form-label">Additional Information Simplified<span> *</span></label>
-                                                        <textarea id="additional_info_simplified" name="additional_info_simplified" class="textarea_editor backend-form-control @error('additional_info_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert additional info in Chinese simplified" value="{{ old('additional_info_simplified') }}" required>{{ old('additional_info_simplified') }}</textarea>
-                                                        @error('additional_info_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="cancellation_policy" class="form-label col-form-label">Cancellation Policy<span> *</span></label>
-                                                        <textarea id="cancellation_policy" name="cancellation_policy" class="textarea_editor backend-form-control @error('cancellation_policy') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert cancellation policy" required>{{ old('cancellation_policy') }}</textarea>
-                                                        @error('cancellation_policy')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="cancellation_policy_traditional" class="form-label col-form-label">Cancellation Policy Traditional<span> *</span></label>
-                                                        <textarea id="cancellation_policy_traditional" name="cancellation_policy_traditional" class="textarea_editor backend-form-control @error('cancellation_policy_traditional') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert cancellation policy in Chinese traditional" required>{{ old('cancellation_policy_traditional') }}</textarea>
-                                                        @error('cancellation_policy_traditional')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6 col-md-6">
-                                                    <div class="backend-form-field">
-                                                        <label for="cancellation_policy_simplified" class="form-label col-form-label">Cancellation Policy Simplified<span> *</span></label>
-                                                        <textarea id="cancellation_policy_simplified" name="cancellation_policy_simplified" class="textarea_editor backend-form-control @error('cancellation_policy_simplified') is-invalid @enderror" data-backend-richtext="true" placeholder="Insert cancellation policy in Chinese simplified" required>{{ old('cancellation_policy_simplified') }}</textarea>
-                                                        @error('cancellation_policy_simplified')
-                                                            <div class="backend-form-error">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @include('backend.operations.tours.partials.tour-location-repeater')
-                                        <input id="initial_state" name="initial_state" value="" type="hidden">
                                     </div>
-                                </form>
-                                <div class="backend-form-actions">
-                                    <button type="submit" form="add-tour" class="backend-button backend-button-primary">
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                        Add Tour
-                                    </button>
-                                    <a href="{{ route('admin.tour-packages.index') }}" class="backend-button backend-button-secondary">
-                                        <i class="fa fa-times" aria-hidden="true"></i>
-                                        Cancel
-                                    </a>
+                                </section>
+
+                                <section class="backend-panel tour-form-panel backend-form-panel tour-create-wizard__panel" data-tour-wizard-panel="route">
+                                    <div class="backend-section-header tour-form-panel__heading">
+                                        <div>
+                                            <span class="backend-section-header__label">Step 2</span>
+                                            <h2>Route & Itinerary</h2>
+                                        </div>
+                                        <p>Optional structured stops used as the source for the public route map and generated itinerary.</p>
+                                    </div>
+
+                                    <div class="backend-form-panel__body tour-form-panel__body">
+                                        @include('backend.operations.tours.partials.tour-location-repeater', [
+                                            'allowEmptyLocations' => true,
+                                            'compactLocationCards' => true,
+                                        ])
+                                    </div>
+                                </section>
+
+                                <section class="backend-panel tour-form-panel backend-form-panel tour-create-wizard__panel" data-tour-wizard-panel="content">
+                                    <div class="backend-section-header tour-form-panel__heading">
+                                        <div>
+                                            <span class="backend-section-header__label">Step 3</span>
+                                            <h2>Content & Translations</h2>
+                                        </div>
+                                        <p>Customer-facing copy grouped by English, Traditional Chinese, and Simplified Chinese.</p>
+                                    </div>
+
+                                    <div class="backend-form-panel__body tour-form-panel__body">
+                                        @foreach ($contentTranslationGroups as $group)
+                                            <section class="backend-translation-group" data-backend-translation-group>
+                                                <div class="backend-translation-group__header">
+                                                    <h3 class="backend-translation-group__title">{{ $group['title'] }}</h3>
+                                                    <p class="backend-translation-group__description">{{ $group['description'] }}</p>
+                                                </div>
+
+                                                <div class="backend-translation-grid">
+                                                    @foreach ($group['fields'] as $field)
+                                                        <div class="backend-translation-field">
+                                                            <label for="{{ $field['name'] }}" class="backend-form-label">
+                                                                {{ $field['label'] }}
+                                                                @if ($group['required'])
+                                                                    <span>*</span>
+                                                                @endif
+                                                            </label>
+                                                            <textarea id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="textarea_editor backend-form-control @error($field['name']) is-invalid @enderror" data-backend-richtext="true" placeholder="{{ $field['placeholder'] }}" @if ($group['required']) required @endif>{{ old($field['name']) }}</textarea>
+                                                            @error($field['name'])
+                                                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </section>
+                                        @endforeach
+                                    </div>
+                                </section>
+
+                                <section class="backend-panel tour-form-panel backend-form-panel tour-create-wizard__panel" data-tour-wizard-panel="media">
+                                    <div class="backend-section-header tour-form-panel__heading">
+                                        <div>
+                                            <span class="backend-section-header__label">Step 4</span>
+                                            <h2>Media</h2>
+                                        </div>
+                                        <p>Upload the primary image used for backend inventory and public Tour Package listing.</p>
+                                    </div>
+
+                                    <div class="backend-form-panel__body tour-form-panel__body">
+                                        <div class="backend-form-grid">
+                                            <div class="backend-form-field is-wide">
+                                                <label for="cover" class="backend-form-label">Cover Image <span>*</span></label>
+                                                <div class="tour-form-cover-control">
+                                                    <figure class="tour-form-cover-preview" data-tour-cover-preview></figure>
+                                                    <div class="tour-form-cover-input">
+                                                        <input type="file" name="cover" id="cover" class="backend-form-control @error('cover') is-invalid @enderror" accept="image/jpeg,image/png,image/jpg,image/webp" data-tour-cover-input data-tour-cover-preview-target="[data-tour-cover-preview]" required>
+                                                        <span class="tour-file-status" data-tour-cover-status data-tour-cover-status-default="No cover selected">No cover selected</span>
+                                                        <small class="form-text text-muted">This cover image is used as the primary Tour visual.</small>
+                                                        @error('cover')
+                                                            <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="backend-panel tour-form-panel backend-form-panel tour-create-wizard__panel" data-tour-wizard-panel="review">
+                                    <div class="backend-section-header tour-form-panel__heading">
+                                        <div>
+                                            <span class="backend-section-header__label">Step 5</span>
+                                            <h2>Review & Create</h2>
+                                        </div>
+                                        <p>Confirm the master profile summary before submitting one final create request.</p>
+                                    </div>
+
+                                    <div class="backend-form-panel__body tour-form-panel__body">
+                                        <div class="tour-create-review-layout">
+                                            <section class="tour-create-review-block tour-create-review-block--wide">
+                                                <div class="tour-create-review-block__header">
+                                                    <span>Basic Information</span>
+                                                    <strong data-tour-summary-name>Not filled</strong>
+                                                </div>
+                                                <dl class="tour-create-review-list">
+                                                    <div>
+                                                        <dt>Tour Code</dt>
+                                                        <dd data-tour-review-code>Not filled</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>Type</dt>
+                                                        <dd data-tour-summary-type>Not selected</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>Duration</dt>
+                                                        <dd data-tour-summary-duration>1D / 0N</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>Status</dt>
+                                                        <dd>Draft</dd>
+                                                    </div>
+                                                </dl>
+                                                <div class="tour-create-review-language-grid">
+                                                    <div>
+                                                        <span>English</span>
+                                                        <strong data-tour-review-name-en>Not filled</strong>
+                                                    </div>
+                                                    <div>
+                                                        <span>Traditional Chinese</span>
+                                                        <strong data-tour-review-name-traditional>Not filled</strong>
+                                                    </div>
+                                                    <div>
+                                                        <span>Simplified Chinese</span>
+                                                        <strong data-tour-review-name-simplified>Not filled</strong>
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            <section class="tour-create-review-block">
+                                                <div class="tour-create-review-block__header">
+                                                    <span>Route & Itinerary</span>
+                                                    <strong data-tour-summary-route>0 day(s), 0 stop(s)</strong>
+                                                </div>
+                                                <div class="tour-create-review-route" data-tour-review-route-days>
+                                                    <p>No route stops added yet.</p>
+                                                </div>
+                                            </section>
+
+                                            <section class="tour-create-review-block">
+                                                <div class="tour-create-review-block__header">
+                                                    <span>Content & Translations</span>
+                                                    <strong data-tour-review-content-summary>0 of 9 required fields filled</strong>
+                                                </div>
+                                                <div class="tour-create-review-content" data-tour-review-content-list></div>
+                                            </section>
+
+                                            <section class="tour-create-review-block">
+                                                <div class="tour-create-review-block__header">
+                                                    <span>Media</span>
+                                                    <strong data-tour-summary-cover>No cover selected</strong>
+                                                </div>
+                                                <p>Cover image is uploaded only during final submit.</p>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="backend-page-toolbar backend-form-actions tour-form-actions tour-create-wizard__actions">
+                                    <div>
+                                        <span class="tour-create-wizard__current">Current step: <strong data-tour-wizard-current-label>Basic Information</strong></span>
+                                    </div>
+                                    <div class="backend-page-toolbar__actions">
+                                        <a href="{{ route('admin.tour-packages.index') }}" class="backend-button backend-button-secondary">Cancel</a>
+                                        <button type="button" class="backend-button backend-button-secondary" data-tour-wizard-back>Back</button>
+                                        <button type="button" class="backend-button backend-button-primary" data-tour-wizard-next>
+                                            Continue
+                                        </button>
+                                        <button type="submit" class="backend-button backend-button-primary" data-tour-wizard-submit hidden>
+                                            <i class="fa fa-check"></i>
+                                            Create Tour
+                                        </button>
+                                    </div>
+                                </section>
+                            </div>
+                        </x-slot>
+
+                        <x-slot name="side">
+                            <section class="backend-panel backend-detail-side-card tour-create-context-panel tour-status-side-card">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Initial Status</span>
+                                        <h2><span class="backend-status-badge backend-status-badge--draft">Draft</span></h2>
+                                    </div>
+                                    <p>New Tour Packages are created as Draft by the server.</p>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 desktop">
-                            <div class="row">
-                            </div>
-                        </div>
-                    </div>
-                    @include('layouts.footer')
-                </div>
+                            </section>
+
+                            <section class="backend-panel backend-detail-side-card tour-create-context-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Pricing Context</span>
+                                        <h2>TourPrice Boundary</h2>
+                                    </div>
+                                    <p>Pricing is managed separately after the Tour master profile is created.</p>
+                                </div>
+                                <div class="backend-detail-side-card__body">
+                                    <ul class="backend-detail-side-list">
+                                        <li>
+                                            <span>Price tiers</span>
+                                            <strong>Configured from Tour detail</strong>
+                                            <small>Create Tour does not calculate or write TourPrice records.</small>
+                                        </li>
+                                        <li>
+                                            <span>Public quote</span>
+                                            <strong>Server authoritative</strong>
+                                            <small>Public Tour pricing continues to use the canonical pricing service.</small>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </section>
+                        </x-slot>
+                    </x-backend.detail-layout>
+                </form>
             </div>
         </main>
-    @endcan
+    @endcanany
 @endsection

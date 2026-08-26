@@ -34,9 +34,19 @@ final class ActivityPricingQuote implements JsonSerializable
         return app(MoneyFormatter::class)->decimal(Money::usdCents($this->unitPriceUsdMinor));
     }
 
+    public function unitPriceIdr(): int
+    {
+        return $this->usdMinorToIdr($this->unitPriceUsdMinor);
+    }
+
     public function grossTotalUsd(): string
     {
         return app(MoneyFormatter::class)->decimal(Money::usdCents($this->grossTotalUsdMinor));
+    }
+
+    public function grossTotalIdr(): int
+    {
+        return $this->usdMinorToIdr($this->grossTotalUsdMinor);
     }
 
     public function discountTotalUsd(): string
@@ -44,14 +54,49 @@ final class ActivityPricingQuote implements JsonSerializable
         return app(MoneyFormatter::class)->decimal(Money::usdCents($this->discountTotalUsdMinor));
     }
 
+    public function discountTotalIdr(): int
+    {
+        return $this->usdMinorToIdr($this->discountTotalUsdMinor);
+    }
+
     public function finalTotalUsd(): string
     {
         return app(MoneyFormatter::class)->decimal(Money::usdCents($this->finalTotalUsdMinor));
     }
 
+    public function finalTotalIdr(): int
+    {
+        return $this->usdMinorToIdr($this->finalTotalUsdMinor);
+    }
+
     public function taxAmountUsd(): string
     {
         return app(MoneyFormatter::class)->decimal(Money::usdCents($this->taxAmountUsdMinor));
+    }
+
+    public function taxAmountIdr(): int
+    {
+        return $this->usdMinorToIdr($this->taxAmountUsdMinor);
+    }
+
+    public function contractRateUsd(): string
+    {
+        return app(MoneyFormatter::class)->decimal(Money::usdCents($this->contractRateUsdMinor));
+    }
+
+    public function contractRateIdr(): int
+    {
+        return $this->usdMinorToIdr($this->contractRateUsdMinor);
+    }
+
+    public function markupUsd(): string
+    {
+        return app(MoneyFormatter::class)->decimal(Money::usdCents($this->markupUsdMinor));
+    }
+
+    public function markupIdr(): int
+    {
+        return $this->usdMinorToIdr($this->markupUsdMinor);
     }
 
     public function taxPercentage(): string
@@ -97,5 +142,14 @@ final class ActivityPricingQuote implements JsonSerializable
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    private function usdMinorToIdr(int $usdMinor): int
+    {
+        return FixedScale::multiplyDivideHalfUp(
+            $usdMinor,
+            $this->rate->valueScaled,
+            100 * $this->rate->scale
+        );
     }
 }

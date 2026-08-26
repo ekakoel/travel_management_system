@@ -97,7 +97,7 @@ class ToursAdminController extends Controller
                 'usdrates'=>$usdrates,
             ])->with('tour',$tour);
         }else{
-            return redirect()->route('admin.tour-packages.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 // View Add Tours =========================================================================================>
@@ -111,7 +111,7 @@ class ToursAdminController extends Controller
                 'partners'=>$partners,
             ])->with('tours',$tours);
         }else{
-            return redirect()->route('admin.tour-packages.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -184,7 +184,7 @@ class ToursAdminController extends Controller
             $user_log->save();
             return redirect()->route('admin.tours.show', $id)->withFragment('prices')->with('success','New Tour Package Price has been successfully created!');
         }else{
-            return redirect()->route('admin.tour-packages.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -223,7 +223,7 @@ class ToursAdminController extends Controller
             $user_log->save();
             return redirect()->route('admin.tours.show', $tour_price->tour_id)->withFragment('prices')->with('success','The Tour Price has been successfully updated!');
         }else{
-            return redirect()->route('admin.tour-packages.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 // FUNCTION DELETE TOUR PRICE
@@ -252,7 +252,7 @@ class ToursAdminController extends Controller
             $user_log->save();
             return redirect()->route('admin.tours.show', $tour_price->tour_id)->withFragment('prices')->with('success','The Tour Price has been successfully deleted!');
         }else{
-            return redirect()->route('admin.tour-packages.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 // function Update Tour =============================================================================================================>
@@ -313,7 +313,7 @@ class ToursAdminController extends Controller
             $user_log->save();
             return back()->with('success','The Tour Package has been successfully deleted!');
         }else{
-            return redirect()->route('admin.tour-packages.index')->with('error','Akses ditolak');
+            return redirect()->route('admin.tour-packages.index')->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 

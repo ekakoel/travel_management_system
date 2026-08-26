@@ -46,7 +46,7 @@
                                                 <a href="#" data-toggle="modal" data-target="#edit-optionalrate-{{ $optionalrate->id }}">
                                                     <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-edit"></i></button>
                                                 </a>
-                                                <form action="{{ route('func.optional_rate.delete',$optionalrate->id) }}" method="post">
+                                                <form action="{{ route('admin.hotels.optional_rate.delete',$optionalrate->id) }}" method="post">
                                                     @csrf
                                                     @method('delete')
                                                     <input type="hidden" name="author" value="{{ Auth::user()->id }}">
@@ -78,7 +78,7 @@
                                                     <a href="#" data-toggle="modal" data-target="#edit-optionalrate-{{ $optionalrate->id }}">
                                                         <button class="btn-edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="icon-copy fa fa-edit"></i></button>
                                                     </a>
-                                                    <form action="{{ route('func.optional_rate.delete',$optionalrate->id) }}" method="post">
+                                                    <form action="{{ route('admin.hotels.optional_rate.delete',$optionalrate->id) }}" method="post">
                                                         @csrf
                                                         @method('delete')
                                                         <input type="hidden" name="author" value="{{ Auth::user()->id }}">
@@ -100,7 +100,7 @@
                                                 <div class="card-box-title">
                                                     <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Additional Charge Edit</div>
                                                 </div>
-                                                <form id="edit-optional-rate-{{ $optionalrate->id }}" action="{{ route('func.optional_rate.update',$optionalrate->id) }}" method="post" enctype="multipart/form-data">
+                                                <form id="edit-optional-rate-{{ $optionalrate->id }}" action="{{ route('admin.hotels.optional_rate.update',$optionalrate->id) }}" method="post" enctype="multipart/form-data">
                                                     @method('put')
                                                     {{ csrf_field() }}
                                                     <div class="row">
@@ -228,7 +228,7 @@
                                 <div class="card-box-title">
                                     <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Additional Charge</div>
                                 </div>
-                                <form id="add-optional-rate" action="{{ route('func.optional_rate.add') }}" method="post" enctype="multipart/form-data">
+                                <form id="add-optional-rate" action="{{ route('admin.hotels.optional_rate.add') }}" method="post" enctype="multipart/form-data">
                                     @csrf
                                     {{ csrf_field() }}
                                     <div class="row">

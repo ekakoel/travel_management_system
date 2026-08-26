@@ -141,7 +141,7 @@
                         @foreach ($heroStats as $stat)
                             <div class="frontend-page-summary__item">
                                 <span>{{ $stat['label'] }}</span>
-                                <strong>{{ $stat['value'] }}</strong>
+                                <strong>{!! $stat['value'] !!}</strong>
                             </div>
                         @endforeach
                     </div>
@@ -158,7 +158,7 @@
                     <div class="about-story__content">
                         <span class="about-section__eyebrow">@lang('messages.Who We Are')</span>
                         <h2>{{ $companyLegalName }}</h2>
-                        <p>{{ $companyDescription }}</p>
+                        <p>{!! $companyDescription !!}</p>
                     </div>
                 </div>
             </div>
@@ -168,7 +168,7 @@
             <div class="container">
                 <div class="about-section-heading">
                     <span class="about-section__eyebrow">@lang('messages.Our Services')</span>
-                    <h2>@lang('messages.International-standard booking support for professional travel partners with clear service access and trusted local expertise.')</h2>
+                    <h2>@lang('messages.International standard booking support for professional travel partners with clear service access and trusted local expertise.')</h2>
                 </div>
 
                 <div class="about-pillar-grid">

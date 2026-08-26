@@ -4,6 +4,8 @@ namespace App\Services\Hotels;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class HotelAssetService
 {
@@ -11,6 +13,8 @@ class HotelAssetService
     public const ROOM_PATH = 'storage/hotels/hotels-room/';
     public const GALLERY_PATH = 'storage/hotels/hotels-galery/';
     public const CONTRACT_PATH = 'storage/hotels/hotels-contract/';
+    public const GALLERY_DISK = 'public';
+    public const GALLERY_STORAGE_PATH = 'hotels/hotels-galery';
 
     public function upload(UploadedFile $file, string $directory): string
     {
@@ -74,6 +78,20 @@ class HotelAssetService
 
     public function deleteGalleryImage(?string $fileName): bool
     {
-        return $this->delete($fileName, self::GALLERY_PATH);
+        if (! $fileName) {
+            return false;
+        }
+
+        $deleted = Storage::disk(self::GALLERY_DISK)->delete(self::GALLERY_STORAGE_PATH.'/'.$fileName);
+
+        return $deleted || $this->delete($fileName, self::GALLERY_PATH);
+    }
+
+    public function uploadGalleryImage(UploadedFile $file): string
+    {
+        $fileName = Str::uuid()->toString().'.'.$file->extension();
+        Storage::disk(self::GALLERY_DISK)->putFileAs(self::GALLERY_STORAGE_PATH, $file, $fileName);
+
+        return $fileName;
     }
 }

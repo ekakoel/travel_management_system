@@ -10,6 +10,7 @@ use App\Http\Controllers\Concerns\BuildsTourLocationItinerary;
 use App\Http\Controllers\Concerns\InteractsWithFormSubmissions;
 use App\Http\Requests\Tours\StoreTourPackageOrderRequest;
 use App\Http\Requests\Hotels\StoreAccommodationOrderRequest;
+use App\Http\Requests\Activities\StoreActivityOrderRequest;
 use App\Exceptions\PricingException;
 use App\Models\Tax;
 use App\Models\User;
@@ -55,6 +56,7 @@ use App\Models\Activities;
 use App\Services\ActivityOrderLifecycleService;
 use App\Services\ActivityReservationService;
 use App\Services\Activities\ActivityPricingService;
+use App\Services\Activities\ActivityBookingService;
 use App\Services\Activities\ActivityOrderPricingReader;
 use App\Services\AccommodationBookingGuardService;
 use App\Services\AccommodationFinancialFileService;
@@ -406,6 +408,24 @@ class OrderController extends Controller
         return route('view.detail-order', ['id' => $order->id]);
     }
 
+    private function redirectToCanonicalFrontendOrderDetail(int $id)
+    {
+        $order = Orders::ownedBy(Auth::id())->find($id);
+
+        if (!$order) {
+            return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
+        }
+
+        if (!in_array($order->service, array_merge(
+            Orders::ACCOMMODATION_SERVICES,
+            ['Private Villa', Orders::PUBLIC_TOUR_SERVICE, Orders::PUBLIC_TRANSPORT_SERVICE, Orders::PUBLIC_ACTIVITY_SERVICE]
+        ), true)) {
+            return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
+        }
+
+        return redirect($this->resolveFrontendOrderDetailUrl($order));
+    }
+
     private function buildOrderHistoryInvoiceLinks(Orders $order): array
     {
         $invoice = optional($order->reservations)->invoice;
@@ -422,7 +442,8 @@ class OrderController extends Controller
         ])
             ->map(function ($label, $locale) use ($order, $invoice, $invoiceNumber) {
                 if (app(AccommodationFinancialFileService::class)->isProtectedPublicOrder($order)) {
-                    $file = app(AccommodationFinancialFileService::class)->resolveInvoiceFile($order, $invoice, $locale);
+                    $files = app(AccommodationFinancialFileService::class);
+                    $file = $files->resolveInvoiceFile($order, $invoice, $locale);
 
                     if (!$file) {
                         return null;
@@ -430,7 +451,7 @@ class OrderController extends Controller
 
                     return [
                         'label' => $label,
-                        'url' => route('orders.accommodation.invoice.preview', [
+                        'url' => route($files->customerInvoicePreviewRouteName($order), [
                             'order' => $order->id,
                             'locale' => $locale,
                         ]),
@@ -2030,7 +2051,6 @@ class OrderController extends Controller
             }
         }
         
-        // dd($order);
         $rquotation = $request->request_quotation;
         $agent = User::where('id',$order->user_id)->first();
         Mail::to(config('app.reservation_mail'))->send(new ReservationMail($id,$rquotation));
@@ -2063,14 +2083,13 @@ class OrderController extends Controller
     public function detail_order_villa($id)
     {
         $user_id = Auth::id(); 
-        $now = Carbon::now();
         $order = Orders::with(['optional_rate_orders', 'reservations.invoice'])
             ->where('sales_agent', $user_id)
-            ->where('checkin', '>', $now)
+            ->where('service', 'Private Villa')
             ->where('id',$id)
             ->first();
         if (!$order) {
-            return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
+            return $this->redirectToCanonicalFrontendOrderDetail((int) $id);
         }
         $statusMap = [
             'Pending'   => ['class' => 'order-status-pending', 'label' => __('messages.Pending')],
@@ -3963,7 +3982,6 @@ class OrderController extends Controller
             $dropoff_date = $checkout;
             $dropoff_location = trim((string) $request->dropoff_location);
         }
-        // dd($request->pickup_date, $checkin, $checkout);
         app(TransportAvailabilityService::class)->ensureCanBook((int) $order->service_id, $checkin, $checkout, (int) $order->id);
         DB::transaction(function () use ($request, $order, $status, $checkin, $checkout, $validated, $duration, $price_total, $final_price, $normal_price, $isAirportShuttleOrder, $shuttleDirection, $airport_shuttle_in, $airport_shuttle_out, $pickup_location, $pickup_date, $dropoff_date, $dropoff_location) {
             app(TransportAvailabilityService::class)->ensureCanBook((int) $order->service_id, $checkin, $checkout, (int) $order->id, true);
@@ -4018,7 +4036,6 @@ class OrderController extends Controller
             ]);
             $order_log->save();
         });
-        // dd($order);
         $rquotation = $request->request_quotation;
         $agent = User::where('id',$order->user_id)->first();
         Mail::to(config('app.reservation_mail'))->send(new ReservationMail($id,$rquotation));
@@ -4038,6 +4055,10 @@ class OrderController extends Controller
             ->where('id',$id)
             ->first();
         if (!$order || in_array($order->status, ["Draft", "Invalid", "Rejected"])) {
+            if (!$order) {
+                return $this->redirectToCanonicalFrontendOrderDetail((int) $id);
+            }
+
             return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
         }
         $agent = User::find($order->sales_agent);
@@ -4051,6 +4072,7 @@ class OrderController extends Controller
         $receipts = $invoice ? $invoice->payment : null;
         $paymentDeadline = $this->getInvoicePaymentDeadline($invoice);
         $paymentSubmissionExists = $this->orderHasPaymentSubmission($invoice);
+        $paymentState = app(\App\Services\Orders\PublicPaymentConfirmationService::class)->state($order, $invoice);
         $promotion_discounts = json_decode($order->promotion_disc, true);
         $total_promotion_disc = $promotion_discounts ? array_sum($promotion_discounts) : null;
         $transport = Transports::with('prices')->find($order->service_id);
@@ -4101,6 +4123,7 @@ class OrderController extends Controller
             'receipts' => $receipts,
             'paymentDeadline' => $paymentDeadline,
             'paymentSubmissionExists' => $paymentSubmissionExists,
+            'paymentState' => $paymentState,
             'discounts' => $discounts,
             'filteredDiscounts' => $filteredDiscounts,
             'transport' => $transport,
@@ -4551,13 +4574,15 @@ class OrderController extends Controller
         $order = Orders::with(['optional_rate_orders', 'reservations.invoice'])
             ->where('sales_agent', $user_id)
             ->where(function ($query) {
-                $query->accommodationService()
-                    ->orWhere('service', Orders::PUBLIC_ACTIVITY_SERVICE);
+                $query->accommodationService();
             })
-            ->where('checkin', '>', $now)
             ->where('id',$id)
             ->first();
         if (!$order || in_array($order->status, ["Draft", "Invalid", "Rejected"])) {
+            if (!$order) {
+                return $this->redirectToCanonicalFrontendOrderDetail((int) $id);
+            }
+
             return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
         }
         $agent = User::find($order->sales_agent);
@@ -4577,8 +4602,11 @@ class OrderController extends Controller
         $optional_rate_orders = $order->optional_rate_orders;
         $optionalServiceTotalPrice = $optional_rate_orders->sum('price_total');
         $reservation = Reservation::find($order->rsv_id);
-        $invoice = InvoiceAdmin::firstWhere('rsv_id', $order->rsv_id);
+        $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
         $receipts = $invoice ? $invoice->payment : null;
+        $paymentDeadline = $this->getInvoicePaymentDeadline($invoice);
+        $paymentSubmissionExists = $this->orderHasPaymentSubmission($invoice);
+        $paymentState = app(\App\Services\Orders\PublicPaymentConfirmationService::class)->state($order, $invoice);
         $decodedData = collect([
             'number_of_guests_room' => json_decode($order->number_of_guests_room, true),
             'guest_details' => json_decode($order->guest_detail, true),
@@ -4667,6 +4695,9 @@ class OrderController extends Controller
             'filteredDiscounts' => $filteredDiscounts,
             'normal_price' => $normal_price,
             'receipts' => $receipts,
+            'paymentDeadline' => $paymentDeadline,
+            'paymentSubmissionExists' => $paymentSubmissionExists,
+            'paymentState' => $paymentState,
             'agent' => $agent,
             'langInclude'=>$langInclude,
             'langExclude'=>$langExclude,
@@ -4677,32 +4708,10 @@ class OrderController extends Controller
     }
 
 
-    // public function detail_order($id)
-    // {   
-    //     $user = Auth::user();
-    //     $order = Orders::with(['guests', 'activePricingSnapshot'])
-    //         ->where('sales_agent', $user->id)
-    //         ->where('id', $id)
-    //         ->first();
-    //     if (!$order) {
-    //         return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
-    //     }
-    //     $business = BusinessProfile::where('id','=',1)->first();
-    //     $optional_rate_order = OptionalRateOrder::all();
-    //     $optionalrates = OptionalRate::all();
-    //     if ($order->status == "Draft") {
-    //         return redirect('/orders')->with('warning',"Submit your order to see order detail");
-    //     }else{
-    //         return view('frontend.home.orders.detail',compact('order'),[
-    //             'usdrates'=>$usdrates,
-    //             'order'=> $order,
-    //             'business'=>$business,
-    //             'optional_rate_order'=>$optional_rate_order,
-    //             'optionalrates'=>$optionalrates,
-    //         ]);
-    //     }
-        
-    // }
+    public function detail_order($id)
+    {
+        return $this->redirectToCanonicalFrontendOrderDetail((int) $id);
+    }
 
 
 
@@ -5435,7 +5444,6 @@ class OrderController extends Controller
                 "other_price"=>$other_price,
                 "markup"=>$markup,
             ]);
-            // dd($orderWedding);
             $orderWedding->save();
             $orderWedding_id = $orderWedding->id;
         } else {
@@ -6030,10 +6038,11 @@ class OrderController extends Controller
         $user = Auth::user();
         $order = Orders::with(['guests', 'activePricingSnapshot'])
             ->where('sales_agent',$user->id)
+            ->where('service', Orders::PUBLIC_TOUR_SERVICE)
             ->where('id',$id)
             ->first();
         if (!$order) {
-            return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
+            return $this->redirectToCanonicalFrontendOrderDetail((int) $id);
         }
         $tour = Tours::with('activeLocations')->find($order->service_id);
         $business = BusinessProfile::where('id','=',1)->first();
@@ -6192,26 +6201,13 @@ class OrderController extends Controller
         
     }
 
-        public function storeFrontendActivityOrder(Request $request, string $code)
+    public function storeFrontendActivityOrder(
+        StoreActivityOrderRequest $request,
+        string $code,
+        ActivityBookingService $bookings
+    )
     {
-        $validated = $request->validate([
-            'submission_token' => ['required', 'string', 'max:120'],
-            'number_of_guests' => ['required', 'integer', 'min:1', 'max:200'],
-            'travel_date' => ['required', 'date', 'after_or_equal:now'],
-            'guests' => ['required', 'array', 'min:1', 'max:200'],
-            'guests.*.name' => ['required', 'string', 'max:255'],
-            'guests.*.phone' => ['nullable', 'string', 'max:50'],
-            'guests.*.age' => ['required', 'in:Adult,Child'],
-            'guests.*.sex' => ['required', 'in:Male,Female'],
-            'guests.*.date_of_birth' => ['nullable', 'date'],
-            'guests.*.identification_type' => ['nullable', 'string', 'max:50'],
-            'guests.*.identification_no' => ['nullable', 'string', 'max:100'],
-            'guests.*.is_leader' => ['nullable', 'boolean'],
-            'note' => ['nullable', 'string'],
-            'activity_order_source' => ['nullable', 'string'],
-            'terms_accepted' => ['accepted'],
-        ]);
-        $user = Auth::user();
+        $validated = $request->validated();
         $existingOrder = $this->findProcessedActivityOrderBySubmissionToken($validated['submission_token']);
 
         if ($existingOrder) {
@@ -6219,157 +6215,15 @@ class OrderController extends Controller
                 ->with('success', 'This order was already submitted. We reopened the existing order detail.');
         }
 
-        $activity = Activities::with('partners')
-            ->published()
-            ->where('code', $code)
-            ->firstOrFail();
+        $order = $bookings->create(
+            code: $code,
+            validated: $validated,
+            guestList: $request->file('guest_list'),
+            user: $request->user(),
+            ipAddress: $request->getClientIp(),
+        );
 
-        $travelDate = Carbon::parse($validated['travel_date']);
-
-        $guestCount = (int) $validated['number_of_guests'];
-        $minimumPax = max((int) ($activity->min_pax ?: 1), 1);
-        if ($guestCount < $minimumPax) {
-            throw ValidationException::withMessages([
-                'number_of_guests' => __('messages.Number of guests is below the activity minimum.'),
-            ]);
-        }
-
-        $capacity = (int) ($activity->qty ?: 0);
-        if ($capacity > 0 && $guestCount > $capacity) {
-            throw ValidationException::withMessages([
-                'number_of_guests' => __('messages.Number of guests exceeds activity capacity.'),
-            ]);
-        }
-
-        if ((float) $activity->contract_rate <= 0 && (float) $activity->markup <= 0) {
-            throw ValidationException::withMessages([
-                'number_of_guests' => __('messages.Activity pricing is not available.'),
-            ]);
-        }
-
-        $activityGuests = $this->normaliseTourGuestRows($validated['guests'] ?? []);
-        if (count($activityGuests) < $guestCount) {
-            throw ValidationException::withMessages([
-                'guests' => __('activities.detail.order.guest_count_mismatch'),
-            ]);
-        }
-
-        $durationHours = $this->extractActivityDurationHours($activity->duration);
-        $checkout = $travelDate->copy()->addHours(max($durationHours, 1));
-        $cnyrates = UsdRates::where('name', 'CNY')->first();
-        $twdrates = UsdRates::where('name', 'TWD')->first();
-
-        try {
-            $activityQuote = app(ActivityPricingService::class)->quote(
-                activity: $activity,
-                guestCount: $guestCount,
-                activityDate: CarbonImmutable::parse($travelDate->format('Y-m-d H:i:s')),
-            );
-        } catch (PricingException $exception) {
-            report($exception);
-
-            if ($exception->pricingCode === 'ACTIVITY_PRICE_DATE_OUT_OF_VALIDITY') {
-                throw ValidationException::withMessages([
-                    'travel_date' => __('messages.The selected activity date is outside the current price validity period.'),
-                ]);
-            }
-
-            throw ValidationException::withMessages([
-                'number_of_guests' => __('messages.Activity pricing is not available.'),
-            ]);
-        }
-
-        $promotionDiscounts = collect($activityQuote->promotions)
-            ->map(fn (array $promotion) => app(MoneyFormatter::class)->decimal(
-                Money::usdCents((int) $promotion['amount_usd_minor'])
-            ))
-            ->values();
-        $pricePerPax = $activityQuote->unitPriceUsd();
-        $normalPrice = $activityQuote->grossTotalUsd();
-        $finalPrice = $activityQuote->finalTotalUsd();
-        $guestLeader = collect($activityGuests)->first(fn ($guest) => $guest['is_leader'] && $guest['phone']);
-
-        if (!$guestLeader) {
-            throw ValidationException::withMessages([
-                'guests' => __('tour-detail.guest_leader_required'),
-            ]);
-        }
-
-        $guestDetail = $this->buildTourGuestManifestHtml($activityGuests);
-
-        $orderPayload = [
-            'orderno' => $this->generateActivityOrderNumber($travelDate),
-            'user_id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'service' => Orders::PUBLIC_ACTIVITY_SERVICE,
-            'service_type' => $activity->type,
-            'service_id' => $activity->id,
-            'servicename' => optional($activity->partners)->name ?: '-',
-            'subservice' => $activity->name,
-            'subservice_id' => $activity->id,
-            'sales_agent' => $user->id,
-            'checkin' => $travelDate->format('Y-m-d H:i:s'),
-            'checkout' => $checkout->format('Y-m-d H:i:s'),
-            'pickup_date' => $travelDate->format('Y-m-d H:i:s'),
-            'dropoff_date' => $checkout->format('Y-m-d H:i:s'),
-            'travel_date' => $travelDate->format('Y-m-d H:i:s'),
-            'pickup_name' => $guestLeader['name'] ?? null,
-            'pickup_phone' => $guestLeader['phone'] ?? null,
-            'location' => $activity->location,
-            'capacity' => $capacity ?: $guestCount,
-            'number_of_guests' => $guestCount,
-            'guest_detail' => $guestDetail,
-            'note' => filled($validated['note'] ?? null) ? trim((string) $validated['note']) : null,
-            'include' => $activity->include,
-            'additional_info' => $activity->additional_info,
-            'cancellation_policy' => $activity->cancellation_policy,
-            'itinerary' => $activity->itinerary,
-            'duration' => $activity->duration,
-            'price_total' => $normalPrice,
-            'normal_price' => $normalPrice,
-            'price_pax' => $pricePerPax,
-            'final_price' => $finalPrice,
-            'promotion' => $activityQuote->promotions !== []
-                ? json_encode(collect($activityQuote->promotions)->pluck('name')->values()->all())
-                : null,
-            'promotion_disc' => $activityQuote->promotions !== [] ? json_encode($promotionDiscounts->all()) : null,
-            'usd_rate' => FixedScale::formatDecimal($activityQuote->rate->valueScaled, $activityQuote->rate->scale),
-            'cny_rate' => $cnyrates?->sell ?: $cnyrates?->rate,
-            'twd_rate' => $twdrates?->sell ?: $twdrates?->rate,
-            'status' => 'Pending',
-        ];
-
-        $order = DB::transaction(function () use ($orderPayload, $activityGuests, $activity, $request, $user, $validated) {
-            $order = Orders::create($this->filterOrderPayloadByExistingColumns($orderPayload));
-
-            $this->saveTourOrderGuests($order, $activityGuests);
-            app(ActivityReservationService::class)->ensurePendingReservationForOrder($order);
-
-            UserLog::create([
-                'action' => 'Create Order',
-                'service' => Orders::PUBLIC_ACTIVITY_SERVICE,
-                'subservice' => $activity->name,
-                'subservice_id' => $order->id,
-                'page' => 'activity-detail-modern',
-                'user_id' => $user->id,
-                'user_ip' => $request->getClientIp(),
-                'note' => 'Created activity order with order no: ' . $order->orderno,
-            ]);
-
-            OrderLog::create([
-                'order_id' => $order->id,
-                'action' => 'Create Order',
-                'url' => $request->getClientIp(),
-                'method' => 'Create',
-                'agent' => $order->name,
-                'admin' => Auth::id(),
-            ]);
-
-            $this->rememberProcessedActivityOrderSubmission($validated['submission_token'], $order);
-
-            return $order->fresh();
-        });
+        $this->rememberProcessedActivityOrderSubmission($validated['submission_token'], $order);
 
         Mail::to(config('app.reservation_mail'))->send(new ReservationMail($order->id, null));
 
@@ -6383,10 +6237,11 @@ class OrderController extends Controller
         $user = Auth::user();
         $order = Orders::with(['guests', 'activePricingSnapshot'])
             ->where('sales_agent',$user->id)
+            ->where('service', Orders::PUBLIC_ACTIVITY_SERVICE)
             ->where('id',$id)
             ->first();
         if (!$order) {
-            return redirect('/orders')->with('warning', __('messages.Your order was not found').'!');
+            return $this->redirectToCanonicalFrontendOrderDetail((int) $id);
         }
         $activity = Activities::with(['partners', 'images'])->find($order->service_id);
         $business = BusinessProfile::where('id','=',1)->first();
@@ -6808,7 +6663,6 @@ class OrderController extends Controller
                 "wedding_date"=>$wedding_date,
                 
             ]);
-            // dd($order,$order_wedding,$bride);
             
             if (isset($request->airport_shuttle_in) or isset($request->airport_shuttle_out)) {
                 $asins = AirportShuttle::where('order_id',$order->id)->get();
@@ -6898,7 +6752,6 @@ class OrderController extends Controller
                     }
                 }
             }
-            // dd($order, $asins);
             //Mail
             $rquotation = $request->request_quotation;
             $agent = User::where('id',$order->sales_agent)->first();
@@ -6906,7 +6759,6 @@ class OrderController extends Controller
             // Mail::to(['reservation@balikamitour.com',config('app.reservation_mail')])
             ->send(new ReservationMail($id,$rquotation));
             $note = "Submited order no: ".$order->orderno;
-            //dd($order);
             $user_log =new UserLog([
                 "action"=>$request->action,
                 "service"=>$order->service,
@@ -7022,7 +6874,6 @@ class OrderController extends Controller
             "service_date"=>$service_date,
             "optional_rate_id"=>$request->optional_rate_id,
         ]);
-        // @dd($order);
         $optionalrateorder->save();
         return redirect("/order-$request->order_id")->with('success','Optional service added successfully');
     

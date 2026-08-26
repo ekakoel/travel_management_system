@@ -2,405 +2,190 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-
-use App\Models\Tax;
-use App\Models\Tours;
-use App\Models\UserLog;
-use App\Models\Partners;
-use App\Models\UsdRates;
+use App\Http\Requests\StorePartnerRequest;
+use App\Http\Requests\UpdatePartnerRequest;
 use App\Models\Activities;
-use Illuminate\Support\Str;
-use App\Models\ActivityType;
+use App\Models\Partners;
+use App\Models\Transports;
+use App\Models\UserLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\StorePartnersRequest;
-use App\Http\Requests\UpdatePartnersRequest;
+use Illuminate\Support\Facades\Storage;
 
 class PartnersController extends Controller
 {
+    private const MANAGE_GATES = ['posDev', 'posAdm', 'posAuthor'];
+
     public function __construct()
     {
-        $this->middleware(['auth','can:isAdmin']);
+        $this->middleware(['auth', 'verified', 'type:admin']);
     }
+
     public function index()
     {
-        $activepartners=Partners::where('status', '=','Active')->get();
-        $draft_partners=Partners::where('status', '=','Draft')->get();
-        $partners = Partners::where('status','!=','Removed')->get();
-        return view('admin.partners', compact('activepartners'),[
-            // "ctpackage" => $ctpackage,
-            "activepartners" => $activepartners,
-            "draft_partners" => $draft_partners,
-            "partners" => $partners,
-            
+        $partners = Partners::query()
+            ->notRemoved()
+            ->withCount([
+                'activity as activities_count' => fn ($query) => $query->where('status', '!=', 'Removed'),
+                'transports as transports_count' => fn ($query) => $query->where('status', '!=', 'Removed'),
+            ])
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $partnerStats = [
+            'total' => Partners::query()->notRemoved()->count(),
+            'active' => Partners::query()->where('status', Partners::STATUS_ACTIVE)->count(),
+            'draft' => Partners::query()->where('status', Partners::STATUS_DRAFT)->count(),
+            'transport' => Partners::query()
+                ->notRemoved()
+                ->where(function ($query) {
+                    $query->where('type', 'Transport')
+                        ->orWhere('type', 'Activity & Transport');
+                })
+                ->count(),
+        ];
+
+        return view('backend.operations.partners.index', [
+            'partners' => $partners,
+            'partnerStats' => $partnerStats,
         ]);
     }
 
-// View Detail Partner =========================================================================================>
-    public function view_vendors_detail($id){
-        $now = Carbon::now();
-        $tax = Tax::where('id',1)->first();
-        $partner = Partners::find($id);
-        $usdrates = UsdRates::where('name','USD')->first();
-        $author = Auth::user()->where('id',$partner->author_id)->first();
-        $type = ActivityType::all();
-        
-        $activitys = Activities::where('partners_id', $partner->id)->where('status','!=','Removed')->get();
-        $tours = Tours::where('partners_id', $partner->id)->where('status','!=','Removed')->get();
-        $cactivity = count($activitys);
-        $ctours = count($tours);
-        $cservice = $cactivity + $ctours;
-        
+    public function store(StorePartnerRequest $request)
+    {
+        $validated = $request->validated();
+        $coverPath = $request->file('cover')->store('partners/covers', 'public');
 
-        if ($partner->status == "Removed") {
-            return redirect("/vendors")->with('invalid','Sorry, the partner you are looking for is not available!');
-        }else{
-            return view('admin.partner-detail',[
-                'partner'=>$partner,
-                'usdrates'=>$usdrates,
-                'author'=>$author,
-                'type'=>$type,
-                'tax'=>$tax,
-                'cservice'=>$cservice,
-                'tours'=>$tours,
-                'activitys'=>$activitys,
-            ]);
-        }
-    }
-// View Partner Add Activity=========================================================================================>
-    public function view_partner_add_activity($id){
-        $activities = Activities::all();
-        $type = ActivityType::all();
-        $partners = Partners::find($id);
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            return view('backend.operations.partners.forms.add-activity', [
-                "type" => $type,
-                "partners" => $partners,
-            ])->with('activities',$activities);
-        }else{
-            return redirect("/dashboard")->with('error','Sorry, anda tidak bisa mengakses halaman tersebut');
-        }
-        
-    }
-// View Partner Add Tour=========================================================================================>
-    public function view_partner_add_tour($id){
-        $tours = Activities::all();
-        $type = ActivityType::all();
-        $partners = Partners::find($id);
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            return view('backend.operations.partners.forms.add-tour', [
-                "type" => $type,
-                "partners" => $partners,
-            ])->with('tours',$tours);
-        }else{
-            return redirect("/dashboard")->with('error','Sorry, anda tidak bisa mengakses halaman tersebut');
-        }
-    }
-// Function Add PARTNER =========================================================================================>
-    public function func_add_partner(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $validated = $request->validate([
-                'name' => 'required|max:255',
-                'address' => 'required',
-                'location' => 'required',
-                'map' => 'required',
-                'cover' => 'required',
-                'type' => 'required',
-                'phone' => 'required',
-                'contact_person' => 'required',
-            ]);
-            $status = 'Draft';
-            if($request->hasFile("cover")){
-                $file=$request->file("cover");
-                $coverName=time().'_'.$file->getClientOriginalName();
-                $file->move("storage/partners/covers/",$coverName);
-                $status="Draft";
-                $code=Str::random(26);
-                $partner =new Partners([
-                    "name"=>$request->name,
-                    "address"=>$request->address,
-                    "location"=>$request->location,
-                    "map"=>$request->map,
-                    "type"=>$request->type,
-                    "phone"=>$request->phone,
-                    "contact_person"=>$request->contact_person,
-                    "status"=>$status,
-                    "cover" =>$coverName,
-                    "author_id" =>$request->author_id,
-                    "description" =>$request->description,
+        try {
+            DB::transaction(function () use ($request, $validated, $coverPath) {
+                $partner = Partners::create([
+                    'name' => $validated['name'],
+                    'address' => $validated['address'],
+                    'location' => $validated['location'],
+                    'map' => $validated['map'],
+                    'type' => $validated['type'],
+                    'phone' => $validated['phone'],
+                    'contact_person' => $validated['contact_person'],
+                    'status' => Partners::STATUS_DRAFT,
+                    'cover' => $coverPath,
+                    'author_id' => $request->user()->id,
+                    'description' => $validated['description'] ?? null,
                 ]);
-                $partner->save();
-            }
-            // USER LOG
-            $action = "Add Partner";
-            $service = "Partner";
-            $subservice = "Partner";
-            $page = "partners";
-            $note = "Add new Partner id : ".$partner->id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$partner->id,
-                "page"=>$page,
-                "user_id"=>$request->author_id,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/detail-partner-$partner->id")->with('success', 'Partner added successfully');
-        }else{
-            return redirect("/dashboard")->with('error','Sorry, anda tidak bisa mengakses halaman tersebut');
+
+                $this->recordPartnerLog($request, $partner, 'Add Partner', "Add new Partner id : {$partner->id}");
+            });
+
+            return redirect()
+                ->route('admin.partners.index')
+                ->with('success', 'Partner created successfully.');
+        } catch (\Throwable $e) {
+            Storage::disk('public')->delete($coverPath);
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Failed to create partner.');
         }
     }
 
-// Function Add Activities =========================================================================================>
-    public function func_partner_add_activity(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $validated = $request->validate([
-                'name' => 'required',
-                'location' => 'required',
-                'type' => 'required',
-                'duration' => 'required',
-                'description' => 'required',
-                'contract_rate' => 'required',
-                'qty' => 'required',
-                'min_pax' => 'required',
-                'validity' => 'required',
-                'cover' => 'required',
-                'partners_id' => 'required',
-            ]);
+    public function update(UpdatePartnerRequest $request, $id)
+    {
+        $validated = $request->validated();
+        $partner = Partners::findOrFail($id);
+        $oldCoverPath = $partner->coverStoragePath();
+        $newCoverPath = $request->hasFile('cover')
+            ? $request->file('cover')->store('partners/covers', 'public')
+            : null;
 
-            if($request->hasFile("cover")){
-                $file=$request->file("cover");
-                $coverName=time().'_'.$file->getClientOriginalName();
-                $file->move("storage/activities/activities-cover/",$coverName);
-                $status="Draft";
-                $code=Str::random(26);
-                $validity = date('Y-m-d',strtotime($request->validity));
-                $activity =new Activities([
-                    "name"=>$request->name,
-                    "code"=>$code,
-                    "type" =>$request->type, 
-                    "location"=>$request->location,
-                    "map"=>$request->map,
-                    "partners_id"=>$request->partners_id,
-                    "address"=>$request->address,
-                    "description"=>$request->description,
-                    "itinerary"=>$request->itinerary,
-                    "duration"=>$request->duration,
-                    "include"=>$request->include,
-                    "additional_info"=>$request->additional_info,
-                    "contract_rate"=>$request->contract_rate,
-                    "cancellation_policy"=>$request->cancellation_policy,
-                    "markup"=>$request->markup,
-                    "validity"=>$request->validity,
-                    "min_pax"=>$request->min_pax,
-                    "qty"=>$request->qty,
-                    "status"=>$status,
-                    "author_id"=>$request->author,
-                    "cover" =>$coverName,
-                ]);
-                $activity->save();
-            }
-            // USER LOG
-            $action = "Add Activity";
-            $service = "Activity";
-            $subservice = "Activity";
-            $page = "add-activity";
-            $note = "Add Activity: ".$activity->id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$activity->id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/detail-partner-$request->partners_id")->with('success','New Activity has been successfully added!');
-        }else{
-            return redirect("/dashboard")->with('error','Sorry, anda tidak bisa mengakses halaman tersebut');
-        }
-    }
-// Function Add Tour =========================================================================================>
-    public function func_partner_add_tour(Request $request){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $validated = $request->validate([
-                'name' => 'required|max:255',
-                'destinations' => 'required',
-                'location' => 'required',
-                'type' => 'required',
-                'duration' => 'required',
-                'description' => 'required',
-                'itinerary'=> 'required',
-                'include' => 'required',
-                'contract_rate' => 'required',
-                'markup' => 'required',
-                'qty' => 'required',
-            ]);
-            if($request->hasFile('cover')){
-                $file=$request->file('cover');
-                $coverName=time().'_'.$file->getClientOriginalName();
-                $file->move("storage/tours/tours-cover",$coverName);
-                $status="Draft";
-                $code=Str::random(26);
-                $tour =new Tours([
-                    "name"=>$request->name,
-                    "partners_id"=>$request->partners_id,
-                    "code"=>$code,
-                    "destinations"=>$request->destinations,
-                    "location"=>$request->location,
-                    "type" =>$request->type, 
-                    "duration"=>$request->duration,
-                    "description"=>$request->description,
-                    "include"=>$request->include,
-                    "itinerary"=>$request->itinerary,
-                    "additional_info"=>$request->additional_info,
-                    "cancellation_policy"=>$request->cancellation_policy,
-                    "contract_rate"=>$request->contract_rate,
-                    "markup"=>$request->markup,
-                    "qty"=>$request->qty,
-                    "status"=>$status,
-                    "author_id"=>$request->author,
-                    "cover" =>$coverName,
-                ]);
-                $tour->save();
-            }
-            // USER LOG
-            $action = "Add Tours";
-            $service = "Tours";
-            $subservice = "Tours";
-            $page = "add-tour";
-            $note = "Add Tours: ".$tour->id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$tour->id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/detail-partner-$request->partners_id")->with('success','New Tour package has been successfully added!');
-        }else{
-            return redirect("/dashboard")->with('error','Sorry, anda tidak bisa mengakses halaman tersebut');
-        }
-    }
+        try {
+            DB::transaction(function () use ($request, $partner, $validated, $newCoverPath) {
+                $status = $validated['status'] ?? $partner->status ?? Partners::STATUS_DRAFT;
 
-// Function Update Partner =============================================================================================================>
-    public function func_update_partner(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $partner=Partners::findOrFail($id);
-            $activities = Activities::where('partners_id',$id)->get();
-            $tours = Tours::where('partners_id',$id)->get();
-            if($request->hasFile("cover")){
-                if (File::exists("storage/partners/covers/".$partner->cover)) {
-                    File::delete("storage/partners/covers/".$partner->cover);
+                if ($status === Partners::STATUS_DRAFT) {
+                    Activities::where('partners_id', $partner->id)->update(['status' => Partners::STATUS_DRAFT]);
+                    Transports::where('partner_id', $partner->id)->update(['status' => Partners::STATUS_DRAFT]);
                 }
-                $file=$request->file("cover");
-                $partner->cover=time()."_".$file->getClientOriginalName();
-                $file->move("storage/partners/covers/",$partner->cover);
-                $request['cover']=$partner->cover;
+
+                $partner->update([
+                    'status' => $status,
+                    'name' => $validated['name'],
+                    'address' => $validated['address'],
+                    'location' => $validated['location'],
+                    'map' => $validated['map'],
+                    'type' => $validated['type'],
+                    'phone' => $validated['phone'],
+                    'contact_person' => $validated['contact_person'],
+                    'cover' => $newCoverPath ?: $partner->cover,
+                    'description' => $validated['description'] ?? null,
+                ]);
+
+                $this->recordPartnerLog($request, $partner, 'Update Partner', "Update Partner id : {$partner->id}");
+            });
+
+            if ($newCoverPath && $oldCoverPath && $oldCoverPath !== $newCoverPath) {
+                Storage::disk('public')->delete($oldCoverPath);
             }
-            if (isset($activities)) {
-                if ($request->status == "Draft") {
-                foreach ($activities as $activity) {
-                        $activity->update([
-                            "status"=>"Draft",
-                        ]);
-                    }
-                foreach ($tours as $tour) {
-                        $tour->update([
-                            "status"=>"Draft",
-                        ]);
-                    }
-                }
+
+            return redirect()
+                ->route('admin.partners.index')
+                ->with('success', 'Partner updated successfully.');
+        } catch (\Throwable $e) {
+            if ($newCoverPath) {
+                Storage::disk('public')->delete($newCoverPath);
             }
-            $partner->update([
-                "status"=>$request->status,
-                "name"=>$request->name,
-                "address"=>$request->address,
-                "location"=>$request->location,
-                "map"=>$request->map,
-                "type"=>$request->type,
-                "phone"=>$request->phone,
-                "contact_person"=>$request->contact_person,
-                "cover" =>$partner->cover,
-                "description" =>$request->description,
-            ]);
-            // USER LOG
-            $action = "update Partner";
-            $service = "Partner";
-            $subservice = "Partner";
-            $page = "partners";
-            $note = "update Partner id : ".$id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$id,
-                "page"=>$page,
-                "user_id"=>$request->author_id,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/detail-partner-$id")->with('success','Partner has been updated!');
-        }else{
-            return redirect("/dashboard")->with('error','Sorry, anda tidak bisa mengakses halaman tersebut');
-        }
-    }
-    // Function Remove Partner =============================================================================================================>
-    public function func_remove_partner(Request $request,$id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor')) {
-            $partner=Partners::findOrFail($id);
-            $activities = Activities::where('partners_id',$id)->get();
-            $status = 'Removed';
-            foreach ($activities as $activity) {
-            $activity->update([
-                    "status"=>"Draft",
-                    "partners_id"=>null,
-            ]);
-            }
-            $partner->update([
-                "status"=>$status,
-            ]);
-            // USER LOG
-            $action = "Remove Partner";
-            $service = "Partner";
-            $subservice = "Partner";
-            $page = "partners";
-            $note = "Remove Partner id : ".$id;
-            $user_log =new UserLog([
-                "action"=>$action,
-                "service"=>$service,
-                "subservice"=>$subservice,
-                "subservice_id"=>$id,
-                "page"=>$page,
-                "user_id"=>$request->author,
-                "user_ip"=>$request->getClientIp(),
-                "note" =>$note, 
-            ]);
-            $user_log->save();
-            return redirect("/partners")->with('success','Partner has been removed!');
-        }else{
-            return redirect("/dashboard")->with('error','Sorry, anda tidak bisa mengakses halaman tersebut');
+
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Failed to update partner.');
         }
     }
 
-    public function partnerdetail($id){
-        $dpartner = Partners::find($id);
-        return view('admin.partnerdetail',[
-                'dpartners'=>$dpartner,
-            ]);
+    public function destroy(Request $request, $id)
+    {
+        if (Gate::allows('posDev')) {
+            $partner = Partners::findOrFail($id);
 
-        } 
+            DB::transaction(function () use ($request, $partner) {
+                Activities::where('partners_id', $partner->id)->update([
+                    'status' => Partners::STATUS_DRAFT,
+                    'partners_id' => null,
+                ]);
+
+                Transports::where('partner_id', $partner->id)->update([
+                    'status' => Partners::STATUS_DRAFT,
+                    'partner_id' => null,
+                ]);
+
+                $partner->update(['status' => Partners::STATUS_REMOVED]);
+
+                $this->recordPartnerLog($request, $partner, 'Archive Partner', "Archive Partner id : {$partner->id}");
+            });
+
+            return redirect()
+                ->route('admin.partners.index')
+                ->with('success', 'Partner archived successfully.');
+        }else{
+            return redirect()
+                ->route('admin.partners.index')
+                ->with('error', __('messages.unauthorized_access'));
+        }
+    }
+
+    private function recordPartnerLog(Request $request, Partners $partner, string $action, string $note): void
+    {
+        UserLog::create([
+            'action' => $action,
+            'service' => 'Partner',
+            'subservice' => 'Partner',
+            'subservice_id' => $partner->id,
+            'page' => 'partners',
+            'user_id' => $request->user()->id,
+            'user_ip' => $request->ip(),
+            'note' => $note,
+        ]);
+    }
 }

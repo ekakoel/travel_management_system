@@ -6,7 +6,6 @@ use App\Models\Hotels;
 use App\Models\HotelRoom;
 use App\Models\WeddingAccomodations;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ExtraBed extends Model

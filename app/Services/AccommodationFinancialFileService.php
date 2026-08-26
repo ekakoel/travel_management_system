@@ -126,6 +126,16 @@ class AccommodationFinancialFileService
         );
     }
 
+    public function customerInvoicePreviewRouteName(Orders $order): string
+    {
+        return $this->customerInvoiceRouteName($order, 'preview');
+    }
+
+    public function customerInvoiceDownloadRouteName(Orders $order): string
+    {
+        return $this->customerInvoiceRouteName($order, 'download');
+    }
+
     public function fileResponseHeaders(array $file, string $disposition): array
     {
         return [
@@ -256,6 +266,18 @@ class AccommodationFinancialFileService
             Orders::PUBLIC_ACTIVITY_SERVICE => self::ACTIVITY_INVOICE_ROOT,
             default => self::INVOICE_ROOT,
         };
+    }
+
+    private function customerInvoiceRouteName(Orders $order, string $action): string
+    {
+        $service = match ($order->service) {
+            Orders::PUBLIC_TRANSPORT_SERVICE => 'transport',
+            Orders::PUBLIC_TOUR_SERVICE => 'tour',
+            Orders::PUBLIC_ACTIVITY_SERVICE => 'activity',
+            default => 'accommodation',
+        };
+
+        return "orders.{$service}.invoice.{$action}";
     }
 
     private function receiptDownloadName(PaymentConfirmation $payment): string

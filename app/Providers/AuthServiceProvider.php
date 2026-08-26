@@ -37,6 +37,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('posDev', function ($user) {
             return $user->position === 'developer';
         });
+        Gate::define('posAdm', function ($user) {
+            return $user->position === 'administrator';
+        });
         Gate::define('posAuthor', function ($user) {
             return $user->position === 'author';
         });

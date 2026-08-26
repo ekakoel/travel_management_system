@@ -12,11 +12,18 @@ body.sidebar-light .backend-page-toolbar {
   padding: 13px 16px;
 }
 
-body.sidebar-light .backend-page-toolbar > nav {
+body.sidebar-light .backend-page-toolbar > nav,
+body.sidebar-light .backend-breadcrumb-nav {
+  flex: 1 1 auto;
   min-width: 0;
 }
 
-body.sidebar-light .breadcrumb {
+body.sidebar-light .backend-breadcrumb-toolbar {
+  isolation: isolate;
+}
+
+body.sidebar-light .breadcrumb,
+body.sidebar-light .backend-breadcrumb {
   align-items: center;
   background: transparent;
   display: flex;
@@ -31,13 +38,20 @@ body.sidebar-light .breadcrumb-item {
   font-size: 13px;
   font-weight: 700;
   line-height: 1.4;
+  min-width: 0;
 }
 
 body.sidebar-light .breadcrumb-item a {
   color: var(--backend-brand-strong);
+  display: inline-block;
   font-weight: 800;
+  max-width: min(44vw, 360px);
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-decoration: none;
   transition: color 160ms ease, background-color 160ms ease;
+  vertical-align: bottom;
+  white-space: nowrap;
 }
 
 body.sidebar-light .breadcrumb-item a:hover,
@@ -55,6 +69,10 @@ body.sidebar-light .breadcrumb-item a:focus-visible {
 body.sidebar-light .breadcrumb-item.active {
   color: var(--backend-muted);
   font-weight: 700;
+  max-width: min(52vw, 420px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 body.sidebar-light .breadcrumb-item + .breadcrumb-item {
@@ -70,5 +88,10 @@ body.sidebar-light .breadcrumb-item + .breadcrumb-item::before {
   body.sidebar-light .backend-page-toolbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  body.sidebar-light .breadcrumb-item a,
+  body.sidebar-light .breadcrumb-item.active {
+    max-width: calc(100vw - 92px);
   }
 }

@@ -11,7 +11,7 @@
 @endpush
 
 @section('content')
-    @can('isAdmin')
+    @canany(['posDev','posAuthor','posRsv','posAdm'])
         @php
             $hotelCount = $hotels->count();
             $activeCount = $cactivehotels->count();
@@ -35,24 +35,33 @@
                     title="Hotel Manager"
                     description="Manage hotel profiles, room availability, active pricing, promo periods, packages, and archive visibility from one standardized backend workspace."
                 >
-                    @canany(['posDev','posAuthor'])
-                        <x-slot name="action">
-                            <a href="{{ route('admin.hotels.create') }}" class="backend-page-primary-action">
-                                <i class="ion-plus-round"></i>
-                                Add Hotel
-                            </a>
-                        </x-slot>
-                    @endcanany
+                @canany(['posDev','posAuthor'])
+                    <x-slot name="action">
+                        <a href="{{ route('admin.hotels.create') }}" class="backend-page-primary-action">
+                            <i class="ion-plus-round"></i>
+                            Add Hotel
+                        </a>
+                    </x-slot>
+                @endcanany
                 </x-backend.page-hero>
 
                 <section class="backend-page-toolbar hotels-admin-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Hotel Manager</li>
                         </ol>
                     </nav>
                     <div class="backend-page-toolbar__actions">
+                        @canany(['posDev','posAuthor','posAdm'])
+                            <form action="{{ route('admin.hotels.status-audit.refresh') }}" method="post" class="hotels-admin-refresh-form">
+                                @csrf
+                                <button type="submit" class="backend-toolbar-action hotels-admin-refresh-action" data-backend-action-loading data-loading-label="Refreshing hotel data">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                    Refresh Hotel Data
+                                </button>
+                            </form>
+                        @endcanany
                         <span class="backend-status-badge backend-status-badge--info">{{ $now->format('d M Y') }}</span>
                     </div>
                 </section>
@@ -188,6 +197,8 @@
                                                     <a href="{{ route('admin.hotels.edit', $hotel->id) }}" class="backend-icon-action" aria-label="Edit {{ $hotel->name }}">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
+                                                @endcanany
+                                                @can('posDev')
                                                     <form action="{{ route('admin.hotels.destroy', $hotel->id) }}" method="post">
                                                         @csrf
                                                         @method('delete')
@@ -196,7 +207,7 @@
                                                             <i class="far fa-trash-alt"></i>
                                                         </button>
                                                     </form>
-                                                @endcanany
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>
@@ -247,6 +258,8 @@
                                         <a href="{{ route('admin.hotels.edit', $hotel->id) }}" class="backend-icon-action" aria-label="Edit {{ $hotel->name }}">
                                             <i class="fa fa-pencil-alt"></i>
                                         </a>
+                                    @endcan
+                                    @can('posDev')
                                         <form action="{{ route('admin.hotels.destroy', $hotel->id) }}" method="post">
                                             @csrf
                                             @method('delete')
@@ -255,7 +268,7 @@
                                                 <i class="fa fa-trash-alt"></i>
                                             </button>
                                         </form>
-                                    @endcanany
+                                    @endcan
                                 </div>
                             </article>
                         @empty
@@ -319,5 +332,5 @@
                 @include('layouts.footer')
             </div>
         </main>
-    @endcan
+    @endcanany
 @endsection

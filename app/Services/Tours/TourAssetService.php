@@ -2,7 +2,6 @@
 
 namespace App\Services\Tours;
 
-use App\Models\ToursImages;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -10,7 +9,6 @@ use Illuminate\Support\Str;
 class TourAssetService
 {
     public const COVER_PATH = 'tours/tours-cover';
-    public const GALLERY_PATH = 'tours/tour-gallery';
     public const MARKER_PATH = 'tours/tour-location-markers';
 
     public function uploadCover(UploadedFile $file): string
@@ -30,31 +28,14 @@ class TourAssetService
         return $this->delete(self::COVER_PATH, $fileName);
     }
 
-    public function uploadGallery(int $tourId, UploadedFile $file): ToursImages
-    {
-        return ToursImages::create([
-            'tour_id' => $tourId,
-            'image' => $this->storeImage($file, self::GALLERY_PATH),
-        ]);
-    }
-
-    public function replaceGallery(ToursImages $image, UploadedFile $file): string
-    {
-        $this->deleteGallery($image->image);
-        $filename = $this->storeImage($file, self::GALLERY_PATH);
-        $image->update(['image' => $filename]);
-
-        return $filename;
-    }
-
-    public function deleteGallery(?string $fileName): bool
-    {
-        return $this->delete(self::GALLERY_PATH, $fileName);
-    }
-
     public function uploadMarker(UploadedFile $file): string
     {
         return $this->storeImage($file, self::MARKER_PATH, true);
+    }
+
+    public function deleteMarker(?string $fileName): bool
+    {
+        return $this->delete(self::MARKER_PATH, $fileName);
     }
 
     private function storeImage(UploadedFile $file, string $directory, bool $randomName = false): string

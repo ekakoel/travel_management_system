@@ -20,7 +20,7 @@ class WeddingVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$ceremonyVenue->hotels_id#ceremonyVenue")->with('success','Ceremony venue has been activated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION DEACTIVATE RECEPTION VENUE ===============================================================================================================>
@@ -32,7 +32,7 @@ class WeddingVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$ceremonyVenue->hotels_id#ceremonyVenue")->with('success','Ceremony venue has been save to draft!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 }

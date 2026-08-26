@@ -32,34 +32,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 <script src="{{ mix('build/backend/js/app.js') }}" defer></script>
 <script>
-    Dropzone.autoDiscover = false;
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.tour-gallery-dropzone').forEach(function (formEl) {
-            if (formEl.dropzone) return; // hindari double attach
-
-            const tourId = formEl.dataset.tourId;
-
-            new Dropzone(formEl, {
-                url: "{{ route('func.tour-gallery.upload') }}",
-                paramName: "file",
-                maxFilesize: 5,
-                acceptedFiles: ".jpg,.jpeg,.png,.webp",
-                uploadMultiple: false,
-                headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" },
-                params: { tour_id: tourId },
-                init: function () {
-                    this.on("success", function (file, response) {
-                        console.log("✅ Uploaded:", response);
-                    });
-                    this.on("error", function (file, errorMessage) {
-                        console.error("❌ Error:", errorMessage);
-                    });
-                }
-            });
-        });
-    });
-</script>
-<script>
     $(document).ready(function() {
         $('.numeric-input').on('input', function(event) {
             var sanitizedValue = $(this).val().replace(/[^0-9.]/g, '');

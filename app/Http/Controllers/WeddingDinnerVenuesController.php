@@ -167,7 +167,7 @@ class WeddingDinnerVenuesController extends Controller
                 return redirect("/weddings-hotel-admin-$dinnerVenue->hotel_id#dinnerVenue")->with('success','Dinner venue has been updated!');
             }
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -180,7 +180,7 @@ class WeddingDinnerVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$dinnerVenue->hotel_id#dinnerVenue")->with('success','Dinner venue has been activated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION DEACTIVATE DINNER VENUE ===============================================================================================================>
@@ -192,7 +192,7 @@ class WeddingDinnerVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$dinnerVenue->hotel_id#dinnerVenue")->with('success','Dinner venue has been save to draft!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION DESTROY RECEPTION VENUE =============================================================================================================>
@@ -325,7 +325,7 @@ class WeddingDinnerVenuesController extends Controller
             $user_log->save();
             return redirect("/weddings-hotel-admin-$request->hotels_id#dinner-venue")->with('success','Dinner venue has been updated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // Function Edit Dinner Venue =============================================================================================================>
@@ -366,7 +366,7 @@ class WeddingDinnerVenuesController extends Controller
             $user_log->save();
             return redirect("/weddings-hotel-admin-$request->hotels_id#dinner-package")->with('success','Dinner package has been updated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 
@@ -410,7 +410,7 @@ class WeddingDinnerVenuesController extends Controller
             $user_log->save();
             return redirect("/weddings-hotel-admin-$hotels_id#dinner-package")->with('success', 'Dinner Package added successfully');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
      }
 }

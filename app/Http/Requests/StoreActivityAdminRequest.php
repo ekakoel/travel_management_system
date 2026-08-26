@@ -8,7 +8,7 @@ class StoreActivityAdminRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->canAny(['posDev', 'posAdm', 'posAuthor']) ?? false;
     }
 
     public function rules(): array
@@ -19,9 +19,9 @@ class StoreActivityAdminRequest extends FormRequest
             'map' => ['nullable', 'string'],
             'type' => ['required', 'string', 'max:255'],
             'duration' => ['required', 'string', 'max:100'],
-            'description' => ['required', 'string'],
-            'description_traditional' => ['required', 'string'],
-            'description_simplified' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'description_traditional' => ['nullable', 'string'],
+            'description_simplified' => ['nullable', 'string'],
             'itinerary' => ['nullable', 'string'],
             'itinerary_traditional' => ['nullable', 'string'],
             'itinerary_simplified' => ['nullable', 'string'],
@@ -34,14 +34,30 @@ class StoreActivityAdminRequest extends FormRequest
             'cancellation_policy' => ['nullable', 'string'],
             'cancellation_policy_traditional' => ['nullable', 'string'],
             'cancellation_policy_simplified' => ['nullable', 'string'],
-            'contract_rate' => ['required', 'numeric', 'min:0'],
-            'markup' => ['nullable', 'numeric', 'min:0'],
-            'qty' => ['required', 'integer', 'min:0'],
-            'min_pax' => ['required', 'integer', 'min:0'],
+            'contract_rate' => ['required', 'integer', 'min:1'],
+            'markup' => ['nullable', 'integer', 'min:0'],
+            'qty' => ['required', 'integer', 'min:1', 'gte:min_pax'],
+            'min_pax' => ['required', 'integer', 'min:1'],
             'validity' => ['required', 'date'],
-            'cover' => ['required', 'image', 'max:4096'],
+            'cover' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'partners_id' => ['required', 'exists:partners,id'],
-            'author' => ['required', 'integer', 'exists:users,id'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'contract_rate' => $this->normalizeNumericInput($this->input('contract_rate')),
+            'markup' => $this->normalizeNumericInput($this->input('markup')),
+        ]);
+    }
+
+    private function normalizeNumericInput(mixed $value): mixed
+    {
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        return str_replace([',', '.'], '', $value);
     }
 }

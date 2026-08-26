@@ -35,7 +35,7 @@
                     <nav aria-label="{{ __('transport-management.breadcrumb.label') }}">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="{{ route('view.admin-panel-main') }}">@lang('left-navbar.Admin Panel')</a>
+                                <a href="{{ route('admin.panel-main.view') }}">@lang('left-navbar.Admin Panel')</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">@lang('transport-management.title')</li>
                         </ol>

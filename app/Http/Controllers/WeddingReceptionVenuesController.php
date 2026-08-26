@@ -150,7 +150,7 @@ class WeddingReceptionVenuesController extends Controller
                 return redirect("/weddings-hotel-admin-$receptionVenue->hotel_id#receptionVenue")->with('success',"Reception venue can't be updated!");
             }
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION ACTIVATE RECEPTION VENUE ===============================================================================================================>
@@ -162,7 +162,7 @@ class WeddingReceptionVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$receptionVenue->hotel_id#receptionVenue")->with('success','Reception venue has been activated!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
     // FUNCTION DEACTIVATE RECEPTION VENUE ===============================================================================================================>
@@ -174,7 +174,7 @@ class WeddingReceptionVenuesController extends Controller
             ]);
             return redirect("/weddings-hotel-admin-$receptionVenue->hotel_id#receptionVenue")->with('success','Reception venue has been save to draft!');
         }else{
-            return redirect("/weddings-admin")->with('error','Akses ditolak');
+            return redirect("/weddings-admin")->with('error',__('messages.You are not authorized to perform this action.'));
         }
     }
 

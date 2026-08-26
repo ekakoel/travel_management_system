@@ -25,7 +25,8 @@ class UpdateHotelRequest extends FormRequest
             'airport_distance' => ['required', 'string', 'max:100'],
             'min_stay' => ['nullable', 'integer', 'min:0'],
             'max_stay' => ['nullable', 'integer', 'min:0', 'gte:min_stay'],
-            'status' => ['nullable', 'string', 'max:50'],
+            'map' => ['required', 'string'],
+            'status' => ['required', 'in:Active,Draft,Archived'],
         ];
     }
 }

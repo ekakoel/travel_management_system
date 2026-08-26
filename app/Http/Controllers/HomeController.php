@@ -185,19 +185,19 @@ class HomeController extends Controller
                 'icon' => 'fas fa-hotel',
                 'title' => __('messages.Accommodations'),
                 'description' => __('messages.Curated hotels, villas, and premium stays for professional travel programs.'),
-                'href' => route('view.accommodation-services'),
+                'href' => route('view.hotels-service'),
             ],
             [
                 'icon' => 'fas fa-car-side',
                 'title' => __('messages.Transports'),
                 'description' => __('messages.Airport shuttle and daily rent transport options for seamless guest mobility.'),
-                'href' => route('view.transport-services'),
+                'href' => route('view.transports-service'),
             ],
             [
                 'icon' => 'fas fa-map-marked-alt',
                 'title' => __('messages.Tour Packages'),
                 'description' => __('messages.Private and curated Indonesia journeys designed for international travel agents.'),
-                'href' => route('view.tour-package-services'),
+                'href' => route('view.tour-packages-service'),
             ],
             [
                 'icon' => 'fas fa-hiking',

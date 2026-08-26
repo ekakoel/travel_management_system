@@ -4,7 +4,9 @@ namespace App\Services\Pricing;
 
 use App\Data\Pricing\ResolvedTaxPolicy;
 use App\Exceptions\PricingException;
+use App\Models\Tax;
 use App\Models\TaxPolicy;
+use App\Support\Pricing\FixedScale;
 use Carbon\CarbonImmutable;
 
 final class TaxResolver
@@ -53,6 +55,38 @@ final class TaxResolver
             effectiveUntil: $policy->effective_until
                 ? CarbonImmutable::instance($policy->effective_until)->toDateTimeImmutable()
                 : null,
+        );
+    }
+
+    public function resolveStored(string $service, ?CarbonImmutable $calculatedAt = null): ResolvedTaxPolicy
+    {
+        $calculatedAt ??= CarbonImmutable::now();
+        $tax = Tax::query()->orderBy('id')->first();
+
+        if ($tax === null) {
+            throw PricingException::tax('PRICING_TAX_MISSING', 'Stored tax is unavailable.');
+        }
+
+        try {
+            $percentageScaled = FixedScale::parseDecimal((string) $tax->tax, FixedScale::PERCENTAGE_SCALE);
+        } catch (PricingException) {
+            throw PricingException::tax('PRICING_TAX_INVALID', 'Stored tax is invalid.', [
+                'tax_id' => $tax->id,
+            ]);
+        }
+
+        return new ResolvedTaxPolicy(
+            id: (int) $tax->id,
+            name: (string) ($tax->name ?: 'Stored Tax'),
+            service: $service,
+            percentageScaled: $percentageScaled,
+            percentageScale: FixedScale::PERCENTAGE_SCALE,
+            calculationType: 'exclusive',
+            taxableBase: 'contract_plus_markup',
+            effectiveFrom: ($tax->created_at
+                ? CarbonImmutable::instance($tax->created_at)
+                : $calculatedAt)->toDateTimeImmutable(),
+            effectiveUntil: null,
         );
     }
 }

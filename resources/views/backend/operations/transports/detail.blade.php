@@ -34,7 +34,7 @@
                 <section class="backend-page-toolbar transport-detail-toolbar">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.panel-main.view') }}">Admin Panel</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.transports.index') }}">Transportation</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $transport->name }}</li>
                         </ol>
@@ -117,6 +117,7 @@
                             </div>
                             <dl class="backend-table-card-grid">
                                 <div><dt>Name</dt><dd>{{ $transport->name }}</dd></div>
+                                <div><dt>Partner</dt><dd>{{ $transport->partner?->name ?: '-' }}</dd></div>
                                 <div><dt>Brand</dt><dd>{{ $transport->brand ?: '-' }}</dd></div>
                                 <div><dt>Type</dt><dd>{{ $transport->type ?: '-' }}</dd></div>
                                 <div><dt>Capacity</dt><dd>{{ $transportDetail->capacity() }}</dd></div>

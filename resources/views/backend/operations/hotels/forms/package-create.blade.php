@@ -11,7 +11,48 @@
 @endpush
 
 @section('content')
-    @can('isAdmin')
+    @canany(['posDev','posAuthor'])
+        @php
+            $translationGroups = [
+                [
+                    'title' => 'Benefits',
+                    'description' => 'Optional guest-facing benefits displayed with this package.',
+                    'fields' => [
+                        ['name' => 'benefits', 'label' => 'English', 'placeholder' => 'Insert package benefits'],
+                        ['name' => 'benefits_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert package benefits in Traditional Chinese'],
+                        ['name' => 'benefits_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert package benefits in Simplified Chinese'],
+                    ],
+                ],
+                [
+                    'title' => 'Inclusion',
+                    'description' => 'Optional inclusions attached to the package offer.',
+                    'fields' => [
+                        ['name' => 'include', 'label' => 'English', 'placeholder' => 'Insert package inclusions'],
+                        ['name' => 'include_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert package inclusions in Traditional Chinese'],
+                        ['name' => 'include_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert package inclusions in Simplified Chinese'],
+                    ],
+                ],
+                [
+                    'title' => 'Additional Information',
+                    'description' => 'Optional notes, restrictions, or preparation details shown to guests.',
+                    'fields' => [
+                        ['name' => 'additional_info', 'label' => 'English', 'placeholder' => 'Insert additional information'],
+                        ['name' => 'additional_info_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert additional information in Traditional Chinese'],
+                        ['name' => 'additional_info_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert additional information in Simplified Chinese'],
+                    ],
+                ],
+            ];
+            $policyGroup = [
+                'title' => 'Cancellation Policy',
+                'description' => 'Optional package-level policy copied to new Hotel Package orders.',
+                'fields' => [
+                    ['name' => 'cancellation_policy', 'label' => 'English', 'placeholder' => 'Insert cancellation policy'],
+                    ['name' => 'cancellation_policy_traditional', 'label' => 'Traditional Chinese', 'placeholder' => 'Insert cancellation policy in Traditional Chinese'],
+                    ['name' => 'cancellation_policy_simplified', 'label' => 'Simplified Chinese', 'placeholder' => 'Insert cancellation policy in Simplified Chinese'],
+                ],
+            ];
+        @endphp
+
         <div class="mobile-menu-overlay"></div>
         <main class="main-container hotel-form-page">
             <div class="pd-ltr-20">
@@ -19,7 +60,7 @@
                     class="hotel-form-hero"
                     eyebrow="Package Price"
                     title="Add Package"
-                    description="Create a bundled hotel package for {{ $hotel->name }} using the shared backend form pattern."
+                    description="Create a draft bundled Hotel package for {{ $hotel->name }}."
                 >
                     <x-slot name="action">
                         <a href="{{ route('admin.hotels.show', $hotel->id) }}#package" class="backend-page-primary-action">
@@ -29,19 +70,19 @@
                     </x-slot>
                 </x-backend.page-hero>
 
-                <section class="backend-page-toolbar hotel-form-toolbar">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('view.admin-panel-main') }}">Admin Panel</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.hotels.index') }}">Hotel Manager</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.hotels.show', $hotel->id) }}">{{ $hotel->name }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Add Package</li>
-                        </ol>
-                    </nav>
-                    <div class="backend-page-toolbar__actions">
-                        <span class="backend-status-badge backend-status-badge--draft">Draft on create</span>
-                    </div>
-                </section>
+                <x-backend.breadcrumb-toolbar
+                    class="hotel-form-toolbar"
+                    :items="[
+                        ['label' => 'Admin Panel', 'url' => route('admin.panel-main.view')],
+                        ['label' => 'Hotel Manager', 'url' => route('admin.hotels.index')],
+                        ['label' => $hotel->name, 'url' => route('admin.hotels.show', $hotel->id)],
+                    ]"
+                    current="Add Package"
+                >
+                    <x-slot name="actions">
+                        <span class="backend-status-badge backend-status-badge--draft">{{ $initialStatus ?? 'Draft' }}</span>
+                    </x-slot>
+                </x-backend.breadcrumb-toolbar>
 
                 @if ($errors->any() || session()->has('success') || session()->has('invalid') || session()->has('error'))
                     <section class="backend-feedback hotel-form-feedback">
@@ -55,181 +96,267 @@
                                 </ul>
                             </div>
                         @endif
-
                         @if (session()->has('success'))
-                            <div class="backend-alert backend-alert--success">
-                                <strong>{{ session('success') }}</strong>
-                            </div>
+                            <div class="backend-alert backend-alert--success"><strong>{{ session('success') }}</strong></div>
                         @endif
-
                         @if (session()->has('invalid') || session()->has('error'))
-                            <div class="backend-alert backend-alert--danger">
-                                <strong>{{ session('invalid') ?? session('error') }}</strong>
-                            </div>
+                            <div class="backend-alert backend-alert--danger"><strong>{{ session('invalid') ?? session('error') }}</strong></div>
                         @endif
                     </section>
                 @endif
 
-                <div class="hotel-form-layout">
-                    <div class="hotel-form-main">
-                        <section class="backend-panel hotel-form-panel">
-                            <div class="backend-section-header hotel-form-panel__heading">
-                                <div>
-                                    <span class="backend-section-header__label">Bundled Offer</span>
-                                    <h2>Package Details</h2>
+                <form id="hotelPackageCreate" class="backend-form" action="{{ route('admin.hotels.packages.store') }}" method="post">
+                    @csrf
+                    <input id="hotels_id" name="hotels_id" value="{{ $hotel->id }}" type="hidden">
+                    <input name="hotel_context" value="{{ $hotelContext }}" type="hidden">
+
+                    <x-backend.detail-layout>
+                        <x-slot name="main">
+                            <section class="backend-panel backend-form-panel hotel-form-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Basic Information</span>
+                                        <h2>Package Profile</h2>
+                                    </div>
+                                    <p>Core Hotel, Room, package identity, and booking reference used by Hotel operations.</p>
                                 </div>
-                            </div>
-
-                            <form id="hotelPackageCreate" action="{{ route('admin.hotels.packages.store') }}" method="post">
-                                @csrf
-                                <div class="hotel-form-panel__body">
-                                    <div class="backend-form-grid backend-form-grid--compact">
+                                <div class="backend-form-panel__body">
+                                    <div class="backend-form-grid backend-form-grid--2">
                                         <div class="backend-form-field">
-                                            <label for="name">Package Name <b>*</b></label>
-                                            <input class="backend-form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Package name" type="text" required>
+                                            <label for="hotel_context" class="backend-form-label">Hotel</label>
+                                            <input id="hotel_context" type="text" class="backend-form-control" value="{{ $hotel->name }}" disabled>
+                                            <p class="backend-form-help">Hotel relation is locked to this create context and verified on the server.</p>
                                         </div>
-
                                         <div class="backend-form-field">
-                                            <label for="rooms_id">Room <b>*</b></label>
-                                            <select class="backend-form-control" id="rooms_id" name="rooms_id" required>
+                                            <label for="rooms_id" class="backend-form-label is-required">Room</label>
+                                            <select class="backend-form-control @error('rooms_id') is-invalid @enderror" id="rooms_id" name="rooms_id" required>
                                                 <option value="">Select room</option>
                                                 @foreach ($rooms as $room)
                                                     <option value="{{ $room->id }}" @selected((int) old('rooms_id') === (int) $room->id)>{{ $room->rooms }}</option>
                                                 @endforeach
                                             </select>
+                                            @error('rooms_id')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
                                         </div>
-
                                         <div class="backend-form-field">
-                                            <label for="booking_code">Booking Code</label>
-                                            <input class="backend-form-control" id="booking_code" name="booking_code" value="{{ old('booking_code') }}" type="text">
+                                            <label for="name" class="backend-form-label is-required">Package Name</label>
+                                            <input class="backend-form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" placeholder="Package name" type="text" required>
+                                            @error('name')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
                                         </div>
-
                                         <div class="backend-form-field">
-                                            <label for="duration">Minimum Stay <b>*</b></label>
-                                            <input class="backend-form-control" id="duration" name="duration" value="{{ old('duration', 1) }}" min="1" type="number" required>
+                                            <label for="booking_code" class="backend-form-label">Booking Code</label>
+                                            <input class="backend-form-control @error('booking_code') is-invalid @enderror" id="booking_code" name="booking_code" value="{{ old('booking_code') }}" placeholder="Booking code" type="text">
+                                            @error('booking_code')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
                                         </div>
+                                    </div>
+                                </div>
+                            </section>
 
+                            <section class="backend-panel backend-form-panel hotel-form-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Package Configuration</span>
+                                        <h2>Stay Rule</h2>
+                                    </div>
+                                    <p>Duration defines the number of package nights used by package pricing.</p>
+                                </div>
+                                <div class="backend-form-panel__body">
+                                    <div class="backend-form-grid backend-form-grid--2">
                                         <div class="backend-form-field">
-                                            <label for="stay_period_start">Stay Period Start <b>*</b></label>
-                                            <input id="stay_period_start" name="stay_period_start" class="backend-form-control date-picker" value="{{ old('stay_period_start') }}" type="text" required>
+                                            <label for="duration" class="backend-form-label is-required">Duration / Minimum Stay</label>
+                                            <input class="backend-form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration', 1) }}" min="1" type="number" required>
+                                            @error('duration')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
                                         </div>
+                                    </div>
+                                </div>
+                            </section>
 
+                            <section class="backend-panel backend-form-panel hotel-form-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Availability</span>
+                                        <h2>Stay Period</h2>
+                                    </div>
+                                    <p>Stay period controls check-in dates eligible for this package.</p>
+                                </div>
+                                <div class="backend-form-panel__body">
+                                    <div class="backend-form-grid backend-form-grid--2">
                                         <div class="backend-form-field">
-                                            <label for="stay_period_end">Stay Period End <b>*</b></label>
-                                            <input id="stay_period_end" name="stay_period_end" class="backend-form-control date-picker" value="{{ old('stay_period_end') }}" type="text" required>
+                                            <label for="stay_period_start" class="backend-form-label is-required">Stay Period Start</label>
+                                            <input id="stay_period_start" name="stay_period_start" class="backend-form-control @error('stay_period_start') is-invalid @enderror" value="{{ old('stay_period_start') }}" placeholder="YYYY-MM-DD" type="text" required data-backend-picker="date" data-backend-picker-format="yyyy-mm-dd">
+                                            @error('stay_period_start')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
                                         </div>
-
                                         <div class="backend-form-field">
-                                            <label for="contract_rate">Contract Rate <b>*</b></label>
-                                            <input class="backend-form-control" id="contract_rate" name="contract_rate" value="{{ old('contract_rate') }}" min="0" type="number" required>
+                                            <label for="stay_period_end" class="backend-form-label is-required">Stay Period End</label>
+                                            <input id="stay_period_end" name="stay_period_end" class="backend-form-control @error('stay_period_end') is-invalid @enderror" value="{{ old('stay_period_end') }}" placeholder="YYYY-MM-DD" type="text" required data-backend-picker="date" data-backend-picker-format="yyyy-mm-dd">
+                                            @error('stay_period_end')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
                                         </div>
+                                    </div>
+                                </div>
+                            </section>
 
+                            <section class="backend-panel backend-form-panel hotel-form-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Pricing</span>
+                                        <h2>Pricing Inputs</h2>
+                                    </div>
+                                    <p>Store master inputs only. Published package pricing remains calculated by the existing Hotel pricing architecture.</p>
+                                </div>
+                                <div class="backend-form-panel__body">
+                                    <div class="backend-form-grid backend-form-grid--2">
                                         <div class="backend-form-field">
-                                            <label for="markup">Markup <b>*</b></label>
-                                            <input class="backend-form-control" id="markup" name="markup" value="{{ old('markup', 0) }}" min="0" type="number" required>
+                                            <label for="contract_rate" class="backend-form-label is-required">Contract Rate</label>
+                                            <input class="backend-form-control @error('contract_rate') is-invalid @enderror" id="contract_rate" name="contract_rate" value="{{ old('contract_rate') }}" placeholder="Insert contract rate" inputmode="numeric" type="text" required data-backend-money-unit="IDR">
+                                            @error('contract_rate')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
                                         </div>
+                                        <div class="backend-form-field">
+                                            <label for="markup" class="backend-form-label is-required">Markup</label>
+                                            <input class="backend-form-control @error('markup') is-invalid @enderror" id="markup" name="markup" value="{{ old('markup', 0) }}" placeholder="Insert markup" inputmode="numeric" type="text" required data-backend-money-unit="USD">
+                                            @error('markup')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
 
-                                        {{-- @foreach ([
-                                            'benefits' => 'Benefits',
-                                            'benefits_traditional' => 'Benefits - Chinese Traditional',
-                                            'benefits_simplified' => 'Benefits - Chinese Simplified',
-                                            'include' => 'Inclusion',
-                                            'include_traditional' => 'Inclusion - Chinese Traditional',
-                                            'include_simplified' => 'Inclusion - Chinese Simplified',
-                                            'additional_info' => 'Additional Information',
-                                            'additional_info_traditional' => 'Additional Information - Chinese Traditional',
-                                            'additional_info_simplified' => 'Additional Information - Chinese Simplified',
-                                        ] as $field => $label)
-                                            <div class="backend-form-field is-wide">
-                                                <label for="{{ $field }}">{{ $label }}</label>
-                                                <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true">{{ old($field) }}</textarea>
+                            <section class="backend-panel backend-form-panel hotel-form-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Content</span>
+                                        <h2>Benefits and Inclusions</h2>
+                                    </div>
+                                    <p>Customer-facing copy is optional and grouped with the canonical language order.</p>
+                                </div>
+                                <div class="backend-form-panel__body">
+                                    @foreach ($translationGroups as $group)
+                                        <section class="backend-translation-group" data-backend-translation-group>
+                                            <div class="backend-translation-group__header">
+                                                <h3 class="backend-translation-group__title">{{ $group['title'] }}</h3>
+                                                <p class="backend-translation-group__description">{{ $group['description'] }}</p>
                                             </div>
-                                        @endforeach --}}
-                                    </div>
-                                    <div class="backend-form-field-2">
-                                        @foreach ([
-                                            'benefits' => 'Benefits',
-                                            'benefits_traditional' => 'Benefits - Chinese Traditional',
-                                            'benefits_simplified' => 'Benefits - Chinese Simplified',
-                                        ] as $field => $label)
-                                        <div class="backend-form-field">
-                                            <label for="{{ $field }}">{{ $label }}</label>
-                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true"></textarea>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    <div class="backend-form-field-2">
-                                        @foreach ([
-                                            'include' => 'Inclusion',
-                                            'include_traditional' => 'Inclusion - Chinese Traditional',
-                                            'include_simplified' => 'Inclusion - Chinese Simplified',
-                                        ] as $field => $label)
-                                        <div class="backend-form-field">
-                                            <label for="{{ $field }}">{{ $label }}</label>
-                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true"></textarea>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    <div class="backend-form-field-2">
-                                        @foreach ([
-                                            'additional_info' => 'Additional Information',
-                                            'additional_info_traditional' => 'Additional Information - Chinese Traditional',
-                                            'additional_info_simplified' => 'Additional Information - Chinese Simplified',
-                                        ] as $field => $label)
-                                        <div class="backend-form-field">
-                                            <label for="{{ $field }}">{{ $label }}</label>
-                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true"></textarea>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    <div class="backend-form-field-2">
-                                        @foreach ([
-                                            'cancellation_policy' => 'Cancellation Policy',
-                                            'cancellation_policy_traditional' => 'Cancellation Policy - Chinese Traditional',
-                                            'cancellation_policy_simplified' => 'Cancellation Policy - Chinese Simplified',
-                                        ] as $field => $label)
-                                        <div class="backend-form-field">
-                                            <label for="{{ $field }}">{{ $label }}</label>
-                                            <textarea class="backend-form-control" id="{{ $field }}" name="{{ $field }}" data-backend-richtext="true">{{ old($field) }}</textarea>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    <input class="backend-form-control" name="hotels_id" value="{{ $hotel->id }}" type="hidden">
-                                    <input class="backend-form-control" name="author" value="{{ Auth::user()->id }}" type="hidden">
-
-                                    <div class="backend-form-actions">
-                                        <a href="{{ route('admin.hotels.show', $hotel->id) }}#package" class="backend-button backend-button-secondary">
-                                            <i class="fa fa-times"></i>
-                                            Cancel
-                                        </a>
-                                        <button type="submit" class="backend-button backend-button-primary">
-                                            <i class="fa fa-plus"></i>
-                                            Add Package
-                                        </button>
-                                    </div>
+                                            <div class="backend-translation-grid">
+                                                @foreach ($group['fields'] as $field)
+                                                    <div class="backend-translation-field">
+                                                        <label for="{{ $field['name'] }}" class="backend-form-label">{{ $field['label'] }}</label>
+                                                        <textarea id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="textarea_editor backend-form-control border-radius-0 @error($field['name']) is-invalid @enderror" data-backend-richtext="true" placeholder="{{ $field['placeholder'] }}">{{ old($field['name']) }}</textarea>
+                                                        @error($field['name'])<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </section>
+                                    @endforeach
                                 </div>
-                            </form>
-                        </section>
-                    </div>
+                            </section>
 
-                    <aside class="hotel-form-sidebar">
-                        <section class="backend-panel hotel-form-panel">
-                            <div class="backend-section-header hotel-form-panel__heading">
-                                <div>
-                                    <span class="backend-section-header__label">Guide</span>
-                                    <h2>Package Notes</h2>
+                            <section class="backend-panel backend-form-panel hotel-form-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Policies</span>
+                                        <h2>Cancellation Policy</h2>
+                                    </div>
+                                    <p>Package policy is optional. Empty values fall back to the parent Hotel policy in booking snapshots.</p>
                                 </div>
-                            </div>
-                            <div class="hotel-form-panel__body">
-                                <span class="backend-status-badge backend-status-badge--draft">Draft</span>
-                                <p class="backend-form-help">New packages are saved as draft first. Review room, stay period, duration, and multilingual copy before publishing.</p>
-                            </div>
-                        </section>
-                    </aside>
-                </div>
+                                <div class="backend-form-panel__body">
+                                    <section class="backend-translation-group" data-backend-translation-group>
+                                        <div class="backend-translation-group__header">
+                                            <h3 class="backend-translation-group__title">{{ $policyGroup['title'] }}</h3>
+                                            <p class="backend-translation-group__description">{{ $policyGroup['description'] }}</p>
+                                        </div>
+                                        <div class="backend-translation-grid">
+                                            @foreach ($policyGroup['fields'] as $field)
+                                                <div class="backend-translation-field">
+                                                    <label for="{{ $field['name'] }}" class="backend-form-label">{{ $field['label'] }}</label>
+                                                    <textarea id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="textarea_editor backend-form-control border-radius-0 @error($field['name']) is-invalid @enderror" data-backend-richtext="true" placeholder="{{ $field['placeholder'] }}">{{ old($field['name']) }}</textarea>
+                                                    @error($field['name'])<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </section>
+                                </div>
+                            </section>
+                        </x-slot>
+
+                        <x-slot name="side">
+                            <section class="backend-panel backend-detail-side-card hotel-package-create-context-panel hotel-status-side-card">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Initial Status</span>
+                                        <h2><span class="backend-status-badge backend-status-badge--draft">{{ $initialStatus ?? 'Draft' }}</span></h2>
+                                    </div>
+                                    <p>The server creates new Hotel Packages as Draft. Status is not accepted from this form.</p>
+                                </div>
+                            </section>
+                            <section class="backend-panel backend-detail-side-card hotel-package-create-context-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Hotel Context</span>
+                                        <h2>{{ $hotel->name }}</h2>
+                                    </div>
+                                    <p>Read-only parent Hotel reference for this package setup.</p>
+                                </div>
+                                <div class="backend-detail-side-card__body">
+                                    <dl class="backend-detail-side-list">
+                                        <div><dt>Region</dt><dd>{{ $hotel->region ?: '-' }}</dd></div>
+                                        <div><dt>Room Options</dt><dd>{{ $rooms->count() }} available</dd></div>
+                                    </dl>
+                                </div>
+                            </section>
+                            <section class="backend-panel backend-detail-side-card hotel-package-create-context-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Package Rules</span>
+                                        <h2>Before Save</h2>
+                                    </div>
+                                    <p>Administrative checks for creating a Room-specific Hotel package.</p>
+                                </div>
+                                <ul class="backend-detail-side-list">
+                                    <li><span>Room Relation</span><strong>Room must belong to this Hotel</strong><small>The server rejects manipulated Room and Hotel combinations.</small></li>
+                                    <li><span>Stay Period</span><strong>Start date must not exceed end date</strong><small>This controls check-in dates eligible for this package.</small></li>
+                                    <li><span>Duration</span><strong>Minimum 1 night</strong><small>Package pricing uses duration as part of the existing Hotel pricing service.</small></li>
+                                </ul>
+                            </section>
+                            <section class="backend-panel backend-detail-side-card hotel-package-create-context-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Pricing Context</span>
+                                        <h2>Master Inputs</h2>
+                                    </div>
+                                    <p>Contract rate, markup, and duration are stored as inputs only; this page does not calculate a selling price preview.</p>
+                                </div>
+                            </section>
+                            <section class="backend-panel backend-detail-side-card hotel-package-create-context-panel">
+                                <div class="backend-section-header">
+                                    <div>
+                                        <span class="backend-section-header__label">Next Step</span>
+                                        <h2>Review Draft</h2>
+                                    </div>
+                                    <p>After saving, review the package from Hotel detail before activating it for booking workflows.</p>
+                                </div>
+                                <div class="backend-detail-side-actions">
+                                    <a href="{{ route('admin.hotels.show', $hotel->id) }}#package" class="backend-button backend-button-secondary">
+                                        <i class="fa fa-building"></i>
+                                        View Hotel
+                                    </a>
+                                </div>
+                            </section>
+                        </x-slot>
+                    </x-backend.detail-layout>
+
+                    <section class="backend-page-toolbar backend-form-actions hotel-form-actions">
+                        <div class="backend-page-toolbar__actions">
+                            <a href="{{ route('admin.hotels.show', $hotel->id) }}#package" class="backend-button backend-button-secondary">
+                                <i class="fa fa-times"></i>
+                                Cancel
+                            </a>
+                            <button type="submit" class="backend-button backend-button-primary">
+                                <i class="fa fa-plus"></i>
+                                Add Package
+                            </button>
+                        </div>
+                    </section>
+                </form>
 
                 @include('layouts.footer')
             </div>
         </main>
-    @endcan
+    @endcanany
 @endsection

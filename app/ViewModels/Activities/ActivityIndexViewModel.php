@@ -36,20 +36,26 @@ class ActivityIndexViewModel
                     max((int) ($activity->min_pax ?: 1), 1),
                 );
                 $publishedRate = $quote->unitPriceUsd();
+                $publishedRateIdr = $quote->unitPriceIdr();
                 $priceAvailable = true;
                 $priceUnavailableCode = null;
+                $priceUnavailableMessage = null;
             } catch (PricingException $exception) {
                 $publishedRate = null;
+                $publishedRateIdr = null;
                 $priceAvailable = false;
                 $priceUnavailableCode = $exception->pricingCode;
+                $priceUnavailableMessage = ActivityDetailViewModel::pricingUnavailableMessageFor($exception->pricingCode);
             }
 
             return [
                 'model' => $activity,
                 'partner_name' => $activity->partners?->name ?: '-',
                 'published_rate' => $publishedRate,
+                'published_rate_idr' => $publishedRateIdr,
                 'price_available' => $priceAvailable,
                 'price_unavailable_code' => $priceUnavailableCode,
+                'price_unavailable_message' => $priceUnavailableMessage,
                 'status_tone' => $this->statusTone($activity->status),
             ];
         });
