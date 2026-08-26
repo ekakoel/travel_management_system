@@ -154,6 +154,53 @@
                                         </li>
                                     </ul>
                                 </li>
+                                {{-- OPERATIONS ------------------------------------- --}}
+                                <li class="dropdown {{ $operationsNavigationActive ? 'show' : '' }}">
+                                    <a href="javascript:;" class="dropdown-toggle">
+                                        <i class="fas fa-briefcase"></i><span class="mtext">@lang('messages.Operations')</span>
+                                    </a>
+                                    <ul id="operations-submenu" class="submenu">
+                                        @canany(['posDev', 'posRsv','posAdm'])
+                                            <li class="order-count">
+                                                <a href="{{ route('admin.order.index') }}" class="{{ $ordersNavigationActive ? 'active' : '' }}">
+                                                    <i class="fas fa-shopping-cart"></i> @lang('messages.Orders')
+                                                    @if ($operationsPendingCount > 0)
+                                                        <span class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="{{ __('messages.Pending Orders') }}">
+                                                            <i class="icon-copy ti-alarm-clock"></i><span>{{ $operationsPendingCount }}</span>
+                                                        </span>
+                                                    @endif
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('view.reservation') }}" class="{{ $reservationsNavigationActive ? 'active' : '' }}">
+                                                    <i class="fas fa-calendar-check"></i> @lang('messages.Reservations')
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('admin.invoices.index') }}" class="{{ $invoicesNavigationActive ? 'active' : '' }}">
+                                                    <i class="fas fa-file-invoice-dollar"></i> @lang('messages.Invoices')
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @canany(['posDev', 'posAuthor', 'posAdm'])
+                                            <li>
+                                                <a href="{{ route('admin.transport-types.index') }}" class="{{ request()->routeIs('admin.transport-types.*') ? 'active' : '' }}">
+                                                    <i class="fas fa-list"></i> Transport Types
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('admin.transport-brands.index') }}" class="{{ request()->routeIs('admin.transport-brands.*') ? 'active' : '' }}">
+                                                    <i class="fas fa-tags"></i> Transport Brands
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('admin.activity-types.index') }}" class="{{ request()->routeIs('admin.activity-types.*') ? 'active' : '' }}">
+                                                    <i class="fas fa-list"></i> Activity Type
+                                                </a>
+                                            </li>
+                                        @endcanany
+                                    </ul>
+                                </li>
                                 {{-- SERVICES --------------------------------------- --}}
                                 <li class="dropdown">
                                     <a href="javascript:;" class="dropdown-toggle">
@@ -219,38 +266,14 @@
                                         </li>
                                     </ul>
                                 </li> --}}
-                                <li>
-                                    <a href="{{ route('view.transport-management.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.transport-management.index') ? 'active' : '' }}">
-                                        <i class="fas fa-car"></i> @lang("messages.Transport Management")
-                                    </a>
-                                </li>
-                                <li class="dropdown {{ $operationsNavigationActive ? 'show' : '' }}">
-                                    <a href="javascript:;" class="dropdown-toggle">
-                                        <i class="fas fa-briefcase"></i><span class="mtext">@lang('messages.Operations')</span>
-                                    </a>
-                                    <ul id="operations-submenu" class="submenu">
-                                        <li class="order-count">
-                                            <a href="{{ route('admin.order.index') }}" class="{{ $ordersNavigationActive ? 'active' : '' }}">
-                                                <i class="fas fa-shopping-cart"></i> @lang('messages.Orders')
-                                                @if ($operationsPendingCount > 0)
-                                                    <span class="order-pending-text backend-sidebar__badge" data-toggle="tooltip" data-placement="top" title="{{ __('messages.Pending Orders') }}">
-                                                        <i class="icon-copy ti-alarm-clock"></i><span>{{ $operationsPendingCount }}</span>
-                                                    </span>
-                                                @endif
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('view.reservation') }}" class="{{ $reservationsNavigationActive ? 'active' : '' }}">
-                                                <i class="fas fa-calendar-check"></i> @lang('messages.Reservations')
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('admin.invoices.index') }}" class="{{ $invoicesNavigationActive ? 'active' : '' }}">
-                                                <i class="fas fa-file-invoice-dollar"></i> @lang('messages.Invoices')
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+                                @canany(['posDev', 'posRsv' ,'posAdm'])
+                                    <li>
+                                        <a href="{{ route('view.transport-management.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('view.transport-management.index') ? 'active' : '' }}">
+                                            <i class="fas fa-car"></i> @lang("messages.Transport Management")
+                                        </a>
+                                    </li>
+                                @endcan
+                                
                             @endcanany
                         @endif
                     </ul>

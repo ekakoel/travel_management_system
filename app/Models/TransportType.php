@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Activities;
 
 class TransportType extends Model
 {
@@ -13,6 +11,11 @@ class TransportType extends Model
     protected $fillable=[
         'type',
     ];
+
+    public function transports()
+    {
+        return $this->hasMany(Transports::class, 'type', 'type');
+    }
 
     public function tags()
     {

@@ -8102,6 +8102,40 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         foreach ([
+            '<x-backend.breadcrumb-toolbar',
+            '<x-backend.detail-layout class="transport-create-layout">',
+            'backend-form-panel',
+            'backend-form-panel__body',
+            'backend-detail-side-card',
+            'backend-detail-side-list',
+            'backend-detail-side-actions',
+            'backend-form-actions',
+        ] as $createPattern) {
+            $this->assertStringContainsString($createPattern, $createForm);
+        }
+
+        $this->assertStringNotContainsString('name="author"', $createForm);
+        $this->assertStringNotContainsString('name="initial_state"', $createForm);
+        $this->assertStringNotContainsString('name="page"', $createForm);
+
+        foreach ([
+            '<x-backend.breadcrumb-toolbar',
+            '<x-backend.detail-layout class="transport-edit-layout">',
+            'backend-form-panel',
+            'backend-form-panel__body',
+            'backend-detail-side-card',
+            'backend-detail-side-list',
+            'backend-detail-side-actions',
+            'backend-form-actions',
+        ] as $editPattern) {
+            $this->assertStringContainsString($editPattern, $editForm);
+        }
+
+        foreach (['name="author"', 'name="initial_state"', 'name="page"', "@include('backend.operations.transports.partials.profile-fields'"] as $legacyEditPattern) {
+            $this->assertStringNotContainsString($legacyEditPattern, $editForm);
+        }
+
+        foreach ([
             'transport-gallery-page',
             'transport-gallery-grid',
             'data-transport-gallery-input',
@@ -8154,10 +8188,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('.transport-gallery-grid', $formsScss);
 
         foreach ([
-            '- [x] Standardisasi create, edit, dan gallery-edit agar memakai shared hero, toolbar, feedback, panel, section header, form label, file input, dan button standard.',
-            '- [x] Hilangkan `card-box`, button Bootstrap langsung, inline style/script, dan struktur form lama.',
-            '- [x] Pindahkan behavior preview/upload/gallery interaction ke `resources/backend/js/operations/transports/forms.js`.',
-            '- [x] Pastikan semua form action memakai route name final.',
+            '- [x] Create Transport memakai canonical two-column backend layout, semantic form panels, contextual sidebar, dan server-authoritative Draft flow.',
         ] as $checkedItem) {
             $this->assertStringContainsString($checkedItem, $roadmap);
         }
@@ -8280,6 +8311,7 @@ class ProjectStructureStandardTest extends TestCase
         $indexView = file_get_contents(resource_path('views/backend/operations/transports/index.blade.php'));
         $detailView = file_get_contents(resource_path('views/backend/operations/transports/detail.blade.php'));
         $transportPriceModel = file_get_contents(app_path('Models/TransportPrice.php'));
+        $storePriceRequest = file_get_contents(app_path('Http/Requests/Backend/Operations/Transports/StoreTransportPriceAdminRequest.php'));
         $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
         $controllers = $profileController . $priceController . $galleryController;
 
@@ -8302,7 +8334,6 @@ class ProjectStructureStandardTest extends TestCase
             '$inventory->detailData((int) $id)',
             'TransportAssetService $assets',
             '$assets->uploadCover',
-            '$assets->replaceCover',
             '$assets->uploadGallery',
             'TransportAuditService $audit',
             '$audit->userLog',
@@ -8386,7 +8417,9 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('public function stats()', $detailViewModel);
         $this->assertStringContainsString('public function contentBlocks()', $detailViewModel);
         $this->assertStringContainsString('public function priceRows()', $detailViewModel);
-        $this->assertStringContainsString("'name'", $transportPriceModel);
+        $this->assertStringNotContainsString("'name'", $transportPriceModel);
+        $this->assertStringNotContainsString("'name' =>", $pricingService);
+        $this->assertStringNotContainsString("'name' =>", $storePriceRequest);
         $this->assertStringContainsString('$transportIndex->stats()', $indexView);
         $this->assertStringContainsString('$transportIndex->rows()', $indexView);
         $this->assertStringContainsString('$transportIndex->archivedRows()', $indexView);
@@ -8403,12 +8436,7 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         foreach ([
-            '- [x] Buat `TransportInventoryService` untuk index/detail summary dan form options.',
-            '- [x] Buat `TransportPricingService` untuk kalkulasi contract rate, markup, tax, published rate, dan price CRUD.',
-            '- [x] Buat `TransportAssetService` untuk cover/gallery lifecycle.',
-            '- [x] Buat `TransportAuditService` untuk UserLog agar controller tidak membuat log manual.',
-            '- [x] Buat `TransportIndexViewModel` dan `TransportDetailViewModel`.',
-            '- [x] Kurangi query/kalkulasi berulang di Blade dan controller.',
+            '- [x] Operations Transports memakai namespace/backend UI modern, Form Request, service, dan view model.',
         ] as $checkedItem) {
             $this->assertStringContainsString($checkedItem, $roadmap);
         }

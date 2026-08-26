@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Spks;
-use App\Models\User;
-use App\Models\Guests;
-use GuzzleHttp\Client;
-use App\Models\Drivers;
-use App\Models\Transports;
-use App\Models\Reservation;
-use Illuminate\Http\Request;
-use GuzzleHttp\TransferStats;
-use App\Models\AirportShuttle;
-use App\Models\SpkDestinations;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreSpksRequest;
 use App\Http\Requests\UpdateSpksRequest;
+use App\Models\AirportShuttle;
+use App\Models\Drivers;
+use App\Models\Guests;
+use App\Models\Reservation;
+use App\Models\SpkDestinations;
+use App\Models\Spks;
+use App\Models\Transports;
+use App\Models\User;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\TransferStats;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 
 
@@ -30,6 +31,11 @@ class SpksController extends Controller
 
     public function index(Request $request)
     {
+        if (! Gate::any(['posDev','posAdm', 'posRsv'])) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', __('messages.You are not authorized to perform this action.'));
+        }
         $today = Carbon::now()->format('Y-m-d');
         $expired_date = Carbon::now()->subDay()->format('Y-m-d');
         // ✅ Update Status SPK langsung dengan query tanpa loop
@@ -124,6 +130,11 @@ class SpksController extends Controller
 
     public function view_transport_management(Request $request)
     {
+        if (! Gate::any(['posDev','posAdm', 'posRsv'])) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', __('messages.You are not authorized to perform this action.'));
+        }
         $today = now()->toDateString();
 
         // ✅ Update Status SPK langsung dengan query tanpa loop
@@ -199,6 +210,11 @@ class SpksController extends Controller
 
     public function generate(Request $request)
     {
+        if (! Gate::any(['posDev','posAdm', 'posRsv'])) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', __('messages.You are not authorized to perform this action.'));
+        }
         $request->validate([
             'order_number'      => 'required|string|max:255',
             'type'              => 'required|string|max:255',
@@ -233,6 +249,11 @@ class SpksController extends Controller
     
     public function create()
     {
+        if (! Gate::any(['posDev','posAdm', 'posRsv'])) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', __('messages.You are not authorized to perform this action.'));
+        }
         $reservations = Reservation::all();
         $drivers = Driver::all();
         $vehicles = Vehicle::all();

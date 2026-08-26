@@ -15,7 +15,7 @@ class TransportAuditService
             'subservice' => $subservice,
             'subservice_id' => $subserviceId,
             'page' => $page,
-            'user_id' => $request->input('author', auth()->id()),
+            'user_id' => $request->user()?->id ?? auth()->id(),
             'user_ip' => $request->getClientIp(),
             'note' => $note,
         ]);

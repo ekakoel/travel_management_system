@@ -13,6 +13,10 @@ class ActivityType extends Model
     protected $fillable=[
         'type',
     ];
+    public function activities()
+    {
+        return $this->hasMany(Activities::class, 'type', 'type');
+    }
 
     public function tags()
     {

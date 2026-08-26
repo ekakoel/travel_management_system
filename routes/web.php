@@ -43,6 +43,8 @@ use App\Http\Controllers\Backend\Operations\Tours\TourPriceAdminController;
 use App\Http\Controllers\Backend\Operations\Transports\TransportAdminController;
 use App\Http\Controllers\Backend\Operations\Transports\TransportGalleryAdminController;
 use App\Http\Controllers\Backend\Operations\Transports\TransportPriceAdminController;
+use App\Http\Controllers\TransportBrandController;
+use App\Http\Controllers\TransportTypeController;
 use App\Http\Controllers\HotelPromoController;
 use App\Http\Controllers\HotelsAdminController;
 use App\Http\Controllers\HotelsController;
@@ -302,6 +304,11 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/remove-activity/{id}',[ActivityGalleryAdminController::class,'destroy'])->name('activities.destroy');
             Route::delete('/fdelete-activity-cover/{id}',[ActivityGalleryAdminController::class,'destroyCover'])->name('activities.cover.destroy');
             Route::delete('/fdelete-activity-img/{id}',[ActivityGalleryAdminController::class,'destroyImage'])->name('activities.images.destroy');
+
+            Route::get('/activity-types', [ActivityAdminController::class, 'type_index'])->name('activity-types.index');
+            Route::post('/activity-types', [ActivityAdminController::class, 'type_store'])->name('activity-types.store');
+            Route::put('/activity-types/{activityType}', [ActivityAdminController::class, 'type_update'])->name('activity-types.update');
+            Route::delete('/activity-types/{activityType}', [ActivityAdminController::class, 'type_destroy'])->name('activity-types.destroy');
             // ---------------------------------------------------
             //                       HOTELS
             // ---------------------------------------------------
@@ -887,6 +894,14 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/transports-admin',[TransportAdminController::class,'index'])->name('admin.transports.index');
             Route::get('/detail-transport/{id}',[TransportAdminController::class,'show'])->name('admin.transports.show');
+            Route::get('/transport-types', [TransportTypeController::class, 'index'])->name('admin.transport-types.index');
+            Route::post('/transport-types', [TransportTypeController::class, 'store'])->name('admin.transport-types.store');
+            Route::put('/transport-types/{transportType}', [TransportTypeController::class, 'update'])->name('admin.transport-types.update');
+            Route::delete('/transport-types/{transportType}', [TransportTypeController::class, 'destroy'])->name('admin.transport-types.destroy');
+            Route::get('/transport-brands', [TransportBrandController::class, 'index'])->name('admin.transport-brands.index');
+            Route::post('/transport-brands', [TransportBrandController::class, 'store'])->name('admin.transport-brands.store');
+            Route::put('/transport-brands/{transportBrand}', [TransportBrandController::class, 'update'])->name('admin.transport-brands.update');
+            Route::delete('/transport-brands/{transportBrand}', [TransportBrandController::class, 'destroy'])->name('admin.transport-brands.destroy');
 
             // ---------------------------------------------------
             //                        EMAIL

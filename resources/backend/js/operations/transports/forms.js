@@ -19,7 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const reader = new FileReader();
       reader.addEventListener('load', () => {
-        preview.innerHTML = `<img src="${reader.result}" alt="Selected transport cover preview">`;
+        const image = document.createElement('img');
+        image.src = reader.result;
+        image.alt = 'Selected transport cover preview';
+        preview.replaceChildren(image);
       });
       reader.readAsDataURL(file);
     });
@@ -51,7 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
           reader.addEventListener('load', () => {
             const item = document.createElement('figure');
             item.className = 'transport-gallery-preview__item';
-            item.innerHTML = `<img src="${reader.result}" alt="${file.name}"><figcaption>${file.name}</figcaption>`;
+            const image = document.createElement('img');
+            image.src = reader.result;
+            image.alt = file.name;
+            const caption = document.createElement('figcaption');
+            caption.textContent = file.name;
+            item.append(image, caption);
             preview.appendChild(item);
           });
           reader.readAsDataURL(file);

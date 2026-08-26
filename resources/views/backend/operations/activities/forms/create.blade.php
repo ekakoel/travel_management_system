@@ -321,6 +321,15 @@
 
                                 <input id="page" name="page" value="add-activity" type="hidden">
                             </section>
+                            <section class="backend-page-toolbar backend-form-actions activity-form-actions">
+                                <div class="backend-page-toolbar__actions">
+                                    <a href="{{ route('admin.activities.index') }}" class="backend-button backend-button-secondary">Cancel</a>
+                                    <button type="submit" class="backend-button backend-button-primary">
+                                        <i class="fa fa-check"></i>
+                                        Add Activity
+                                    </button>
+                                </div>
+                            </section>
                         </x-slot>
 
                         <x-slot name="side">
@@ -383,19 +392,7 @@
                             </section>
                         </x-slot>
                     </x-backend.detail-layout>
-
-                    <section class="backend-page-toolbar backend-form-actions activity-form-actions">
-                        <div class="backend-page-toolbar__actions">
-                            <a href="{{ route('admin.activities.index') }}" class="backend-button backend-button-secondary">Cancel</a>
-                            <button type="submit" class="backend-button backend-button-primary">
-                                <i class="fa fa-check"></i>
-                                Add Activity
-                            </button>
-                        </div>
-                    </section>
                 </form>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcanany

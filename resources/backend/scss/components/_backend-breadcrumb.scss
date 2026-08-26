@@ -6,10 +6,10 @@ body.sidebar-light .backend-page-toolbar {
   box-shadow: var(--backend-shadow-soft);
   display: flex;
   gap: 12px;
-  justify-content: space-between;
   margin-bottom: 16px;
   min-width: 0;
   padding: 13px 16px;
+  justify-content: flex-end;
 }
 
 body.sidebar-light .backend-page-toolbar > nav,

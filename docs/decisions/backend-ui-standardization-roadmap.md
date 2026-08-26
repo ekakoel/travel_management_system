@@ -75,6 +75,9 @@ Tracker ringkas standardisasi UI backend/internal.
   ActivityDetailViewModel.
 - [x] Operations Tours memakai namespace/backend UI modern, Form Request, service, dan view model.
 - [x] Operations Transports memakai namespace/backend UI modern, Form Request, service, dan view model.
+- [x] Create Transport memakai canonical two-column backend layout, semantic form panels, contextual sidebar, dan server-authoritative Draft flow.
+- [x] Edit Transport memakai canonical two-column layout, status/context sidebar, master-data validation, targeted loading, dan transactional cover/gallery replacement.
+- [x] Transport Type dan Transport Brand memakai shared master-data CRUD, usage-aware deletion, canonical forms, dan Operations navigation.
 - [x] Drivers dan Guides memakai shared backend components.
 - [x] Orders Admin dan Reservations memiliki cleanup awal.
 - [x] Reservation Active work queue memiliki read-only operational calendar

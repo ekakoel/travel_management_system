@@ -4,13 +4,13 @@ namespace App\Services\Transports;
 
 use App\Models\TransportsImages;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TransportAssetService
 {
-    public const COVER_PATH = 'storage/transports/transports-cover';
-    public const GALLERY_PATH = 'storage/transports/transports-gallery';
+    public const COVER_PATH = 'transports/transports-cover';
+    public const GALLERY_PATH = 'transports/transports-gallery';
 
     public function uploadCover(UploadedFile $file): string
     {
@@ -19,8 +19,6 @@ class TransportAssetService
 
     public function replaceCover(?string $currentFileName, UploadedFile $file): string
     {
-        $this->deleteCover($currentFileName);
-
         return $this->uploadCover($file);
     }
 
@@ -31,10 +29,18 @@ class TransportAssetService
 
     public function uploadGallery(int $transportId, UploadedFile $file): TransportsImages
     {
-        return TransportsImages::create([
-            'transports_id' => $transportId,
-            'image' => $this->storeImage($file, self::GALLERY_PATH),
-        ]);
+        $fileName = $this->storeImage($file, self::GALLERY_PATH);
+
+        try {
+            return TransportsImages::create([
+                'transports_id' => $transportId,
+                'image' => $fileName,
+            ]);
+        } catch (\Throwable $exception) {
+            $this->deleteGallery($fileName);
+
+            throw $exception;
+        }
     }
 
     public function deleteGallery(?string $fileName): bool
@@ -44,13 +50,8 @@ class TransportAssetService
 
     private function storeImage(UploadedFile $file, string $directory): string
     {
-        if (! File::isDirectory($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        $baseName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-        $filename = time() . '_' . $baseName . '.' . $file->getClientOriginalExtension();
-        $file->move($directory, $filename);
+        $filename = Str::uuid() . '.' . $file->extension();
+        $file->storeAs($directory, $filename, 'public');
 
         return $filename;
     }
@@ -61,12 +62,27 @@ class TransportAssetService
             return false;
         }
 
-        $path = $directory . '/' . $fileName;
+        $path = $this->storagePath($directory, $fileName);
 
-        if (! File::exists($path)) {
+        if (! Storage::disk('public')->exists($path)) {
             return false;
         }
 
-        return File::delete($path);
+        return Storage::disk('public')->delete($path);
+    }
+
+    private function storagePath(string $directory, string $fileName): string
+    {
+        $fileName = ltrim($fileName, '/');
+
+        if (Str::startsWith($fileName, 'storage/')) {
+            return Str::after($fileName, 'storage/');
+        }
+
+        if (Str::startsWith($fileName, $directory . '/')) {
+            return $fileName;
+        }
+
+        return $directory . '/' . $fileName;
     }
 }

@@ -8,14 +8,15 @@ class StoreTransportPriceAdminRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->can('isAdmin') ?? false;
+        $user = $this->user();
+
+        return $user?->can('isAdmin') && ($user->can('posDev') || $user->can('posAuthor'));
     }
 
     public function rules(): array
     {
         return [
             'transports_id' => 'required|integer|exists:transports,id',
-            'name' => 'nullable|string|max:255',
             'type' => 'required|string|in:Daily Rent,Airport Shuttle,Transfers',
             'src' => 'nullable|string|max:255',
             'dst' => 'nullable|string|max:255',
@@ -24,7 +25,6 @@ class StoreTransportPriceAdminRequest extends FormRequest
             'markup' => 'required|numeric|min:0',
             'extra_time' => 'required|numeric|min:0',
             'additional_info' => 'nullable|string',
-            'author' => 'required|integer',
         ];
     }
 }

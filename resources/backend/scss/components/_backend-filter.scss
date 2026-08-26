@@ -38,18 +38,19 @@ body.sidebar-light .backend-toolbar-filter__control:focus {
 }
 
 body.sidebar-light .backend-filter-panel {
-  align-items: end;
-  background: var(--backend-panel);
-  border: 1px solid var(--backend-line-soft);
-  border-radius: var(--backend-radius-md);
-  box-shadow: var(--backend-shadow-soft);
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 260px));
-  justify-content: start;
-  margin-bottom: 12px;
-  min-width: 0;
-  padding: 8px 10px;
+    align-items: end;
+    background: var(--backend-panel);
+    border: 1px solid var(--backend-line-soft);
+    border-radius: var(--backend-radius-md);
+    box-shadow: var(--backend-shadow-soft);
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(192px, 100%));
+    justify-content: start;
+    margin-bottom: 12px;
+    min-width: 0;
+    padding: 8px 10px;
+    grid-auto-flow: column;
 }
 
 body.sidebar-light .backend-filter-panel--flush {
@@ -153,10 +154,13 @@ body.sidebar-light .backend-filter-search .backend-filter-control {
 
 body.sidebar-light .backend-filter-actions,
 body.sidebar-light .backend-page-toolbar__actions {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: max-content;
+    align-content: flex-end;
+    padding-bottom: 4px;
 }
 
 body.sidebar-light .backend-toolbar-action {

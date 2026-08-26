@@ -12,7 +12,6 @@ class TransportPrice extends Model
     use HasFactory;
     protected $fillable=[
         'transports_id',
-        'name',
         'type',
         'src',
         'dst',
@@ -29,7 +28,7 @@ class TransportPrice extends Model
     }
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'author_id');
     }
     public function calculatePrice($usdrates, $tax)
     {

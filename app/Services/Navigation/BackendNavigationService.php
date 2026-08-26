@@ -49,6 +49,7 @@ class BackendNavigationService
             || $request->is('reservation', 'reservation/*', 'order-rsv/*');
         $invoicesActive = $request->routeIs('admin.invoices.*')
             || $request->is('invoice', 'invoice/*');
+        $transportMasterDataActive = $request->routeIs('admin.transport-types.*', 'admin.transport-brands.*');
 
         return $this->resolved = [
             'user' => $user,
@@ -63,7 +64,7 @@ class BackendNavigationService
                 'orders' => $ordersActive,
                 'reservations' => $reservationsActive,
                 'invoices' => $invoicesActive,
-                'operations' => $ordersActive || $reservationsActive || $invoicesActive,
+                'operations' => $ordersActive || $reservationsActive || $invoicesActive || $transportMasterDataActive,
             ],
             'logos' => [
                 'color' => config('app.logo_img_color'),

@@ -5,86 +5,58 @@ namespace App\Http\Controllers;
 use App\Models\TransportType;
 use App\Http\Requests\StoreTransportTypeRequest;
 use App\Http\Requests\UpdateTransportTypeRequest;
+use App\Services\Transports\TransportMasterDataService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TransportTypeController extends Controller
 {
+    private const RESOURCE = TransportMasterDataService::TYPE;
+
     public function __construct()
     {
-        $this->middleware(['auth','verified']);
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+        $this->middleware(['auth', 'verified', 'can:isAdmin']);
+        $this->middleware(function ($request, $next) {
+            abort_unless(Gate::any(['posDev', 'posAuthor']), 403);
+
+            return $next($request);
+        });
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index(Request $request, TransportMasterDataService $masterData)
     {
-        //
+        return view('backend.operations.transport-master-data.index', [
+            'definition' => $masterData->definition(self::RESOURCE),
+            'items' => $masterData->index(self::RESOURCE, $request->string('search')->trim()->value()),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreTransportTypeRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreTransportTypeRequest $request)
+    public function store(StoreTransportTypeRequest $request, TransportMasterDataService $masterData)
     {
-        //
+        $masterData->store(self::RESOURCE, $request->validated('type'));
+
+        return redirect()->route('admin.transport-types.index')->with('success', 'Transport Type created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\TransportType  $transportType
-     * @return \Illuminate\Http\Response
-     */
-    public function show(TransportType $transportType)
+    public function update(UpdateTransportTypeRequest $request, TransportType $transportType, TransportMasterDataService $masterData)
     {
-        //
+        try {
+            $masterData->update(self::RESOURCE, $transportType, $request->validated('type'));
+        } catch (\LogicException $exception) {
+            return back()->withInput()->with('error', $exception->getMessage());
+        }
+
+        return redirect()->route('admin.transport-types.index')->with('success', 'Transport Type updated successfully.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\TransportType  $transportType
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(TransportType $transportType)
+    public function destroy(TransportType $transportType, TransportMasterDataService $masterData)
     {
-        //
-    }
+        try {
+            $masterData->delete(self::RESOURCE, $transportType);
+        } catch (\LogicException $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateTransportTypeRequest  $request
-     * @param  \App\Models\TransportType  $transportType
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateTransportTypeRequest $request, TransportType $transportType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\TransportType  $transportType
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(TransportType $transportType)
-    {
-        //
+        return redirect()->route('admin.transport-types.index')->with('success', 'Transport Type deleted successfully.');
     }
 }

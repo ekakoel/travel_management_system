@@ -6,15 +6,15 @@ use App\Models\TransportPrice;
 
 class TransportPricingService
 {
-    public function createPrice(array $validated): TransportPrice
+    public function createPrice(array $validated, int $authorId): TransportPrice
     {
-        return TransportPrice::create($this->payload($validated));
+        return TransportPrice::create($this->payload($validated, $authorId));
     }
 
-    public function updatePrice(int $priceId, array $validated): TransportPrice
+    public function updatePrice(int $priceId, array $validated, int $authorId): TransportPrice
     {
         $price = TransportPrice::findOrFail($priceId);
-        $price->update($this->payload($validated));
+        $price->update($this->payload($validated, $authorId));
 
         return $price;
     }
@@ -57,11 +57,10 @@ class TransportPricingService
             + $this->taxAmount($contractRateIdr, $markup, $usdRate, $tax);
     }
 
-    private function payload(array $validated): array
+    private function payload(array $validated, int $authorId): array
     {
         return [
             'transports_id' => $validated['transports_id'],
-            'name' => $validated['name'] ?? null,
             'type' => $validated['type'],
             'src' => $validated['src'] ?? null,
             'dst' => $validated['dst'] ?? null,
@@ -70,7 +69,7 @@ class TransportPricingService
             'markup' => $validated['markup'],
             'extra_time' => $validated['extra_time'],
             'additional_info' => $validated['additional_info'] ?? null,
-            'author_id' => $validated['author'],
+            'author_id' => $authorId,
         ];
     }
 }

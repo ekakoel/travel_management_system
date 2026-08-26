@@ -23,7 +23,7 @@ class TransportPriceAdminController extends Controller
         }
 
         $validated = $request->validated();
-        $price = $pricing->createPrice($validated);
+        $price = $pricing->createPrice($validated, $request->user()->id);
 
         $audit->userLog($request, 'Add', 'Transportation Price', $validated['transports_id'], 'detail-transport', 'Add Price:' . $price->id . ' to Transportation: ' . $validated['transports_id']);
 
@@ -37,7 +37,7 @@ class TransportPriceAdminController extends Controller
         }
 
         $validated = $request->validated();
-        $price = $pricing->updatePrice((int) $id, $validated);
+        $price = $pricing->updatePrice((int) $id, $validated, $request->user()->id);
 
         $audit->userLog($request, 'Update', 'Transportation Price', $id, 'admin-detail-transport', 'Update Price :' . $price->id . ' on transport: ' . $validated['transports_id']);
 

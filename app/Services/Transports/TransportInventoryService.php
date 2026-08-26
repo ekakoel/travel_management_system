@@ -83,8 +83,8 @@ class TransportInventoryService
     public function formOptions(): array
     {
         return [
-            'transports' => Transports::all(),
             'partners' => Partners::query()
+                ->select(['id', 'name', 'type', 'status'])
                 ->notRemoved()
                 ->where(function ($query) {
                     $query->where('type', 'Transport')
@@ -92,16 +92,18 @@ class TransportInventoryService
                 })
                 ->orderBy('name')
                 ->get(),
-            'type' => TransportType::all(),
-            'brand' => TransportBrand::all(),
+            'type' => TransportType::query()->select(['id', 'type'])->orderBy('type')->get(),
+            'brand' => TransportBrand::query()->select(['id', 'brand'])->orderBy('brand')->get(),
         ];
     }
 
     public function editData(int $transportId): array
     {
         return array_merge($this->formOptions(), [
-            'transport' => Transports::findOrFail($transportId),
-            'usdrates' => $this->usdRate(),
+            'transport' => Transports::query()
+                ->with(['partner', 'user'])
+                ->withCount('prices')
+                ->findOrFail($transportId),
         ]);
     }
 

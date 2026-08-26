@@ -5,86 +5,58 @@ namespace App\Http\Controllers;
 use App\Models\TransportBrand;
 use App\Http\Requests\StoreTransportBrandRequest;
 use App\Http\Requests\UpdateTransportBrandRequest;
+use App\Services\Transports\TransportMasterDataService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TransportBrandController extends Controller
 {
+    private const RESOURCE = TransportMasterDataService::BRAND;
+
     public function __construct()
     {
-        $this->middleware(['auth','verified']);
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+        $this->middleware(['auth', 'verified', 'can:isAdmin']);
+        $this->middleware(function ($request, $next) {
+            abort_unless(Gate::any(['posDev', 'posAuthor']), 403);
+
+            return $next($request);
+        });
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index(Request $request, TransportMasterDataService $masterData)
     {
-        //
+        return view('backend.operations.transport-master-data.index', [
+            'definition' => $masterData->definition(self::RESOURCE),
+            'items' => $masterData->index(self::RESOURCE, $request->string('search')->trim()->value()),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreTransportBrandRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreTransportBrandRequest $request)
+    public function store(StoreTransportBrandRequest $request, TransportMasterDataService $masterData)
     {
-        //
+        $masterData->store(self::RESOURCE, $request->validated('brand'));
+
+        return redirect()->route('admin.transport-brands.index')->with('success', 'Transport Brand created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\TransportBrand  $transportBrand
-     * @return \Illuminate\Http\Response
-     */
-    public function show(TransportBrand $transportBrand)
+    public function update(UpdateTransportBrandRequest $request, TransportBrand $transportBrand, TransportMasterDataService $masterData)
     {
-        //
+        try {
+            $masterData->update(self::RESOURCE, $transportBrand, $request->validated('brand'));
+        } catch (\LogicException $exception) {
+            return back()->withInput()->with('error', $exception->getMessage());
+        }
+
+        return redirect()->route('admin.transport-brands.index')->with('success', 'Transport Brand updated successfully.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\TransportBrand  $transportBrand
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(TransportBrand $transportBrand)
+    public function destroy(TransportBrand $transportBrand, TransportMasterDataService $masterData)
     {
-        //
-    }
+        try {
+            $masterData->delete(self::RESOURCE, $transportBrand);
+        } catch (\LogicException $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateTransportBrandRequest  $request
-     * @param  \App\Models\TransportBrand  $transportBrand
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateTransportBrandRequest $request, TransportBrand $transportBrand)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\TransportBrand  $transportBrand
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(TransportBrand $transportBrand)
-    {
-        //
+        return redirect()->route('admin.transport-brands.index')->with('success', 'Transport Brand deleted successfully.');
     }
 }

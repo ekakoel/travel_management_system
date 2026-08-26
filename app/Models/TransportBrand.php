@@ -2,11 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Tag;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TransportBrand extends Model
 {
@@ -14,4 +11,9 @@ class TransportBrand extends Model
     protected $fillable = [
         'brand',
     ];
+
+    public function transports()
+    {
+        return $this->hasMany(Transports::class, 'brand', 'brand');
+    }
 }

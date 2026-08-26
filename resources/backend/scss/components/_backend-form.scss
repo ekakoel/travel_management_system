@@ -22,9 +22,11 @@ body.sidebar-light .backend-form-section {
 }
 
 body.sidebar-light .backend-form-grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    display: grid;
+    gap: 16px;
+    justify-content: space-between;
+    // grid-auto-flow: column;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 body.sidebar-light .backend-form-grid--compact {
@@ -393,6 +395,7 @@ body.sidebar-light a.backend-button {
   transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
   user-select: none;
   white-space: nowrap;
+  height: 44px;
 }
 
 body.sidebar-light .backend-button i,

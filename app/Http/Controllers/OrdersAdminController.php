@@ -90,7 +90,6 @@ class OrdersAdminController extends Controller
     public function __construct()
     {
         $this->middleware(['auth']);
-        // $this->middleware(['auth','can:isAdmin']);
     }
 
     private const STANDARD_PAYMENT_ADMIN_POSITIONS = [

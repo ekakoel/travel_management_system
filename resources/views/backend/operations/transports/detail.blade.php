@@ -191,7 +191,7 @@
                                     @php($price = $row['model'])
                                     <tr data-transport-price-row data-transport-price-type="{{ strtolower($price->type ?? '') }}" data-transport-price-duration="{{ strtolower((string) $price->duration) }}">
                                         <td data-label="#">{{ $loop->iteration }}</td>
-                                        <td data-label="Type"><strong>{{ $price->type }}</strong><span>{{ $price->name ?: '-' }}</span></td>
+                                        <td data-label="Type"><strong>{{ $price->type }}</strong></td>
                                         <td data-label="Duration">{{ $row['duration_label'] }}</td>
                                         <td data-label="Route">{{ $row['route_label'] }}</td>
                                         <td data-label="Contract Rate">
@@ -347,7 +347,6 @@
                                             @method('put')
                                             @include('backend.operations.transports.partials.price-fields', ['price' => $price])
                                             <input name="transports_id" value="{{ $transport->id }}" type="hidden">
-                                            <input name="author" value="{{ Auth::id() }}" type="hidden">
                                             <input name="service_id" value="{{ $price->id }}" type="hidden">
                                         </form>
                                     </div>
@@ -379,7 +378,6 @@
                                         @csrf
                                         @include('backend.operations.transports.partials.price-fields', ['price' => null])
                                         <input name="transports_id" value="{{ $transport->id }}" type="hidden">
-                                        <input name="author" value="{{ Auth::id() }}" type="hidden">
                                     </form>
                                 </div>
                                 <div class="backend-modal__footer">
@@ -393,8 +391,6 @@
                         </div>
                     </div>
                 @endcanany
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan

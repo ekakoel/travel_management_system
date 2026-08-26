@@ -329,6 +329,18 @@
                                     </section>
                                 @endforeach
                             </section>
+                            <section class="backend-page-toolbar backend-form-actions activity-form-actions">
+                                <div class="backend-page-toolbar__actions">
+                                    <a href="{{ route('admin.activities.show', $activities->id) }}" class="backend-button backend-button-secondary">
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                        Cancel
+                                    </a>
+                                    <button type="submit" class="backend-button backend-button-primary">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        Save Activity
+                                    </button>
+                                </div>
+                            </section>
                         </x-slot>
 
                         <x-slot name="side">
@@ -431,22 +443,7 @@
                             </section>
                         </x-slot>
                     </x-backend.detail-layout>
-
-                    <section class="backend-page-toolbar backend-form-actions activity-form-actions">
-                        <div class="backend-page-toolbar__actions">
-                            <a href="{{ route('admin.activities.show', $activities->id) }}" class="backend-button backend-button-secondary">
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                                Cancel
-                            </a>
-                            <button type="submit" class="backend-button backend-button-primary">
-                                <i class="fa fa-check" aria-hidden="true"></i>
-                                Save Activity
-                            </button>
-                        </div>
-                    </section>
                 </form>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcanany

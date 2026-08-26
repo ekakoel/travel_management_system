@@ -4,16 +4,21 @@ namespace App\Http\Controllers\Backend\Operations\Activities;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreActivityAdminRequest;
+use App\Http\Requests\StoreActivityTypeRequest;
 use App\Http\Requests\UpdateActivityAdminRequest;
+use App\Http\Requests\UpdateActivityTypeRequest;
 use App\Models\Activities;
 use App\Models\ActivitiesImages;
+use App\Models\ActivityType;
 use App\Models\Tax;
 use App\Models\UsdRates;
 use App\Services\Activities\ActivityAssetService;
 use App\Services\Activities\ActivityAuditService;
 use App\Services\Activities\ActivityInventoryService;
+use App\Services\Activities\ActivityMasterDataService;
 use App\Services\Activities\ActivityPricingService;
 use App\ViewModels\Activities\ActivityDetailViewModel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -22,6 +27,7 @@ use Throwable;
 class ActivityAdminController extends Controller
 {
     private const MANAGE_GATES = ['posDev', 'posAuthor', 'posAdm'];
+    private const RESOURCE = ActivityMasterDataService::TYPE;
 
     public function __construct()
     {
@@ -201,5 +207,40 @@ class ActivityAdminController extends Controller
             'min_pax' => $validated['min_pax'],
             'validity' => date('Y-m-d', strtotime($validated['validity'])),
         ];
+    }
+
+    public function type_index(Request $request, ActivityMasterDataService $masterData)
+    {
+        return view('backend.operations.activities.activity-master-data.index', [
+            'definition' => $masterData->definition(self::RESOURCE),
+            'items' => $masterData->index(self::RESOURCE, $request->string('search')->trim()->value()),
+        ]);
+    }
+    public function type_store(StoreActivityTypeRequest $request, ActivityMasterDataService $masterData)
+    {
+        $masterData->store(self::RESOURCE, $request->validated('type'));
+
+        return redirect()->route('admin.activity-types.index')->with('success', 'Activity Type created successfully.');
+    }
+
+    public function type_update(UpdateActivityTypeRequest $request, ActivityType $activityType, ActivityMasterDataService $masterData)
+    {
+        try {
+            $masterData->update(self::RESOURCE, $activityType, $request->validated('type'));
+        } catch (\LogicException $exception) {
+            return back()->withInput()->with('error', $exception->getMessage());
+        }
+
+        return redirect()->route('admin.activity-types.index')->with('success', 'Activity Type updated successfully.');
+    }
+    public function type_destroy(ActivityType $activityType, ActivityMasterDataService $masterData)
+    {
+        try {
+            $masterData->delete(self::RESOURCE, $activityType);
+        } catch (\LogicException $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
+
+        return redirect()->route('admin.activity-types.index')->with('success', 'Activity Type deleted successfully.');
     }
 }
