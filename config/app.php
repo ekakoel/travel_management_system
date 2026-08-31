@@ -64,8 +64,8 @@ return [
     'bali_contact_office_phone'=> env('BALI_CONTACT_OFFICE_PHONE',"+62-361-710661 / 710663 / 710664"),
 
 
-    'bali_contact_person_name_i'=> env('BALI_CONTACT_PERSON_NAME_I',"Ellise"),
-    'bali_contact_person_phone_i'=> env('BALI_CONTACT_PERSON_PHONE_I',"+62 821-1558-8558"),
+    'bali_contact_person_name_i'=> env('BALI_CONTACT_PERSON_NAME_I',"Eka Koel"),
+    'bali_contact_person_phone_i'=> env('BALI_CONTACT_PERSON_PHONE_I',"+62 857-3865-7767"),
     'bali_contact_person_name_ii'=> env('BALI_CONTACT_PERSON_NAME_II',"Magie"),
     'bali_contact_person_phone_ii'=> env('BALI_CONTACT_PERSON_PHONE_II',"+62 812-381-1823"),
     'company_phone_number_i'=> env('COMPANY_PHONE_NUMBER_I',"+62 361-710-661"),
