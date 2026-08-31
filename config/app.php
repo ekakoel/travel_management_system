@@ -39,8 +39,8 @@ return [
     'logo_img_white' => env('LOGO_IMG_WHITE', "logo-white-bali-kami.png"),
     'logo_img_black' => env('LOGO_IMG_BLACK', "logo-black-bali-kami.png"),
     
-    // 'reservation_mail' => env('RESERVATION_MAIL', "reservation@balikamitour.com"), // online
-    'reservation_mail' => env('RESERVATION_MAIL', "e-admin@balikamitour.com"), // offline
+    'reservation_mail' => env('RESERVATION_MAIL', "reservation@balikamitour.com"), // online
+    // 'reservation_mail' => env('RESERVATION_MAIL', "e-admin@balikamitour.com"), // offline
     'administrator_mail' => env('ADMINISTRATOR_MAIL', "e-admin@balikamitour.com"),
     
     'wa_me' => env('WA_ME', "https://wa.me/09999999999/?"),

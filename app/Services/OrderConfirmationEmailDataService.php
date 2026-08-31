@@ -30,7 +30,7 @@ final class OrderConfirmationEmailDataService
             'brand' => [
                 'name' => $brandName,
                 'tagline' => $business?->public_tagline ?: $business?->caption ?: 'Travel services in Bali',
-                'email' => $business?->email ?: 'reservation@balikamitour.com',
+                'email' => $business?->email ?: config('app.reservation_mail'),
                 'phone' => $business?->phone,
                 'website' => $business?->website ?: config('app.url'),
             ],

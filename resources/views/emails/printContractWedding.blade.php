@@ -719,7 +719,7 @@
                     </table>
                 @endif
                 <div class="notification-text">
-                    Thank you for your support of {{ $business->name }}! If you have any questions or need further assistance, please feel free to contact our customer service at email: reservation@balikamitour.com or phone: {{ $business->phone }}
+                    Thank you for your support of {{ $business->name }}! If you have any questions or need further assistance, please feel free to contact our customer service at email: {{ config('app.reservation_mail') }} or phone: {{ $business->phone }}
                 </div>
                 
             </div>

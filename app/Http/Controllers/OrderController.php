@@ -6756,7 +6756,6 @@ class OrderController extends Controller
             $rquotation = $request->request_quotation;
             $agent = User::where('id',$order->sales_agent)->first();
             Mail::to(config('app.reservation_mail'))
-            // Mail::to(['reservation@balikamitour.com',config('app.reservation_mail')])
             ->send(new ReservationMail($id,$rquotation));
             $note = "Submited order no: ".$order->orderno;
             $user_log =new UserLog([

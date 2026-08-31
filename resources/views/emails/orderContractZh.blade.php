@@ -1097,8 +1097,7 @@
                     </table>
                 @endif
                 <div class="notification-text">
-                    感謝您支持 {{ $business->name }}。如果您有任何問題或需要進一步協助， 請隨時聯繫我們的客戶服務， 電子郵件： reservation@balikamitour.com， 電話：{{ $business->phone }}。
-                    {{-- Thank you for your support of {{ $business->name }}! If you have any questions or need further assistance, please feel free to contact our customer service at email: reservation@balikamitour.com or phone: {{ $business->phone }} --}}
+                    感謝您支持 {{ $business->name }}。如果您有任何問題或需要進一步協助， 請隨時聯繫我們的客戶服務， 電子郵件： {{ config('app.reservation_mail') }}， 電話：{{ $business->phone }}。
                 </div>
             </div>
         </div>
