@@ -461,7 +461,7 @@ class AdminPanelController extends Controller
             $this->writeServiceLog($request, 'Add', $service, 'Add Service');
         });
 
-        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.created'));
+        return redirect()->route('admin.panel-main.view')->with('success', __('service-registry.flash.created'));
     }
 
 // FUNCTION EDIT SERVICE =============================================================================================================>
@@ -474,7 +474,7 @@ class AdminPanelController extends Controller
             $this->writeServiceLog($request, 'Edit Service', $service, "Update Service: {$id}");
         });
 
-        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.updated'));
+        return redirect()->route('admin.panel-main.view')->with('success', __('service-registry.flash.updated'));
     }
 
 // FUNCTION DISABLE SERVICE =============================================================================================================>
@@ -487,7 +487,7 @@ class AdminPanelController extends Controller
             $this->writeServiceLog($request, 'Update Service', $service, "Disable Service: {$id}");
         });
 
-        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.disabled'));
+        return redirect()->route('admin.panel-main.view')->with('success', __('service-registry.flash.disabled'));
     }
 
 // FUNCTION ENNABLE SERVICE =============================================================================================================>
@@ -500,7 +500,7 @@ class AdminPanelController extends Controller
             $this->writeServiceLog($request, 'Update Service', $service, "Enable Service: {$id}");
         });
 
-        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.activated'));
+        return redirect()->route('admin.panel-main.view')->with('success', __('service-registry.flash.activated'));
     }
 
 // FUNCTION REMOVE SERVICE =============================================================================================================>
@@ -512,7 +512,7 @@ class AdminPanelController extends Controller
             $service->delete();
         });
 
-        return redirect()->route('admin-panel')->with('success', __('service-registry.flash.removed'));
+        return redirect()->route('admin.panel-main.view')->with('success', __('service-registry.flash.removed'));
     }
 
     private function writeServiceLog(Request $request, string $action, Services $service, string $note): void
@@ -522,7 +522,7 @@ class AdminPanelController extends Controller
             'service' => 'Service',
             'subservice' => $service->name,
             'subservice_id' => $service->getKey(),
-            'page' => 'admin-panel',
+            'page' => 'admin.panel-main.view',
             'user_id' => $request->user()->getKey(),
             'user_ip' => $request->ip(),
             'note' => $note,
