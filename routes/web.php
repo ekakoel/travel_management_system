@@ -394,6 +394,16 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fadd-bank-account',[BankAccountController::class,'func_add_bank_account']);
             Route::put('/fupdate-bank-account/{id}',[BankAccountController::class,'func_update_bank_account']);
             Route::delete('/delete-bank-account/{id}',[BankAccountController::class,'destroy_bank_account']);
+
+            /// ---------------------------------------------------
+            //                        CURRENCY
+            // ---------------------------------------------------
+            Route::get('/currency',[UsdRatesController::class,'index'])->name('currency');
+            Route::post('/currency/refresh-rates',[UsdRatesController::class,'refreshRates'])->name('admin.currency.refresh-rates');
+            Route::put('/update-usdrates/{id}',[UsdRatesController::class,'func_update_usdrates'])->name('f-update-usd-rates');
+            Route::put('/update-cnyrates/{id}',[UsdRatesController::class,'func_update_cnyrates'])->name('f-update-cny-rates');
+            Route::put('/update-twdrates/{id}',[UsdRatesController::class,'func_update_twdrates'])->name('f-update-twd-rates');
+            
             // ---------------------------------------------------
             //                       EMAIL
             // ---------------------------------------------------
@@ -635,14 +645,7 @@ use Illuminate\Support\Facades\Route;
         // ========================================================================================================================================> (RESERVATION)
         Route::middleware(['checkPosition:developer,administrator,reservation'])->group(function () {
 
-            /// ---------------------------------------------------
-            //                        CURRENCY
-            // ---------------------------------------------------
-            Route::get('/currency',[UsdRatesController::class,'index'])->name('currency');
-            Route::post('/currency/refresh-rates',[UsdRatesController::class,'refreshRates'])->name('admin.currency.refresh-rates');
-            Route::put('/update-usdrates/{id}',[UsdRatesController::class,'func_update_usdrates'])->name('f-update-usd-rates');
-            Route::put('/update-cnyrates/{id}',[UsdRatesController::class,'func_update_cnyrates'])->name('f-update-cny-rates');
-            Route::put('/update-twdrates/{id}',[UsdRatesController::class,'func_update_twdrates'])->name('f-update-twd-rates');
+            
 
             // ---------------------------------------------------
             //                       REVIEWS TOURS

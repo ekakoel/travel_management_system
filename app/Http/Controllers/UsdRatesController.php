@@ -27,6 +27,7 @@ class UsdRatesController extends Controller
     {
         $this->middleware(['auth', 'verified', 'type:admin']);
     }
+    
     public function index()
     {
         $codes = ['USD', 'CNY', 'TWD'];
