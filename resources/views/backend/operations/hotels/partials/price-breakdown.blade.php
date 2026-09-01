@@ -13,10 +13,10 @@
 
 <div class="hotel-price-calculation" aria-label="Rate calculation breakdown">
     <div>
-        <span>Contract</span>
-        <strong>{{ currencyFormatIdr($pricing['effective_contract_rate_idr'] ?? 0) }}</strong>
+        <span>Contract Rate</span>
+        <strong>{{ currencyFormatUsd($pricing['contract_rate_usd'] ?? 0) }}</strong>
         <small>
-            {{ currencyFormatUsd($pricing['contract_rate_usd'] ?? 0) }} - contract x {{ $pricing['multiplier'] }} nights
+            {{ currencyFormatIdr($pricing['effective_contract_rate_idr'] ?? 0) }}
         </small>
     </div>
     <div>
@@ -27,7 +27,7 @@
     <div>
         <span>Tax</span>
         <strong>{{ currencyFormatUsd($pricing['tax_usd'] ?? 0) }}</strong>
-        <small>{{ currencyFormatIdr($pricing['tax_idr'] ?? 0) }} - {{ number_format((float) ($pricing['tax_percent'] ?? 0), 2) }}% of USD subtotal</small>
+        <small>{{ currencyFormatIdr($pricing['tax_idr'] ?? 0) }} - {{ number_format((float) ($pricing['tax_percent'] ?? 0), 2) }}%</small>
     </div>
     <div>
         <span>Formula</span>
