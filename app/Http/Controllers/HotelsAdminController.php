@@ -56,31 +56,7 @@ class HotelsAdminController extends Controller
         return redirect($url);
     }
 
-// View Admin Index =========================================================================================>
-    public function index() {
-    $now = Carbon::now();
-    $queryDate = $now->toDateString();
-    $hotels = Hotels::whereNotIn('status', ['Archived', 'Removed'])
-        ->with(['rooms', 'prices' => function($q) use ($queryDate) {
-            $q->notExpired($queryDate);
-        }, 'promos' => function($q) use ($queryDate) {
-            $q->notExpired($queryDate);
-        }, 'packages' => function($q) use ($queryDate) {
-            $q->notExpired($queryDate);
-        }])->get();
-    $archivehotels = Hotels::where('status', 'Archived')->get();
-    $drafthotels = Hotels::where('status', 'Draft')->get();
-    $cactivehotels = Hotels::where('status', 'Active')->get();
-    $activerooms = HotelRoom::where('status', 'Active')->get();
-    $normal_prices = HotelPrice::notExpired($queryDate)->orderBy('end_date', 'desc')->get();
-    $promos = HotelPromo::notExpired($queryDate)->orderBy('book_periode_end', 'desc')->get();
-    $packages = HotelPackage::notExpired($queryDate)->orderBy('stay_period_end', 'desc')->get();
 
-    return view('backend.operations.hotels.index', compact(
-        'hotels', 'cactivehotels', 'archivehotels', 'drafthotels', 
-        'activerooms', 'normal_prices', 'now', 'promos', 'packages'
-    ));
-}
     
 // View Detail Hotel =========================================================================================>
     public function view_detail_hotel($id){

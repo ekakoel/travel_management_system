@@ -51,11 +51,10 @@ body.sidebar-light .backend-filter-panel {
 }
 
 body.sidebar-light .backend-filter-panel--flush {
-  border-left: 0;
-  border-radius: 0;
-  border-right: 0;
+  border: none;
   box-shadow: none;
   margin: 0;
+  padding: 0;
 }
 
 body.sidebar-light .backend-filter-grid {

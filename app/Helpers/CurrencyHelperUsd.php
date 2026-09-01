@@ -10,27 +10,27 @@ if (!function_exists('formatMoneyValue')) {
 if (!function_exists('currencyFormatUsd')) {
     function currencyFormatUsd($amount)
     {
-        return '$' . formatMoneyValue($amount, 2);
+        return '$'.' '. formatMoneyValue($amount, 2);
     }
 }
 
 if (!function_exists('currencyFormatIdr')) {
     function currencyFormatIdr($amount)
     {
-        return 'Rp' . formatMoneyValue($amount, 0);
+        return 'Rp'.' '. formatMoneyValue($amount, 0);
     }
 }
 
 if (!function_exists('currencyFormatTwd')) {
     function currencyFormatTwd($amount)
     {
-        return 'NT$' . formatMoneyValue($amount, 2);
+        return 'NT$'.' '. formatMoneyValue($amount, 2);
     }
 }
 
 if (!function_exists('currencyFormatCny')) {
     function currencyFormatCny($amount)
     {
-        return '¥' . formatMoneyValue($amount, 2);
+        return '¥'.' '. formatMoneyValue($amount, 2);
     }
 }

@@ -9,21 +9,8 @@ use Illuminate\Support\Facades\URL;
 
 class SpkWhatsAppController extends Controller
 {
-    /**
-     * Membuka WhatsApp atau WhatsApp Web dengan pesan SPK.
-     */
     public function send(Spks $spk): RedirectResponse
     {
-        /*
-         * Sesuaikan nama relasi berikut dengan project Anda.
-         *
-         * Contoh relasi:
-         * - reservation
-         * - reservation.user
-         * - driver
-         * - vehicle
-         * - destinations
-         */
         $spk->loadMissing([
             'reservation',
             'driver',
@@ -39,19 +26,6 @@ class SpkWhatsAppController extends Controller
                 'Reservation untuk SPK ini tidak ditemukan.'
             );
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Nomor penerima
-         |--------------------------------------------------------------------------
-        |
-        | Urutan pencarian nomor:
-        | 1. customer_phone pada reservation
-        | 2. phone pada user yang membuat reservation
-        |
-        | Silakan sesuaikan dengan struktur database Anda.
-        |
-         */
 
         $recipientPhone = $reservation->customer_phone
             ?? $reservation->agent?->phone
@@ -72,15 +46,6 @@ class SpkWhatsAppController extends Controller
                 'Format nomor WhatsApp penerima tidak valid.'
             );
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Signed report URL
-         |--------------------------------------------------------------------------
-        |
-        | Link berlaku selama 7 hari.
-        |
-         */
 
         if (blank($spk->public_token)) {
             $spk->public_token =
@@ -123,7 +88,7 @@ class SpkWhatsAppController extends Controller
             );
         }
 
-        $driverPhone = $reservation->driver?->phone
+        $driverPhone = $spk->driver?->phone
             ?? null;
 
         if (!$driverPhone) {
@@ -164,20 +129,7 @@ class SpkWhatsAppController extends Controller
         return redirect()->away($whatsappUrl);
     }
     
-    /**
-     * Membuat daftar destinasi untuk pesan WhatsApp.
-     *
-     * Jika 1 destinasi:
-     *
-     * Destination
-     * Ubud Palace
-     *
-     * Jika lebih dari 1:
-     *
-     * Destination:
-     * 1. Ubud Palace (Visit traditional palace)
-     * 2. Ubud Art Market (Shopping and sightseeing)
-     */
+
     private function buildFlightMessage(Spks $spk): string
     {
         $airportShuttles = $spk->airport_shuttles
@@ -332,21 +284,9 @@ class SpkWhatsAppController extends Controller
     ): string {
         $reservation = $spk->reservation;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Customer
-         |--------------------------------------------------------------------------
-         */
-
         $customerName = $reservation->customer_name
             ?? $reservation->agent?->name
             ?? 'Customer';
-
-        /*
-        |--------------------------------------------------------------------------
-        | Informasi order
-         |--------------------------------------------------------------------------
-         */
 
         $orderNumber = $reservation->reservation_code
             ?? $reservation->rsv_no
@@ -362,41 +302,12 @@ class SpkWhatsAppController extends Controller
                 ?? null
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | Informasi guest
-         |--------------------------------------------------------------------------
-         */
-
-        // $guestName = $reservation->guest_name
-        //     ?? $reservation->guests?->first()?->name
-        //     ?? '-';
 
         $guestName = $this->buildGuestMessage($spk);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Informasi penerbangan
-         |--------------------------------------------------------------------------
-         */
-
         $flightNumber = $this->buildFlightMessage($spk);
-        // $flightNumber = $flights->flight_number
-        //     ?? '-';
-
-        /*
-        |--------------------------------------------------------------------------
-        | Informasi destination
-         |--------------------------------------------------------------------------
-         */
 
         $destinationMessage = $this->buildDestinationMessage($spk);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Informasi driver
-         |--------------------------------------------------------------------------
-         */
 
         $driverName = $spk->driver?->name
             ?? $spk->driver_name
@@ -407,12 +318,6 @@ class SpkWhatsAppController extends Controller
             ?? '-';
 
         $driverPhone = $this->formatDisplayPhone($driverPhone);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Informasi kendaraan
-         |--------------------------------------------------------------------------
-         */
 
         $vehicleBrand = $spk->vehicle?->brand
             ?? $spk->vehicle_brand
@@ -437,15 +342,6 @@ class SpkWhatsAppController extends Controller
 
         $policeNumber = $spk->plate_number
             ?? '-';
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pesan WhatsApp
-         |--------------------------------------------------------------------------
-        |
-        | Tanda * digunakan untuk membuat tulisan tebal di WhatsApp.
-        |
-         */
 
         return implode("\n", [
             "Halo {$customerName},",
@@ -485,7 +381,7 @@ class SpkWhatsAppController extends Controller
     private function buildDriverMessage(Spks $spk): string {
         $reservation = $spk->reservation;
 
-        $driverName = $reservation->driver?->name
+        $driverName = $spk->driver?->name
             ?? 'Driver';
 
         $spkDate = $this->formatDate(

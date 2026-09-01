@@ -30850,7 +30850,6 @@ body.sidebar-light .breadcrumb-item.active {
   justify-content: space-between;
   min-width: 0;
   flex-direction: row;
-  margin-bottom: 8px !important;
 }
 
 .backend-section-header__label {
@@ -30884,7 +30883,6 @@ body.sidebar-light .breadcrumb-item.active {
 
 .backend-form-panel > .backend-section-header {
   border-bottom: 1px solid var(--backend-line-soft);
-  margin-bottom: 8px;
   padding: 18px;
 }
 
@@ -31104,11 +31102,10 @@ body.sidebar-light .backend-filter-panel {
 }
 
 body.sidebar-light .backend-filter-panel--flush {
-  border-left: 0;
-  border-radius: 0;
-  border-right: 0;
+  border: none;
   box-shadow: none;
   margin: 0;
+  padding: 0;
 }
 
 body.sidebar-light .backend-filter-grid {

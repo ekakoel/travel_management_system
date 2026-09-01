@@ -61,8 +61,8 @@
                                 @endphp
                                 <tr data-hotel-detail-row="promo" data-hotel-detail-search="{{ $row['search'] }}">
                                     <td data-label="Name"><strong>{{ $promo->name }}</strong></td>
-                                    <td data-label="Booking Period">{{ $row['booking_period'] }}</td>
-                                    <td data-label="Stay Period">{{ $row['stay_period'] }}</td>
+                                    <td data-label="Booking Period">{!! $row['booking_period'] !!}</td>
+                                    <td data-label="Stay Period">{!! $row['stay_period'] !!}</td>
                                     <td data-label="Published Rate">
                                         <span class="hotel-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
                                         <button type="button" class="hotel-price-calculation-action" data-toggle="modal" data-target="#hotelPromoPriceCalculation{{ $promo->id }}">

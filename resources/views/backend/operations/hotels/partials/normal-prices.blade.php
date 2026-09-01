@@ -57,7 +57,7 @@
                                     $price = $row['model'];
                                 @endphp
                                 <tr data-hotel-detail-row="price" data-hotel-detail-search="{{ $row['search'] }}">
-                                    <td data-label="Stay Period">{{ $row['period'] }}</td>
+                                    <td data-label="Stay Period">{!! $row['period'] !!}</td>
                                     <td data-label="Published Rate">
                                         <span class="hotel-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
                                         @if ($row['kick_back'] > 0)

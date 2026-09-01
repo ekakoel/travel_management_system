@@ -364,6 +364,12 @@ use Illuminate\Support\Facades\Route;
             Route::post('/spks/fadd-spk-destination/{id}', [SpksController::class, 'func_add_spk_destination'])->name('spk-destinations.add');
             Route::post('/spks/fupdate-spk-destination/{id}', [SpksController::class, 'func_update_spk_destination'])->name('spk-destinations.update');
             Route::delete('/spks/fdelete-spk-destination/{id}', [SpksController::class, 'func_delete_spk_destination'])->name('spk-destination.delete');
+
+            // ---------------------------------------------------
+            //                   SPK Web WhatsApp
+            // ---------------------------------------------------
+            Route::get('/spks/{spk}/send-whatsapp', [SpkWhatsAppController::class,'send',])->name('spk-send-whatsapp.operator');
+            Route::get('/spks/{spk}/send-whatsapp-driver', [SpkWhatsAppController::class,'send_to_driver',])->name('spk-send-whatsapp.driver');
         });
 
         // DEVELOPER | ADMINISTRATOR | RESERVATION | AUTHOR ==================================================================================
@@ -963,12 +969,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-            // Send WhatsApp melalui web whatsapp
-            // |--------------------------------------------------------------------------
-            // | SPK WhatsApp
-            // |--------------------------------------------------------------------------
-            Route::get('/spks/{spk}/send-whatsapp', [SpkWhatsAppController::class,'send',])->name('spks.send-whatsapp');
-            Route::get('/spks/{spk}/send-whatsapp-driver', [SpkWhatsAppController::class,'send_to_driver',])->name('spks.send-whatsapp-driver');
+
 
 
             // ---------------------------------------------------

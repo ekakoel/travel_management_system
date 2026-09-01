@@ -205,7 +205,7 @@ class HotelDetailViewModel
                 'model' => $price,
                 'room_name' => $price->rooms?->rooms ?: '-',
                 'search' => strtolower(($price->rooms?->rooms ?? '').' '.$statusLabel),
-                'period' => dateFormat($price->start_date).' -> '.dateFormat($price->end_date),
+                'period' => dateFormat($price->start_date).' <br> '.dateFormat($price->end_date),
                 'kick_back' => $kickBack,
                 'kick_back_label' => $kickBack > 0 ? currencyFormatUsd($kickBack) : '-',
                 'pricing' => $pricing,
@@ -352,8 +352,8 @@ class HotelDetailViewModel
                 'model' => $promo,
                 'room_name' => $roomName,
                 'search' => strtolower(($promo->name ?? '').' '.$roomName),
-                'booking_period' => dateFormat($promo->book_periode_start).' -> '.dateFormat($promo->book_periode_end),
-                'stay_period' => dateFormat($promo->periode_start).' -> '.dateFormat($promo->periode_end),
+                'booking_period' => dateFormat($promo->book_periode_start).' <br> '.dateFormat($promo->book_periode_end),
+                'stay_period' => dateFormat($promo->periode_start).' <br> '.dateFormat($promo->periode_end),
                 'pricing' => $pricing,
                 'published_rate' => $pricing['published_rate'],
                 'status_tone' => $this->statusToneForPeriod($promo->status, $promo->book_periode_end),
@@ -404,12 +404,6 @@ class HotelDetailViewModel
             )
             ->map(function ($package) {
                 $roomName = $package->room?->rooms ?: '-';
-
-                /*
-                * Hotel Package is calculated as ONE package price.
-                * Duration is informational only and must NOT be used
-                * as a pricing multiplier or divisor.
-                */
                 $pricing = $this->pricingService->rateBreakdown(
                     $package->contract_rate,
                     $package->markup,
@@ -422,15 +416,9 @@ class HotelDetailViewModel
                     'model' => $package,
                     'room_name' => $roomName,
                     'search' => strtolower(($package->name ?? '') . ' ' . $roomName),
-                    'stay_period' => dateFormat($package->stay_period_start)
-                        . ' -> '
-                        . dateFormat($package->stay_period_end),
-
-                    // Full package pricing
+                    'stay_period' => dateFormat($package->stay_period_start).'<br>'. dateFormat($package->stay_period_end),
                     'pricing' => $pricing,
                     'package_total_pricing' => $pricing,
-
-                    // Published Rate = full package price
                     'published_rate' => $pricing['published_rate'],
                     'package_total_rate' => $pricing['published_rate'],
 

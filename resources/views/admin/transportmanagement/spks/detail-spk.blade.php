@@ -19,8 +19,7 @@
 
     <div class="mobile-menu-overlay"></div>
     @can('isAdmin')
-        <main
-            class="main-container transport-spk-detail-page"
+        <main class="main-container transport-management-page"
             data-transport-spk-detail
             data-destinations="{{ e($destinationsJson) }}"
             data-label-sending="{{ __('transport-management.detail.actions.sending') }}"
@@ -69,9 +68,9 @@
                         </ol>
                     </nav>
                     <div class="transport-spk-detail-toolbar__actions">
-                        @if($spk->send_report === 1 && $spk->operator?->phone)
+                        {{-- @if($spk->send_report === 1 && $spk->operator?->phone) --}}
                             <a
-                                href="{{ route('spks.send-whatsapp', $spk) }}"
+                                href="{{ route('admin.spk-send-whatsapp.operator', $spk) }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="btn btn-success"
@@ -80,7 +79,7 @@
                                 Send to Operator
                             </a>
                             <a
-                                href="{{ route('spks.send-whatsapp-driver', $spk) }}"
+                                href="{{ route('admin.spk-send-whatsapp.driver', $spk) }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="btn btn-success"
@@ -88,20 +87,20 @@
                                 <i class="bi bi-whatsapp me-1"></i>
                                 Send to Driver
                             </a>
-                        @endif
-                        @if($spk->send_report === 0 && $spk->operator?->phone)
-                            <button
+                        {{-- @endif
+                        @if($spk->send_report === 0 && $spk->operator?->phone) --}}
+                            {{-- <button
                                 id="btnSendWa"
                                 class="backend-button backend-button-secondary sendWA"
                                 type="button"
-                                data-route="{{ route('send.whatsapp-both') }}"
+                                data-route="{{ route('admin.whatsapp-both') }}"
                                 data-phone="{{ $spk->driver?->phone }}"
                                 data-spk="{{ $spk->id }}"
                             >
                                 <i class="fa fa-share" aria-hidden="true"></i>
                                 @lang('transport-management.detail.actions.share_both')
-                            </button>
-                        @endif
+                            </button> --}}
+                        {{-- @endif --}}
                         <a class="backend-button backend-button-secondary" href="{{ route('spks.print', $spk->id) }}" target="_blank" rel="noopener">
                             <i class="fa fa-print" aria-hidden="true"></i>
                             @lang('transport-management.detail.actions.print')

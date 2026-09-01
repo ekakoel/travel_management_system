@@ -62,7 +62,6 @@
                                 </button>
                             </form>
                         @endcanany
-                        <span class="backend-status-badge backend-status-badge--info">{{ $now->format('d M Y') }}</span>
                     </div>
                 </section>
 
@@ -141,7 +140,6 @@
                                     <th>Location</th>
                                     <th>Services</th>
                                     <th>Rooms</th>
-                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -158,7 +156,8 @@
                                     <tr data-hotel-row data-hotel-name="{{ strtolower($hotel->name ?? '') }}" data-hotel-location="{{ strtolower($hotel->region ?? '') }}">
                                         <td data-label="No">{{ $loop->iteration }}</td>
                                         <td data-label="Name">
-                                            <strong>{{ $hotel->name }}</strong>
+                                            <strong>{{ $hotel->name }}</strong><br>
+                                            <span class="backend-status-badge backend-status-badge--{{ $statusClass }}">{{ $hotel->status }}</span>
                                         </td>
                                         <td data-label="Location">{{ $hotel->region ?: '-' }}</td>
                                         <td data-label="Services">
@@ -175,7 +174,9 @@
                                                         <span class="{{ $package ? 'is-active' : '' }}" title="{{ $package ? date('d M y', strtotime($package->stay_period_end)) : 'Package Price' }}">PA</span>
                                                     @endif
                                                 @else
-                                                    <i>No price available</i>
+                                                    <small>
+                                                        <i>No price available</i>
+                                                    </small>
                                                 @endif
                                             </div>
                                         </td>
@@ -184,9 +185,6 @@
                                                 <span class="backend-status-badge backend-status-badge--active">{{ $activeRooms }} A</span>
                                                 <span class="backend-status-badge backend-status-badge--draft">{{ $draftRooms }} D</span>
                                             </div>
-                                        </td>
-                                        <td data-label="Status">
-                                            <span class="backend-status-badge backend-status-badge--{{ $statusClass }}">{{ $hotel->status }}</span>
                                         </td>
                                         <td data-label="Action">
                                             <div class="backend-table-actions hotels-admin-actions">
