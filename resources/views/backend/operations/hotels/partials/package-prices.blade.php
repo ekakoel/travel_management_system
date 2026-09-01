@@ -137,7 +137,7 @@
     @include('backend.operations.hotels.modals.price-calculation', [
         'modalId' => 'hotelPackagePriceCalculation'.$row['model']->id,
         'eyebrow' => 'Package Price Calculation',
-        'title' => $row['model']->name.' '.$row['model']->duration.' nights',
+        'title' => $row['model']->name,
         'subtitle' => $row['room_name'],
         'pricing' => $row['pricing'],
     ])
