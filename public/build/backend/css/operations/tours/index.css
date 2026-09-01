@@ -1,0 +1,54 @@
+.tours-admin-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.tours-admin-page * {
+  box-sizing: border-box;
+}
+
+.tours-admin-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.tours-admin-panel__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.tours-admin-table-wrap {
+  padding: 0;
+}
+
+.tours-admin-table th:nth-child(2),
+.tours-admin-table td:nth-child(2) {
+  width: 26%;
+}
+
+.tours-admin-card-list {
+  padding: 14px;
+}
+
+.tours-admin-card__actions {
+  border-top: 1px solid var(--backend-line-soft);
+  justify-content: flex-start;
+  padding: 12px;
+}
+
+[data-tour-row].is-filtered-out {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  .tours-admin-table-wrap {
+    display: none;
+  }
+  .tours-admin-card-list {
+    display: grid;
+    gap: 12px;
+  }
+}

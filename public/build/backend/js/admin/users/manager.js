@@ -1,0 +1,16 @@
+/******/ (() => { // webpackBootstrap
+/*!*****************************************************!*\
+  !*** ./resources/backend/js/admin/users/manager.js ***!
+  \*****************************************************/
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('[data-confirm-delete]').forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      var message = form.getAttribute('data-confirm-delete') || 'Remove this user?';
+      if (!window.confirm(message)) {
+        event.preventDefault();
+      }
+    });
+  });
+});
+/******/ })()
+;

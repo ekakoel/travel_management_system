@@ -1,0 +1,1539 @@
+.transport-detail-page .transport-detail-topband {
+  margin-bottom: 0;
+}
+.transport-detail-page .transport-detail-hero {
+  display: grid;
+  grid-template-columns: minmax(280px, 430px) minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: stretch;
+  margin-top: 1.5rem;
+  padding: var(--frontend-shell-panel-padding);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--frontend-shell-radius-lg);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: var(--frontend-shell-shadow-topband);
+  backdrop-filter: blur(14px);
+}
+.transport-detail-page .transport-detail-hero__media {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  overflow: hidden;
+  min-height: -moz-fit-content;
+  min-height: fit-content;
+  border-radius: var(--frontend-shell-radius-md);
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.22), transparent 34%), linear-gradient(135deg, rgba(224, 242, 254, 0.24) 0%, rgba(255, 255, 255, 0.12) 100%);
+}
+.transport-detail-page .transport-detail-hero__media img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+  -o-object-position: center;
+     object-position: center;
+}
+.transport-detail-page .transport-detail-hero__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.transport-detail-page .transport-detail-kicker,
+.transport-detail-page .transport-detail-cta__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 0.45rem 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-detail-title {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+.transport-detail-page .transport-detail-subtitle {
+  max-width: 760px;
+  margin: 1rem 0 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.transport-detail-page .transport-detail-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.35rem;
+}
+.transport-detail-page .transport-detail-meta__item {
+  padding: 1rem 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+}
+.transport-detail-page .transport-detail-meta__item span,
+.transport-detail-page .transport-detail-cta__facts span,
+.transport-detail-page .transport-rate-card__facts span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-detail-meta__item strong {
+  color: #fff;
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+.transport-detail-page .transport-detail-section,
+.transport-detail-page .transport-detail-cta {
+  padding: var(--frontend-shell-panel-padding);
+}
+.transport-detail-page .transport-detail-section__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.15rem;
+}
+.transport-detail-page .transport-detail-section__range {
+  flex: 0 0 auto;
+  padding: 0.7rem 0.95rem;
+  border-radius: var(--frontend-shell-radius-sm);
+  background: linear-gradient(180deg, var(--frontend-shell-surface-muted) 0%, #eff6ff 100%);
+  color: var(--frontend-shell-primary);
+  font-size: 0.88rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.transport-detail-page .transport-detail-richtext,
+.transport-detail-page .transport-detail-info-card,
+.transport-detail-page .transport-rate-card__note,
+.transport-detail-page .transport-detail-cta p,
+.transport-detail-page .transport-detail-empty p {
+  color: #334155;
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+.transport-detail-page .transport-detail-richtext > :last-child,
+.transport-detail-page .transport-rate-card__note > :last-child,
+.transport-detail-page .transport-detail-info-card > div > :last-child {
+  margin-bottom: 0;
+}
+.transport-detail-page .transport-detail-info-grid {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.2rem;
+}
+.transport-detail-page .transport-detail-info-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: var(--frontend-shell-shadow-md);
+}
+.transport-detail-page .transport-detail-info-card__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--frontend-shell-primary-soft);
+  color: var(--frontend-shell-primary);
+}
+.transport-detail-page .transport-detail-info-card h3 {
+  margin: 0 0 0.35rem;
+  color: var(--frontend-shell-text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-rate-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+.transport-detail-page .transport-rate-group__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  color: var(--frontend-shell-primary);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-rate-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+.transport-detail-page .transport-rate-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 100%;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: radial-gradient(circle at top right, rgba(14, 116, 144, 0.08), transparent 32%), linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: var(--frontend-shell-shadow-md);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.transport-detail-page .transport-rate-card:hover,
+.transport-detail-page .transport-rate-card:focus-within,
+.transport-detail-page .transport-rate-card.is-selected {
+  border-color: rgba(14, 116, 144, 0.34);
+  box-shadow: var(--frontend-shell-shadow-lg);
+  transform: translateY(-2px);
+}
+.transport-detail-page .transport-rate-card.is-selected {
+  background: radial-gradient(circle at top right, rgba(14, 116, 144, 0.12), transparent 32%), linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
+}
+.transport-detail-page .transport-rate-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.transport-detail-page .transport-rate-card__top span {
+  display: block;
+  color: var(--frontend-shell-text);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.transport-detail-page .transport-rate-card__top small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--frontend-shell-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-rate-card__top strong {
+  color: var(--frontend-shell-primary);
+  font-size: 1rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.transport-detail-page .transport-rate-card__price,
+.transport-detail-page .transport-selected-rate {
+  padding: 1rem;
+  border: 1px solid rgba(14, 116, 144, 0.14);
+  border-radius: 18px;
+  background: radial-gradient(circle at top right, rgba(14, 116, 144, 0.1), transparent 36%), linear-gradient(135deg, #ecfeff 0%, #ffffff 100%);
+}
+.transport-detail-page .transport-rate-card__price span,
+.transport-detail-page .transport-selected-rate span {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--frontend-shell-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-rate-card__price strong,
+.transport-detail-page .transport-selected-rate strong {
+  display: block;
+  color: var(--frontend-shell-primary);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.transport-detail-page .transport-rate-card__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.transport-detail-page .transport-rate-card__facts div {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+.transport-detail-page .transport-rate-card__facts span,
+.transport-detail-page .transport-detail-cta__facts span {
+  color: var(--frontend-shell-muted);
+}
+.transport-detail-page .transport-rate-card__facts strong,
+.transport-detail-page .transport-detail-cta__facts strong {
+  color: var(--frontend-shell-text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.transport-detail-page .transport-rate-card__button,
+.transport-detail-page .transport-detail-cta__button {
+  width: 100%;
+  margin-top: auto;
+  font-weight: 800;
+}
+.transport-detail-page .transport-detail-empty {
+  display: grid;
+  place-items: center;
+  padding: 2.4rem 1rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  text-align: center;
+}
+.transport-detail-page .transport-detail-empty__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 0.8rem;
+  border-radius: 18px;
+  background: var(--frontend-shell-primary-soft);
+  color: var(--frontend-shell-primary);
+  font-size: 1.2rem;
+}
+.transport-detail-page .transport-detail-empty h3 {
+  margin: 0 0 0.35rem;
+  color: var(--frontend-shell-text);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-similar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+.transport-detail-page .transport-similar-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--frontend-shell-shadow-sm);
+}
+.transport-detail-page .transport-similar-card img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  padding: 0.65rem;
+  -o-object-fit: contain;
+     object-fit: contain;
+  background: #ffffff;
+}
+.transport-detail-page .transport-similar-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem;
+}
+.transport-detail-page .transport-similar-card strong {
+  color: var(--frontend-shell-text);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+.transport-detail-page .transport-similar-card span {
+  color: var(--frontend-shell-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.transport-detail-page .transport-detail-cta__eyebrow {
+  background: var(--frontend-shell-primary-soft);
+  color: var(--frontend-shell-primary);
+}
+.transport-detail-page .transport-detail-cta h2 {
+  margin: 0;
+  color: var(--frontend-shell-text);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.transport-detail-page .transport-detail-cta p {
+  margin: 0.75rem 0 1rem;
+}
+.transport-detail-page .transport-detail-cta__facts {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.transport-detail-page .transport-detail-cta__facts div {
+  padding: 0.85rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+.transport-detail-page .transport-reservation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+.transport-detail-page .transport-reservation-field label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--frontend-shell-text);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-required {
+  color: #dc2626;
+  font-weight: 900;
+}
+.transport-detail-page .transport-selected-rate {
+  margin-top: 0.15rem;
+}
+.transport-detail-page .transport-selected-rate small,
+.transport-detail-page .transport-selected-rate em {
+  display: block;
+  margin-top: 0.45rem;
+  color: #334155;
+  font-size: 0.86rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.transport-detail-page .transport-selected-rate em {
+  color: var(--frontend-shell-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-detail-cta__secondary {
+  width: 100%;
+  margin-top: 0.75rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1600;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.transport-detail-page .transport-reservation-modal.is-visible {
+  display: flex;
+}
+.transport-detail-page .transport-reservation-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(4px);
+}
+.transport-detail-page .transport-reservation-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 100%);
+  margin: auto 0;
+}
+.transport-detail-page .transport-reservation-modal__shell {
+  position: relative;
+  overflow: visible;
+  padding: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 28px;
+  background: radial-gradient(circle at top right, rgba(14, 116, 144, 0.1), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  box-shadow: 0 34px 90px rgba(15, 23, 42, 0.34);
+}
+.transport-detail-page .transport-reservation-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #dbe7f3;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--frontend-shell-text);
+}
+.transport-detail-page .transport-reservation-modal__header {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-right: 3rem;
+  align-items: stretch;
+}
+.transport-detail-page .transport-reservation-modal__media {
+  overflow: hidden;
+  border: 1px solid #dbe7f3;
+  border-radius: 24px;
+  background: radial-gradient(circle at top right, rgba(15, 95, 168, 0.08), transparent 28%), linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: var(--frontend-shell-shadow-md);
+}
+.transport-detail-page .transport-reservation-modal__media img {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  -o-object-position: center;
+     object-position: center;
+  padding: 1rem;
+}
+.transport-detail-page .transport-reservation-modal__eyebrow,
+.transport-detail-page .transport-reservation-wizard__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  background: var(--frontend-shell-primary-soft);
+  color: var(--frontend-shell-primary);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-reservation-modal__header h2 {
+  margin: 0.9rem 0 0.45rem;
+  color: var(--frontend-shell-text);
+  font-size: clamp(1.7rem, 2vw, 2.1rem);
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-modal__header p,
+.transport-detail-page .transport-reservation-wizard__heading p,
+.transport-detail-page .transport-reservation-helper,
+.transport-detail-page .transport-reservation-inline-note,
+.transport-detail-page .transport-reservation-rate-note {
+  color: #64748b;
+  line-height: 1.7;
+}
+.transport-detail-page .transport-reservation-modal__hero-card,
+.transport-detail-page .transport-reservation-review-card,
+.transport-detail-page .transport-reservation-summary-card {
+  padding: 0.8rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.transport-detail-page .transport-reservation-service-panel,
+.transport-detail-page .transport-reservation-price-breakdown {
+  padding: 1rem 0 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.transport-detail-page .transport-reservation-modal__hero-card span,
+.transport-detail-page .transport-reservation-review-card span,
+.transport-detail-page .transport-reservation-summary-card span,
+.transport-detail-page .transport-reservation-price-breakdown__row span {
+  display: block;
+  margin-bottom: 0.28rem;
+  color: var(--frontend-shell-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-reservation-modal__hero-card strong {
+  display: block;
+  color: var(--frontend-shell-primary);
+  font-size: clamp(1.5rem, 2vw, 1.95rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+.transport-detail-page .transport-reservation-modal__hero-card small {
+  display: block;
+  margin-top: 0.35rem;
+  color: #334155;
+  line-height: 1.55;
+}
+.transport-detail-page .transport-reservation-modal__header .transport-reservation-modal__hero-card {
+  margin-top: 1rem;
+}
+.transport-detail-page .transport-reservation-summary-grid--header {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+.transport-detail-page .transport-reservation-wizard__nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.transport-detail-page .transport-reservation-wizard__step {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid #dbe7f3;
+  border-radius: 20px;
+  background: #fff;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.transport-detail-page .transport-reservation-wizard__step span {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-wizard__step strong {
+  display: block;
+  color: var(--frontend-shell-text);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-wizard__step small {
+  color: var(--frontend-shell-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.transport-detail-page .transport-reservation-wizard__step.is-active,
+.transport-detail-page .transport-reservation-wizard__step.is-complete {
+  border-color: rgba(14, 116, 144, 0.28);
+  box-shadow: var(--frontend-shell-shadow-md);
+}
+.transport-detail-page .transport-reservation-wizard__step.is-active {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%);
+}
+.transport-detail-page .transport-reservation-wizard__step.is-active span,
+.transport-detail-page .transport-reservation-wizard__step.is-complete span {
+  background: linear-gradient(135deg, #0f5fa8 0%, #0d7b8f 100%);
+  color: #fff;
+}
+.transport-detail-page .transport-reservation-wizard__panel {
+  display: none;
+}
+.transport-detail-page .transport-reservation-wizard__panel.is-active {
+  display: block;
+}
+.transport-detail-page .transport-reservation-wizard__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+.transport-detail-page .transport-reservation-wizard__heading h3 {
+  margin: 0.85rem 0 0;
+  color: var(--frontend-shell-text);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-grid,
+.transport-detail-page .transport-reservation-summary-grid,
+.transport-detail-page .transport-reservation-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+.transport-detail-page .transport-reservation-summary-grid,
+.transport-detail-page .transport-reservation-review-grid {
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-summary-card + .transport-reservation-summary-card,
+.transport-detail-page .transport-reservation-review-card + .transport-reservation-review-card {
+  padding-left: 1rem;
+  border-left: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-summary-card:nth-child(odd),
+.transport-detail-page .transport-reservation-review-card:nth-child(odd) {
+  padding-left: 0;
+  border-left: 0;
+}
+.transport-detail-page .transport-reservation-summary-card:nth-child(n+3),
+.transport-detail-page .transport-reservation-review-card:nth-child(n+3) {
+  border-top: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-review-grid {
+  border-top: 0;
+}
+.transport-detail-page .transport-reservation-review-card,
+.transport-detail-page .transport-reservation-review-card + .transport-reservation-review-card,
+.transport-detail-page .transport-reservation-review-card:nth-child(odd) {
+  padding-left: 0;
+  border-left: 0;
+  border-top: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-grid--trip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.transport-detail-page .transport-reservation-grid--service-pair {
+  gap: 18px;
+}
+.transport-detail-page .transport-reservation-grid--daily-rent-service {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.transport-detail-page .transport-reservation-grid--service-pair .transport-reservation-field {
+  margin-bottom: 0;
+}
+.transport-detail-page .transport-reservation-field {
+  margin-bottom: 1rem;
+}
+.transport-detail-page .transport-reservation-field--full {
+  grid-column: 1/-1;
+}
+.transport-detail-page .transport-reservation-guest-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.transport-detail-page .transport-reservation-guest-head .btn {
+  flex: 0 0 auto;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-guest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-guest-item {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-guest-item__index {
+  padding-top: 2rem;
+}
+.transport-detail-page .transport-reservation-guest-item__index strong {
+  color: var(--frontend-shell-text);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-guest-item__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(130px, 0.75fr) minmax(130px, 0.75fr) minmax(0, 1.15fr) auto;
+  gap: 0.85rem;
+  align-items: start;
+}
+.transport-detail-page .transport-reservation-guest-item__remove {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #dbe7f3;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #b91c1c;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.transport-detail-page .transport-reservation-guest-item__remove:hover,
+.transport-detail-page .transport-reservation-guest-item__remove:focus {
+  border-color: rgba(185, 28, 28, 0.2);
+  background: #fff1f2;
+  transform: translateY(-1px);
+}
+.transport-detail-page .transport-reservation-field--compact {
+  margin-bottom: 0;
+}
+.transport-detail-page .transport-reservation-guest-item__action {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.transport-detail-page .transport-reservation-guest-item__action-label {
+  display: block;
+  height: 1.45rem;
+  margin-bottom: 0.45rem;
+}
+.transport-detail-page .transport-reservation-optional {
+  color: var(--frontend-shell-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.transport-detail-page .transport-reservation-summary-card strong,
+.transport-detail-page .transport-reservation-review-card strong {
+  color: var(--frontend-shell-text);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+.transport-detail-page .transport-reservation-review-guests {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-review-guests__head {
+  margin-bottom: 0.75rem;
+}
+.transport-detail-page .transport-reservation-review-guests__head span {
+  display: block;
+  color: var(--frontend-shell-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.transport-detail-page .transport-reservation-review-guests__table-wrap {
+  overflow-x: auto;
+  border-top: 1px solid #dbe7f3;
+  border-bottom: 1px solid #dbe7f3;
+  border-radius: 0;
+  background: transparent;
+}
+.transport-detail-page .transport-reservation-review-guests__table {
+  width: 100%;
+  min-width: 620px;
+  margin: 0;
+  border-collapse: collapse;
+}
+.transport-detail-page .transport-reservation-review-guests__table th,
+.transport-detail-page .transport-reservation-review-guests__table td {
+  padding: 0.85rem 0.9rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: var(--frontend-shell-text);
+  font-size: 0.86rem;
+  text-align: left;
+  vertical-align: top;
+}
+.transport-detail-page .transport-reservation-review-guests__table th {
+  color: var(--frontend-shell-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: transparent;
+}
+.transport-detail-page .transport-reservation-review-guests__table tr:last-child td {
+  border-bottom: 0;
+}
+.transport-detail-page .transport-reservation-review-guests__empty {
+  margin-top: 0.75rem;
+  padding: 0.85rem 0;
+  border-top: 1px dashed rgba(14, 116, 144, 0.22);
+  border-bottom: 1px dashed rgba(14, 116, 144, 0.22);
+  border-radius: 0;
+  background: transparent;
+  color: var(--frontend-shell-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.transport-detail-page .transport-reservation-rate-note,
+.transport-detail-page .transport-reservation-inline-note {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.65rem 0 0.65rem 0.85rem;
+  border: 0;
+  border-left: 3px solid rgba(14, 116, 144, 0.28);
+  border-radius: 0;
+  background: transparent;
+}
+.transport-detail-page .transport-reservation-inline-note--accent {
+  border-left-color: var(--frontend-shell-primary);
+}
+.transport-detail-page .transport-reservation-price-breakdown {
+  margin-top: 1rem;
+}
+.transport-detail-page .transport-reservation-price-breakdown__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.transport-detail-page .transport-reservation-price-breakdown__row + .transport-reservation-price-breakdown__row {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #e2e8f0;
+}
+.transport-detail-page .transport-reservation-price-breakdown__row strong {
+  color: var(--frontend-shell-text);
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-price-breakdown__row--total strong {
+  color: var(--frontend-shell-primary);
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+.transport-detail-page .transport-reservation-price-breakdown__row.is-hidden {
+  display: none;
+}
+.transport-detail-page .transport-reservation-wizard__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+.transport-detail-page .transport-reservation-warning {
+  margin-bottom: 1rem;
+  border-radius: 18px;
+}
+.transport-detail-page .transport-reservation-wizard__actions .btn.is-disabled,
+.transport-detail-page .transport-reservation-wizard__actions .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  box-shadow: none;
+  transform: none;
+  filter: saturate(0.7);
+}
+.transport-detail-page .transport-reservation-submit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1700;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.52);
+  backdrop-filter: blur(4px);
+}
+.transport-detail-page .transport-reservation-submit-overlay.hidden {
+  display: none;
+}
+.transport-detail-page .transport-reservation-submit-overlay__card {
+  width: min(100%, 360px);
+  padding: 1.45rem 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.2);
+  text-align: center;
+}
+.transport-detail-page .transport-reservation-submit-overlay__card strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--frontend-shell-text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+.transport-detail-page .transport-reservation-submit-overlay__card p {
+  margin: 0;
+  color: #64748b;
+}
+.transport-detail-page .transport-reservation-submit-overlay__spinner {
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 0.85rem;
+  border: 3px solid rgba(15, 95, 168, 0.18);
+  border-top-color: #0f5fa8;
+  border-radius: 999px;
+  animation: transportReservationSpin 0.8s linear infinite;
+}
+.transport-detail-page .btn.is-processing {
+  pointer-events: none;
+  opacity: 0.95;
+}
+@keyframes transportReservationSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .transport-detail-page .transport-detail-hero {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 991.98px) {
+  .transport-detail-page .transport-detail-meta,
+.transport-detail-page .transport-similar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 767.98px) {
+  .transport-detail-page .transport-detail-section__header,
+.transport-detail-page .transport-rate-card__top {
+    flex-direction: column;
+  }
+  .transport-detail-page .transport-rate-grid,
+.transport-detail-page .transport-rate-card__facts {
+    grid-template-columns: 1fr;
+  }
+  .transport-detail-page .transport-detail-section__range {
+    width: 100%;
+  }
+  .transport-detail-page .transport-reservation-modal {
+    padding: 0.75rem;
+  }
+  .transport-detail-page .transport-reservation-modal__shell {
+    padding: 1rem;
+    border-radius: 24px;
+  }
+  .transport-detail-page .transport-reservation-modal__header,
+.transport-detail-page .transport-reservation-wizard__nav,
+.transport-detail-page .transport-reservation-grid,
+.transport-detail-page .transport-reservation-summary-grid,
+.transport-detail-page .transport-reservation-review-grid {
+    grid-template-columns: 1fr;
+  }
+  .transport-detail-page .transport-reservation-guest-head,
+.transport-detail-page .transport-reservation-guest-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .transport-detail-page .transport-reservation-guest-item {
+    display: block;
+  }
+  .transport-detail-page .transport-reservation-guest-item__index {
+    padding-top: 0;
+    margin-bottom: 0.75rem;
+  }
+  .transport-detail-page .transport-reservation-guest-item__content {
+    grid-template-columns: 1fr;
+  }
+  .transport-detail-page .transport-reservation-summary-card + .transport-reservation-summary-card,
+.transport-detail-page .transport-reservation-review-card + .transport-reservation-review-card {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid #e2e8f0;
+  }
+  .transport-detail-page .transport-reservation-guest-item__action-label {
+    display: none;
+  }
+  .transport-detail-page .transport-reservation-modal__media img {
+    min-height: 180px;
+  }
+  .transport-detail-page .transport-reservation-wizard__heading,
+.transport-detail-page .transport-reservation-wizard__actions {
+    flex-direction: column;
+  }
+  .transport-detail-page .transport-reservation-wizard__actions .btn {
+    width: 100%;
+  }
+}
+html.transport-modal-open,
+body.transport-modal-open {
+  overflow: hidden;
+}
+
+.frontend-order-modal {
+  --frontend-order-modal-accent: var(--ui-primary, #0f5fa8);
+  --frontend-order-modal-accent-secondary: var(--ui-secondary, #0d7b8f);
+  --frontend-order-modal-border: #dbe7f3;
+  --frontend-order-modal-muted: var(--ui-muted, #64748b);
+  --frontend-order-modal-text: var(--ui-text, #0f172a);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.frontend-order-modal__dialog {
+  width: min(1120px, 100% - 2rem);
+  max-width: 1120px !important;
+  margin: 1rem auto;
+}
+
+.frontend-order-modal__surface {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  padding: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 28px;
+  background: radial-gradient(circle at top right, rgba(14, 116, 144, 0.1), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  box-shadow: 0 34px 90px rgba(15, 23, 42, 0.34);
+}
+
+.frontend-order-modal__form {
+  min-width: 0;
+}
+
+.frontend-order-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 5;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--frontend-order-modal-border);
+  border-radius: 999px;
+  color: var(--frontend-order-modal-text, #0f172a);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  opacity: 1;
+}
+
+.frontend-order-modal__close:hover,
+.frontend-order-modal__close:focus {
+  border-color: rgba(15, 95, 168, 0.34);
+  color: var(--frontend-order-modal-accent, #0f5fa8);
+}
+
+.frontend-order-modal__service {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-right: 3rem;
+}
+
+.frontend-order-modal__media {
+  min-height: 220px;
+  overflow: hidden;
+  border: 1px solid var(--frontend-order-modal-border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.1);
+}
+
+.frontend-order-modal__media img {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+}
+
+.frontend-order-modal__service-content {
+  min-width: 0;
+}
+
+.frontend-order-modal__eyebrow,
+.frontend-order-modal__heading-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(15, 95, 168, 0.09);
+  color: var(--frontend-order-modal-accent);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.frontend-order-modal__title {
+  margin: 0.9rem 0 0.45rem;
+  color: var(--frontend-order-modal-text);
+  font-size: clamp(1.7rem, 2vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.frontend-order-modal__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 1rem 0 0;
+  border-top: 1px solid var(--frontend-order-modal-border);
+  border-bottom: 1px solid var(--frontend-order-modal-border);
+}
+
+.frontend-order-modal__summary-card,
+.frontend-order-modal__price-card {
+  padding: 0.8rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.frontend-order-modal__summary-card + .frontend-order-modal__summary-card {
+  padding-left: 1rem;
+  border-left: 1px solid var(--frontend-order-modal-border);
+}
+
+.frontend-order-modal__summary-card > span,
+.frontend-order-modal__price-card > span {
+  display: block;
+  margin-bottom: 0.28rem;
+  color: var(--frontend-order-modal-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.frontend-order-modal__summary-card > strong {
+  color: var(--frontend-order-modal-text);
+  font-weight: 800;
+}
+
+.frontend-order-modal__price-card {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--frontend-order-modal-border);
+}
+
+.frontend-order-modal__price-card > strong {
+  display: block;
+  color: var(--frontend-order-modal-accent);
+  font-size: clamp(1.5rem, 2vw, 1.95rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.frontend-order-modal__price-card--split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.frontend-order-modal__price-card-item + .frontend-order-modal__price-card-item {
+  padding-left: 1rem;
+  border-left: 1px solid var(--frontend-order-modal-border);
+}
+
+.frontend-order-modal__price-card-item > span {
+  display: block;
+  margin-bottom: 0.28rem;
+  color: var(--frontend-order-modal-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.frontend-order-modal__price-card-item > strong {
+  display: block;
+  color: var(--frontend-order-modal-accent);
+  font-size: clamp(1.35rem, 1.75vw, 1.8rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.frontend-order-modal__nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.frontend-order-modal__nav-item {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--frontend-order-modal-border);
+  border-radius: 20px;
+  background: var(--ui-surface, #ffffff);
+  color: var(--frontend-order-modal-muted);
+  text-align: left;
+  box-shadow: none;
+  transform: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.frontend-order-modal__nav-item > span {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.frontend-order-modal__nav-item strong {
+  display: block;
+  color: var(--frontend-order-modal-text);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.frontend-order-modal__nav-item small {
+  color: var(--frontend-order-modal-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.frontend-order-modal__nav-item.is-active,
+.frontend-order-modal__nav-item.is-complete {
+  border-color: rgba(14, 116, 144, 0.28);
+  box-shadow: 0 14px 32px rgba(15, 95, 168, 0.1);
+}
+
+.frontend-order-modal__nav-item.is-active {
+  background: linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%);
+  transform: translateY(-1px);
+}
+
+.frontend-order-modal__nav-item.is-active > span,
+.frontend-order-modal__nav-item.is-complete > span {
+  background: linear-gradient(135deg, var(--frontend-order-modal-accent) 0%, var(--frontend-order-modal-accent-secondary) 100%);
+  color: #ffffff;
+}
+
+.frontend-order-modal__panel {
+  min-width: 0;
+}
+
+.frontend-order-modal__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.frontend-order-modal__heading h3,
+.frontend-order-modal__heading h6 {
+  margin: 0.85rem 0 0;
+  color: var(--frontend-order-modal-text);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.frontend-order-modal__heading p {
+  max-width: 560px;
+  margin: 0;
+  color: var(--frontend-order-modal-muted);
+  line-height: 1.7;
+}
+
+.frontend-order-modal .form-control,
+.frontend-order-modal .form-select {
+  min-height: 48px;
+  border-color: var(--frontend-order-modal-border);
+  border-radius: 15px;
+  background-color: var(--ui-surface, #ffffff) !important;
+  color: var(--frontend-order-modal-text);
+  box-shadow: none;
+}
+
+.frontend-order-modal textarea.form-control {
+  min-height: 110px;
+}
+
+.frontend-order-modal .form-control:focus,
+.frontend-order-modal .form-select:focus {
+  border-color: rgba(15, 95, 168, 0.48);
+  box-shadow: 0 0 0 0.22rem rgba(15, 95, 168, 0.11);
+}
+
+.frontend-order-modal .btn {
+  display: inline-flex;
+  min-height: var(--frontend-shell-button-height, 48px);
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: var(--frontend-shell-radius-pill, 999px);
+  font-weight: 700;
+  line-height: 1.2;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.frontend-order-modal .btn-primary {
+  border-color: var(--ui-primary, #0f5fa8);
+  background: linear-gradient(135deg, var(--ui-primary, #0f5fa8) 0%, var(--ui-secondary, #0d7b8f) 100%);
+  color: var(--ui-on-primary, #ffffff);
+}
+
+.frontend-order-modal .btn-primary:hover,
+.frontend-order-modal .btn-primary:focus {
+  border-color: var(--ui-primary, #0f5fa8);
+  background: linear-gradient(135deg, var(--ui-primary, #0f5fa8) 100%, var(--ui-secondary, #0d7b8f) 0%);
+  color: var(--ui-on-primary, #ffffff);
+}
+
+.frontend-order-modal .btn-light {
+  border-color: var(--frontend-order-modal-border);
+  background: var(--ui-surface, #ffffff);
+  color: #334155;
+}
+
+.frontend-order-modal .btn-light:hover,
+.frontend-order-modal .btn-light:focus {
+  border-color: rgba(15, 95, 168, 0.28);
+  background: #f8fbff;
+  color: var(--frontend-order-modal-accent);
+}
+
+.frontend-order-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.frontend-order-modal .frontend-order-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 1rem 0 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(219, 228, 238, 0.92);
+  border-bottom: 1px solid rgba(219, 228, 238, 0.92);
+  color: var(--frontend-order-modal-muted);
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.frontend-order-modal .frontend-order-confirmation input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-top: 0.15rem;
+  accent-color: var(--frontend-order-modal-accent);
+}
+
+.frontend-order-modal .frontend-order-confirmation a {
+  color: var(--frontend-order-modal-accent);
+  font-weight: 800;
+}
+
+.frontend-order-modal__actions .btn.is-processing,
+.frontend-order-modal .btn.is-processing {
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+html.frontend-order-submit-locked,
+body.frontend-order-submit-locked {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+body.frontend-order-submit-locked {
+  touch-action: none;
+}
+
+.frontend-order-modal__overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.52);
+  backdrop-filter: blur(4px);
+  overscroll-behavior: none;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: wait;
+}
+
+.frontend-order-modal__overlay.hidden {
+  display: none !important;
+  pointer-events: none;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__card,
+.frontend-order-modal__overlay .booking-submit-overlay__dialog {
+  display: block;
+  width: min(100%, 360px);
+  padding: 1.45rem 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.2);
+  text-align: center;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__spinner,
+.frontend-order-modal__overlay .booking-submit-overlay__spinner {
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  margin: 0 0 0.85rem;
+  border: 3px solid rgba(15, 95, 168, 0.18);
+  border-top-color: var(--frontend-order-modal-accent, #0f5fa8);
+  border-radius: 999px;
+  animation: frontendOrderModalSpin 0.8s linear infinite;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__card strong,
+.frontend-order-modal__overlay .booking-submit-overlay__title {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--frontend-order-modal-text, #0f172a);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.frontend-order-modal__overlay .transport-reservation-submit-overlay__card p,
+.frontend-order-modal__overlay .booking-submit-overlay__text {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+@keyframes frontendOrderModalSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 767.98px) {
+  .frontend-order-modal__dialog {
+    width: calc(100% - 1.5rem);
+    margin: 0.75rem auto;
+  }
+  .frontend-order-modal__surface {
+    padding: 1rem;
+    border-radius: 24px;
+  }
+  .frontend-order-modal__service,
+.frontend-order-modal__summary,
+.frontend-order-modal__nav {
+    grid-template-columns: 1fr;
+  }
+  .frontend-order-modal__service {
+    padding-right: 0;
+  }
+  .frontend-order-modal__media,
+.frontend-order-modal__media img {
+    min-height: 180px;
+  }
+  .frontend-order-modal__summary-card + .frontend-order-modal__summary-card {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--frontend-order-modal-border);
+  }
+  .frontend-order-modal__price-card--split {
+    grid-template-columns: 1fr;
+  }
+  .frontend-order-modal__price-card-item + .frontend-order-modal__price-card-item {
+    padding-left: 0;
+    padding-top: 0.85rem;
+    border-left: 0;
+    border-top: 1px solid var(--frontend-order-modal-border);
+  }
+  .frontend-order-modal__heading,
+.frontend-order-modal__actions {
+    flex-direction: column;
+  }
+  .frontend-order-modal__actions .btn {
+    width: 100%;
+  }
+}

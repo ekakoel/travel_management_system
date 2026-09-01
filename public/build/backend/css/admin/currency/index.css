@@ -1,0 +1,401 @@
+.currency-admin-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+}
+
+.currency-admin-page * {
+  box-sizing: border-box;
+}
+
+.currency-admin-toolbar,
+.currency-rate-card,
+.currency-tax-card,
+.currency-bank-card,
+.currency-admin-feedback {
+  background: #ffffff;
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-md);
+  box-shadow: var(--backend-shadow-soft);
+}
+
+.currency-rate-card h2,
+.currency-tax-card h2,
+.currency-bank-card h3,
+.currency-admin-modal h3 {
+  color: var(--backend-ink);
+  font-weight: 800;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.currency-tax-card p,
+.currency-admin-help {
+  color: var(--backend-muted);
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+
+.currency-admin-eyebrow {
+  color: var(--backend-brand);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.currency-bank-card__actions button {
+  align-items: center;
+  border: 0;
+  border-radius: var(--backend-radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 38px;
+  padding: 9px 14px;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.currency-bank-card__actions button:hover {
+  box-shadow: var(--backend-button-hover-shadow);
+  transform: var(--backend-button-hover-transform);
+}
+
+.currency-admin-feedback {
+  margin-bottom: 16px;
+}
+
+.currency-admin-toolbar {
+  margin-bottom: 16px;
+}
+
+.currency-admin-toolbar__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.currency-admin-toolbar__actions form {
+  margin: 0;
+}
+
+.currency-admin-toolbar .breadcrumb {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.currency-admin-source {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 8px;
+  padding: 7px 10px;
+}
+
+.currency-admin-source small {
+  color: inherit;
+  display: inline-block;
+  margin-left: 6px;
+  opacity: 0.72;
+}
+
+.currency-admin-source--ok {
+  background: #ecfdf3;
+  color: #166534;
+}
+
+.currency-admin-source--warning {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.currency-admin-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  margin-bottom: 16px;
+}
+
+.currency-admin-rates {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.currency-rate-card {
+  overflow: hidden;
+}
+
+.currency-rate-card__header,
+.currency-rate-card__footer,
+.currency-bank-card__header,
+.currency-admin-section-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.currency-rate-card__header {
+  border-bottom: 1px solid var(--backend-line-soft);
+  padding: 16px;
+}
+
+.currency-rate-card__code,
+.currency-bank-card__header span {
+  color: var(--backend-brand-strong);
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.currency-rate-card__icon {
+  align-items: center;
+  background: var(--backend-brand-soft);
+  border-radius: 12px;
+  color: var(--backend-brand-strong);
+  display: inline-flex;
+  flex: 0 0 42px;
+  height: 42px;
+  justify-content: center;
+}
+
+.currency-rate-card__body {
+  padding: 16px;
+}
+
+.currency-rate-card__metric {
+  margin-bottom: 14px;
+}
+
+.currency-rate-card__metric span,
+.currency-rate-card__pair span {
+  color: var(--backend-muted);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.currency-rate-card__metric strong {
+  color: var(--backend-ink);
+  display: block;
+  font-size: 24px;
+  font-weight: 900;
+  margin-top: 4px;
+}
+
+.currency-rate-card__metric small {
+  color: var(--backend-muted);
+  display: block;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.currency-rate-card__pair {
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-md);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 12px;
+}
+
+.currency-rate-card__pair strong {
+  color: var(--backend-brand-strong);
+  display: block;
+  font-size: 14px;
+  font-weight: 900;
+  margin-top: 4px;
+}
+
+.currency-rate-card__footer {
+  border-top: 1px solid var(--backend-line-soft);
+  color: var(--backend-muted);
+  font-size: 12px;
+  font-weight: 700;
+  gap: 12px;
+  padding: 13px 16px;
+}
+
+.currency-admin-side {
+  display: grid;
+  gap: 16px;
+}
+
+.currency-tax-card {
+  padding: 18px;
+}
+
+.currency-tax-card {
+  align-content: space-between;
+  display: grid;
+  gap: 18px;
+}
+
+.currency-tax-card h2 {
+  font-size: 34px;
+  margin-top: 6px;
+}
+
+.currency-bank-section {
+  margin-bottom: 24px;
+}
+
+.currency-admin-section-heading {
+  align-items: center;
+}
+
+.currency-bank-list {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.currency-bank-card {
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.currency-bank-card__header {
+  background: var(--backend-sidebar-bg-soft);
+  border-bottom: 1px solid var(--backend-line-soft);
+  padding: 14px;
+}
+
+.currency-bank-card__actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.currency-bank-card__actions form {
+  margin: 0;
+}
+
+.currency-bank-card__actions button {
+  background: #ffffff;
+  border: 1px solid var(--backend-line);
+  color: var(--backend-muted-link);
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  width: 34px;
+}
+
+.currency-bank-card__details {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 14px;
+}
+
+.currency-bank-card__details div {
+  border-bottom: 1px solid var(--backend-line-soft);
+  padding: 9px 0;
+}
+
+.currency-bank-card__details div:nth-last-child(-n+2) {
+  border-bottom: 0;
+}
+
+.currency-bank-card__details dt {
+  color: var(--backend-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.currency-bank-card__details dd {
+  color: var(--backend-ink);
+  font-size: 13px;
+  font-weight: 700;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.currency-admin-current {
+  background: var(--backend-brand-soft);
+  border-radius: var(--backend-radius-md);
+  margin-bottom: 14px;
+  padding: 12px;
+}
+
+.currency-admin-current span,
+.currency-admin-form-grid label span,
+.currency-admin-field span {
+  color: var(--backend-muted-link);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.currency-admin-current strong {
+  color: var(--backend-brand-strong);
+  display: block;
+  font-size: 20px;
+}
+
+.currency-admin-form-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.currency-admin-form-grid--wide {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.currency-admin-field-span {
+  grid-column: 1/-1;
+}
+
+.currency-admin-form-grid b,
+.currency-admin-field b {
+  color: var(--backend-required);
+  font-weight: 900;
+}
+
+.currency-admin-modal .currency-admin-form-grid label,
+.currency-admin-modal .currency-admin-field {
+  color: var(--backend-muted-link) !important;
+}
+
+.currency-admin-modal .currency-admin-form-grid label > span,
+.currency-admin-modal .currency-admin-field > span {
+  color: var(--backend-muted-link) !important;
+}
+
+.currency-admin-modal .currency-admin-form-grid label > span b,
+.currency-admin-modal .currency-admin-field > span b {
+  color: var(--backend-required) !important;
+}
+
+@media (max-width: 1199px) {
+  .currency-admin-grid,
+.currency-admin-rates,
+.currency-bank-list {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 767px) {
+  .currency-admin-toolbar,
+.currency-admin-section-heading,
+.currency-rate-card__footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .currency-bank-card__details,
+.currency-rate-card__pair,
+.currency-admin-form-grid,
+.currency-admin-form-grid--wide {
+    grid-template-columns: 1fr;
+  }
+}

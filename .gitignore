@@ -22,10 +22,10 @@ yarn-error.log
 pnpm-debug.log
 
 # Laravel mix / vite
-/public/hot
-/public/build
-/public/js/*.map
-/public/css/*.map
+# /public/hot
+# /public/build
+# /public/js/*.map
+# /public/css/*.map
 
 # IDE / Editor files
 .idea/

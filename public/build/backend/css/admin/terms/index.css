@@ -1,0 +1,402 @@
+.terms-admin-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.terms-admin-page * {
+  box-sizing: border-box;
+}
+
+.terms-admin-policy-card,
+.terms-admin-empty,
+.terms-admin-modal .modal-content {
+  background: var(--backend-panel);
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-md);
+  box-shadow: var(--backend-shadow-soft);
+}
+
+.terms-admin-toolbar {
+  margin-bottom: 16px;
+}
+
+.terms-admin-toolbar .breadcrumb {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.terms-admin-public-link,
+.terms-admin-icon-action {
+  align-items: center;
+  border: 0;
+  border-radius: var(--backend-radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 38px;
+  padding: 9px 14px;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.terms-admin-public-link {
+  background: var(--backend-brand-soft);
+  color: var(--backend-brand-strong);
+  text-decoration: none;
+}
+
+.terms-admin-public-link:hover,
+.terms-admin-icon-action:hover {
+  box-shadow: var(--backend-button-hover-shadow);
+  color: #ffffff;
+  text-decoration: none;
+  transform: var(--backend-button-hover-transform);
+}
+
+.terms-admin-public-link:hover {
+  background: var(--backend-brand);
+}
+
+.terms-admin-policy-card p,
+.terms-admin-policy-meta dt,
+.terms-admin-policy-meta dd,
+.terms-admin-guide li,
+.terms-admin-guide dd {
+  color: var(--backend-muted);
+}
+
+.terms-admin-layout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 330px;
+}
+
+.terms-admin-main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.terms-admin-section {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.terms-admin-section__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.terms-admin-policy-card h3,
+.terms-admin-modal h3 {
+  color: var(--backend-ink);
+  font-weight: 800;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.terms-admin-counts {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.terms-admin-policy-list {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.terms-admin-policy-card {
+  box-shadow: none;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 14px;
+}
+
+.terms-admin-policy-card.is-draft {
+  background: var(--backend-sidebar-bg-soft);
+}
+
+.terms-admin-policy-card__content {
+  min-width: 0;
+}
+
+.terms-admin-policy-card__title {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.terms-admin-policy-card h3 {
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.terms-admin-policy-card p {
+  line-height: 1.6;
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
+}
+
+.terms-admin-policy-meta,
+.terms-admin-guide dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.terms-admin-policy-meta {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.terms-admin-policy-meta div,
+.terms-admin-guide dl div {
+  min-width: 0;
+}
+
+.terms-admin-policy-meta dt,
+.terms-admin-guide dt {
+  color: var(--backend-muted-link);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.terms-admin-policy-meta dd,
+.terms-admin-guide dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.terms-admin-policy-card__actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.terms-admin-policy-card__actions form {
+  margin: 0;
+}
+
+.terms-admin-icon-action {
+  background: #eef6ff;
+  color: var(--backend-brand-strong);
+  min-height: 34px;
+  padding: 0;
+  width: 34px;
+}
+
+.terms-admin-icon-action.is-danger {
+  background: var(--backend-danger-soft);
+  color: var(--backend-danger-strong);
+}
+
+.terms-admin-icon-action:hover {
+  background: var(--backend-brand);
+}
+
+.terms-admin-icon-action.is-danger:hover {
+  background: var(--backend-danger);
+}
+
+.terms-admin-empty {
+  box-shadow: none;
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+}
+
+.terms-admin-empty span {
+  color: var(--backend-muted);
+}
+
+.terms-admin-side {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  position: sticky;
+  top: 92px;
+}
+
+.terms-admin-guide ul {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 0 18px;
+  padding: 0;
+}
+
+.terms-admin-guide dl {
+  margin-top: 0;
+}
+
+.terms-admin-guide__heading {
+  margin-bottom: 14px;
+}
+
+.terms-admin-modal .modal-dialog {
+  max-width: min(1180px, 100vw - 28px);
+}
+
+.terms-admin-modal .modal-content {
+  overflow: hidden;
+}
+
+.terms-admin-modal__header,
+.terms-admin-modal__footer {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.terms-admin-modal__header {
+  border-bottom: 1px solid var(--backend-line-soft);
+  padding: 18px;
+}
+
+.terms-admin-modal__header span,
+.terms-admin-language-panel header span {
+  color: var(--backend-brand-strong);
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.terms-admin-modal__header .close {
+  background: #eef2f7;
+  border-radius: 999px;
+  color: var(--backend-ink);
+  height: 36px;
+  opacity: 1;
+  padding: 0;
+  width: 36px;
+}
+
+.terms-admin-modal__body {
+  max-height: calc(100vh - 220px);
+  overflow-x: clip;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.terms-admin-form-grid,
+.terms-admin-language-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.terms-admin-form-grid--meta {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.terms-admin-language-grid {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.terms-admin-language-panel {
+  background: var(--backend-sidebar-bg-soft);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-md);
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.terms-admin-language-panel header {
+  display: grid;
+  gap: 4px;
+}
+
+.terms-admin-language-panel header strong {
+  color: var(--backend-ink);
+}
+
+.terms-admin-form-grid label,
+.terms-admin-language-panel label {
+  display: block;
+  margin: 0;
+  min-width: 0;
+}
+
+.terms-admin-form-grid label > span,
+.terms-admin-language-panel label > span {
+  color: var(--backend-muted-link);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.terms-admin-modal__footer {
+  border-top: 1px solid var(--backend-line-soft);
+  padding: 16px 18px;
+}
+
+body.sidebar-light .terms-admin-page {
+  overflow-x: clip;
+}
+
+@media (max-width: 1199px) {
+  .terms-admin-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .terms-admin-side {
+    position: static;
+  }
+  .terms-admin-language-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 991px) {
+  .terms-admin-policy-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 575px) {
+  .terms-admin-form-grid--meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .terms-admin-section__heading,
+.terms-admin-policy-card,
+.terms-admin-modal__footer {
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .terms-admin-section__heading {
+    flex-direction: column;
+  }
+  .terms-admin-counts,
+.terms-admin-policy-card__actions,
+.terms-admin-modal__footer {
+    justify-content: flex-start;
+  }
+  .terms-admin-policy-card__actions {
+    border-top: 1px solid var(--backend-line-soft);
+    padding-top: 12px;
+  }
+  .terms-admin-modal .modal-dialog {
+    margin: 8px;
+    max-width: calc(100vw - 16px);
+  }
+  .terms-admin-modal__body {
+    max-height: calc(100vh - 190px);
+    padding: 14px;
+  }
+}

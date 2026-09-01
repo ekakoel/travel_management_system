@@ -1,0 +1,118 @@
+.invoice-index-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.invoice-index-page * {
+  box-sizing: border-box;
+}
+
+.invoice-index-toolbar,
+.invoice-index-feedback {
+  margin-bottom: 18px;
+}
+
+.invoice-index-filter {
+  grid-template-columns: minmax(240px, 1.4fr) repeat(3, minmax(150px, 0.75fr)) auto;
+}
+
+.invoice-index-filter__actions {
+  align-self: end;
+}
+
+.invoice-index-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.invoice-index-panel__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.invoice-index-panel__heading p {
+  color: var(--backend-muted);
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.invoice-index-table-wrap {
+  padding: 0;
+}
+
+.invoice-index-table td strong,
+.invoice-index-table td small {
+  display: block;
+}
+
+.invoice-index-table td small {
+  color: var(--backend-muted);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.invoice-index-table td small.is-overdue,
+.invoice-index-card small.is-overdue {
+  color: var(--backend-danger);
+  font-weight: 800;
+}
+
+.invoice-index-table td small.is-due-soon,
+.invoice-index-card small.is-due-soon {
+  color: #b45309;
+  font-weight: 800;
+}
+
+.invoice-index-table th:nth-child(5),
+.invoice-index-table th:nth-child(6),
+.invoice-index-table td:nth-child(5),
+.invoice-index-table td:nth-child(6) {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.invoice-index-table th:last-child,
+.invoice-index-table td:last-child {
+  text-align: right;
+}
+
+.invoice-index-card-list {
+  padding: 14px;
+}
+
+.invoice-index-card small {
+  color: var(--backend-muted);
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.invoice-index-card__actions {
+  border-top: 1px solid var(--backend-line-soft);
+  justify-content: flex-start;
+  padding: 12px 14px;
+}
+
+.invoice-index-filter-empty {
+  margin: 0;
+}
+
+@media (max-width: 1199px) {
+  .invoice-index-filter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 767px) {
+  .invoice-index-filter {
+    grid-template-columns: 1fr;
+  }
+  .invoice-index-filter__actions,
+.invoice-index-filter__actions .backend-button {
+    width: 100%;
+  }
+}

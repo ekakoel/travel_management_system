@@ -1,0 +1,119 @@
+.transport-form-admin-page {
+  --transport-form-accent: var(--backend-accent, #2563eb);
+}
+
+.transport-form-cover-control {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+}
+
+.transport-form-cover-preview {
+  align-items: center;
+  background: var(--backend-form-bg-soft);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  display: flex;
+  flex: 0 0 160px;
+  justify-content: center;
+  margin: 0;
+  min-height: 120px;
+  overflow: hidden;
+}
+
+.transport-form-cover-preview img {
+  aspect-ratio: 4/3;
+  display: block;
+  height: auto;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.transport-form-cover-input {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.transport-form-cover.is-wide {
+  grid-column: 1/-1;
+}
+
+.transport-file-status {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.transport-form-cover {
+  display: grid;
+  gap: 14px;
+}
+
+.transport-cover-preview {
+  align-items: center;
+  background: var(--backend-form-bg-soft);
+  border: 1px dashed var(--backend-line);
+  border-radius: var(--backend-radius-sm);
+  color: var(--backend-muted);
+  display: flex;
+  justify-content: center;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.transport-cover-preview img {
+  height: 100%;
+  max-height: 320px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.transport-gallery-grid,
+.transport-gallery-preview {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.transport-gallery-card {
+  overflow: hidden;
+}
+
+.transport-gallery-card img,
+.transport-gallery-preview__item img {
+  aspect-ratio: 4/3;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.transport-gallery-preview__item {
+  background: var(--backend-panel-bg);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  overflow: hidden;
+}
+
+.transport-gallery-preview__item figcaption {
+  color: var(--backend-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
+@media (max-width: 768px) {
+  .transport-form-cover-control {
+    flex-direction: column;
+  }
+  .transport-form-cover-preview {
+    flex-basis: auto;
+    max-width: 180px;
+    width: 100%;
+  }
+  .transport-gallery-grid,
+.transport-gallery-preview {
+    grid-template-columns: 1fr;
+  }
+}

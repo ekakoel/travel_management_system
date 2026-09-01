@@ -1,0 +1,323 @@
+.hotel-form-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.hotel-form-page * {
+  box-sizing: border-box;
+}
+
+.hotel-form-layout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.hotel-form-main,
+.hotel-form-sidebar {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.hotel-form-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.hotel-form-panel__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.hotel-form-panel__body {
+  padding: 18px;
+}
+
+.hotel-form-cover-control {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+}
+
+.hotel-form-cover-preview {
+  background: var(--backend-form-bg-soft);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  flex: 0 0 160px;
+  margin: 0;
+  overflow: hidden;
+}
+
+.hotel-form-cover-preview::before {
+  color: var(--backend-muted);
+  content: "Preview";
+  display: grid;
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 120px;
+  place-items: center;
+  text-transform: uppercase;
+}
+
+.hotel-form-cover-preview:has(img)::before {
+  content: none;
+}
+
+.hotel-form-cover-preview img {
+  aspect-ratio: 4/3;
+  display: block;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.hotel-form-cover-input {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.hotel-file-status {
+  color: var(--backend-muted);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 8px;
+}
+
+.hotel-form-price-list {
+  display: grid;
+  gap: 14px;
+}
+
+.hotel-form-price-row {
+  background: #ffffff;
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-md);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 14px;
+}
+
+.hotel-form-price-row__header {
+  align-items: center;
+  border-bottom: 1px solid var(--backend-line-soft);
+  display: flex;
+  gap: 12px;
+  grid-column: 1/-1;
+  justify-content: space-between;
+  padding-bottom: 12px;
+}
+
+.hotel-form-price-row__header strong {
+  color: var(--backend-ink);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.hotel-form-gallery-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hotel-form-gallery-item {
+  position: relative;
+}
+
+.hotel-form-gallery-image {
+  border-radius: var(--backend-radius-sm);
+  display: block;
+  height: auto;
+  max-width: 100%;
+  width: 100%;
+}
+
+.hotel-form-gallery-delete {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 2;
+}
+
+.hotel-gallery-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hotel-gallery-card {
+  background: #ffffff;
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-md);
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hotel-gallery-card__preview {
+  background: var(--backend-form-bg-soft);
+  display: block;
+  overflow: hidden;
+}
+
+.hotel-gallery-card__preview img {
+  aspect-ratio: 4/3;
+  display: block;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.hotel-gallery-card__body {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.hotel-gallery-card__body span {
+  color: var(--backend-muted-link);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hotel-gallery-card__body strong {
+  color: var(--backend-ink);
+  font-size: 13px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hotel-gallery-card__actions {
+  align-items: center;
+  border-top: 1px solid var(--backend-line-soft);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 10px 12px 12px;
+}
+
+.hotel-gallery-card__actions form {
+  margin: 0;
+}
+
+.hotel-gallery-upload-preview {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.hotel-gallery-upload-preview:empty {
+  display: none;
+}
+
+.hotel-gallery-upload-preview__item,
+.hotel-gallery-cover-context {
+  background: #ffffff;
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-sm);
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hotel-gallery-upload-preview__item img,
+.hotel-gallery-cover-context img {
+  aspect-ratio: 4/3;
+  display: block;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.hotel-gallery-upload-preview__item figcaption {
+  color: var(--backend-muted);
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+  padding: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hotel-gallery-guidance-copy {
+  color: var(--backend-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hotel-form-suggestions {
+  background: #ffffff;
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-sm);
+  box-shadow: var(--backend-button-hover-shadow);
+  display: grid;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.hotel-form-suggestions[hidden] {
+  display: none;
+}
+
+.hotel-form-suggestion {
+  background: #ffffff;
+  border: 0;
+  color: var(--backend-ink);
+  cursor: pointer;
+  padding: 9px 11px;
+  text-align: left;
+  width: 100%;
+}
+
+.hotel-form-suggestion:hover,
+.hotel-form-suggestion:focus-visible {
+  background: var(--backend-soft);
+  outline: none;
+}
+
+.hotel-form-sidebar .backend-status-badge {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 991.98px) {
+  .hotel-form-layout {
+    grid-template-columns: 1fr;
+  }
+  .hotel-form-sidebar {
+    order: -1;
+  }
+}
+@media (max-width: 767.98px) {
+  .hotel-form-cover-control {
+    flex-direction: column;
+  }
+  .hotel-form-cover-preview {
+    flex-basis: auto;
+    max-width: 180px;
+    width: 100%;
+  }
+  .hotel-form-price-row {
+    grid-template-columns: 1fr;
+  }
+  .hotel-gallery-grid,
+.hotel-gallery-upload-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .hotel-gallery-grid,
+.hotel-gallery-upload-preview {
+    grid-template-columns: 1fr;
+  }
+}

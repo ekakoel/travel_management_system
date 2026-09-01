@@ -1,0 +1,7 @@
+.transports-admin-page {
+  --transports-admin-accent: #2563eb;
+}
+
+.transports-admin-page .is-filtered-out {
+  display: none;
+}

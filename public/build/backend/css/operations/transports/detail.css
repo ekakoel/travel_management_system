@@ -1,0 +1,128 @@
+.transport-detail-admin-page {
+  --transport-detail-accent: #2563eb;
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.transport-detail-admin-page * {
+  box-sizing: border-box;
+}
+
+.transport-detail-admin-page .is-filtered-out {
+  display: none;
+}
+
+.transport-detail-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.transport-detail-panel__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.transport-detail-summary {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  padding: 18px;
+}
+
+.transport-detail-cover {
+  align-self: start;
+  margin: 0;
+  overflow: hidden;
+}
+
+.transport-detail-cover img {
+  aspect-ratio: 3/2;
+  display: block;
+  height: auto;
+  max-height: 240px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.transport-detail-content-block {
+  grid-column: 1/-1;
+}
+
+.transport-detail-info-card .backend-table-card__header strong,
+.transport-detail-content-block .backend-table-card__header strong {
+  color: var(--backend-ink);
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.transport-detail-richtext {
+  color: var(--backend-ink);
+  line-height: 1.7;
+  padding: 16px;
+}
+
+.transport-detail-richtext > :last-child {
+  margin-bottom: 0;
+}
+
+.transport-detail-table-wrap {
+  padding: 0;
+}
+
+.backend-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.backend-form-field {
+  display: grid;
+  gap: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.backend-form-field.is-wide {
+  grid-column: 1/-1;
+}
+
+.backend-form-field b {
+  color: #dc2626;
+}
+
+.backend-form-control {
+  width: 100%;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  color: #0f172a;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+textarea.backend-form-control {
+  min-height: 120px;
+}
+
+.backend-form-error {
+  color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .transport-detail-summary {
+    grid-template-columns: 1fr;
+  }
+  .transport-detail-cover {
+    max-width: 360px;
+  }
+  .backend-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

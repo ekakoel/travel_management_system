@@ -1,0 +1,266 @@
+.transport-management-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+}
+
+.transport-management-page * {
+  box-sizing: border-box;
+}
+
+.transport-management-toolbar {
+  background: #ffffff;
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-md);
+  box-shadow: var(--backend-shadow-soft);
+}
+
+.transport-management-toolbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 13px 16px;
+}
+
+.transport-management-toolbar .breadcrumb {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.transport-management-date,
+.transport-management-chip {
+  align-items: center;
+  background: var(--backend-brand-soft);
+  border-radius: 999px;
+  color: var(--backend-brand-strong);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 8px;
+  padding: 7px 10px;
+}
+
+.transport-management-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  margin-bottom: 16px;
+}
+
+.transport-management-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.transport-management-panel__heading {
+  align-items: center;
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 16px;
+}
+
+.transport-management-modal-section h4 {
+  color: var(--backend-ink);
+  font-weight: 800;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.transport-management-help {
+  color: var(--backend-muted);
+  line-height: 1.6;
+  margin: 0;
+  padding: 16px 16px 0;
+}
+
+.transport-management-submit-action {
+  width: 100%;
+}
+
+.transport-management-form {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.transport-management-form__split {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.transport-management-form label {
+  margin: 0;
+}
+
+.transport-management-form label > span {
+  color: var(--backend-muted-link);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.transport-management-form b {
+  color: var(--backend-required);
+}
+
+.transport-management-search {
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto minmax(160px, 260px);
+  margin: 0;
+}
+
+.transport-management-search i {
+  background: var(--backend-brand-soft);
+  border: 1px solid var(--backend-line);
+  border-right: 0;
+  border-radius: var(--backend-radius-sm) 0 0 var(--backend-radius-sm);
+  color: var(--backend-brand-strong);
+  display: inline-flex;
+  height: 42px;
+  justify-content: center;
+  padding-top: 12px;
+  width: 42px;
+}
+
+.transport-management-search input {
+  border-radius: 0 var(--backend-radius-sm) var(--backend-radius-sm) 0;
+}
+
+.transport-management-card__header span {
+  color: var(--backend-muted);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.transport-management-card__header strong {
+  color: var(--backend-ink);
+  display: block;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.transport-management-detail-grid {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.transport-management-detail-grid div {
+  border-bottom: 1px solid var(--backend-line-soft);
+  padding: 9px 0;
+}
+
+.transport-management-detail-grid div:nth-last-child(-n+2) {
+  border-bottom: 0;
+}
+
+.transport-management-detail-grid dt {
+  color: var(--backend-muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.transport-management-detail-grid dd {
+  color: var(--backend-ink);
+  font-size: 13px;
+  font-weight: 700;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.transport-management-card > .transport-management-row-action {
+  border-radius: 0;
+  width: 100%;
+}
+
+.transport-management-empty i {
+  font-size: 28px;
+}
+
+.transport-management-detail-grid {
+  background: #ffffff;
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-md);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 14px;
+  padding: 14px;
+}
+
+.transport-management-modal-section {
+  background: #ffffff;
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-md);
+  padding: 14px;
+}
+
+.transport-management-modal-section + .transport-management-modal-section {
+  margin-top: 14px;
+}
+
+.transport-management-modal-section h4 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.transport-management-timeline {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.transport-management-timeline li {
+  border-left: 3px solid var(--backend-brand);
+  color: var(--backend-muted);
+  font-size: 13px;
+  padding-left: 10px;
+}
+
+.transport-management-timeline strong {
+  color: var(--backend-ink);
+  display: block;
+  font-weight: 800;
+}
+
+.transport-management-timeline span {
+  display: block;
+  margin-top: 2px;
+}
+
+@media (max-width: 1199px) {
+  .transport-management-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 991px) {
+  .transport-management-grid,
+.transport-management-form__split,
+.transport-management-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .transport-management-detail-grid div:nth-last-child(-n+2) {
+    border-bottom: 1px solid var(--backend-line-soft);
+  }
+  .transport-management-detail-grid div:last-child {
+    border-bottom: 0;
+  }
+}
+@media (max-width: 767px) {
+  .transport-management-toolbar,
+.transport-management-panel__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .transport-management-search {
+    grid-template-columns: auto minmax(0, 1fr);
+    width: 100%;
+  }
+}

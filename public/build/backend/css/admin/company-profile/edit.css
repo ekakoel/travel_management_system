@@ -1,0 +1,218 @@
+.company-profile-page {
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.company-profile-page * {
+  box-sizing: border-box;
+}
+
+.company-profile-actionbar {
+  background: var(--backend-panel);
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-md);
+  box-shadow: var(--backend-shadow-soft);
+}
+
+.company-profile-toolbar {
+  margin-bottom: 16px;
+}
+
+.company-profile-toolbar .breadcrumb {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.company-profile-panel p,
+.company-profile-actionbar p,
+.company-profile-form-grid small,
+.company-profile-logo-field small {
+  color: var(--backend-muted);
+}
+
+.company-profile-form {
+  min-width: 0;
+}
+
+.company-profile-layout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  margin-bottom: 18px;
+}
+
+.company-profile-main,
+.company-profile-side {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.company-profile-panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.company-profile-form-grid,
+.company-profile-language-grid,
+.company-profile-logo-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.company-profile-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.company-profile-form-grid--single,
+.company-profile-logo-stack {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.company-profile-language-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.company-profile-language-panel {
+  background: var(--backend-sidebar-bg-soft);
+  border: 1px solid var(--backend-line-soft);
+  border-radius: var(--backend-radius-md);
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.company-profile-language-panel header {
+  display: grid;
+  gap: 4px;
+}
+
+.company-profile-language-panel header span {
+  color: var(--backend-brand-strong);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.company-profile-language-panel header strong {
+  color: var(--backend-ink);
+}
+
+.company-profile-form-grid label,
+.company-profile-language-panel label,
+.company-profile-logo-field {
+  display: block;
+  margin: 0;
+  min-width: 0;
+}
+
+.company-profile-form-grid label.is-wide {
+  grid-column: 1/-1;
+}
+
+.company-profile-form-grid label > span,
+.company-profile-language-panel label > span,
+.company-profile-logo-field > span {
+  color: var(--backend-muted-link);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.company-profile-form-grid small,
+.company-profile-logo-field small {
+  display: block;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.company-profile-logo-preview {
+  align-items: center;
+  border: 1px solid var(--backend-line);
+  border-radius: var(--backend-radius-md);
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  min-height: 150px;
+  overflow: hidden;
+  padding: 22px;
+  text-align: center;
+}
+
+.company-profile-logo-preview--light {
+  background: #f8fbff;
+}
+
+.company-profile-logo-preview--dark {
+  background: #102033;
+  border-color: #24435f;
+}
+
+.company-profile-logo-preview img {
+  max-height: 92px;
+  max-width: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.company-profile-logo-preview strong {
+  color: var(--backend-muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.company-profile-logo-preview--dark strong {
+  color: #cbd5e1;
+}
+
+.company-profile-actionbar {
+  align-items: center;
+  bottom: 16px;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding: 18px;
+  position: sticky;
+  z-index: 20;
+}
+
+.company-profile-actionbar strong {
+  color: var(--backend-ink);
+  display: block;
+  font-size: 16px;
+}
+
+.company-profile-actionbar p {
+  margin: 4px 0 0;
+}
+
+body.sidebar-light .company-profile-page {
+  overflow-x: clip;
+}
+
+@media (max-width: 1199px) {
+  .company-profile-layout,
+.company-profile-language-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 575px) {
+  .company-profile-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .company-profile-actionbar {
+    align-items: stretch;
+    flex-direction: column;
+    position: static;
+  }
+  .company-profile-actionbar .backend-button {
+    width: 100%;
+  }
+}
