@@ -59,7 +59,7 @@
                                                         <span class="badge {{ $statusColors[$spk->status] ?? 'bg-secondary' }}">{{ $spk->status }}</span>
                                                     </td>
                                                     <td class="text-right">
-                                                        <a href="{{ route('view.detail-spk',$spk->id) }}">
+                                                        <a href="{{ route('admin.detail-spk',$spk->id) }}">
                                                             <button class="backend-table-action backend-table-action-view"><i class="icon-copy dw dw-eye"></i> Detail</button>
                                                         </a>
                                                     </td>
@@ -78,7 +78,7 @@
                             <div class="card">
                                 <div class="card-header">Create New SPK</div>
                                 <div class="card-body">
-                                    <form id="createReservation" action="{{ route('spks.store') }}" method="post" enctype="multipart/form-data">
+                                    <form id="createReservation" action="{{ route('admin.spks.store') }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row g-3">
                                             <div class="col-md-12">

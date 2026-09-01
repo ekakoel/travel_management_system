@@ -191,12 +191,6 @@
                             </ol>
                         </section>
                     </div>
-                    <div class="backend-modal__footer transport-management-modal__footer">
-                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">
-                            <i class="icon-copy dw dw-cancel" aria-hidden="true"></i>
-                            <span>@lang('messages.Close')</span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

@@ -117,7 +117,6 @@
                     @endforeach
                 </div>
             @endif
-
             <div class="availability-rate-card__totals">
                 @foreach ($card['totals'] as $total)
                     <div class="availability-total{{ $total['strikethrough'] ? ' availability-total--strikethrough' : '' }}">

@@ -346,6 +346,24 @@ use Illuminate\Support\Facades\Route;
             Route::get('/autocomplete/room-view', [RoomViewController::class, 'autocomplete'])->name('autocomplate.hotels.room_view');
             Route::get('/autocomplete/bed-type', [BedTypeController::class, 'autocomplete'])->name('autocomplate.hotels.room.bed_type');
 
+            // ---------------------------------------------------
+            //                 TRANSPORT MANAGEMENT
+            // ---------------------------------------------------
+            Route::get('/distance/{lat1}/{lng1}/{lat2}/{lng2}', [MapController::class, 'getDistance']);
+            Route::get('/transport-management', [SpksController::class, 'index'])->name('transport-management.index');
+            Route::get('/spks/{id}', [SpksController::class, 'show'])->name('detail-spk');
+            Route::post('/spks/store', [SpksController::class, 'store'])->name('spks.store');
+            Route::post('/fadd-transport-reservation', [ReservationController::class, 'addReservation'])->name('transport-reservation.add');
+
+            Route::post('/spks/generate', [SpksController::class, 'generate'])->name('spks.generate');
+            Route::delete('/spks/destroy/{id}', [SpksController::class, 'destroy'])->name('spks.destroy');
+            Route::post('/spks/{spk}/destinations', [SpksController::class, 'store'])->name('spks.destinations.store');
+            Route::post('/spks/fupdate-spk/{id}', [SpksController::class, 'func_update_spk'])->name('spk.update');
+            Route::post('/reservation/fupdate-reservation/{id}', [ReservationController::class, 'func_update_transport_management_reservation'])->name('transport-management-reservation.update');
+
+            Route::post('/spks/fadd-spk-destination/{id}', [SpksController::class, 'func_add_spk_destination'])->name('spk-destinations.add');
+            Route::post('/spks/fupdate-spk-destination/{id}', [SpksController::class, 'func_update_spk_destination'])->name('spk-destinations.update');
+            Route::delete('/spks/fdelete-spk-destination/{id}', [SpksController::class, 'func_delete_spk_destination'])->name('spk-destination.delete');
         });
 
         // DEVELOPER | ADMINISTRATOR | RESERVATION | AUTHOR ==================================================================================
@@ -396,14 +414,14 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/delete-bank-account/{id}',[BankAccountController::class,'destroy_bank_account']);
 
             /// ---------------------------------------------------
-            //                        CURRENCY
+            //                     CURRENCY
             // ---------------------------------------------------
             Route::get('/currency',[UsdRatesController::class,'index'])->name('currency');
             Route::post('/currency/refresh-rates',[UsdRatesController::class,'refreshRates'])->name('admin.currency.refresh-rates');
             Route::put('/update-usdrates/{id}',[UsdRatesController::class,'func_update_usdrates'])->name('f-update-usd-rates');
             Route::put('/update-cnyrates/{id}',[UsdRatesController::class,'func_update_cnyrates'])->name('f-update-cny-rates');
             Route::put('/update-twdrates/{id}',[UsdRatesController::class,'func_update_twdrates'])->name('f-update-twd-rates');
-            
+
             // ---------------------------------------------------
             //                       EMAIL
             // ---------------------------------------------------
@@ -422,6 +440,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/getCeremonyDecorations', [WeddingsController::class, 'getCeremonyDecorations']);
             Route::get('/getReceptionDecorations', [WeddingsController::class, 'getReceptionDecorations']);
+
             // ---------------------------------------------------
             //                TERMS AND CONDITIONS
             // ---------------------------------------------------
@@ -484,6 +503,8 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/fdelete-transport-price/{id}',[TransportPriceAdminController::class,'destroy'])->name('admin.transports.prices.destroy');
             Route::delete('/fdelete-transport-cover/{id}',[TransportGalleryAdminController::class,'destroyCover'])->name('admin.transports.cover.destroy');
             Route::delete('/fdelete-transport-img/{id}',[TransportGalleryAdminController::class,'destroyImage'])->name('admin.transports.images.destroy');
+
+            
 
             // ---------------------------------------------------
             //                       EMAIL
@@ -919,23 +940,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/promotion',[PromotionController::class,'index'])->name('promotion');
 
-            // ---------------------------------------------------
-            //                MANAGEMENT TRANSPORT
-            // ---------------------------------------------------
-            Route::get('/distance/{lat1}/{lng1}/{lat2}/{lng2}', [MapController::class, 'getDistance']);
-            Route::get('/transport-management', [SpksController::class, 'index'])->name('view.transport-management.index');
-            Route::get('/spks/{id}', [SpksController::class, 'show'])->name('view.detail-spk');
-            Route::post('/spks/store', [SpksController::class, 'store'])->name('spks.store');
-            Route::post('/fadd-transport-reservation', [ReservationController::class, 'addReservation'])->name('transport-reservation.add');
-
-            Route::post('/spks/generate', [SpksController::class, 'generate'])->name('spks.generate');
-            Route::delete('/spks/destroy/{id}', [SpksController::class, 'destroy'])->name('spks.destroy');
-            Route::post('/spks/fupdate-spk/{id}', [SpksController::class, 'func_update_spk'])->name('func.spk.update');
-            Route::post('/spks/{spk}/destinations', [SpksController::class, 'store'])->name('spks.destinations.store');
-            Route::post('/spks/fadd-spk-destination/{id}', [SpksController::class, 'func_add_spk_destination'])->name('func.spk-destinations.add');
-            Route::post('/spks/fupdate-spk-destination/{id}', [SpksController::class, 'func_update_spk_destination'])->name('func.spk-destinations.update');
-            Route::delete('/spks/fdelete-spk-destination/{id}', [SpksController::class, 'func_delete_spk_destination'])->name('func.spk-destination.delete');
-            Route::post('/reservation/fupdate-reservation/{id}', [ReservationController::class, 'func_update_transport_management_reservation'])->name('func.transport-management-reservation.update');
+            
 
             // Print SPK (PDF atau langsung view untuk print)
             Route::get('/spks/{id}/print', [SpksController::class, 'print'])->name('spks.print');

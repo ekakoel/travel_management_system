@@ -255,12 +255,6 @@ class HotelsController extends Controller
             ->get();
         $promotion_name = $promotions->pluck('name')->implode(', ');
         $promotion_price = $promotions->sum('discounts');
-        $promoImages = [
-            'Hot Deal' => 'hot_deal_promo.png',
-            'Best Choice' => 'best_choice_promo.png',
-            'Best Price' => 'best_price_promo.png',
-            'Special Offer' => 'special_offer_promo.png',
-        ];
         if ($duration < $hotel->min_stay) {
             return redirect()
                 ->route('view.hotel-detail', ['code' => $code, 'check_price' => 1])

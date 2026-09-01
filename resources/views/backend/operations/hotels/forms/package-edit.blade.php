@@ -385,8 +385,6 @@
                         </div>
                     </section>
                 </form>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcanany

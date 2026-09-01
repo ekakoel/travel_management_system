@@ -139,7 +139,7 @@ class HotelPricingService
             $package->markup,
             $usdRate,
             $tax,
-            max((int) ($package->duration ?? 1), 1)
+            1
         );
     }
 

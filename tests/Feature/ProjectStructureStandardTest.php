@@ -3358,7 +3358,7 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("view('admin.transportmanagement.spks.index'", $controller);
         $this->assertStringContainsString('statusSummary', $controller);
         $this->assertStringContainsString("Route::get('/transport-management'", $routeFile);
-        $this->assertStringContainsString("->name('view.transport-management.index')", $routeFile);
+        $this->assertStringContainsString("->name('admin.transport-management.index')", $routeFile);
         $this->assertStringContainsString('<x-backend.page-hero', $view);
         $this->assertStringContainsString('backend-page-primary-action', $view);
         $this->assertStringContainsString('backend-page-toolbar transport-management-toolbar', $view);

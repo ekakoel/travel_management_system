@@ -15,9 +15,6 @@
                 <div class="backend-modal__body">
                     @include('backend.operations.hotels.partials.price-breakdown', ['pricing' => $pricing])
                 </div>
-                {{-- <div class="backend-modal__footer">
-                    <button type="button" class="backend-toolbar-action" data-dismiss="modal">Close</button>
-                </div> --}}
             </section>
         </div>
     </div>

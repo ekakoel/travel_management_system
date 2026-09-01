@@ -11,7 +11,7 @@
                 </button>
             </div>
             <div class="backend-modal__body transport-spk-detail-modal__body">
-                <form id="updateSpkDetail" class="transport-spk-detail-form" action="{{ route('func.spk.update', $spk->id) }}" method="POST">
+                <form id="updateSpkDetail" class="transport-spk-detail-form" action="{{ route('admin.spk.update', $spk->id) }}" method="POST">
                     @csrf
                     <div class="transport-spk-detail-note">
                         <span>@lang('transport-management.detail.modal.spk_help_1')</span>
@@ -83,10 +83,6 @@
                 </form>
             </div>
             <div class="backend-modal__footer transport-spk-detail-modal__footer">
-                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">
-                    <i class="icon-copy dw dw-cancel" aria-hidden="true"></i>
-                    @lang('transport-management.detail.actions.cancel')
-                </button>
                 <button type="submit" form="updateSpkDetail" class="backend-button backend-button-primary">
                     <i class="icon-copy dw dw-diskette1" aria-hidden="true"></i>
                     @lang('transport-management.detail.actions.save')
@@ -115,7 +111,6 @@
                 </form>
             </div>
             <div class="backend-modal__footer transport-spk-detail-modal__footer">
-                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">@lang('transport-management.detail.actions.cancel')</button>
                 <button type="submit" form="addMoreGuest" class="backend-button backend-button-primary">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                     @lang('transport-management.detail.actions.add')
@@ -145,7 +140,6 @@
                     </form>
                 </div>
                 <div class="backend-modal__footer transport-spk-detail-modal__footer">
-                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">@lang('transport-management.detail.actions.cancel')</button>
                     <button type="submit" form="updateGuest{{ $guest->id }}" class="backend-button backend-button-primary">
                         <i class="icon-copy dw dw-diskette1" aria-hidden="true"></i>
                         @lang('transport-management.detail.actions.save')
@@ -176,7 +170,6 @@
                     </form>
                 </div>
                 <div class="backend-modal__footer transport-spk-detail-modal__footer">
-                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">@lang('transport-management.detail.actions.cancel')</button>
                     <button type="submit" form="addAirportShuttleForm" class="backend-button backend-button-primary">
                         <i class="fa fa-plus" aria-hidden="true"></i>
                         @lang('transport-management.detail.actions.add')
@@ -206,7 +199,6 @@
                         </form>
                     </div>
                     <div class="backend-modal__footer transport-spk-detail-modal__footer">
-                        <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">@lang('transport-management.detail.actions.cancel')</button>
                         <button type="submit" form="updateAirportShuttle{{ $airport_shuttle->id }}" class="backend-button backend-button-primary">
                             <i class="icon-copy dw dw-diskette1" aria-hidden="true"></i>
                             @lang('transport-management.detail.actions.save')
@@ -231,13 +223,12 @@
                 </button>
             </div>
             <div class="backend-modal__body transport-spk-detail-modal__body">
-                <form id="addSpkDestination" class="transport-spk-detail-form" action="{{ route('func.spk-destinations.add', $spk->id) }}" method="POST">
+                <form id="addSpkDestination" class="transport-spk-detail-form" action="{{ route('admin.spk-destinations.add', $spk->id) }}" method="POST">
                     @csrf
                     @include('admin.transportmanagement.spks.partials.destination-form', ['destination' => null])
                 </form>
             </div>
             <div class="backend-modal__footer transport-spk-detail-modal__footer">
-                <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">@lang('transport-management.detail.actions.cancel')</button>
                 <button type="submit" form="addSpkDestination" class="backend-button backend-button-primary">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                     @lang('transport-management.detail.actions.add')
@@ -261,13 +252,12 @@
                     </button>
                 </div>
                 <div class="backend-modal__body transport-spk-detail-modal__body">
-                    <form id="updateSpkDestinationForm{{ $destination->id }}" class="transport-spk-detail-form" action="{{ route('func.spk-destinations.update', $destination->id) }}" method="POST">
+                    <form id="updateSpkDestinationForm{{ $destination->id }}" class="transport-spk-detail-form" action="{{ route('admin.spk-destinations.update', $destination->id) }}" method="POST">
                         @csrf
                         @include('admin.transportmanagement.spks.partials.destination-form', ['destination' => $destination])
                     </form>
                 </div>
                 <div class="backend-modal__footer transport-spk-detail-modal__footer">
-                    <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">@lang('transport-management.detail.actions.cancel')</button>
                     <button type="submit" form="updateSpkDestinationForm{{ $destination->id }}" class="backend-button backend-button-primary">
                         <i class="icon-copy dw dw-diskette1" aria-hidden="true"></i>
                         @lang('transport-management.detail.actions.save')

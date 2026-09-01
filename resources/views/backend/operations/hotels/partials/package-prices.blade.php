@@ -70,8 +70,8 @@
                                         <td data-label="Stay Period">{{ $row['stay_period'] }}</td>
                                         <td data-label="Published Rate">
                                             <span class="hotel-detail-rate">{{ currencyFormatUsd($row['published_rate']) }}</span>
-                                            <span>Per night</span>
-                                            <span>Package total: {{ currencyFormatUsd($row['package_total_rate']) }}</span>
+                                            {{-- <span>Per night</span>
+                                            <span>Package total: {{ currencyFormatUsd($row['package_total_rate']) }}</span> --}}
                                             <button type="button" class="hotel-price-calculation-action" data-toggle="modal" data-target="#hotelPackagePriceCalculation{{ $package->id }}">
                                                 View calculation
                                             </button>

@@ -318,10 +318,10 @@ class SpksController extends Controller
                 $spk->save();
             });
 
-            return redirect()->route('view.transport-management.index')->with('success','SPK berhasil ditambahkan');
+            return redirect()->route('admin.transport-management.index')->with('success','SPK berhasil ditambahkan');
         } catch (\Exception $e) {
             \Log::error('SPK save failed: '.$e->getMessage());
-            return redirect()->route('view.transport-management.index')->with('error','SPK gagal ditambahkan, silahkan coba kembali!');
+            return redirect()->route('admin.transport-management.index')->with('error','SPK gagal ditambahkan, silahkan coba kembali!');
         }
     }
 
@@ -352,7 +352,7 @@ class SpksController extends Controller
         ]);
         $spk_destination->save();
 
-        return redirect()->route('view.detail-spk',$id)->with('success', 'Destinasi berhasil ditambahkan kedalam SPK.');
+        return redirect()->route('admin.detail-spk',$id)->with('success', 'Destinasi berhasil ditambahkan kedalam SPK.');
     }
     
     public function func_update_spk(Request $request, $id)
@@ -384,7 +384,7 @@ class SpksController extends Controller
             'driver_id' => $validated['driver_id'],
         ]);
 
-        return redirect()->route('view.detail-spk',$id)->with('success', 'SPK Berhasil diupdate.');
+        return redirect()->route('admin.detail-spk',$id)->with('success', 'SPK Berhasil diupdate.');
     }
 
     public function func_update_spk_destination(Request $request, $id)
@@ -415,7 +415,7 @@ class SpksController extends Controller
             "latitude"=>$latitude,
             "description"=>$request->description,
         ]);
-        return redirect()->route('view.detail-spk',$spk->id)->with('success', 'SPK berhasil diupdate.');
+        return redirect()->route('admin.detail-spk',$spk->id)->with('success', 'SPK berhasil diupdate.');
     }
 
     

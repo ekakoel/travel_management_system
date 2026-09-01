@@ -1,26 +1,14 @@
 @php
     $pricing = $pricing ?? [];
     $showKickBack = (int) ($pricing['kick_back_usd'] ?? 0) > 0;
-    $isPackagePerNight = ($pricing['display_mode'] ?? null) === 'package_per_night';
 @endphp
 
-<div class="hotel-price-calculation-summary {{ $isPackagePerNight ? 'hotel-price-calculation-summary--package' : '' }}" aria-label="Agent rate summary">
+<div class="hotel-price-calculation-summary" aria-label="Agent rate summary">
     <div class="hotel-price-calculation-summary__item hotel-price-calculation-summary__item--agent">
-        <span>{{ $isPackagePerNight ? 'Agent Rate Per Night' : 'Agent Rate' }}</span>
+        <span>Agent Rate</span>
         <strong>{{ currencyFormatUsd($pricing['net_rate'] ?? ($pricing['published_rate'] ?? 0)) }}</strong>
         <small>{{ currencyFormatIdr($pricing['net_rate_idr'] ?? ($pricing['published_rate_idr'] ?? 0)) }}</small>
     </div>
-
-    @if ($isPackagePerNight)
-        <div class="hotel-price-calculation-summary__item">
-            <span>Package Total</span>
-            <strong>{{ currencyFormatUsd($pricing['package_total_net_rate'] ?? ($pricing['package_total_published_rate'] ?? 0)) }}</strong>
-            <small>
-                {{ currencyFormatIdr($pricing['package_total_net_rate_idr'] ?? ($pricing['package_total_published_rate_idr'] ?? 0)) }}
-                - {{ $pricing['package_duration'] ?? 1 }} nights
-            </small>
-        </div>
-    @endif
 </div>
 
 <div class="hotel-price-calculation" aria-label="Rate calculation breakdown">
@@ -28,18 +16,13 @@
         <span>Contract</span>
         <strong>{{ currencyFormatIdr($pricing['effective_contract_rate_idr'] ?? 0) }}</strong>
         <small>
-            {{ currencyFormatUsd($pricing['contract_rate_usd'] ?? 0) }}
-            @if ($isPackagePerNight)
-                - allocated per night from {{ $pricing['package_duration'] ?? 1 }} nights
-            @elseif (($pricing['multiplier'] ?? 1) > 1)
-                - contract x {{ $pricing['multiplier'] }} nights
-            @endif
+            {{ currencyFormatUsd($pricing['contract_rate_usd'] ?? 0) }} - contract x {{ $pricing['multiplier'] }} nights
         </small>
     </div>
     <div>
         <span>Markup</span>
         <strong>{{ currencyFormatUsd($pricing['markup_usd'] ?? 0) }}</strong>
-        <small>{{ currencyFormatIdr($pricing['markup_idr'] ?? 0) }} {{ $isPackagePerNight ? 'allocated per night' : 'applied once per rate' }}</small>
+        <small>{{ currencyFormatIdr($pricing['markup_idr'] ?? 0) }}</small>
     </div>
     <div>
         <span>Tax</span>

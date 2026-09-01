@@ -331,7 +331,7 @@
                                                 <td class="text-right pd-2-8">
                                                     <div class="table-action">
                                                         @if ($dest->status !== 'Visited')
-                                                            <form id="deleteSpkDestination{{ $dest->id }}" action="{{ route('func.spk-destination.delete',$dest->id) }}" method="post" enctype="multipart/form-data">
+                                                            <form id="deleteSpkDestination{{ $dest->id }}" action="{{ route('admin.spk-destination.delete',$dest->id) }}" method="post" enctype="multipart/form-data">
                                                                 @csrf
                                                                 @method('delete')
                                                             </form>
@@ -353,7 +353,7 @@
                                                                 <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit Destinasi</div>
                                                             </div>
                                                             <div class="card-box-body">
-                                                                <form id="updateSpk{{ $dest->id }}" action="{{ route('func.spk-destinations.update',$dest->id) }}" method="POST" class="modal-content">
+                                                                <form id="updateSpk{{ $dest->id }}" action="{{ route('admin.spk-destinations.update',$dest->id) }}" method="POST" class="modal-content">
                                                                     @csrf
                                                                     <div class="alert alert-info" role="alert">
                                                                         <p>• Gunakan form ini untuk memperbarui data destinasi wisata yang sudah ada.</p>
@@ -437,7 +437,7 @@
 
                             <button class="backend-button backend-button-primary" data-toggle="modal" data-target="#editSpkDetail"><i class="fa fa-pencil-alt"></i> Edit SPK</button>
 
-                            <a href="{{ route('view.transport-management.index') }}">
+                            <a href="{{ route('admin.transport-management.index') }}">
                                 <button class="backend-button backend-button-danger"><i class="icon-copy dw dw-left-arrow1"></i> Back</button>
                             </a>
                         </div>
@@ -450,7 +450,7 @@
                                             <div class="title"><i class="icon-copy fa fa-pencil-alt" aria-hidden="true"></i> Edit SPK</div>
                                         </div>
                                         <div class="card-box-body">
-                                            <form id="updateSpkDetail" action="{{ route('func.spk.update',$spk->id) }}" method="POST" class="modal-content">
+                                            <form id="updateSpkDetail" action="{{ route('admin.spk.update',$spk->id) }}" method="POST" class="modal-content">
                                                 @csrf
                                                 <div class="alert alert-info" role="alert">
                                                     <p>• Gunakan form ini untuk memperbarui data Surat Perintah Kerja (SPK) yang sudah ada.</p>
@@ -581,7 +581,7 @@
                                             <div class="title"><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add Destination</div>
                                         </div>
                                         <div class="card-box-body">
-                                            <form id="addSpkDestination" action="{{ route('func.spk-destinations.add',$spk->id) }}" method="POST" class="modal-content">
+                                            <form id="addSpkDestination" action="{{ route('admin.spk-destinations.add',$spk->id) }}" method="POST" class="modal-content">
                                                 @csrf
                                                 <div class="row">
                                                     <div class="col-md-6">

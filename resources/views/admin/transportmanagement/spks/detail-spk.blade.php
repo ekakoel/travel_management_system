@@ -23,9 +23,6 @@
             class="main-container transport-spk-detail-page"
             data-transport-spk-detail
             data-destinations="{{ e($destinationsJson) }}"
-            data-wa-status-route="{{ route('wa.status') }}"
-            data-wa-qr-route="{{ route('wa.qr') }}"
-            data-wa-disconnect-route="{{ route('wa.disconnect') }}"
             data-label-sending="{{ __('transport-management.detail.actions.sending') }}"
             data-label-sent="{{ __('transport-management.detail.actions.sent') }}"
             data-label-send-failed="{{ __('transport-management.detail.actions.send_failed') }}"
@@ -67,7 +64,7 @@
                     <nav aria-label="{{ __('transport-management.breadcrumb.label') }}">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('admin.panel.index') }}">@lang('transport-management.detail.breadcrumb.admin')</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('view.transport-management.index') }}">@lang('transport-management.title')</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.transport-management.index') }}">@lang('transport-management.title')</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $spk->order_number ?? '-' }}</li>
                         </ol>
                     </nav>
@@ -113,7 +110,7 @@
                             <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                             @lang('transport-management.detail.actions.edit_spk')
                         </button>
-                        <a class="backend-button backend-button-danger" href="{{ route('view.transport-management.index') }}">
+                        <a class="backend-button backend-button-danger" href="{{ route('admin.transport-management.index') }}">
                             <i class="icon-copy dw dw-left-arrow1" aria-hidden="true"></i>
                             @lang('transport-management.detail.actions.back')
                         </a>
@@ -509,7 +506,7 @@
                                                                 <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#updateSpkDestination{{ $destination->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
                                                                     <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                                 </button>
-                                                                <form action="{{ route('func.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
+                                                                <form action="{{ route('admin.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">
@@ -568,7 +565,7 @@
                                                                 <button class="backend-icon-action" type="button" data-toggle="modal" data-target="#updateSpkDestination{{ $destination->id }}" aria-label="{{ __('transport-management.detail.actions.edit') }}">
                                                                     <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                                                 </button>
-                                                                <form action="{{ route('func.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
+                                                                <form action="{{ route('admin.spk-destination.delete', $destination->id) }}" method="POST" data-confirm-delete="{{ __('transport-management.detail.actions.confirm_destination_delete') }}">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="backend-danger-icon-action" aria-label="{{ __('transport-management.detail.actions.delete') }}">

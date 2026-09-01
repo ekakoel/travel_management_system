@@ -397,33 +397,52 @@ class HotelDetailViewModel
     public function packageRows(): Collection
     {
         return $this->visiblePackages()
-            ->sortBy(fn ($package) => strtolower((string) ($package->room?->rooms ?? '')).'|'.$this->packageStayPeriodSortKey($package))
+            ->sortBy(fn ($package) =>
+                strtolower((string) ($package->room?->rooms ?? ''))
+                . '|'
+                . $this->packageStayPeriodSortKey($package)
+            )
             ->map(function ($package) {
-            $roomName = $package->room?->rooms ?: '-';
-            $duration = max((int) ($package->duration ?? 1), 1);
-            $pricing = $this->pricingService->rateBreakdown(
-                $package->contract_rate,
-                $package->markup,
-                $this->usdRate,
-                $this->tax,
-                $duration
-            );
-            $perNightPricing = $this->packagePerNightPricing($pricing, $duration);
+                $roomName = $package->room?->rooms ?: '-';
 
-            return [
-                'model' => $package,
-                'room_name' => $roomName,
-                'search' => strtolower(($package->name ?? '').' '.$roomName),
-                'stay_period' => dateFormat($package->stay_period_start).' -> '.dateFormat($package->stay_period_end),
-                'pricing' => $perNightPricing,
-                'package_total_pricing' => $pricing,
-                'published_rate' => $perNightPricing['published_rate'],
-                'package_total_rate' => $pricing['published_rate'],
-                'status_tone' => $this->statusToneForPeriod($package->status, $package->stay_period_end),
-            ];
-        })->values();
+                /*
+                * Hotel Package is calculated as ONE package price.
+                * Duration is informational only and must NOT be used
+                * as a pricing multiplier or divisor.
+                */
+                $pricing = $this->pricingService->rateBreakdown(
+                    $package->contract_rate,
+                    $package->markup,
+                    $this->usdRate,
+                    $this->tax,
+                    1
+                );
+
+                return [
+                    'model' => $package,
+                    'room_name' => $roomName,
+                    'search' => strtolower(($package->name ?? '') . ' ' . $roomName),
+                    'stay_period' => dateFormat($package->stay_period_start)
+                        . ' -> '
+                        . dateFormat($package->stay_period_end),
+
+                    // Full package pricing
+                    'pricing' => $pricing,
+                    'package_total_pricing' => $pricing,
+
+                    // Published Rate = full package price
+                    'published_rate' => $pricing['published_rate'],
+                    'package_total_rate' => $pricing['published_rate'],
+
+                    'status_tone' => $this->statusToneForPeriod(
+                        $package->status,
+                        $package->stay_period_end
+                    ),
+                ];
+            })
+            ->values();
     }
-
+    
     public function packageGroups(): Collection
     {
         return $this->packageRows()
@@ -455,39 +474,6 @@ class HotelDetailViewModel
             strtolower((string) ($package->name ?? '')),
             (int) ($package->id ?? 0)
         );
-    }
-
-    private function packagePerNightPricing(array $pricing, int $duration): array
-    {
-        $effectiveDuration = max($duration, 1);
-        $perNightPricing = $pricing;
-
-        foreach ([
-            'effective_contract_rate_idr',
-            'contract_rate_usd',
-            'markup_usd',
-            'markup_idr',
-            'subtotal_usd',
-            'tax_usd',
-            'tax_idr',
-            'published_rate',
-            'published_rate_idr',
-            'kick_back_usd',
-            'kick_back_idr',
-            'net_rate',
-            'net_rate_idr',
-        ] as $field) {
-            $perNightPricing[$field] = (int) ceil(((float) ($pricing[$field] ?? 0)) / $effectiveDuration);
-        }
-
-        $perNightPricing['display_mode'] = 'package_per_night';
-        $perNightPricing['package_duration'] = $effectiveDuration;
-        $perNightPricing['package_total_published_rate'] = $pricing['published_rate'] ?? 0;
-        $perNightPricing['package_total_published_rate_idr'] = $pricing['published_rate_idr'] ?? 0;
-        $perNightPricing['package_total_net_rate'] = $pricing['net_rate'] ?? ($pricing['published_rate'] ?? 0);
-        $perNightPricing['package_total_net_rate_idr'] = $pricing['net_rate_idr'] ?? ($pricing['published_rate_idr'] ?? 0);
-
-        return $perNightPricing;
     }
 
     public function additionalChargeRows(): Collection

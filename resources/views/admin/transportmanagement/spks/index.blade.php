@@ -155,7 +155,7 @@
                                             </td>
                                             <td class="text-right">
                                                 <div class="backend-table-actions">
-                                                    <a class="backend-icon-action backend-table-action-view transport-management-row-action" href="{{ route('view.detail-spk', $spk->id) }}">
+                                                    <a class="backend-icon-action backend-table-action-view transport-management-row-action" href="{{ route('admin.detail-spk', $spk->id) }}">
                                                         <i class="icon-copy dw dw-eye" aria-hidden="true"></i>
                                                     </a>
                                                 </div>
@@ -202,7 +202,7 @@
                                             <dd>{{ $spk->spk_number ?? '-' }}</dd>
                                         </div>
                                     </dl>
-                                    <a class="backend-table-action backend-table-action-view transport-management-row-action" href="{{ route('view.detail-spk', $spk->id) }}">
+                                    <a class="backend-table-action backend-table-action-view transport-management-row-action" href="{{ route('admin.detail-spk', $spk->id) }}">
                                         <i class="icon-copy dw dw-eye" aria-hidden="true"></i>
                                         <span>@lang('transport-management.actions.detail')</span>
                                     </a>
@@ -226,7 +226,7 @@
                         </div>
                         <p class="transport-management-help">@lang('transport-management.create.help')</p>
 
-                        <form class="transport-management-form" action="{{ route('spks.store') }}" method="post" enctype="multipart/form-data" data-transport-management-form>
+                        <form class="transport-management-form" action="{{ route('admin.spks.store') }}" method="post" enctype="multipart/form-data" data-transport-management-form>
                             @csrf
                             <label>
                                 <span>@lang('transport-management.form.operator') <b>*</b></span>
