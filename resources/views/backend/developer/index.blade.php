@@ -73,7 +73,7 @@
                 </section>
                 @can('posDev')
                     <section class="backend-panel admin-registration-access">
-                        <div class="backend-section-header">
+                        <div class="backend-section-header m-b-18">
                             <div>
                                 <span class="backend-section-header__label">Access Control</span>
                                 <h2>Registration Access</h2>
@@ -200,7 +200,7 @@
 
                 <section class="admin-panel-grid">
                     <div class="backend-panel admin-panel-wide">
-                        <div class="backend-section-header">
+                        <div class="backend-section-header m-b-18">
                             <div>
                                 <span class="backend-section-header__label">Service Registry</span>
                                 <h2>Registered Services</h2>
@@ -308,7 +308,7 @@
                     </div>
 
                     <aside class="backend-panel">
-                        <div class="backend-section-header">
+                        <div class="backend-section-header m-b-18">
                             <div>
                                 <span class="backend-section-header__label">Integration</span>
                                 <h2>Currency Readiness</h2>
@@ -329,7 +329,7 @@
 
                 <section class="admin-panel-grid admin-panel-grid--single">
                     <div class="backend-panel">
-                        <div class="backend-section-header">
+                        <div class="backend-section-header m-b-18">
                             <div>
                                 <span class="backend-section-header__label">Developer Focus</span>
                                 <h2>Platform Health Checks</h2>
@@ -347,8 +347,6 @@
                         </div>
                     </div>
                 </section>
-
-                @include('layouts.footer')
             </div>
         </main>
 

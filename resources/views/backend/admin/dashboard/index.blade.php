@@ -54,7 +54,7 @@
             </section>
 
             <section class="backend-panel m-b-18">
-                <div class="backend-section-header">
+                <div class="backend-section-header m-b-18">
                     <div>
                         <span class="backend-section-header__label">Service Inventory</span>
                         <h2>Available Services</h2>
@@ -78,7 +78,7 @@
 
             <section class="admin-dashboard-grid">
                 <div class="backend-panel">
-                    <div class="backend-section-header">
+                    <div class="backend-section-header m-b-18">
                         <div>
                             <span class="backend-section-header__label">Latest Movement</span>
                             <h2>Recent Activity</h2>
@@ -106,7 +106,7 @@
                 </div>
 
                 <div class="backend-panel">
-                    <div class="backend-section-header">
+                    <div class="backend-section-header m-b-18">
                         <div>
                             <span class="backend-section-header__label">Next 14 Days</span>
                             <h2>Upcoming Services</h2>
@@ -136,7 +136,7 @@
 
             <section class="admin-dashboard-grid">
                 <div class="backend-panel">
-                    <div class="backend-section-header">
+                    <div class="backend-section-header m-b-18">
                         <div>
                             <span class="backend-section-header__label">Needs Attention</span>
                             <h2>Data Quality</h2>
@@ -155,7 +155,7 @@
                 </div>
 
                 <div class="backend-panel">
-                    <div class="backend-section-header">
+                    <div class="backend-section-header m-b-18">
                         <div>
                             <span class="backend-section-header__label">Status Distribution</span>
                             <h2>Bookings & Reservations</h2>
