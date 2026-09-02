@@ -69,7 +69,7 @@
                     </nav>
                     <div class="backend-page-toolbar__actions">
                         <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer" class="backend-toolbar-action footer-manager-toolbar-action">
-                            <i class="fa fa-external-link"></i>
+                            <i class="fa fa-eye" aria-hidden="true"></i>
                             Preview Footer
                         </a>
                     </div>

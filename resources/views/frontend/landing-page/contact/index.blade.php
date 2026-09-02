@@ -41,7 +41,7 @@
                         </div>
                         <div class="frontend-page-summary__item">
                             <span>@lang('messages.Location')</span>
-                            <strong>@lang('messages.Bali, Indonesia')</strong>
+                            <strong>Bali, Indonesia</strong>
                         </div>
                     </div>
                 </div>

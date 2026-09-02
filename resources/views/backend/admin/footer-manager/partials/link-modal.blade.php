@@ -144,7 +144,6 @@
                 </div>
 
                 <div class="backend-form-actions footer-link-modal__footer">
-                    <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="backend-button backend-button-primary" data-footer-submit>
                         <i class="fa fa-check"></i>
                         Save Link

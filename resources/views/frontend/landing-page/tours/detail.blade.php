@@ -126,7 +126,7 @@
                     <div class="tour-detail-meta-grid">
                         <div class="tour-detail-meta">
                             <span>@lang('messages.Type')</span>
-                            <strong>{{ $tourDisplayType ?: '-' }}</strong>
+                            <strong>{{ $tourDisplayType ? $tourDisplayType: '-' }}</strong>
                         </div>
                         <div class="tour-detail-meta">
                             <span>@lang('messages.Duration')</span>
