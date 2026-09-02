@@ -284,6 +284,18 @@
                                     </section>
                                 </div>
                             </section>
+                            <section class="backend-page-toolbar backend-form-actions hotel-form-actions">
+                                <div class="backend-page-toolbar__actions">
+                                    <a href="{{ route('admin.hotels.show', $hotel->id) }}#package" class="backend-button backend-button-secondary">
+                                        <i class="fa fa-times"></i>
+                                        Cancel
+                                    </a>
+                                    <button type="submit" class="backend-button backend-button-primary">
+                                        <i class="fa fa-floppy-o"></i>
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </section>
                         </x-slot>
 
                         <x-slot name="side">
@@ -371,19 +383,6 @@
                             </section>
                         </x-slot>
                     </x-backend.detail-layout>
-
-                    <section class="backend-page-toolbar backend-form-actions hotel-form-actions">
-                        <div class="backend-page-toolbar__actions">
-                            <a href="{{ route('admin.hotels.show', $hotel->id) }}#package" class="backend-button backend-button-secondary">
-                                <i class="fa fa-times"></i>
-                                Cancel
-                            </a>
-                            <button type="submit" class="backend-button backend-button-primary">
-                                <i class="fa fa-floppy-o"></i>
-                                Save Changes
-                            </button>
-                        </div>
-                    </section>
                 </form>
             </div>
         </main>

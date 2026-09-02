@@ -6,6 +6,7 @@
  * pages move from legacy public assets into the new build pipeline.
  */
 
+import './components/home-slider';
 window._ = require('lodash');
 window.axios = require('axios');
 

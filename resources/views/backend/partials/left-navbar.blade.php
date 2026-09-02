@@ -198,6 +198,12 @@
                                                     <i class="fas fa-list"></i> Activity Type
                                                 </a>
                                             </li>
+                                            <li>
+                                                <a href="{{ route('admin.home-sliders.index') }}">
+                                                    <i class="fa fa-images"></i>
+                                                    <span>Home Slider</span>
+                                                </a>
+                                            </li>
                                         @endcanany
                                     </ul>
                                 </li>

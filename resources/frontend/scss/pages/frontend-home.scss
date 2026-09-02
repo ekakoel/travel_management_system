@@ -70,14 +70,14 @@
 
 .home-hero__surface {
     position: relative;
-    overflow: hidden;
-    padding: clamp(1.4rem, 3vw, 2rem);
+    // overflow: hidden;
+    // padding: clamp(1.4rem, 3vw, 2rem);
     width: 100%;
 }
 
-.home-hero__content {
-    padding: clamp(0.5rem, 1vw, 1rem);
-}
+// .home-hero__content {
+//     padding: clamp(0.5rem, 1vw, 1rem);
+// }
 
 .home-hero__eyebrow {
     display: inline-flex;

@@ -121,6 +121,12 @@
                                                     <div class="frontend-fact-card__content">{!! $promo_benefits !!}</div>
                                                 </div>
                                             @endif
+                                            @if (!empty(trim(strip_tags((string) $promo_additional_info))))
+                                                <div class="frontend-fact-card frontend-fact-card--fullrow">
+                                                    <span>@lang('messages.Additional Information')</span>
+                                                    <div class="frontend-fact-card__content">{!! $promo_additional_info !!}</div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </section>
 
@@ -229,7 +235,12 @@
                                         </div>
                                         <p class="booking-wizard__text">@lang('messages.Double-check the promotion, extras, and total amount before submitting the booking request.')</p>
                                     </div>
-
+                                    @if (!empty(trim(strip_tags((string) $promo_cancellation_policy))))
+                                        <div class="frontend-fact-card frontend-fact-card--fullrow">
+                                            <span>@lang('messages.Cancellation Policy')</span>
+                                            <div class="frontend-fact-card__content">{!! $promo_cancellation_policy !!}</div>
+                                        </div>
+                                    @endif
                                     <section class="frontend-detail-block">
                                         <div class="frontend-detail-block__header">
                                             <div>

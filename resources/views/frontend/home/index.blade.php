@@ -7,6 +7,7 @@
 
 @section('content')
     @include('frontend.partials.spinner')
+    @include('frontend.home.partials.slider')
     @include('frontend.home.partials.hero-b2b')
     @include('frontend.home.partials.services')
     @include('frontend.home.partials.partner-flow')

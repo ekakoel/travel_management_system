@@ -1,15 +1,30 @@
 <?php
+use App\Http\Controllers\AccommodationFinancialFileController;
 use App\Http\Controllers\ActivitiesAdminController;
 use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\ActivityGuestListTemplateController;
 use App\Http\Controllers\ActivityQuoteController;
-use App\Http\Controllers\AdminNotificationController;
-use App\Http\Controllers\AccommodationFinancialFileController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\AgentRegistrationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Backend\Operations\Activities\ActivityAdminController;
+use App\Http\Controllers\Backend\Operations\Activities\ActivityGalleryAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelAdditionalChargeAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelContractAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelGalleryAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelNormalPriceAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelPackageAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelPromoAdminController;
+use App\Http\Controllers\Backend\Operations\Hotels\HotelRoomAdminController;
+use App\Http\Controllers\Backend\Operations\Tours\TourAdminController;
+use App\Http\Controllers\Backend\Operations\Tours\TourPriceAdminController;
+use App\Http\Controllers\Backend\Operations\Transports\TransportAdminController;
+use App\Http\Controllers\Backend\Operations\Transports\TransportGalleryAdminController;
+use App\Http\Controllers\Backend\Operations\Transports\TransportPriceAdminController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BedTypeController;
 use App\Http\Controllers\BookingCodeController;
@@ -23,28 +38,12 @@ use App\Http\Controllers\EmailBlastsController;
 use App\Http\Controllers\ExtraBedController;
 use App\Http\Controllers\FlightsController;
 use App\Http\Controllers\FlyerGeneratorController;
-use App\Http\Controllers\FrontEndController;
 use App\Http\Controllers\FooterManagerController;
+use App\Http\Controllers\FrontEndController;
 use App\Http\Controllers\GuestsController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Backend\Operations\Activities\ActivityAdminController;
-use App\Http\Controllers\Backend\Operations\Activities\ActivityGalleryAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelAdditionalChargeAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelContractAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelGalleryAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelPromoAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelPackageAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelNormalPriceAdminController;
-use App\Http\Controllers\Backend\Operations\Hotels\HotelRoomAdminController;
-use App\Http\Controllers\Backend\Operations\Tours\TourAdminController;
-use App\Http\Controllers\Backend\Operations\Tours\TourPriceAdminController;
-use App\Http\Controllers\Backend\Operations\Transports\TransportAdminController;
-use App\Http\Controllers\Backend\Operations\Transports\TransportGalleryAdminController;
-use App\Http\Controllers\Backend\Operations\Transports\TransportPriceAdminController;
-use App\Http\Controllers\TransportBrandController;
-use App\Http\Controllers\TransportTypeController;
+use App\Http\Controllers\HomeSliderController;
 use App\Http\Controllers\HotelPromoController;
 use App\Http\Controllers\HotelsAdminController;
 use App\Http\Controllers\HotelsController;
@@ -63,15 +62,19 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RoomViewController;
+use App\Http\Controllers\SpkReportController;
 use App\Http\Controllers\SpksController;
 use App\Http\Controllers\SpksDestinationsController;
+use App\Http\Controllers\SpkWhatsAppController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TermAndConditionController;
+use App\Http\Controllers\TourPackageQuoteController;
 use App\Http\Controllers\TourPricesController;
 use App\Http\Controllers\ToursController;
-use App\Http\Controllers\TourPackageQuoteController;
+use App\Http\Controllers\TransportBrandController;
 use App\Http\Controllers\TransportManagementController;
 use App\Http\Controllers\TransportsController;
+use App\Http\Controllers\TransportTypeController;
 use App\Http\Controllers\UsdRatesController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VendorController;
@@ -85,10 +88,6 @@ use App\Http\Controllers\WeddingReceptionVenuesController;
 use App\Http\Controllers\WeddingsController;
 use App\Http\Controllers\WeddingVenuesController;
 use App\Http\Controllers\WhatsAppController;
-
-use App\Http\Controllers\SpkReportController;
-use App\Http\Controllers\SpkWhatsAppController;
-
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -255,7 +254,7 @@ use Illuminate\Support\Facades\Route;
         });
 
         // DEVELOPER | ADMINISTRATOR | AUTHOR ================================================================================================
-        Route::middleware(['checkPosition:developer,administrator,reservation,author'])->prefix('admin')->name('admin.')->group(function () {
+        Route::middleware(['checkPosition:developer,administrator,author'])->prefix('admin')->name('admin.')->group(function () {
             // ---------------------------------------------------
             //                     DEVELOPER
             // ---------------------------------------------------
@@ -265,9 +264,14 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/panel-main', [AdminPanelController::class, 'admin_panel_main'])->name('panel-main.view');
             Route::get('/panel',[AdminPanelController::class,'index'])->name('panel.index');
+
             // ---------------------------------------------------
-            //                    RESERVATION
+            //                      SLIDER
             // ---------------------------------------------------
+            Route::get('/home-sliders', [HomeSliderController::class, 'index'])->name('home-sliders.index');
+            Route::post('/fcreate-home-slider', [HomeSliderController::class, 'store'])->name('home-slider.create');
+            Route::put('/fupdate-home-slider/{id}', [HomeSliderController::class, 'update'])->name('home-slider.edit');
+            Route::delete('/fremove-home-slider/{id}', [HomeSliderController::class, 'destroy'])->name('home-slider.destroy');
 
             // ---------------------------------------------------
             //                      PARTNERS

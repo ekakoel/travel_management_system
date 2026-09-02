@@ -120,6 +120,12 @@
                                                     <div class="frontend-fact-card__content">{!! $package->localized_benefits !!}</div>
                                                 </div>
                                             @endif
+                                            @if (!empty(trim(strip_tags((string) $package->localized_additional_info))))
+                                                <div class="frontend-fact-card frontend-fact-card--fullrow">
+                                                    <span>@lang('messages.Additional Information')</span>
+                                                    <div class="frontend-fact-card__content">{!! $package->localized_additional_info !!}</div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </section>
                                     <section>
@@ -181,7 +187,12 @@
                                         </div>
                                         <p class="booking-wizard__text">@lang('messages.Review the package amount, transfer selections, and booking references before sending the request.')</p>
                                     </div>
-
+                                    @if (!empty(trim(strip_tags((string) $package->localized_cancellation_policy))))
+                                        <div class="frontend-fact-card frontend-fact-card--fullrow m-b-18">
+                                            <span>@lang('messages.Cancellation Policy')</span>
+                                            <div class="frontend-fact-card__content">{!! $package->localized_cancellation_policy !!}</div>
+                                        </div>
+                                    @endif
                                     <section class="frontend-detail-block">
                                         <div class="frontend-detail-block__header">
                                             <div>

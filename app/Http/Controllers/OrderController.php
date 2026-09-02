@@ -1509,6 +1509,7 @@ class OrderController extends Controller
         $promo_benefits = $this->localizedJoinedField($promos, 'benefits');
         $promo_include = $this->localizedJoinedField($promos, 'include');
         $promo_additional_info = $this->localizedJoinedField($promos, 'additional_info');
+        $promo_cancellation_policy = $this->localizedJoinedField($promos, 'cancellation_policy');
         $transportOptions = $this->buildHotelBookingTransportOptions($hotel, $usdrates, $tax);
         $roomForm = $this->buildHotelBookingRoomFormData($hotel, $room, $room_capacity, $duration, $usdrates, $tax, 'nightly', $room->capacity_adult);
         $promo_price = $request->promo_price;
@@ -1525,7 +1526,7 @@ class OrderController extends Controller
             'now', 'usdrates', 'tax',
             'service', 'orderNumber', 'checkin', 'checkout', 'duration',
             'hotel', 'promos', 'prIds', 'promo_name', 'room', 'room_capacity',
-            'promo_benefits', 'promo_include', 'promo_additional_info',
+            'promo_benefits', 'promo_include', 'promo_additional_info','promo_cancellation_policy',
             'transportOptions', 'final_price', 'promo_price',
             'uniqueHotelPromoIds', 'price_list', 'agents', 'optional_rates', 'totalPriceOptionalRates', 'roomForm'
         ));
@@ -2255,6 +2256,7 @@ class OrderController extends Controller
         $package->localized_benefits = localized_model_field($package, 'benefits');
         $package->localized_include = localized_model_field($package, 'include');
         $package->localized_additional_info = localized_model_field($package, 'additional_info');
+        $package->localized_cancellation_policy = localized_model_field($package, 'cancellation_policy');
         $data = ([
             'now' => $now,
             'usdrates' => $usdrates,

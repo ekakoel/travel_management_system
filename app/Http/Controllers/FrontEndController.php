@@ -2,30 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
-use Carbon\Exceptions\InvalidFormatException;
 use App\Exceptions\PricingException;
 use App\Models\Activities;
-use App\Models\Promotion;
-use App\Models\Tours;
-use App\Models\Tax;
-use App\Models\Hotels;
+use App\Models\HomeSlider;
 use App\Models\HotelPackage;
-use App\Models\TourPrices;
-use Illuminate\Support\Facades\Log;
 use App\Models\HotelPromo;
+use App\Models\Hotels;
+use App\Models\Promotion;
+use App\Models\Tax;
+use App\Models\TourPrices;
+use App\Models\Tours;
 use App\Models\Transports;
 use App\Models\UsdRates;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Services\PublicFaqService;
 use App\Services\Activities\ActivityPricingService;
+use App\Services\PublicFaqService;
 use App\Services\Tours\TourPackagePricingService;
 use App\Support\MoneyFormatter;
 use App\ValueObjects\Money;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\Exceptions\InvalidFormatException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\Support\ViewErrorBag;
 
 class FrontEndController extends Controller
@@ -101,8 +102,11 @@ class FrontEndController extends Controller
             ];
 
             $homeFaqItems = $publicFaqService->items();
+            $sliders = HomeSlider::active()
+                ->orderBy('sort_order')
+                ->get();
 
-            return view('frontend.home.index', compact('promos', 'homeStats', 'homeServiceImages', 'homeFaqItems'));
+            return view('frontend.home.index', compact('promos', 'homeStats', 'homeServiceImages', 'homeFaqItems','sliders'));
         } catch (\Exception $e) {
             Log::error('Error on homepage: ' . $e->getMessage());
             abort(500, 'An error occurred while loading the homepage.');

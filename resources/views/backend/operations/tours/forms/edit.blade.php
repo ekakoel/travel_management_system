@@ -478,7 +478,7 @@
                                         <button type="button" class="backend-button backend-button-primary" data-tour-wizard-next>
                                             Continue
                                         </button>
-                                        <button type="submit" class="backend-button backend-button-primary" data-tour-wizard-submit hidden>
+                                        <button type="submit" class="backend-button backend-button-primary" data-tour-wizard-submit>
                                             <i class="fa fa-check"></i>
                                             Update Tour
                                         </button>

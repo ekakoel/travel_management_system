@@ -103,6 +103,7 @@ mix.js('resources/js/app.js', 'public/js')
     .sass('resources/frontend/scss/pages/hotel-booking-entry.scss', 'public/build/frontend/css/pages')
     .sass('resources/frontend/scss/pages/transport-booking-entry.scss', 'public/build/frontend/css/pages')
     .sass('resources/frontend/scss/home/orders/detail-entry.scss', 'public/build/frontend/css/pages/order-detail-entry.css')
+    .sass('resources/backend/scss/operations/home-sliders/index.scss', 'public/build/backend/css/operations/home-sliders/index.css')
     .js('resources/frontend/js/home/orders/index.js', 'public/build/frontend/js/pages/frontend-orders.js')
     .js('resources/frontend/js/home/manual-book/index.js', 'public/build/frontend/js/pages/manual-book.js')
     .js('resources/frontend/js/pages/auth.js', 'public/build/frontend/js/pages')
@@ -120,6 +121,7 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/frontend/js/home/orders/detail.js', 'public/build/frontend/js/pages/order-detail.js')
     .js('resources/frontend/js/pages/transport-booking.js', 'public/build/frontend/js/pages')
     .js('resources/frontend/js/home/orders/edit.js', 'public/build/frontend/js/pages/order-edit.js')
+    .js('resources/backend/js/operations/home-sliders/index.js', 'public/build/backend/js/operations/home-sliders/index.js')
     .version();
 
 if (!fs.existsSync(ckeditorTarget)) {

@@ -443,8 +443,6 @@
                             </section>
                         </x-slot>
                     </x-backend.detail-layout>
-
-                    
                 </form>
             </div>
         </main>

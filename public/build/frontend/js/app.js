@@ -652,6 +652,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /***/ }),
 
+/***/ "./resources/frontend/js/components/home-slider.js":
+/*!*********************************************************!*\
+  !*** ./resources/frontend/js/components/home-slider.js ***!
+  \*********************************************************/
+/***/ (() => {
+
+document.addEventListener('DOMContentLoaded', function () {
+  var sliderElement = document.querySelector('.home-slider__swiper');
+  if (!sliderElement || typeof Swiper === 'undefined') {
+    return;
+  }
+  var slideCount = sliderElement.querySelectorAll('.swiper-slide').length;
+  if (slideCount <= 1) {
+    return;
+  }
+  new Swiper(sliderElement, {
+    loop: true,
+    speed: 900,
+    autoplay: {
+      delay: 6000,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true
+    },
+    effect: 'fade',
+    fadeEffect: {
+      crossFade: true
+    },
+    pagination: {
+      el: sliderElement.querySelector('.swiper-pagination'),
+      clickable: true
+    },
+    navigation: {
+      nextEl: sliderElement.querySelector('.swiper-button-next'),
+      prevEl: sliderElement.querySelector('.swiper-button-prev')
+    },
+    keyboard: {
+      enabled: true
+    },
+    a11y: {
+      enabled: true
+    }
+  });
+});
+
+/***/ }),
+
 /***/ "./node_modules/base64-js/index.js":
 /*!*****************************************!*\
   !*** ./node_modules/base64-js/index.js ***!
@@ -23896,6 +23942,30 @@ module.exports = axios;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -23906,6 +23976,22 @@ module.exports = axios;
 /******/ 				if (typeof window === 'object') return window;
 /******/ 			}
 /******/ 		})();
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
@@ -23919,11 +24005,15 @@ module.exports = axios;
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
+"use strict";
 /*!**************************************!*\
   !*** ./resources/frontend/js/app.js ***!
   \**************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_home_slider__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/home-slider */ "./resources/frontend/js/components/home-slider.js");
+/* harmony import */ var _components_home_slider__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_components_home_slider__WEBPACK_IMPORTED_MODULE_0__);
 /**
  * Frontend entry point.
  *
@@ -23931,6 +24021,7 @@ var __webpack_exports__ = {};
  * Page-specific frontend scripts can be imported here gradually as
  * pages move from legacy public assets into the new build pipeline.
  */
+
 
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs");

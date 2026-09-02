@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use App\Services\BusinessProfileService;
 use App\Services\PublicFaqService;
 use Illuminate\Support\Facades\Schema;
+use App\Models\HomeSlider;
 
 class HomeController extends Controller
 {
@@ -39,8 +40,11 @@ class HomeController extends Controller
             ->get()
             ->unique('hotels_id');
         $homeFaqItems = $publicFaqService->items();
+        $sliders = HomeSlider::active()
+            ->orderBy('sort_order')
+            ->get();
 
-        return view('frontend.home.index', compact('promos', 'homeFaqItems'));
+        return view('frontend.home.index', compact('promos', 'homeFaqItems','sliders'));
     }
 
     public function about_us(Request $request, BusinessProfileService $businessProfileService)
