@@ -19,7 +19,7 @@ class UpdatePartnerRequest extends FormRequest
             'location' => ['required', 'string', 'max:255'],
             'map' => ['required', 'string'],
             'cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'type' => ['required', 'string', 'in:Activity,Transport,F&B,Activity & Transport'],
+            'type' => ['required', 'string', 'in:Activity,Transport,F&B,Wellness'],
             'phone' => ['required', 'string', 'max:50'],
             'contact_person' => ['required', 'string', 'max:255'],
             'status' => ['nullable', 'string', 'in:Draft,Active'],
