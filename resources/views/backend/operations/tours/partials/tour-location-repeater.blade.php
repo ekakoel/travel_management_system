@@ -55,7 +55,7 @@
 @endphp
 
 <div class="col-12">
-    <div class="tour-location-repeater @if($compactLocationCards) tour-location-repeater--compact @endif" data-tour-locations-repeater data-allow-empty="{{ $allowEmptyLocations ? 'true' : 'false' }}" data-resolve-url="{{ route('tour-location.resolve-coordinates') }}" data-references-url="{{ route('tour-location.references') }}">
+    <div class="tour-location-repeater @if($compactLocationCards) tour-location-repeater--compact @endif" data-tour-locations-repeater data-allow-empty="{{ $allowEmptyLocations ? 'true' : 'false' }}" data-resolve-url="{{ route('admin.tour-location.resolve-coordinates') }}" data-references-url="{{ route('admin.tour-location.references') }}">
         <div class="d-flex justify-content-between align-items-start flex-wrap m-b-18">
             <div>
                 <h5 class="m-b-5">Tour Route Map Locations</h5>

@@ -87,7 +87,7 @@
 
                 <x-backend.detail-layout class="transport-detail-layout">
                     <x-slot name="main">
-                <section class="backend-panel transport-detail-panel m-b-18">
+                <section class="backend-panel transport-detail-panel">
                     <div class="backend-section-header transport-detail-panel__heading">
                         <div>
                             <span class="backend-section-header__label">Transport Profile</span>
@@ -156,7 +156,7 @@
                         @endcanany
                     </div>
 
-                    <section class="backend-filter-panel transport-detail-price-filter backend-filter-panel--flush">
+                    <section class="backend-filter-panel transport-detail-price-filter backend-filter-panel--flush p-18">
                         <label class="backend-filter-field">
                             <span class="backend-filter-label">Filter by type</span>
                             <span class="backend-filter-search">
@@ -173,7 +173,7 @@
                         </label>
                     </section>
 
-                    <div class="backend-table-wrap transport-detail-table-wrap">
+                    <section class="backend-table-card transport-detail-table-wrap">
                         <table id="transportPriceTable" class="backend-table transport-detail-price-table">
                             <thead>
                                 <tr>
@@ -237,7 +237,7 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>
+                    </section>
                 </section>
                     </x-slot>
 
@@ -298,7 +298,7 @@
                                         <span class="backend-section-header__label">Price Detail</span>
                                         <h5 id="detail-price-title-{{ $price->id }}">{{ $transport->name }} | {{ $price->type }}</h5>
                                     </div>
-                                    <span class="backend-status-badge backend-status-badge--info">{{ $row['duration_label'] }}</span>
+                                    <button type="button" class="backend-modal__close" data-dismiss="modal" aria-label="Close">&times;</button>
                                 </div>
                                 <div class="backend-modal__body">
                                     <dl class="backend-table-card-grid">
@@ -324,9 +324,6 @@
                                         </article>
                                     @endif
                                 </div>
-                                <div class="backend-modal__footer">
-                                    <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Close</button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -340,6 +337,7 @@
                                             <span class="backend-section-header__label">Edit Price</span>
                                             <h5 id="edit-price-title-{{ $price->id }}">{{ $transport->name }} | {{ $price->type }}</h5>
                                         </div>
+                                        <button type="button" class="backend-modal__close" data-dismiss="modal" aria-label="Close">&times;</button>
                                     </div>
                                     <div class="backend-modal__body">
                                         <form id="update-price-{{ $price->id }}" class="backend-form-grid" action="{{ route('admin.transports.prices.update', $price->id) }}" method="post" enctype="multipart/form-data">
@@ -351,7 +349,6 @@
                                         </form>
                                     </div>
                                     <div class="backend-modal__footer">
-                                        <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Cancel</button>
                                         <button type="submit" form="update-price-{{ $price->id }}" class="backend-button backend-button-primary">
                                             <i class="fa fa-check"></i>
                                             Save Changes
@@ -372,6 +369,7 @@
                                         <span class="backend-section-header__label">Add Price</span>
                                         <h5 id="add-transport-price-title">{{ $transport->name }}</h5>
                                     </div>
+                                    <button type="button" class="backend-modal__close" data-dismiss="modal" aria-label="Close">&times;</button>
                                 </div>
                                 <div class="backend-modal__body">
                                     <form id="create-transport-price" class="backend-form-grid" action="{{ route('admin.transports.prices.store') }}" method="post" enctype="multipart/form-data">
@@ -381,7 +379,6 @@
                                     </form>
                                 </div>
                                 <div class="backend-modal__footer">
-                                    <button type="button" class="backend-button backend-button-secondary" data-dismiss="modal">Cancel</button>
                                     <button type="submit" form="create-transport-price" class="backend-button backend-button-primary">
                                         <i class="fa fa-plus"></i>
                                         Add Price

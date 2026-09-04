@@ -7934,18 +7934,18 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         foreach ([
-            '/add-transport',
-            '/edit-transport-',
-            '/edit-galery-transport-',
-            '/fadd-transport',
-            '/fadd-transport-price',
-            '/fupdate-transport',
-            '/fupdate-transport-price',
-            '/delete-transport',
-            '/fdelete-transport-price',
-            '/fdelete-transport-cover',
-            '/detail-transport-',
-            '/transports-admin',
+            '/admin/add-transport',
+            '/admin/edit-transport-',
+            '/admin/edit-galery-transport-',
+            '/admin/fadd-transport',
+            '/admin/fadd-transport-price',
+            '/admin/fupdate-transport',
+            '/admin/fupdate-transport-price',
+            '/admin/delete-transport',
+            '/admin/fdelete-transport-price',
+            '/admin/fdelete-transport-cover',
+            '/admin/detail-transport-',
+            '/admin/transports-admin',
         ] as $legacyUrl) {
             $this->assertStringNotContainsString($legacyUrl, $indexView . $detailView . $createForm . $editForm . $galleryForm);
         }

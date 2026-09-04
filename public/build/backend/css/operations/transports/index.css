@@ -1,7 +1,54 @@
 .transports-admin-page {
-  --transports-admin-accent: #2563eb;
+  background: var(--backend-surface);
+  color: var(--backend-ink);
+  min-height: 100vh;
+  overflow-x: clip;
 }
 
-.transports-admin-page .is-filtered-out {
-  display: none;
+.transports-admin-page * {
+  box-sizing: border-box;
+}
+
+.transports-admin-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.transports-admin-panel__heading {
+  border-bottom: 1px solid var(--backend-line-soft);
+  margin-bottom: 0;
+  padding: 18px;
+}
+
+.transports-admin-table-wrap {
+  padding: 0;
+}
+
+.transports-admin-table th:nth-child(2),
+.transports-admin-table td:nth-child(2) {
+  width: 26%;
+}
+
+.transports-admin-card-list {
+  padding: 14px;
+}
+
+.transports-admin-card__actions {
+  border-top: 1px solid var(--backend-line-soft);
+  justify-content: flex-start;
+  padding: 12px;
+}
+
+[data-transport-row].is-filtered-out {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  .transports-admin-table-wrap {
+    display: none;
+  }
+  .transports-admin-card-list {
+    display: grid;
+    gap: 12px;
+  }
 }

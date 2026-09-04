@@ -45,7 +45,7 @@
                 @include('backend.operations.transports.partials.form-feedback')
 
                 <div class="row">
-                    <div class="col-12 col-lg-7">
+                    <div class="col-12 col-lg-8">
                         <section class="backend-panel transport-gallery-panel">
                             <div class="backend-section-header">
                                 <div>
@@ -82,12 +82,12 @@
                         </section>
                     </div>
 
-                    <div class="col-12 col-lg-5">
+                    <div class="col-12 col-lg-4">
                         <form data-transport-form action="{{ route('admin.transports.update', $transports->id) }}" method="post" enctype="multipart/form-data">
                             @csrf
                             @method('put')
 
-                            <section class="backend-panel transport-gallery-panel">
+                            <section class="backend-panel transport-gallery-panel m-b-18">
                                 <div class="backend-section-header">
                                     <div>
                                         <span class="backend-section-header__label">Upload</span>
@@ -109,21 +109,19 @@
 
                                 <div class="transport-gallery-preview" data-transport-gallery-preview aria-live="polite"></div>
 
-                                <div class="backend-page-toolbar backend-form-actions">
-                                    <div class="backend-page-toolbar__actions">
-                                        <a href="{{ route('admin.transports.show', $transports->id) }}" class="backend-button backend-button-secondary">Cancel</a>
-                                        <button type="submit" class="backend-button backend-button-primary">
-                                            <i class="fa fa-check"></i>
-                                            Update Gallery
-                                        </button>
-                                    </div>
-                                </div>
                             </section>
+                            <div class="backend-page-toolbar backend-form-actions">
+                                <div class="backend-page-toolbar__actions">
+                                    <a href="{{ route('admin.transports.show', $transports->id) }}" class="backend-button backend-button-secondary">Cancel</a>
+                                    <button type="submit" class="backend-button backend-button-primary">
+                                        <i class="fa fa-check"></i>
+                                        Update Gallery
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan

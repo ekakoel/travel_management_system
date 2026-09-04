@@ -45,9 +45,9 @@ body.sidebar-light .backend-filter-panel {
     box-shadow: var(--backend-shadow-soft);
     display: flex;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
     min-width: 0;
-    padding: 8px 10px;
+    padding: 18px;
 }
 
 body.sidebar-light .backend-filter-panel--flush {
@@ -156,7 +156,7 @@ body.sidebar-light .backend-page-toolbar__actions {
     gap: 8px;
     width: max-content;
     align-content: flex-end;
-    padding-bottom: 4px;
+    // padding-bottom: 4px;
 }
 
 body.sidebar-light .backend-toolbar-action {

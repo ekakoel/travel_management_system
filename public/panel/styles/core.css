@@ -9612,7 +9612,7 @@ ul.wysihtml5-toolbar .fa {
 .datepickers-container {
   position: absolute;
   left: 0;
-  top: 0; }
+  top: -25px; }
 
 @media print {
   .datepickers-container {

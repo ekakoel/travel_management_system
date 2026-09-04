@@ -389,6 +389,49 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/fdelete-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'destroy'])->name('hotels.additional-charges.destroy');
             Route::post('/fadd-additional-charge',[HotelAdditionalChargeAdminController::class,'store'])->name('hotels.additional-charges.store');
             Route::put('/fupdate-additional-charge/{id}',[HotelAdditionalChargeAdminController::class,'update'])->name('hotels.additional-charges.update');
+
+            // ---------------------------------------------------
+            //                     TRANSPORTS
+            // ---------------------------------------------------
+            Route::get('/transports-admin',[TransportAdminController::class,'index'])->name('transports.index');
+            Route::get('/detail-transport/{id}',[TransportAdminController::class,'show'])->name('transports.show');
+            Route::get('/transport-types', [TransportTypeController::class, 'index'])->name('transport-types.index');
+            Route::post('/transport-types', [TransportTypeController::class, 'store'])->name('transport-types.store');
+            Route::put('/transport-types/{transportType}', [TransportTypeController::class, 'update'])->name('transport-types.update');
+            Route::delete('/transport-types/{transportType}', [TransportTypeController::class, 'destroy'])->name('transport-types.destroy');
+            Route::get('/transport-brands', [TransportBrandController::class, 'index'])->name('transport-brands.index');
+            Route::post('/transport-brands', [TransportBrandController::class, 'store'])->name('transport-brands.store');
+            Route::put('/transport-brands/{transportBrand}', [TransportBrandController::class, 'update'])->name('transport-brands.update');
+            Route::delete('/transport-brands/{transportBrand}', [TransportBrandController::class, 'destroy'])->name('transport-brands.destroy');
+            Route::get('/add-transport',[TransportAdminController::class,'create'])->name('transports.create');
+            Route::get('/edit-transport/{id}',[TransportAdminController::class,'edit'])->name('transports.edit');
+            Route::get('/edit-galery-transport/{id}',[TransportGalleryAdminController::class,'edit'])->name('transports.gallery.edit');
+            Route::post('/fadd-transport',[TransportAdminController::class,'store'])->name('transports.store');
+            Route::post('/fadd-transport-price',[TransportPriceAdminController::class,'store'])->name('transports.prices.store');
+            Route::put('/fupdate-transport/{id}',[TransportAdminController::class,'update'])->name('transports.update');
+            Route::put('/fupdate-transport-price/{id}',[TransportPriceAdminController::class,'update'])->name('transports.prices.update');
+            Route::put('/delete-transport/{id}',[TransportAdminController::class,'destroy'])->name('transports.destroy');
+            Route::delete('/fdelete-transport-price/{id}',[TransportPriceAdminController::class,'destroy'])->name('transports.prices.destroy');
+            Route::delete('/fdelete-transport-cover/{id}',[TransportGalleryAdminController::class,'destroyCover'])->name('transports.cover.destroy');
+            Route::delete('/fdelete-transport-img/{id}',[TransportGalleryAdminController::class,'destroyImage'])->name('transports.images.destroy');
+
+            // ---------------------------------------------------
+            //                       TOURS PACKAGES
+            // ---------------------------------------------------
+            Route::get('/tour-package-admin',[TourAdminController::class,'index'])->name('tour-packages.index');
+            Route::post('/fadd-tour',[TourAdminController::class,'store'])->name('tours.store');
+            Route::put('/fupdate-tour/{id}',[TourAdminController::class,'update'])->name('tours.update');
+            Route::get('/detail-tour/{id}',[TourAdminController::class,'show'])->name('tours.show');
+            Route::get('/edit-tour/{id}',[TourAdminController::class,'edit'])->name('tours.edit');
+            Route::delete('/remove-tour/{id}',[TourAdminController::class,'destroy'])->name('tours.destroy');
+            Route::get('/add-tour',[TourAdminController::class,'create'])->name('tours.create');
+            Route::get('/tour-location/references',[TourAdminController::class,'searchTourLocationReferences'])->name('tour-location.references');
+            Route::post('/tour-location/resolve-coordinates',[TourAdminController::class,'resolveTourLocationCoordinates'])->name('tour-location.resolve-coordinates');
+            Route::post('/detail-tour-{tour}/prices',[TourPriceAdminController::class,'store'])->name('tours.prices.store');
+            Route::put('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'update'])->name('tours.prices.update');
+            Route::delete('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'destroy'])->name('tours.prices.destroy');
+            Route::post('/detail-tour-{tour}/prices/{tourPrice}/restore',[TourPriceAdminController::class,'restore'])->name('tours.prices.restore');
+
         });
 
         Route::middleware(['checkPosition:developer,administrator,author'])->group(function () {
@@ -495,21 +538,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/delete-additional-service/{id}',[ReservationController::class,'destroy_additional_service']);
 
 
-            // ---------------------------------------------------
-            //                     TRANSPORTS
-            // ---------------------------------------------------
-            Route::get('/add-transport',[TransportAdminController::class,'create'])->name('admin.transports.create');
-            Route::get('/edit-transport/{id}',[TransportAdminController::class,'edit'])->name('admin.transports.edit');
-            Route::get('/edit-galery-transport/{id}',[TransportGalleryAdminController::class,'edit'])->name('admin.transports.gallery.edit');
-            Route::post('/fadd-transport',[TransportAdminController::class,'store'])->name('admin.transports.store');
-            Route::post('/fadd-transport-price',[TransportPriceAdminController::class,'store'])->name('admin.transports.prices.store');
-            Route::put('/fupdate-transport/{id}',[TransportAdminController::class,'update'])->name('admin.transports.update');
-            Route::put('/fupdate-transport-price/{id}',[TransportPriceAdminController::class,'update'])->name('admin.transports.prices.update');
-            Route::put('/delete-transport/{id}',[TransportAdminController::class,'destroy'])->name('admin.transports.destroy');
-            Route::delete('/fdelete-transport-price/{id}',[TransportPriceAdminController::class,'destroy'])->name('admin.transports.prices.destroy');
-            Route::delete('/fdelete-transport-cover/{id}',[TransportGalleryAdminController::class,'destroyCover'])->name('admin.transports.cover.destroy');
-            Route::delete('/fdelete-transport-img/{id}',[TransportGalleryAdminController::class,'destroyImage'])->name('admin.transports.images.destroy');
-
+            
             
 
             // ---------------------------------------------------
@@ -902,36 +931,9 @@ use Illuminate\Support\Facades\Route;
             Route::post('/fadd-villa-additional-service',[VillasController::class,'func_add_additional_service'])->name('func.villa-additional-service.add');
             Route::delete('/fdelete-villa-additional-service/{id}',[VillasController::class,'func_delete_additional_service'])->name('func.villa-additional-service.delete');
             Route::post('/check-villa-status', [VillasController::class, 'checkVillaStatus'])->name('villa.checkStatus');
-            // ---------------------------------------------------
-            //                       TOURS PACKAGES
-            // ---------------------------------------------------
-            Route::post('/fadd-tour',[TourAdminController::class,'store'])->name('admin.tours.store');
-            Route::put('/fupdate-tour/{id}',[TourAdminController::class,'update'])->name('admin.tours.update');
-            Route::get('/tour-package-admin',[TourAdminController::class,'index'])->name('admin.tour-packages.index');
-            Route::get('/detail-tour/{id}',[TourAdminController::class,'show'])->name('admin.tours.show');
-            Route::get('/edit-tour/{id}',[TourAdminController::class,'edit'])->name('admin.tours.edit');
-            Route::delete('/remove-tour/{id}',[TourAdminController::class,'destroy'])->name('admin.tours.destroy');
-            Route::get('/add-tour',[TourAdminController::class,'create'])->name('admin.tours.create');
-            Route::get('/tour-location/references',[TourAdminController::class,'searchTourLocationReferences'])->name('tour-location.references');
-            Route::post('/tour-location/resolve-coordinates',[TourAdminController::class,'resolveTourLocationCoordinates'])->name('tour-location.resolve-coordinates');
-            Route::post('/detail-tour-{tour}/prices',[TourPriceAdminController::class,'store'])->name('admin.tours.prices.store');
-            Route::put('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'update'])->name('admin.tours.prices.update');
-            Route::delete('/detail-tour-{tour}/prices/{tourPrice}',[TourPriceAdminController::class,'destroy'])->name('admin.tours.prices.destroy');
-            Route::post('/detail-tour-{tour}/prices/{tourPrice}/restore',[TourPriceAdminController::class,'restore'])->name('admin.tours.prices.restore');
 
-            // ---------------------------------------------------
-            //                     TRANSPORTS
-            // ---------------------------------------------------
-            Route::get('/transports-admin',[TransportAdminController::class,'index'])->name('admin.transports.index');
-            Route::get('/detail-transport/{id}',[TransportAdminController::class,'show'])->name('admin.transports.show');
-            Route::get('/transport-types', [TransportTypeController::class, 'index'])->name('admin.transport-types.index');
-            Route::post('/transport-types', [TransportTypeController::class, 'store'])->name('admin.transport-types.store');
-            Route::put('/transport-types/{transportType}', [TransportTypeController::class, 'update'])->name('admin.transport-types.update');
-            Route::delete('/transport-types/{transportType}', [TransportTypeController::class, 'destroy'])->name('admin.transport-types.destroy');
-            Route::get('/transport-brands', [TransportBrandController::class, 'index'])->name('admin.transport-brands.index');
-            Route::post('/transport-brands', [TransportBrandController::class, 'store'])->name('admin.transport-brands.store');
-            Route::put('/transport-brands/{transportBrand}', [TransportBrandController::class, 'update'])->name('admin.transport-brands.update');
-            Route::delete('/transport-brands/{transportBrand}', [TransportBrandController::class, 'destroy'])->name('admin.transport-brands.destroy');
+
+            
 
             // ---------------------------------------------------
             //                        EMAIL

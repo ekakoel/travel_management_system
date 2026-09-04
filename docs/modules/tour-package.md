@@ -116,8 +116,8 @@ wizard ringan project-native:
   ketika reference lokasi dibuat/diperbarui sehingga autocomplete berikutnya
   dapat mengisi ulang deskripsi multi-bahasa.
 - location reference autocomplete tetap memakai route
-  `tour-location.references`, sedangkan resolve koordinat tetap memakai
-  `tour-location.resolve-coordinates`. Route & Itinerary tidak menampilkan
+  `admin.tour-location.references`, sedangkan resolve koordinat tetap memakai
+  `admin.tour-location.resolve-coordinates`. Route & Itinerary tidak menampilkan
   tombol manual "Resolve Location" atau "Enter Coordinates Manually"; koordinat
   harus tetap otomatis dibaca saat Google Maps URL diinput atau dipilih dari
   reference, dengan fallback field koordinat manual hanya muncul saat resolver

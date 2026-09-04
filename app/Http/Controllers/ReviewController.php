@@ -18,7 +18,7 @@ class ReviewController extends Controller
 {
     public function index()
     {
-        $guides = Guide::where('status', 'active')->get();
+        $guides = Guide::all();
         $drivers = Drivers::where('status', 'active')->get();
         $reviews = Review::with(['guide', 'driver'])->latest()->paginate(20);
         $serviceStats = Review::serviceStats();

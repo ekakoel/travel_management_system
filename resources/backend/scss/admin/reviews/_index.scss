@@ -43,7 +43,7 @@
   align-items: start;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 7fr) minmax(260px, 3fr);
 }
 
 .tour-reviews-layout--links {

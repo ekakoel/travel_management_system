@@ -311,8 +311,6 @@
                         </article>
                     </aside>
                 </section>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan

@@ -64,7 +64,7 @@
                     </section>
                 @endif
 
-                <section class="tour-reviews-layout tour-reviews-layout--links">
+                <section class="tour-reviews-layout">
                     <div class="tour-reviews-main">
                         <article class="backend-panel tour-reviews-panel">
                             <header class="backend-section-header tour-reviews-panel__heading">
@@ -193,18 +193,16 @@
                                     <input type="text" name="booking_code" class="backend-form-control @error('booking_code') is-invalid @enderror" value="{{ old('booking_code') }}" required data-uppercase-input>
                                     @error('booking_code')<small>{{ $message }}</small>@enderror
                                 </label>
-                                <div class="tour-review-link-form__grid">
-                                    <label>
-                                        <span>Arrival Date <b>*</b></span>
-                                        <input type="date" name="arrival_date" class="backend-form-control @error('arrival_date') is-invalid @enderror" value="{{ old('arrival_date') }}" required>
-                                        @error('arrival_date')<small>{{ $message }}</small>@enderror
-                                    </label>
-                                    <label>
-                                        <span>Departure Date <b>*</b></span>
-                                        <input type="date" name="departure_date" class="backend-form-control @error('departure_date') is-invalid @enderror" value="{{ old('departure_date') }}" required>
-                                        @error('departure_date')<small>{{ $message }}</small>@enderror
-                                    </label>
-                                </div>
+                                <label>
+                                    <span>Arrival Date <b>*</b></span>
+                                    <input name="arrival_date" class="backend-form-control @error('arrival_date') is-invalid @enderror" value="{{ old('arrival_date') }}" placeholder="YYYY-MM-DD" type="text" required data-backend-picker="date" data-backend-picker-format="yyyy-mm-dd">
+                                    @error('arrival_date')<small>{{ $message }}</small>@enderror
+                                </label>
+                                <label>
+                                    <span>Departure Date <b>*</b></span>
+                                    <input name="departure_date" class="backend-form-control @error('departure_date') is-invalid @enderror" value="{{ old('departure_date') }}" placeholder="YYYY-MM-DD" type="text" required data-backend-picker="date" data-backend-picker-format="yyyy-mm-dd">
+                                    @error('departure_date')<small>{{ $message }}</small>@enderror
+                                </label>
                                 <label>
                                     <span>Number of Guests <b>*</b></span>
                                     <input type="number" name="jumlah_review" class="backend-form-control @error('jumlah_review') is-invalid @enderror" value="{{ old('jumlah_review', 1) }}" min="1" required>
@@ -221,8 +219,6 @@
                         </article>
                     </aside>
                 </section>
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan
