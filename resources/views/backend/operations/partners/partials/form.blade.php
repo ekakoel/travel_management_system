@@ -70,7 +70,7 @@
         <select class="backend-form-control" name="type" required>
             <option value="">Select partner type</option>
 
-            @foreach (['Activity', 'Transport', 'F&B', 'Activity & Transport'] as $type)
+            @foreach (['Activity', 'Transport', 'F&B', 'Wellness'] as $type)
                 <option value="{{ $type }}" @selected(old('type', optional($partner)->type) === $type)>
                     {{ $type }}
                 </option>
