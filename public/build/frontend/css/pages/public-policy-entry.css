@@ -11,8 +11,7 @@
 
 .public-policy-hero > .container,
 .public-policy-content > .container {
-  width: 100%;
-  max-width: 80%;
+  width: min(1180px, 100% - 2rem);
   margin-inline: auto;
 }
 

@@ -203,8 +203,6 @@ use Illuminate\Support\Facades\Route;
     // ---------------------------------------------------
 
     Route::get('lang/{locale}',[LocalizationController::class,'changeLanguage'])->name('language.switch');
-    // Route::get('/', function () {return view('/home');});
-    // Route::get('/', function () {return redirect('/home');});
     Route::get('change-password', [ForgotPasswordController::class, 'forgetPassword'])->name('change.password.get');
     Route::get('forget-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('forget.password.get');
     Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset.password.get');
@@ -221,7 +219,6 @@ use Illuminate\Support\Facades\Route;
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->middleware('throttle:5,1')->name('password.email');
     Route::post('password/reset', [\App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
     Route::middleware(['auth'])->group(function () {
-        // Route::get('home', function () {return redirect('/profile');});
         Route::get('/profile', [ProfileController::class,'profile'])->name('profile');
         Route::get('/profile-{email}',[ProfileController::class,'users']);
         Route::put('/fupdate-profile/{id}',[UsersController::class,'func_update_profile']);
@@ -234,7 +231,6 @@ use Illuminate\Support\Facades\Route;
             ->whereIn('format', ['csv', 'xlsx'])
             ->name('activity.guest-list-template');
         Route::post('/activity/{code}/order', [OrderController::class, 'storeFrontendActivityOrder'])->name('view.activity-order.store');
-        // Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index');
 
         // DEVELOPER | ADMINISTRATOR =========================================================================================================
         Route::middleware(['checkPosition:developer,administrator'])->prefix('admin')->name('admin.')->group(function () {
