@@ -63,10 +63,16 @@ class HomeSliderController extends Controller
             ) {
                 $slider = HomeSlider::create([
                     'title' => $validated['title'] ?? null,
+                    'title_traditional' => $validated['title_traditional'] ?? null,
+                    'title_simplified' => $validated['title_simplified'] ?? null,
                     'description' => $validated['description'] ?? null,
+                    'description_traditional' => $validated['description_traditional'] ?? null,
+                    'description_simplified' => $validated['description_simplified'] ?? null,
                     'image' => $desktopPath,
                     'mobile_image' => $mobilePath,
                     'button_text' => $validated['button_text'] ?? null,
+                    'button_text_traditional' => $validated['button_text_traditional'] ?? null,
+                    'button_text_simplified' => $validated['button_text_simplified'] ?? null,
                     'button_url' => $validated['button_url'] ?? null,
                     'sort_order' => $validated['sort_order'],
                     'is_active' => $request->boolean('is_active'),
@@ -145,10 +151,16 @@ class HomeSliderController extends Controller
             ) {
                 $slider->update([
                     'title' => $validated['title'] ?? null,
+                    'title_traditional' => $validated['title_traditional'] ?? null,
+                    'title_simplified' => $validated['title_simplified'] ?? null,
                     'description' => $validated['description'] ?? null,
+                    'description_traditional' => $validated['description_traditional'] ?? null,
+                    'description_simplified' => $validated['description_simplified'] ?? null,
                     'image' => $newDesktopPath ?: $slider->image,
                     'mobile_image' => $newMobilePath ?: $slider->mobile_image,
                     'button_text' => $validated['button_text'] ?? null,
+                    'button_text_traditional' => $validated['button_text_traditional'] ?? null,
+                    'button_text_simplified' => $validated['button_text_simplified'] ?? null,
                     'button_url' => $validated['button_url'] ?? null,
                     'sort_order' => $validated['sort_order'],
                     'is_active' => $request->boolean('is_active'),
