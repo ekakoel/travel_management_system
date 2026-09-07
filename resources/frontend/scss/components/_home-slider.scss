@@ -64,10 +64,10 @@
     &__content {
         position: absolute;
         bottom: 17%;
-        left: 50%;
+        left: 0;
         z-index: 2;
-        width: 100%;
-        transform: translate(-50%, 0%);
+        width: 50%;
+        // transform: translate(-50%, 0%);
         color: #fff;
         padding: 0 10%;
         text-align: left;
