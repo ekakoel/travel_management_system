@@ -268,6 +268,7 @@ use Illuminate\Support\Facades\Route;
             Route::post('/fcreate-home-slider', [HomeSliderController::class, 'store'])->name('home-slider.create');
             Route::put('/fupdate-home-slider/{id}', [HomeSliderController::class, 'update'])->name('home-slider.edit');
             Route::delete('/fremove-home-slider/{id}', [HomeSliderController::class, 'destroy'])->name('home-slider.destroy');
+            Route::patch('/home-sliders/{slider}/status', [HomeSliderController::class, 'updateStatus'])->name('home-sliders.status');
 
             // ---------------------------------------------------
             //                      PARTNERS

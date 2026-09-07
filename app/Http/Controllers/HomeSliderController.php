@@ -99,6 +99,23 @@ class HomeSliderController extends Controller
         }
     }
 
+    public function updateStatus(Request $request, HomeSlider $slider)
+    {
+        $validated = $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+
+        $slider->update([
+            'is_active' => $validated['is_active'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $slider->is_active,
+            'message' => $slider->is_active ? 'Slider activated.' : 'Slider moved to draft.',
+        ]);
+    }
+
     public function update(
         UpdateHomeSliderRequest $request,
         $id

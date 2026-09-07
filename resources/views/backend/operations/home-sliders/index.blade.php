@@ -141,8 +141,8 @@
                             <th>Order</th>
                             <th>Preview</th>
                             <th>Title</th>
-                            <th>Status</th>
                             <th>Schedule</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -172,19 +172,7 @@
                                 </span>
                             </td>
 
-                            <td data-label="Status">
-
-                                @if($slider->is_active)
-                                    <span class="backend-status-badge backend-status-badge--success">
-                                        Active
-                                    </span>
-                                @else
-                                    <span class="backend-status-badge backend-status-badge--warning">
-                                        Inactive
-                                    </span>
-                                @endif
-
-                            </td>
+                            
 
                             <td data-label="Schedule">
                                 <span>
@@ -194,10 +182,32 @@
                                     {{ $slider->end_at?->format('d M Y H:i') ?: 'No end' }}
                                 </span>
                             </td>
+                            <td data-label="Status">
+                               <button
+                                    type="button"
+                                    class="backend-status-toggle {{ $slider->is_active ? 'is-active' : '' }}"
+                                    data-backend-status-toggle
+                                    data-status-url="{{ route('admin.home-sliders.status', $slider) }}"
+                                    data-status-value="{{ $slider->is_active ? 1 : 0 }}"
+                                    title="{{ $slider->is_active ? 'Active' : 'Draft' }}"
+                                >
+                                    <span class="backend-status-toggle__track" aria-hidden="true">
+                                        <span class="backend-status-toggle__knob"></span>
+                                    </span>
 
+                                    <span
+                                        class="backend-status-toggle__label"
+                                        data-backend-status-toggle-label
+                                    >
+                                        {{ $slider->is_active ? 'Active' : 'Draft' }}
+                                    </span>
+                                </button>
+
+                            </td>
                             <td data-label="Action">
 
                                 <div class="backend-table-actions">
+                                    
 
                                     <button
                                         type="button"
@@ -332,7 +342,7 @@
     role="dialog"
     aria-hidden="true"
 >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <div class="backend-modal__header">

@@ -29372,6 +29372,7 @@ body.sidebar-light {
 
 body.sidebar-light .backend-form,
 body.sidebar-light .backend-form-grid,
+body.sidebar-light .backend-form-grid-2,
 body.sidebar-light .backend-form-section {
   min-width: 0;
 }
@@ -29381,6 +29382,13 @@ body.sidebar-light .backend-form-grid {
   gap: 16px;
   justify-content: space-between;
   grid-template-columns: repeat(3, 1fr);
+}
+
+body.sidebar-light .backend-form-grid-2 {
+  display: grid;
+  gap: 16px;
+  justify-content: space-between;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 body.sidebar-light .backend-form-grid--compact {
@@ -29396,6 +29404,7 @@ body.sidebar-light .backend-form-field-2 {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  align-self: flex-end;
 }
 
 body.sidebar-light .backend-form-field,
@@ -29404,6 +29413,7 @@ body.sidebar-light .form-group {
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+  align-self: flex-end;
 }
 
 body.sidebar-light .backend-form-field.is-wide,
@@ -30016,6 +30026,38 @@ body.sidebar-light input[type=submit].is-submitting {
 
 body.sidebar-light .note-editor.note-frame {
   width: 100%;
+}
+
+.backend-status-toggle {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.backend-status-toggle__track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  transition: 0.2s ease;
+}
+
+.backend-status-toggle__track .active {
+  background: #1f81e7 !important;
+}
+
+.backend-status-toggle__knob {
+  position: absolute;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.backend-status-toggle.active .backend-status-toggle__knob {
+  transform: translateX(18px);
 }
 
 .backend-action-spinner {
