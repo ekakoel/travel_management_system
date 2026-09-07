@@ -76,6 +76,16 @@
             <input type="text" name="button_text" id="button_text" class="backend-form-control"
                 value="{{ old('button_text', $slider->button_text ?? '') }}">
         </div>
+        <div class="backend-form-field">
+            <label for="button_text_traditional">Button Text Traditional</label>
+            <input type="text" name="button_text_traditional" id="button_text_traditional" class="backend-form-control"
+                value="{{ old('button_text_traditional', $slider->button_text_traditional ?? '') }}">
+        </div>
+        <div class="backend-form-field">
+            <label for="button_text_simplified">Button Text Simplified</label>
+            <input type="text" name="button_text_simplified" id="button_text_simplified" class="backend-form-control"
+                value="{{ old('button_text_simplified', $slider->button_text_simplified ?? '') }}">
+        </div>
     </div>
 
     <div class="backend-form-grid m-b-18">
@@ -97,17 +107,4 @@
                 value="{{ old('end_at', isset($slider?->end_at) ? $slider->end_at->format('Y-m-d\TH:i') : '') }}">
         </div>
     </div>
-     {{-- <div class="backend-form-field">
-        <button type="button" class="backend-status-toggle {{ $slider->is_active ?? true ? 'is-active' : '' }}"
-            title="{{ $slider->is_active ?? true ? 'Active' : 'Draft' }}" data-backend-status-toggle>
-            <span class="backend-status-toggle__track" aria-hidden="true">
-                <span class="backend-status-toggle__knob"></span>
-            </span>
-
-            <span class="backend-status-toggle__label" data-backend-status-toggle-label>
-                {{ $slider->is_active ?? true ? 'Active' : 'Draft' }}
-            </span>
-        </button>
-        <input type="hidden" name="is_active" id="is_active" value="{{ $slider->is_active ?? true ? 1 : 0 }}">
-    </div> --}}
 </div>
