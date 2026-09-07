@@ -19,7 +19,11 @@ class UpdateHomeSliderRequest extends FormRequest
     {
         return [
             'title' => ['nullable', 'string', 'max:255'],
+            'title_simplified' => ['nullable', 'string', 'max:255'],
+            'title_traditional' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'description_simplified' => ['nullable', 'string'],
+            'description_traditional' => ['nullable', 'string'],
 
             'image' => [
                 'nullable',
@@ -36,6 +40,8 @@ class UpdateHomeSliderRequest extends FormRequest
             ],
 
             'button_text' => ['nullable', 'string', 'max:100'],
+            'button_text_traditional' => ['nullable', 'string', 'max:100'],
+            'button_text_simplified' => ['nullable', 'string', 'max:100'],
             'button_url' => ['nullable', 'string', 'max:2048'],
 
             'sort_order' => ['required', 'integer', 'min:0'],

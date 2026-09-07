@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         speed: 900,
 
         autoplay: {
-            delay: 6000,
-            disableOnInteraction: false,
+            delay: 8000,
+            disableOnInteraction: true,
             pauseOnMouseEnter: true,
         },
 
@@ -27,22 +27,22 @@ document.addEventListener('DOMContentLoaded', () => {
             crossFade: true,
         },
 
-        pagination: {
-            el: sliderElement.querySelector('.swiper-pagination'),
-            clickable: true,
-        },
+        // pagination: {
+        //     el: sliderElement.querySelector('.swiper-pagination'),
+        //     clickable: true,
+        // },
 
-        navigation: {
-            nextEl: sliderElement.querySelector('.swiper-button-next'),
-            prevEl: sliderElement.querySelector('.swiper-button-prev'),
-        },
+        // navigation: {
+        //     nextEl: sliderElement.querySelector('.swiper-button-next'),
+        //     prevEl: sliderElement.querySelector('.swiper-button-prev'),
+        // },
 
         keyboard: {
-            enabled: true,
+            enabled: false,
         },
 
         a11y: {
-            enabled: true,
+            enabled: false,
         },
     });
 });

@@ -53,9 +53,9 @@
         pointer-events: none;
         background:
             linear-gradient(
-                90deg,
+                0deg,
                 rgba(0, 0, 0, 0.68) 0%,
-                rgba(0, 0, 0, 0.45) 38%,
+                rgba(0, 0, 0, 0.45) 18%,
                 rgba(0, 0, 0, 0.18) 72%,
                 rgba(0, 0, 0, 0.03) 100%
             );
@@ -63,21 +63,23 @@
 
     &__content {
         position: absolute;
-        top: 50%;
-        left: clamp(32px, 8vw, 120px);
+        bottom: 17%;
+        left: 50%;
         z-index: 2;
-        width: min(650px, calc(100% - 64px));
-        transform: translateY(-50%);
+        width: 100%;
+        transform: translate(-50%, 0%);
         color: #fff;
+        padding: 0 10%;
+        text-align: left;
     }
 
     &__title {
         margin: 0 0 1.25rem;
         color: #fff;
         font-size: clamp(2.5rem, 5vw, 5rem);
-        font-weight: 700;
-        line-height: 1.05;
-        letter-spacing: -0.02em;
+        font-weight: 400;
+        line-height: 1;
+        // letter-spacing: em;
     }
 
     &__description {

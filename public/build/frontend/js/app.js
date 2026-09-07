@@ -671,27 +671,29 @@ document.addEventListener('DOMContentLoaded', function () {
     loop: true,
     speed: 900,
     autoplay: {
-      delay: 6000,
-      disableOnInteraction: false,
+      delay: 8000,
+      disableOnInteraction: true,
       pauseOnMouseEnter: true
     },
     effect: 'fade',
     fadeEffect: {
       crossFade: true
     },
-    pagination: {
-      el: sliderElement.querySelector('.swiper-pagination'),
-      clickable: true
-    },
-    navigation: {
-      nextEl: sliderElement.querySelector('.swiper-button-next'),
-      prevEl: sliderElement.querySelector('.swiper-button-prev')
-    },
+    // pagination: {
+    //     el: sliderElement.querySelector('.swiper-pagination'),
+    //     clickable: true,
+    // },
+
+    // navigation: {
+    //     nextEl: sliderElement.querySelector('.swiper-button-next'),
+    //     prevEl: sliderElement.querySelector('.swiper-button-prev'),
+    // },
+
     keyboard: {
-      enabled: true
+      enabled: false
     },
     a11y: {
-      enabled: true
+      enabled: false
     }
   });
 });

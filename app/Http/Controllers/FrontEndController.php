@@ -105,7 +105,7 @@ class FrontEndController extends Controller
             $sliders = HomeSlider::active()
                 ->orderBy('sort_order')
                 ->get();
-
+                
             return view('frontend.home.index', compact('promos', 'homeStats', 'homeServiceImages', 'homeFaqItems','sliders'));
         } catch (\Exception $e) {
             Log::error('Error on homepage: ' . $e->getMessage());

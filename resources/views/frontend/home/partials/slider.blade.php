@@ -17,32 +17,36 @@
 
                                 <img
                                     src="{{ asset('storage/' . $slider->image) }}"
-                                    alt="{{ $slider->title }}"
+                                    alt="{{ $slider->localized_title }}"
                                     loading="{{ $loop->first ? 'eager' : 'lazy' }}"
                                 >
                             </picture>
 
-                            @if($slider->title || $slider->description || ($slider->button_url && $slider->button_text))
+                            @if(
+                                $slider->localized_title ||
+                                $slider->localized_description ||
+                                ($slider->button_url && $slider->localized_button_text)
+                            )
                                 <div class="home-slider__content">
 
-                                    @if($slider->title)
+                                    @if($slider->localized_title)
                                         <h1 class="home-slider__title">
-                                            {{ $slider->title }}
+                                            {{ $slider->localized_title }}
                                         </h1>
                                     @endif
 
-                                    @if($slider->description)
+                                    @if($slider->localized_description)
                                         <p class="home-slider__description">
-                                            {!! $slider->description !!}
+                                            {!! $slider->localized_description !!}
                                         </p>
                                     @endif
 
-                                    @if($slider->button_url && $slider->button_text)
+                                    @if($slider->button_url && $slider->localized_button_text)
                                         <a
                                             href="{{ $slider->button_url }}"
                                             class="btn btn-primary"
                                         >
-                                            {{ $slider->button_text }}
+                                            {{ $slider->localized_button_text }}
                                         </a>
                                     @endif
 
@@ -55,19 +59,19 @@
 
             </div>
 
-            <div class="swiper-pagination"></div>
+            {{-- <div class="swiper-pagination"></div>
 
             <button
                 type="button"
                 class="swiper-button-prev"
-                aria-label="Previous slide">
+                aria-label="{{ __('messages.Previous') }}">
             </button>
 
             <button
                 type="button"
                 class="swiper-button-next"
-                aria-label="Next slide">
-            </button>
+                aria-label="{{ __('messages.Next') }}">
+            </button> --}}
         </div>
     </section>
 @endif

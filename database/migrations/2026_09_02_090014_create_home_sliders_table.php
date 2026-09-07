@@ -14,8 +14,14 @@ return new class extends Migration
         Schema::create('home_sliders', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('title_simplified');
+            $table->string('title_traditional');
             $table->text('description')->nullable();
+            $table->text('description_simplified')->nullable();
+            $table->text('description_traditional')->nullable();
             $table->string('button_text')->nullable();
+            $table->string('button_text_traditional')->nullable();
+            $table->string('button_text_simplified')->nullable();
             $table->string('button_url')->nullable();
             $table->string('image');
             $table->string('mobile_image')->nullable();
