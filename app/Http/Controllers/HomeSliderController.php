@@ -163,7 +163,6 @@ class HomeSliderController extends Controller
                     'button_text_simplified' => $validated['button_text_simplified'] ?? null,
                     'button_url' => $validated['button_url'] ?? null,
                     'sort_order' => $validated['sort_order'],
-                    'is_active' => $request->boolean('is_active'),
                     'start_at' => $validated['start_at'] ?? null,
                     'end_at' => $validated['end_at'] ?? null,
                 ]);
