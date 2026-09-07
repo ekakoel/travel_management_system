@@ -331,14 +331,12 @@
                                     <div class="tour-price-calculation" aria-label="Rate calculation breakdown">
                                         <div>
                                             <span>Contract</span>
-                                            <strong>{{ currencyFormatIdr($row['contract_rate_idr'] ?? 0) }}</strong>
-                                            <small>{{ $row['price_available'] ? currencyFormatUsd($row['contract_rate_usd']) : 'USD rate unavailable' }}</small>
+                                            <strong>{{ $row['price_available'] ? currencyFormatUsd($row['contract_rate_usd']) : 'USD rate unavailable' }}</strong>
+                                            <small>{{ currencyFormatIdr($row['contract_rate_idr'] ?? 0) }}</small>
                                         </div>
                                         <div>
                                             <span>Markup</span>
                                             <strong>{{ $row['price_available'] ? currencyFormatUsd($row['markup_usd']) : $row['markup_display'] }}</strong>
-                                            <small>Type: {{ $row['markup_type'] }}</small>
-                                            <small>Calculation: {{ $row['markup_calculation'] }}</small>
                                             <small>{{ $row['price_available'] && $row['markup_idr'] !== null ? currencyFormatIdr($row['markup_idr']) : $row['markup_type'] }}</small>
                                         </div>
                                         <div>
@@ -409,8 +407,6 @@
                         </div>
                     </div>
                 @endcanany
-
-                @include('layouts.footer')
             </div>
         </main>
     @endcan
