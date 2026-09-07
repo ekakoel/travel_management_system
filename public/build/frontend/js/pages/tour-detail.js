@@ -104,12 +104,12 @@ module.exports = {
 /*!************************************************************!*\
   !*** ./resources/frontend/js/landing-page/tours/detail.js ***!
   \************************************************************/
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -131,10 +131,17 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   var mapElement = document.getElementById('tourRouteMap');
   var mapDataElement = document.querySelector('[data-tour-route-locations]');
+  // const routeMarkers = new Map();
+  // let routeLocations = [];
+  // let routeMap = null;
+  // let routePolyline = null;
   var routeMarkers = new Map();
+  var roadRouteCache = new Map();
   var routeLocations = [];
   var routeMap = null;
   var routePolyline = null;
+  var routeRequestId = 0;
+  var routeRequestController = null;
   document.querySelectorAll('.tour-gallery-modal').forEach(function (modal) {
     if (modal.parentElement !== document.body) {
       document.body.appendChild(modal);
@@ -319,58 +326,349 @@ document.addEventListener('DOMContentLoaded', function () {
       duration: 0.35
     });
   };
-  var syncRouteDay = function syncRouteDay(day) {
-    var shouldFit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-    if (!routeMap) {
-      return;
-    }
-    var activeDay = day || (mapElement === null || mapElement === void 0 ? void 0 : mapElement.dataset.activeDay) || 'all';
-    var activeLocations = locationsForDay(activeDay);
-    var activeOrders = new Set(activeLocations.map(function (location) {
-      return String(location.order);
+  var fetchRoadRoute = /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(locations, requestId) {
+      var coordinates, cacheKey, url, response, data, route, latLngs, routeData;
+      return _regeneratorRuntime().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (!(!window.L || locations.length < 2)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return", null);
+            case 2:
+              coordinates = locations.map(function (location) {
+                var lat = Number(location.lat);
+                var lng = Number(location.lng);
+                return "".concat(lng, ",").concat(lat);
+              }).join(';');
+              if (coordinates) {
+                _context.next = 5;
+                break;
+              }
+              return _context.abrupt("return", null);
+            case 5:
+              cacheKey = coordinates;
+              if (!roadRouteCache.has(cacheKey)) {
+                _context.next = 8;
+                break;
+              }
+              return _context.abrupt("return", roadRouteCache.get(cacheKey));
+            case 8:
+              if (routeRequestController) {
+                routeRequestController.abort();
+              }
+              routeRequestController = new AbortController();
+              url = "https://router.project-osrm.org/route/v1/driving/".concat(coordinates, "?overview=full&geometries=geojson&steps=false");
+              _context.prev = 11;
+              _context.next = 14;
+              return fetch(url, {
+                method: 'GET',
+                headers: {
+                  Accept: 'application/json'
+                },
+                signal: routeRequestController.signal
+              });
+            case 14:
+              response = _context.sent;
+              if (response.ok) {
+                _context.next = 17;
+                break;
+              }
+              throw new Error("OSRM request failed with status ".concat(response.status));
+            case 17:
+              _context.next = 19;
+              return response.json();
+            case 19:
+              data = _context.sent;
+              if (!(requestId !== routeRequestId)) {
+                _context.next = 22;
+                break;
+              }
+              return _context.abrupt("return", null);
+            case 22:
+              if (!(data.code !== 'Ok' || !Array.isArray(data.routes) || !data.routes.length || !data.routes[0].geometry || !Array.isArray(data.routes[0].geometry.coordinates))) {
+                _context.next = 24;
+                break;
+              }
+              throw new Error('OSRM returned an invalid route response.');
+            case 24:
+              route = data.routes[0];
+              latLngs = route.geometry.coordinates.map(function (_ref2) {
+                var _ref3 = _slicedToArray(_ref2, 2),
+                  lng = _ref3[0],
+                  lat = _ref3[1];
+                return [Number(lat), Number(lng)];
+              }).filter(function (_ref4) {
+                var _ref5 = _slicedToArray(_ref4, 2),
+                  lat = _ref5[0],
+                  lng = _ref5[1];
+                return Number.isFinite(lat) && Number.isFinite(lng);
+              });
+              if (!(latLngs.length < 2)) {
+                _context.next = 28;
+                break;
+              }
+              throw new Error('OSRM returned insufficient route geometry.');
+            case 28:
+              routeData = {
+                latLngs: latLngs,
+                distance: Number(route.distance || 0),
+                duration: Number(route.duration || 0)
+              };
+              roadRouteCache.set(cacheKey, routeData);
+              return _context.abrupt("return", routeData);
+            case 33:
+              _context.prev = 33;
+              _context.t0 = _context["catch"](11);
+              if (!((_context.t0 === null || _context.t0 === void 0 ? void 0 : _context.t0.name) === 'AbortError')) {
+                _context.next = 37;
+                break;
+              }
+              return _context.abrupt("return", null);
+            case 37:
+              console.warn('Tour road route could not be calculated.', _context.t0);
+              return _context.abrupt("return", null);
+            case 39:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, null, [[11, 33]]);
     }));
-    if (mapElement) {
-      mapElement.dataset.activeDay = activeDay;
+    return function fetchRoadRoute(_x, _x2) {
+      return _ref.apply(this, arguments);
+    };
+  }();
+  var drawStraightRoute = function drawStraightRoute(locations) {
+    if (!routeMap || !window.L || locations.length < 2) {
+      return null;
     }
-    routeMap.closePopup();
-    document.querySelectorAll('[data-tour-route-day-tab]').forEach(function (tab) {
-      var isActive = tab.dataset.tourRouteDayTab === String(activeDay);
-      tab.classList.toggle('is-active', isActive);
-      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-    });
-    document.querySelectorAll('[data-tour-route-day-panel]').forEach(function (panel) {
-      panel.classList.toggle('is-active', panel.dataset.tourRouteDayPanel === String(activeDay));
-    });
-    document.querySelectorAll('[data-tour-route-stop]').forEach(function (card) {
-      card.classList.remove('is-active');
-    });
-    routeMarkers.forEach(function (marker, order) {
-      var shouldShow = activeOrders.has(order);
-      if (shouldShow && !routeMap.hasLayer(marker)) {
-        marker.addTo(routeMap);
-      }
-      if (!shouldShow && routeMap.hasLayer(marker)) {
-        routeMap.removeLayer(marker);
-      }
-    });
-    if (routePolyline) {
-      routeMap.removeLayer(routePolyline);
-      routePolyline = null;
-    }
-    if (activeLocations.length > 1 && window.L) {
-      routePolyline = window.L.polyline(activeLocations.map(function (location) {
-        return [location.lat, location.lng];
-      }), {
-        color: '#0f766e',
-        opacity: 0.82,
-        weight: 4,
-        dashArray: '8 10'
-      }).addTo(routeMap);
-    }
-    if (shouldFit) {
-      fitRouteLocations(activeLocations);
-    }
+    return window.L.polyline(locations.map(function (location) {
+      return [Number(location.lat), Number(location.lng)];
+    }), {
+      color: '#0f766e',
+      opacity: 0.82,
+      weight: 3
+    }).addTo(routeMap);
   };
+  var drawRoadRoute = /*#__PURE__*/function () {
+    var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(locations, shouldFit, requestId) {
+      var route;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              if (!(!routeMap || !window.L || locations.length < 2)) {
+                _context2.next = 2;
+                break;
+              }
+              return _context2.abrupt("return");
+            case 2:
+              _context2.next = 4;
+              return fetchRoadRoute(locations, requestId);
+            case 4:
+              route = _context2.sent;
+              if (!(requestId !== routeRequestId)) {
+                _context2.next = 7;
+                break;
+              }
+              return _context2.abrupt("return");
+            case 7:
+              if (route) {
+                _context2.next = 11;
+                break;
+              }
+              routePolyline = drawStraightRoute(locations);
+              if (shouldFit && routePolyline) {
+                routeMap.fitBounds(routePolyline.getBounds(), {
+                  padding: [48, 48],
+                  animate: true
+                });
+              }
+              return _context2.abrupt("return");
+            case 11:
+              routePolyline = window.L.polyline(route.latLngs, {
+                color: '#0f766e',
+                opacity: 0.82,
+                weight: 3
+              }).addTo(routeMap);
+              if (shouldFit && routePolyline) {
+                routeMap.fitBounds(routePolyline.getBounds(), {
+                  padding: [48, 48],
+                  animate: true
+                });
+              }
+            case 13:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2);
+    }));
+    return function drawRoadRoute(_x3, _x4, _x5) {
+      return _ref6.apply(this, arguments);
+    };
+  }();
+
+  // const syncRouteDay = (day, shouldFit = true) => {
+  //     if (!routeMap) {
+  //         return;
+  //     }
+
+  //     const activeDay = day || mapElement?.dataset.activeDay || 'all';
+  //     const activeLocations = locationsForDay(activeDay);
+  //     const activeOrders = new Set(activeLocations.map((location) => String(location.order)));
+
+  //     if (mapElement) {
+  //         mapElement.dataset.activeDay = activeDay;
+  //     }
+
+  //     routeMap.closePopup();
+
+  //     document.querySelectorAll('[data-tour-route-day-tab]').forEach((tab) => {
+  //         const isActive = tab.dataset.tourRouteDayTab === String(activeDay);
+  //         tab.classList.toggle('is-active', isActive);
+  //         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  //     });
+
+  //     document.querySelectorAll('[data-tour-route-day-panel]').forEach((panel) => {
+  //         panel.classList.toggle('is-active', panel.dataset.tourRouteDayPanel === String(activeDay));
+  //     });
+
+  //     document.querySelectorAll('[data-tour-route-stop]').forEach((card) => {
+  //         card.classList.remove('is-active');
+  //     });
+
+  //     routeMarkers.forEach((marker, order) => {
+  //         const shouldShow = activeOrders.has(order);
+
+  //         if (shouldShow && !routeMap.hasLayer(marker)) {
+  //             marker.addTo(routeMap);
+  //         }
+
+  //         if (!shouldShow && routeMap.hasLayer(marker)) {
+  //             routeMap.removeLayer(marker);
+  //         }
+  //     });
+
+  //     if (routePolyline) {
+  //         routeMap.removeLayer(routePolyline);
+  //         routePolyline = null;
+  //     }
+
+  //     if (activeLocations.length > 1 && window.L) {
+  //         routePolyline = window.L.polyline(activeLocations.map((location) => [location.lat, location.lng]), {
+  //             color: '#0f766e',
+  //             opacity: 0.82,
+  //             weight: 4,
+  //             dashArray: '8 10',
+  //         }).addTo(routeMap);
+  //     }
+
+  //     if (shouldFit) {
+  //         fitRouteLocations(activeLocations);
+  //     }
+  // };
+  var syncRouteDay = /*#__PURE__*/function () {
+    var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(day) {
+      var shouldFit,
+        activeDay,
+        activeLocations,
+        activeOrders,
+        currentRequestId,
+        _args3 = arguments;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              shouldFit = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : true;
+              if (routeMap) {
+                _context3.next = 3;
+                break;
+              }
+              return _context3.abrupt("return");
+            case 3:
+              activeDay = day || (mapElement === null || mapElement === void 0 ? void 0 : mapElement.dataset.activeDay) || 'all';
+              activeLocations = locationsForDay(activeDay);
+              activeOrders = new Set(activeLocations.map(function (location) {
+                return String(location.order);
+              }));
+              if (mapElement) {
+                mapElement.dataset.activeDay = activeDay;
+              }
+              routeMap.closePopup();
+              document.querySelectorAll('[data-tour-route-day-tab]').forEach(function (tab) {
+                var isActive = tab.dataset.tourRouteDayTab === String(activeDay);
+                tab.classList.toggle('is-active', isActive);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+              });
+              document.querySelectorAll('[data-tour-route-day-panel]').forEach(function (panel) {
+                panel.classList.toggle('is-active', panel.dataset.tourRouteDayPanel === String(activeDay));
+              });
+              document.querySelectorAll('[data-tour-route-stop]').forEach(function (card) {
+                card.classList.remove('is-active');
+              });
+              routeMarkers.forEach(function (marker, order) {
+                var shouldShow = activeOrders.has(order);
+                if (shouldShow && !routeMap.hasLayer(marker)) {
+                  marker.addTo(routeMap);
+                }
+                if (!shouldShow && routeMap.hasLayer(marker)) {
+                  routeMap.removeLayer(marker);
+                }
+              });
+
+              /*
+              * Invalidate every previous routing request.
+              *
+              * This is important when the user quickly changes:
+              *
+              * Day 1 → Day 2 → Day 3
+              *
+              * An old OSRM response must never overwrite
+              * the route belonging to the currently selected day.
+              */
+              routeRequestId += 1;
+              currentRequestId = routeRequestId;
+              if (routeRequestController) {
+                routeRequestController.abort();
+                routeRequestController = null;
+              }
+              if (routePolyline) {
+                routeMap.removeLayer(routePolyline);
+                routePolyline = null;
+              }
+              if (activeLocations.length) {
+                _context3.next = 18;
+                break;
+              }
+              return _context3.abrupt("return");
+            case 18:
+              if (!(activeLocations.length === 1)) {
+                _context3.next = 21;
+                break;
+              }
+              if (shouldFit) {
+                fitRouteLocations(activeLocations);
+              }
+              return _context3.abrupt("return");
+            case 21:
+              _context3.next = 23;
+              return drawRoadRoute(activeLocations, shouldFit, currentRequestId);
+            case 23:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3);
+    }));
+    return function syncRouteDay(_x6) {
+      return _ref7.apply(this, arguments);
+    };
+  }();
   var getMarkerHtml = function getMarkerHtml(location) {
     var color = location.color || '#0f766e';
     var displayOrder = location.display_order || location.visit_order || location.order;
@@ -450,17 +748,17 @@ document.addEventListener('DOMContentLoaded', function () {
     return _ensureTourRouteMap.apply(this, arguments);
   }
   function _ensureTourRouteMap() {
-    _ensureTourRouteMap = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    _ensureTourRouteMap = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
       var locations, fallbackCss, fallback, map;
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      return _regeneratorRuntime().wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
               if (!(!mapElement || !mapDataElement || mapElement.dataset.initialized === 'true')) {
-                _context2.next = 2;
+                _context5.next = 2;
                 break;
               }
-              return _context2.abrupt("return");
+              return _context5.abrupt("return");
             case 2:
               locations = [];
               try {
@@ -469,21 +767,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 locations = [];
               }
               if (locations.length) {
-                _context2.next = 6;
+                _context5.next = 6;
                 break;
               }
-              return _context2.abrupt("return");
+              return _context5.abrupt("return");
             case 6:
               if (window.L) {
-                _context2.next = 25;
+                _context5.next = 25;
                 break;
               }
-              _context2.prev = 7;
+              _context5.prev = 7;
               fallbackCss = document.createElement('link');
               fallbackCss.rel = 'stylesheet';
               fallbackCss.href = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';
               document.head.appendChild(fallbackCss);
-              _context2.next = 14;
+              _context5.next = 14;
               return new Promise(function (resolve, reject) {
                 var fallbackScript = document.createElement('script');
                 fallbackScript.src = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';
@@ -492,11 +790,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.head.appendChild(fallbackScript);
               });
             case 14:
-              _context2.next = 25;
+              _context5.next = 25;
               break;
             case 16:
-              _context2.prev = 16;
-              _context2.t0 = _context2["catch"](7);
+              _context5.prev = 16;
+              _context5.t0 = _context5["catch"](7);
               mapElement.classList.add('tour-route-map__canvas--fallback');
               mapElement.innerHTML = '';
               fallback = document.createElement('div');
@@ -523,13 +821,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 fallback.appendChild(item);
               });
               mapElement.appendChild(fallback);
-              return _context2.abrupt("return");
+              return _context5.abrupt("return");
             case 25:
               if (window.L) {
-                _context2.next = 27;
+                _context5.next = 27;
                 break;
               }
-              return _context2.abrupt("return");
+              return _context5.abrupt("return");
             case 27:
               mapElement.dataset.initialized = 'true';
               mapElement.innerHTML = '';
@@ -580,10 +878,10 @@ document.addEventListener('DOMContentLoaded', function () {
               }, 250);
             case 37:
             case "end":
-              return _context2.stop();
+              return _context5.stop();
           }
         }
-      }, _callee2, null, [[7, 16]]);
+      }, _callee5, null, [[7, 16]]);
     }));
     return _ensureTourRouteMap.apply(this, arguments);
   }
@@ -924,10 +1222,10 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   var fillGuestForm = function fillGuestForm() {
     var guest = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    Object.entries(guestFieldElements).forEach(function (_ref) {
-      var _ref2 = _slicedToArray(_ref, 2),
-        key = _ref2[0],
-        field = _ref2[1];
+    Object.entries(guestFieldElements).forEach(function (_ref8) {
+      var _ref9 = _slicedToArray(_ref8, 2),
+        key = _ref9[0],
+        field = _ref9[1];
       if (!field) return;
       field.value = guest[key] || '';
     });
@@ -1172,21 +1470,21 @@ document.addEventListener('DOMContentLoaded', function () {
     syncPriceControls();
   };
   var requestPricePreview = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
       var _quoteRequestControll, _orderForm$querySelec4, _orderForm$querySelec5;
       var guestCount, travelDate, requestFingerprint, requestBody, bookingCode, promotionId, response, responsePayload, payload;
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
+      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) {
-          switch (_context.prev = _context.next) {
+          switch (_context4.prev = _context4.next) {
             case 0:
               guestCount = quotedGuestCount();
               travelDate = String((travelDateInput === null || travelDateInput === void 0 ? void 0 : travelDateInput.value) || '').trim();
               if (!(!quoteUrl || guestCount > maxGuests || guests.length > maxGuests || !travelDate)) {
-                _context.next = 5;
+                _context4.next = 5;
                 break;
               }
               setQuoteUnavailable(guests.length > maxGuests ? guestCountMismatchLabel : '');
-              return _context.abrupt("return");
+              return _context4.abrupt("return");
             case 5:
               (_quoteRequestControll = quoteRequestController) === null || _quoteRequestControll === void 0 ? void 0 : _quoteRequestControll.abort();
               quoteRequestController = new AbortController();
@@ -1200,8 +1498,8 @@ document.addEventListener('DOMContentLoaded', function () {
               promotionId = (_orderForm$querySelec5 = orderForm.querySelector('[name="promotion_id"]')) === null || _orderForm$querySelec5 === void 0 ? void 0 : _orderForm$querySelec5.value;
               if (bookingCode) requestBody.set('booking_code', bookingCode);
               if (promotionId) requestBody.set('promotion_id', promotionId);
-              _context.prev = 14;
-              _context.next = 17;
+              _context4.prev = 14;
+              _context4.next = 17;
               return fetch(quoteUrl, {
                 method: 'POST',
                 credentials: 'same-origin',
@@ -1214,32 +1512,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 signal: quoteRequestController.signal
               });
             case 17:
-              response = _context.sent;
-              _context.next = 20;
+              response = _context4.sent;
+              _context4.next = 20;
               return response.json();
             case 20:
-              responsePayload = _context.sent;
+              responsePayload = _context4.sent;
               // Accept the previous Laravel Resource wrapper while cached assets/responses expire.
               payload = (responsePayload === null || responsePayload === void 0 ? void 0 : responsePayload.data) || responsePayload;
               if (!(!response.ok || payload.price_available !== true || !payload.quote || !payload.display)) {
-                _context.next = 25;
+                _context4.next = 25;
                 break;
               }
               setQuoteUnavailable(payload.message || priceUnavailableLabel);
-              return _context.abrupt("return");
+              return _context4.abrupt("return");
             case 25:
               if (!(requestFingerprint !== quoteFingerprint())) {
-                _context.next = 27;
+                _context4.next = 27;
                 break;
               }
-              return _context.abrupt("return");
+              return _context4.abrupt("return");
             case 27:
               if (payload.quote.price_id) {
-                _context.next = 30;
+                _context4.next = 30;
                 break;
               }
               setQuoteUnavailable(priceUnavailableLabel);
-              return _context.abrupt("return");
+              return _context4.abrupt("return");
             case 30:
               if (selectedPriceId) selectedPriceId.value = payload.quote.price_id || '';
               setTextTargets(pricePerPaxTargets, "USD ".concat(payload.display.unit_price_usd));
@@ -1253,23 +1551,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 loading: false
               };
               syncPriceControls();
-              _context.next = 43;
+              _context4.next = 43;
               break;
             case 40:
-              _context.prev = 40;
-              _context.t0 = _context["catch"](14);
-              if (_context.t0.name !== 'AbortError') {
+              _context4.prev = 40;
+              _context4.t0 = _context4["catch"](14);
+              if (_context4.t0.name !== 'AbortError') {
                 setQuoteUnavailable(priceUnavailableLabel);
               }
             case 43:
             case "end":
-              return _context.stop();
+              return _context4.stop();
           }
         }
-      }, _callee, null, [[14, 40]]);
+      }, _callee4, null, [[14, 40]]);
     }));
     return function requestPricePreview() {
-      return _ref3.apply(this, arguments);
+      return _ref10.apply(this, arguments);
     };
   }();
   var updatePricePreview = function updatePricePreview() {

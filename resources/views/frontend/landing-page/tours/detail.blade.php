@@ -313,7 +313,7 @@
                         </section>
                     @endif
                     
-                    @if (!empty($tourGeneratedItinerary))
+                    {{-- @if (!empty($tourGeneratedItinerary))
                         <section class="tour-detail-section frontend-surface-card">
                             <div class="tour-detail-section__header">
                                 <div>
@@ -325,7 +325,7 @@
                                 {!! $tourGeneratedItinerary !!}
                             </div>
                         </section>
-                    @endif
+                    @endif --}}
 
                     @if ($tourPackageHighlights)
                         <section class="tour-detail-section tour-detail-section--highlights frontend-surface-card">

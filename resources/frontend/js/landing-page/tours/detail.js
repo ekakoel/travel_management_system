@@ -12,10 +12,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const mapElement = document.getElementById('tourRouteMap');
     const mapDataElement = document.querySelector('[data-tour-route-locations]');
+    // const routeMarkers = new Map();
+    // let routeLocations = [];
+    // let routeMap = null;
+    // let routePolyline = null;
     const routeMarkers = new Map();
+    const roadRouteCache = new Map();
+
     let routeLocations = [];
     let routeMap = null;
     let routePolyline = null;
+    let routeRequestId = 0;
+    let routeRequestController = null;
 
     document.querySelectorAll('.tour-gallery-modal').forEach((modal) => {
         if (modal.parentElement !== document.body) {
@@ -235,14 +243,225 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const syncRouteDay = (day, shouldFit = true) => {
+    const fetchRoadRoute = async (locations, requestId) => {
+        if (!window.L || locations.length < 2) {
+            return null;
+        }
+
+        const coordinates = locations
+            .map((location) => {
+                const lat = Number(location.lat);
+                const lng = Number(location.lng);
+
+                return `${lng},${lat}`;
+            })
+            .join(';');
+
+        if (!coordinates) {
+            return null;
+        }
+
+        const cacheKey = coordinates;
+
+        if (roadRouteCache.has(cacheKey)) {
+            return roadRouteCache.get(cacheKey);
+        }
+
+        if (routeRequestController) {
+            routeRequestController.abort();
+        }
+
+        routeRequestController = new AbortController();
+
+        const url = `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=full&geometries=geojson&steps=false`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                },
+                signal: routeRequestController.signal,
+            });
+
+            if (!response.ok) {
+                throw new Error(`OSRM request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (requestId !== routeRequestId) {
+                return null;
+            }
+
+            if (
+                data.code !== 'Ok' ||
+                !Array.isArray(data.routes) ||
+                !data.routes.length ||
+                !data.routes[0].geometry ||
+                !Array.isArray(data.routes[0].geometry.coordinates)
+            ) {
+                throw new Error('OSRM returned an invalid route response.');
+            }
+
+            const route = data.routes[0];
+
+            const latLngs = route.geometry.coordinates
+                .map(([lng, lat]) => [
+                    Number(lat),
+                    Number(lng),
+                ])
+                .filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng));
+
+            if (latLngs.length < 2) {
+                throw new Error('OSRM returned insufficient route geometry.');
+            }
+
+            const routeData = {
+                latLngs,
+                distance: Number(route.distance || 0),
+                duration: Number(route.duration || 0),
+            };
+
+            roadRouteCache.set(cacheKey, routeData);
+
+            return routeData;
+        } catch (error) {
+            if (error?.name === 'AbortError') {
+                return null;
+            }
+
+            console.warn('Tour road route could not be calculated.', error);
+
+            return null;
+        }
+    };
+
+    const drawStraightRoute = (locations) => {
+        if (!routeMap || !window.L || locations.length < 2) {
+            return null;
+        }
+
+        return window.L.polyline(
+            locations.map((location) => [
+                Number(location.lat),
+                Number(location.lng),
+            ]),
+            {
+                color: '#0f766e',
+                opacity: 0.82,
+                weight: 3,
+            }
+        ).addTo(routeMap);
+    };
+
+    const drawRoadRoute = async (locations, shouldFit, requestId) => {
+        if (!routeMap || !window.L || locations.length < 2) {
+            return;
+        }
+
+        const route = await fetchRoadRoute(locations, requestId);
+
+        if (requestId !== routeRequestId) {
+            return;
+        }
+
+        if (!route) {
+            routePolyline = drawStraightRoute(locations);
+
+            if (shouldFit && routePolyline) {
+                routeMap.fitBounds(routePolyline.getBounds(), {
+                    padding: [48, 48],
+                    animate: true,
+                });
+            }
+
+            return;
+        }
+
+        routePolyline = window.L.polyline(route.latLngs, {
+            color: '#0f766e',
+            opacity: 0.82,
+            weight: 3,
+        }).addTo(routeMap);
+
+        if (shouldFit && routePolyline) {
+            routeMap.fitBounds(routePolyline.getBounds(), {
+                padding: [48, 48],
+                animate: true,
+            });
+        }
+    };
+
+    // const syncRouteDay = (day, shouldFit = true) => {
+    //     if (!routeMap) {
+    //         return;
+    //     }
+
+    //     const activeDay = day || mapElement?.dataset.activeDay || 'all';
+    //     const activeLocations = locationsForDay(activeDay);
+    //     const activeOrders = new Set(activeLocations.map((location) => String(location.order)));
+
+    //     if (mapElement) {
+    //         mapElement.dataset.activeDay = activeDay;
+    //     }
+
+    //     routeMap.closePopup();
+
+    //     document.querySelectorAll('[data-tour-route-day-tab]').forEach((tab) => {
+    //         const isActive = tab.dataset.tourRouteDayTab === String(activeDay);
+    //         tab.classList.toggle('is-active', isActive);
+    //         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    //     });
+
+    //     document.querySelectorAll('[data-tour-route-day-panel]').forEach((panel) => {
+    //         panel.classList.toggle('is-active', panel.dataset.tourRouteDayPanel === String(activeDay));
+    //     });
+
+    //     document.querySelectorAll('[data-tour-route-stop]').forEach((card) => {
+    //         card.classList.remove('is-active');
+    //     });
+
+    //     routeMarkers.forEach((marker, order) => {
+    //         const shouldShow = activeOrders.has(order);
+
+    //         if (shouldShow && !routeMap.hasLayer(marker)) {
+    //             marker.addTo(routeMap);
+    //         }
+
+    //         if (!shouldShow && routeMap.hasLayer(marker)) {
+    //             routeMap.removeLayer(marker);
+    //         }
+    //     });
+
+    //     if (routePolyline) {
+    //         routeMap.removeLayer(routePolyline);
+    //         routePolyline = null;
+    //     }
+
+    //     if (activeLocations.length > 1 && window.L) {
+    //         routePolyline = window.L.polyline(activeLocations.map((location) => [location.lat, location.lng]), {
+    //             color: '#0f766e',
+    //             opacity: 0.82,
+    //             weight: 4,
+    //             dashArray: '8 10',
+    //         }).addTo(routeMap);
+    //     }
+
+    //     if (shouldFit) {
+    //         fitRouteLocations(activeLocations);
+    //     }
+    // };
+    const syncRouteDay = async (day, shouldFit = true) => {
         if (!routeMap) {
             return;
         }
 
         const activeDay = day || mapElement?.dataset.activeDay || 'all';
         const activeLocations = locationsForDay(activeDay);
-        const activeOrders = new Set(activeLocations.map((location) => String(location.order)));
+        const activeOrders = new Set(
+            activeLocations.map((location) => String(location.order))
+        );
 
         if (mapElement) {
             mapElement.dataset.activeDay = activeDay;
@@ -251,13 +470,21 @@ document.addEventListener('DOMContentLoaded', () => {
         routeMap.closePopup();
 
         document.querySelectorAll('[data-tour-route-day-tab]').forEach((tab) => {
-            const isActive = tab.dataset.tourRouteDayTab === String(activeDay);
+            const isActive =
+                tab.dataset.tourRouteDayTab === String(activeDay);
+
             tab.classList.toggle('is-active', isActive);
-            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            tab.setAttribute(
+                'aria-selected',
+                isActive ? 'true' : 'false'
+            );
         });
 
         document.querySelectorAll('[data-tour-route-day-panel]').forEach((panel) => {
-            panel.classList.toggle('is-active', panel.dataset.tourRouteDayPanel === String(activeDay));
+            panel.classList.toggle(
+                'is-active',
+                panel.dataset.tourRouteDayPanel === String(activeDay)
+            );
         });
 
         document.querySelectorAll('[data-tour-route-stop]').forEach((card) => {
@@ -276,23 +503,57 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        /*
+        * Invalidate every previous routing request.
+        *
+        * This is important when the user quickly changes:
+        *
+        * Day 1 → Day 2 → Day 3
+        *
+        * An old OSRM response must never overwrite
+        * the route belonging to the currently selected day.
+        */
+        routeRequestId += 1;
+
+        const currentRequestId = routeRequestId;
+
+        if (routeRequestController) {
+            routeRequestController.abort();
+            routeRequestController = null;
+        }
+
         if (routePolyline) {
             routeMap.removeLayer(routePolyline);
             routePolyline = null;
         }
 
-        if (activeLocations.length > 1 && window.L) {
-            routePolyline = window.L.polyline(activeLocations.map((location) => [location.lat, location.lng]), {
-                color: '#0f766e',
-                opacity: 0.82,
-                weight: 4,
-                dashArray: '8 10',
-            }).addTo(routeMap);
+        if (!activeLocations.length) {
+            return;
         }
 
-        if (shouldFit) {
-            fitRouteLocations(activeLocations);
+        /*
+        * For one location there is no route to draw.
+        */
+        if (activeLocations.length === 1) {
+            if (shouldFit) {
+                fitRouteLocations(activeLocations);
+            }
+
+            return;
         }
+
+        /*
+        * Calculate the route using the ORIGINAL coordinates.
+        *
+        * IMPORTANT:
+        * Do NOT use marker_lat / marker_lng here.
+        * Those coordinates are only visual offsets for overlapping markers.
+        */
+        await drawRoadRoute(
+            activeLocations,
+            shouldFit,
+            currentRequestId
+        );
     };
 
     const getMarkerHtml = (location) => {
