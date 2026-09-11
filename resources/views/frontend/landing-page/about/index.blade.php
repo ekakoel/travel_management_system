@@ -63,6 +63,11 @@
             'title' => __('messages.Customized Tour Packages'),
             'description' => __('messages.Bali Kami Tour specializes in creating personalized tour packages that offer exclusive, tailored experiences. Whether your clients are seeking cultural excursions, adventure activities, or relaxing retreats, we design bespoke itineraries that reflect the uniqueness of each destination, ensuring memorable, one of a kind experiences.'),
         ],
+        [
+            'icon' => 'fas fa-hiking',
+            'title' => __('messages.Exclusive Activities & Experiences'),
+            'description' => __('messages.Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.'),
+        ],
     ];
 
     $agentBenefits = [

@@ -2015,4 +2015,6 @@ return[
     'Administrator' => '管理員',
     'You are not authorized to access this page, please contact the system developer for confirmation!' => '您沒有權限存取此頁面，請聯絡系統開發人員進行確認！',
     'unauthorized_access' => '您沒有權限存取此頁面。請聯絡系統管理員以取得協助。',
+    'Exclusive Activities & Experiences' => '專屬活動與體驗',
+    'Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.' => '探索精心挑選的活動與道地的峇里島體驗，從刺激的冒險、文化探索到悠閒放鬆的度假時光，每一項體驗都經過用心安排，為每位賓客創造難忘的美好回憶。',
 ];

@@ -2053,4 +2053,6 @@ return [
     'Administrator' => 'Administrator',
     'You are not authorized to access this page, please contact the system developer for confirmation!' => 'You are not authorized to access this page, please contact the system developer for confirmation!',
     'unauthorized_access' => 'You are not authorized to access this page. Please contact the system administrator for assistance.',
+    'Exclusive Activities & Experiences' => 'Exclusive Activities & Experiences',
+    'Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.' => 'Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.',
 ];
