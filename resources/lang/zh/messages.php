@@ -2017,4 +2017,7 @@ return[
     'unauthorized_access' => '您沒有權限存取此頁面。請聯絡系統管理員以取得協助。',
     'Exclusive Activities & Experiences' => '專屬活動與體驗',
     'Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.' => '探索精心挑選的活動與道地的峇里島體驗，從刺激的冒險、文化探索到悠閒放鬆的度假時光，每一項體驗都經過用心安排，為每位賓客創造難忘的美好回憶。',
+    'Helicopter' => '直升機',
+    'Helicopter Tour' => '直升機觀光之旅',
+    "Soar above Bali and enjoy breathtaking aerial views of its stunning coastline, lush landscapes, and iconic landmarks." => "飛越峇里島，欣賞壯麗海岸線、翠綠自然景觀與標誌性地標的壯闊空中美景。",
 ];

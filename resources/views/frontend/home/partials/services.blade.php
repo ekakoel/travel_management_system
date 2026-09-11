@@ -82,7 +82,37 @@
                         </a>
                     </article>
                 </div>
-            @endforeach
+                @endforeach
+                <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
+                    <article class="home-service-card service-item h-100">
+                        <a class="home-service-card__link" target="_blank" href="https://balikami.helicopter.services/">
+                            <div class="home-service-card__media icon-container">
+                                <img
+                                    class="img-fluid hover-effect home-service-card__image"
+                                    src="{{ asset('/storage/helicopter/helicopter.jpg') }}"
+                                    alt="Helicopter Tour"
+                                    loading="lazy"
+                                >
+
+                                <div class="home-service-card__badge-wrap">
+                                    <span class="home-service-card__accent">{{ __('messages.Helicopter') }}</span>
+                                </div>
+                            </div>
+
+                            <div class="home-service-card__body">
+                                <h3 class="home-service-card__title">{{ __('messages.Helicopter Tour') }}</h3>
+                                <p class="home-service-card__description">{{ __("messages.Soar above Bali and enjoy breathtaking aerial views of its stunning coastline, lush landscapes, and iconic landmarks.") }}</p>
+
+                                <div class="home-service-card__footer">
+                                    <span class="home-service-card__line"></span>
+                                    <span class="home-service-card__action" aria-hidden="true">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </article>
+                </div>
         </div>
     </div>
 </section>
