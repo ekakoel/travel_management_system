@@ -166,10 +166,10 @@
                                                                 <span>{{ $activity->display_type }}</span>
                                                             </div>
                                                             <h3 class="activity-directory-card__title">
-                                                                {{ $partnerName }}
+                                                                {{ $activity->name }}
                                                             </h3>
                                                             <p class="activity-directory-card__description">
-                                                                {{ $activity->name }}
+                                                                {{ $partnerName }}
                                                             </p>
                                                         </div>
                                                         <div class="activity-directory-card__facts">
