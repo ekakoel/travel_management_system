@@ -12,7 +12,7 @@
     @include('frontend.home.partials.partner-flow')
     @include('frontend.home.partials.services')
     @include('frontend.home.partials.hotel-promotion')
-    @include('frontend.home.partials.platform-overview')
+    {{-- @include('frontend.home.partials.platform-overview') --}}
     @include('frontend.home.partials.benefits')
     @include('frontend.home.partials.faqs-home')
     @include('frontend.home.partials.cta')

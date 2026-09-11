@@ -103,7 +103,8 @@ final class TourPackagePricingService
         );
         $calculatedAt = CarbonImmutable::now();
         $rate = $this->rateResolver->resolveStoredUsdSell($calculatedAt);
-        $tax = $this->taxResolver->resolveStored('Tour Package', $calculatedAt);
+        // $tax = $this->taxResolver->resolveStored('Tour Package', $calculatedAt);
+        $tax = $this->taxResolver->resolve('Tour Package', $calculatedAt);
         $markup = $this->markupResolver->resolve($price);
         $discountCandidates = $this->discountCandidates(
             $promotionId,
@@ -163,7 +164,7 @@ final class TourPackagePricingService
 
         foreach ([
             fn () => $this->rateResolver->resolveStoredUsdSell(CarbonImmutable::now()),
-            fn () => $this->taxResolver->resolveStored('Tour Package', CarbonImmutable::now()),
+            fn () => $this->taxResolver->resolve('Tour Package', CarbonImmutable::now()),
         ] as $resolveRequirement) {
             try {
                 $resolveRequirement();
