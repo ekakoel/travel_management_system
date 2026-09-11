@@ -58,7 +58,8 @@ body.sidebar-light .backend-form-field-2 {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  align-self: flex-end;
+  height: 100%;
+  justify-content: flex-start;
 }
 
 body.sidebar-light .backend-form-field,
@@ -67,7 +68,8 @@ body.sidebar-light .form-group {
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-      align-self: flex-end;
+  height: 100%;
+  justify-content: flex-start;
 }
 
 body.sidebar-light .backend-form-field.is-wide,
