@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\View\Composers\NavbarComposer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +31,11 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('businessProfile', app(BusinessProfileService::class)->primary());
         });
+
+        View::composer(
+            'frontend.layouts.navbar',
+            NavbarComposer::class
+        );
 
         View::composer('frontend.layouts.footer-modern', function ($view) {
             if (array_key_exists('footerData', $view->getData())) {

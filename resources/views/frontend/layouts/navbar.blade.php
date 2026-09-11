@@ -119,7 +119,7 @@
 
 <nav id="mainNavbar" class="navbar navbar-expand-lg p-0 px-4 px-lg-5">
     <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-        <img src="{{ asset('storage/logo/'.$logoColor) }}" alt="Logo Bali Kami Tour" class="logo">
+        <img src="{{ asset('storage/public/logo/'.$companyProfile->logo) }}" alt="Logo Bali Kami Tour" class="logo">
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
