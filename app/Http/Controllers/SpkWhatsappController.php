@@ -204,19 +204,9 @@ class SpkWhatsAppController extends Controller
             return '-';
         }
 
-        /**
-         * Membersihkan HTML / HTML encoded dari text.
-         *
-         * Contoh:
-         * <p>Pick Up</p>
-         * menjadi:
-         * Pick Up
-         *
-         * Dan:
-         * &lt;p&gt;Pick Up&lt;/p&gt;
-         * menjadi:
-         * Pick Up
-         */
+        /*
+        * Membersihkan HTML dari sebuah nilai text.
+        */
         $cleanText = function ($value): string {
             if (!filled($value)) {
                 return '';
@@ -225,69 +215,38 @@ class SpkWhatsAppController extends Controller
             $value = (string) $value;
 
             /*
-            * Decode HTML entities TERLEBIH DAHULU.
+            * HTML seperti:
             *
-            * Contoh:
-            * &lt;p&gt;Pick Up&lt;/p&gt;
-            *
-            * menjadi:
             * <p>Pick Up</p>
-            */
-            $value = html_entity_decode(
-                $value,
-                ENT_QUOTES | ENT_HTML5,
-                'UTF-8'
-            );
-
-            /*
-            * Ubah <br>, <br/>, dan <br /> menjadi line break.
+            *
+            * diubah menjadi:
+            *
+            * Pick Up
             */
             $value = preg_replace(
-                '/<br\s*\/?>/i',
-                "\n",
+                '/<p\b[^>]*>/i',
+                '',
+                $value
+            );
+
+            $value = preg_replace(
+                '/<\/p>/i',
+                '',
                 $value
             );
 
             /*
-            * Ubah penutup paragraph menjadi line break.
-            */
-            $value = preg_replace(
-                '/<\/p\s*>/i',
-                "\n",
-                $value
-            );
-
-            /*
-            * Hapus seluruh HTML tag.
+            * Hapus tag HTML lainnya.
             */
             $value = strip_tags($value);
 
             /*
-            * Decode sekali lagi untuk menangani kemungkinan
-            * HTML entity yang nested / double encoded.
+            * Decode HTML entity.
             */
             $value = html_entity_decode(
                 $value,
                 ENT_QUOTES | ENT_HTML5,
                 'UTF-8'
-            );
-
-            /*
-            * Bersihkan whitespace.
-            */
-            $value = preg_replace(
-                "/[ \t]+/",
-                " ",
-                $value
-            );
-
-            /*
-            * Bersihkan terlalu banyak line break.
-            */
-            $value = preg_replace(
-                "/\n{2,}/",
-                "\n",
-                $value
             );
 
             return trim($value);
@@ -317,9 +276,9 @@ class SpkWhatsAppController extends Controller
         }
 
         /*
-        * Jika terdapat beberapa destination.
+        * Jika terdapat lebih dari satu destination.
         */
-        $destinationLines = $destinations
+        return $destinations
             ->map(function ($destination, $index) use ($cleanText) {
                 $number = $index + 1;
 
@@ -339,10 +298,7 @@ class SpkWhatsAppController extends Controller
 
                 return "{$number}. {$destinationName}";
             })
-            ->filter()
             ->implode("\n");
-
-        return $destinationLines ?: '-';
     }
 
 
