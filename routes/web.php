@@ -28,7 +28,6 @@ use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BedTypeController;
 use App\Http\Controllers\BookingCodeController;
 use App\Http\Controllers\BusinessProfileController;
-use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DownloadDataHotelController;
@@ -83,7 +82,6 @@ use App\Http\Controllers\WeddingPlannerController;
 use App\Http\Controllers\WeddingReceptionVenuesController;
 use App\Http\Controllers\WeddingsController;
 use App\Http\Controllers\WeddingVenuesController;
-use App\Http\Controllers\WhatsAppController;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -329,13 +327,11 @@ use Illuminate\Support\Facades\Route;
             Route::get('/spks/{id}', [SpksController::class, 'show'])->name('detail-spk');
             Route::post('/spks/store', [SpksController::class, 'store'])->name('spks.store');
             Route::post('/fadd-transport-reservation', [ReservationController::class, 'addReservation'])->name('transport-reservation.add');
-
             Route::post('/spks/generate', [SpksController::class, 'generate'])->name('spks.generate');
             Route::delete('/spks/destroy/{id}', [SpksController::class, 'destroy'])->name('spks.destroy');
             Route::post('/spks/{spk}/destinations', [SpksController::class, 'store'])->name('spks.destinations.store');
             Route::post('/spks/fupdate-spk/{id}', [SpksController::class, 'func_update_spk'])->name('spk.update');
             Route::post('/reservation/fupdate-reservation/{id}', [ReservationController::class, 'func_update_transport_management_reservation'])->name('transport-management-reservation.update');
-
             Route::post('/spks/fadd-spk-destination/{id}', [SpksController::class, 'func_add_spk_destination'])->name('spk-destinations.add');
             Route::post('/spks/fupdate-spk-destination/{id}', [SpksController::class, 'func_update_spk_destination'])->name('spk-destinations.update');
             Route::delete('/spks/fdelete-spk-destination/{id}', [SpksController::class, 'func_delete_spk_destination'])->name('spk-destination.delete');
@@ -675,9 +671,6 @@ use Illuminate\Support\Facades\Route;
         });
         // ========================================================================================================================================> (RESERVATION)
         Route::middleware(['checkPosition:developer,administrator,reservation'])->group(function () {
-
-            
-
             // ---------------------------------------------------
             //                       REVIEWS TOURS
             // ---------------------------------------------------
@@ -1048,10 +1041,10 @@ use Illuminate\Support\Facades\Route;
             //                      TRANSPORT
             // ---------------------------------------------------
             // Route::get('/transports',[transportsController::class,'index'])->name('view.transports-service');
-            Route::get('/transport-{code}',[transportsController::class,'transport_detail'])->name('view.transport-detail');
-            Route::get('/transport/{code}/{bcode}',[transportsController::class,'transport_detail_bookingcode'])->name('view.transport-detail-booking-code');
-            Route::post('/transport-detail',[transportsController::class,'transport_check_code'])->name('view.transport-detail-check-code');
-            Route::post('/search-transports',[transportsController::class,'search_transports'])->name('view.search-transport');
+            Route::get('/transport-{code}',[TransportsController::class,'transport_detail'])->name('view.transport-detail');
+            Route::get('/transport/{code}/{bcode}',[TransportsController::class,'transport_detail_bookingcode'])->name('view.transport-detail-booking-code');
+            Route::post('/transport-detail',[TransportsController::class,'transport_check_code'])->name('view.transport-detail-check-code');
+            Route::post('/search-transports',[TransportsController::class,'search_transports'])->name('view.search-transport');
             // ---------------------------------------------------
             //                        ORDER
             // ---------------------------------------------------

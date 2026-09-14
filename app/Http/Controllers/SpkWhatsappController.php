@@ -276,8 +276,8 @@ class SpkWhatsAppController extends Controller
     }
 
     /**
-     * Membuat isi pesan WhatsApp.
-     */
+    * Membuat isi pesan WhatsApp.
+    */
     private function buildMessage(
         Spks $spk,
         string $reportUrl
@@ -302,12 +302,13 @@ class SpkWhatsAppController extends Controller
                 ?? null
         );
 
-
         $guestName = $this->buildGuestMessage($spk);
 
         $flightNumber = $this->buildFlightMessage($spk);
 
-        $destinationMessage = $this->buildDestinationMessage($spk);
+        $destinationMessage = trim(
+            strip_tags($this->buildDestinationMessage($spk))
+        );
 
         $driverName = $spk->driver?->name
             ?? $spk->driver_name

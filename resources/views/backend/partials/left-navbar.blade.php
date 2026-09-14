@@ -125,18 +125,6 @@
                                         <i class="fas fa-handshake"></i><span class="mtext">@lang("messages.Provider")</span>
                                     </a>
                                     <ul class="submenu">
-                                        {{-- <li>
-                                            <a href="/partners">
-                                                <i class="fa fa-handshake-o" aria-hidden="true"></i> @lang("messages.Partners")
-                                            </a>
-                                        </li> --}}
-                                        {{-- @canany(['posDev'])
-                                            <li>
-                                                <a href="{{ route('partners-admin.index') }}" {{ request()->routeIs('admin-panelpartners-admin.index') ? 'active' : '' }}>
-                                                    <i class="icon-copy fi-torso-business"></i> Wedding Partners
-                                                </a>
-                                            </li>
-                                        @endcanany --}}
                                         <li>
                                             <a href="{{ route('admin.partners.index') }}" {{ request()->routeIs('admin.partners.index') ? 'active' : '' }}>
                                                 <i class="fa fa-handshake-o" aria-hidden="true"></i> @lang("messages.Partners")
