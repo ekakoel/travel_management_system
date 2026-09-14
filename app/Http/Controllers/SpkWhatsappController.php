@@ -189,7 +189,9 @@ class SpkWhatsAppController extends Controller
         return "{$airportShuttleLines}";
     }
 
-
+    /**
+    * Membuat informasi destination untuk pesan WhatsApp.
+    */
     private function buildDestinationMessage(Spks $spk): string
     {
         $destinations = $spk->destinations
@@ -202,24 +204,100 @@ class SpkWhatsAppController extends Controller
             return "-";
         }
 
+        /*
+        * Membersihkan HTML dari text.
+        *
+        * Contoh:
+        * <p>Drop-off</p>
+        * menjadi:
+        * Drop-off
+        */
+        $cleanText = function ($value): string {
+            if (!filled($value)) {
+                return '';
+            }
+
+            // Ubah <br>, <br/>, <br /> menjadi line break.
+            $value = preg_replace(
+                '/<br\s*\/?>/i',
+                "\n",
+                $value
+            );
+
+            // Ubah penutup paragraf menjadi line break.
+            $value = preg_replace(
+                '/<\/p>/i',
+                "\n",
+                $value
+            );
+
+            // Hapus seluruh HTML tag lainnya.
+            $value = strip_tags($value);
+
+            // Decode HTML entities seperti &nbsp;, &amp;, dll.
+            $value = html_entity_decode(
+                $value,
+                ENT_QUOTES | ENT_HTML5,
+                'UTF-8'
+            );
+
+            // Ubah beberapa whitespace/newline menjadi format yang rapi.
+            $value = preg_replace(
+                "/[ \t]+/",
+                " ",
+                $value
+            );
+
+            $value = preg_replace(
+                "/\n{2,}/",
+                "\n",
+                $value
+            );
+
+            return trim($value);
+        };
+
+        /*
+        * Jika hanya ada satu destination,
+        * tampilkan tanpa nomor.
+        */
         if ($destinations->count() === 1) {
             $destination = $destinations->first();
 
-            $destinationName = $destination->destination_name;
+            $destinationName = $cleanText(
+                $destination->destination_name
+            );
 
-            return "{$destinationName}";
+            $description = $destination->description
+                ?? $destination->notes
+                ?? null;
+
+            $description = $cleanText($description);
+
+            if (filled($description)) {
+                return "{$destinationName} ({$description})";
+            }
+
+            return $destinationName ?: "-";
         }
 
-
+        /*
+        * Jika terdapat beberapa destination,
+        * tampilkan dengan nomor.
+        */
         $destinationLines = $destinations
-            ->map(function ($destination, $index) {
+            ->map(function ($destination, $index) use ($cleanText) {
                 $number = $index + 1;
 
-                $destinationName = $destination->destination_name;
+                $destinationName = $cleanText(
+                    $destination->destination_name
+                );
 
                 $description = $destination->description
                     ?? $destination->notes
                     ?? null;
+
+                $description = $cleanText($description);
 
                 if (filled($description)) {
                     return "{$number}. {$destinationName} ({$description})";
@@ -227,9 +305,10 @@ class SpkWhatsAppController extends Controller
 
                 return "{$number}. {$destinationName}";
             })
+            ->filter()
             ->implode("\n");
 
-        return "{$destinationLines}";
+        return $destinationLines ?: "-";
     }
 
 
@@ -276,8 +355,8 @@ class SpkWhatsAppController extends Controller
     }
 
     /**
-    * Membuat isi pesan WhatsApp.
-    */
+     * Membuat isi pesan WhatsApp.
+     */
     private function buildMessage(
         Spks $spk,
         string $reportUrl
@@ -302,21 +381,12 @@ class SpkWhatsAppController extends Controller
                 ?? null
         );
 
+
         $guestName = $this->buildGuestMessage($spk);
 
         $flightNumber = $this->buildFlightMessage($spk);
 
         $destinationMessage = $this->buildDestinationMessage($spk);
-
-        $destinationMessage = preg_replace(
-            '/<\/p>\s*<p[^>]*>/i',
-            "\n",
-            $destinationMessage
-        );
-
-        $destinationMessage = strip_tags($destinationMessage);
-
-        $destinationMessage = trim($destinationMessage);
 
         $driverName = $spk->driver?->name
             ?? $spk->driver_name
