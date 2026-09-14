@@ -211,25 +211,6 @@ class SpkWhatsAppController extends Controller
             return '-';
         }
 
-        /**
-         * Mengubah HTML menjadi plain text.
-         *
-         * Contoh:
-         *
-         * <p>Pick Up</p>
-         *      => Pick Up
-         *
-         * <p>Pick Up</p>
-         * <p>Please wait at the lobby.</p>
-         *      => Pick Up
-         *         Please wait at the lobby.
-         *
-         * <br>
-         *      => line break
-         *
-         * &lt;p&gt;Pick Up&lt;/p&gt;
-         *      => Pick Up
-         */
         $cleanText = function ($value): string {
             if (!filled($value)) {
                 return '';
@@ -237,17 +218,7 @@ class SpkWhatsAppController extends Controller
 
             $value = (string) $value;
 
-            /*
-             * Decode HTML entity beberapa kali.
-             *
-             * Ini menangani data seperti:
-             *
-             * &amp;lt;p&amp;gt;Pick Up&amp;lt;/p&amp;gt;
-             *
-             * sampai menjadi:
-             *
-             * <p>Pick Up</p>
-             */
+            // Decode HTML entities terlebih dahulu.
             for ($i = 0; $i < 3; $i++) {
                 $decoded = html_entity_decode(
                     $value,
@@ -262,57 +233,32 @@ class SpkWhatsAppController extends Controller
                 $value = $decoded;
             }
 
-            /*
-             * <br>, <br/>, <br /> menjadi line break.
-             */
+            // HTML block elements menjadi line break.
             $value = preg_replace(
-                '/<br\s*\/?>/i',
+                '/<\s*br\s*\/?\s*>/i',
                 "\n",
                 $value
             );
 
-            /*
-             * </p> menjadi line break.
-             *
-             * Contoh:
-             * <p>Pick Up</p><p>Drop Off</p>
-             *
-             * menjadi:
-             * Pick Up
-             * Drop Off
-             */
             $value = preg_replace(
-                '/<\/p\s*>/i',
+                '/<\s*\/\s*p\s*>/i',
                 "\n",
                 $value
             );
 
-            /*
-             * Hapus seluruh tag HTML yang masih tersisa.
-             */
+            // Hapus semua HTML tag.
             $value = strip_tags($value);
 
-            /*
-             * Decode entity yang mungkin masih tersisa
-             * setelah proses strip_tags().
-             */
+            // Decode entity sekali lagi setelah tag dibuang.
             $value = html_entity_decode(
                 $value,
                 ENT_QUOTES | ENT_HTML5,
                 'UTF-8'
             );
 
-            /*
-             * Pecah berdasarkan line break.
-             */
-            $lines = preg_split(
-                '/\R/',
-                $value
-            );
+            // Bersihkan whitespace.
+            $lines = preg_split('/\R/', $value);
 
-            /*
-             * Bersihkan whitespace setiap baris.
-             */
             $lines = collect($lines)
                 ->map(function ($line) {
                     return trim(
@@ -324,9 +270,6 @@ class SpkWhatsAppController extends Controller
                 })
                 ->values();
 
-            /*
-             * Gabungkan kembali menggunakan line break.
-             */
             return $lines->implode("\n");
         };
 
