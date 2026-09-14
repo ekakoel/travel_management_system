@@ -109,6 +109,7 @@ class SpkWhatsAppController extends Controller
         if (blank($spk->public_token)) {
             $spk->public_token =
                 Spks::generateUniquePublicToken();
+
             $spk->save();
         }
 
@@ -127,8 +128,10 @@ class SpkWhatsAppController extends Controller
 
         return redirect()->away($whatsappUrl);
     }
-    
 
+    /**
+     * Membuat informasi flight untuk pesan WhatsApp.
+     */
     private function buildFlightMessage(Spks $spk): string
     {
         $airportShuttles = $spk->airport_shuttles
@@ -138,7 +141,7 @@ class SpkWhatsAppController extends Controller
             ->values();
 
         if ($airportShuttles->isEmpty()) {
-            return "-";
+            return '-';
         }
 
         if ($airportShuttles->count() === 1) {
@@ -146,27 +149,28 @@ class SpkWhatsAppController extends Controller
 
             if ($airportShuttle->nav === 'In') {
                 $airportShuttleNav = 'Arrival';
-            }else{
+            } else {
                 $airportShuttleNav = 'Departure';
             }
 
             $flightNumber = $airportShuttle->flight_number
-                    ?? null;
+                ?? null;
 
             $flightTime = $airportShuttle->date
-            ? Carbon::parse($airportShuttle->date)->format('d M Y (H:i)')
-            : null;
+                ? Carbon::parse($airportShuttle->date)
+                    ->format('d M Y (H:i)')
+                : null;
 
             return "{$airportShuttleNav} - {$flightNumber} - {$flightTime}";
         }
 
-
         $airportShuttleLines = $airportShuttles
             ->map(function ($airportShuttle, $index) {
                 $number = $index + 1;
+
                 if ($airportShuttle->nav === 'In') {
                     $airportShuttleNav = 'Arrival';
-                }else{
+                } else {
                     $airportShuttleNav = 'Departure';
                 }
 
@@ -174,8 +178,9 @@ class SpkWhatsAppController extends Controller
                     ?? null;
 
                 $flightTime = $airportShuttle->date
-                ? Carbon::parse($airportShuttle->date)->format('d M Y H:i')
-                : null;
+                    ? Carbon::parse($airportShuttle->date)
+                        ->format('d M Y H:i')
+                    : null;
 
                 if (filled($flightNumber)) {
                     return "{$number}. {$airportShuttleNav} - {$flightNumber} ({$flightTime})";
@@ -185,11 +190,14 @@ class SpkWhatsAppController extends Controller
             })
             ->implode("\n");
 
-        return "{$airportShuttleLines}";
+        return $airportShuttleLines;
     }
 
     /**
      * Membuat informasi destination untuk pesan WhatsApp.
+     *
+     * HTML pada database TIDAK diubah.
+     * HTML hanya dibersihkan ketika pesan WhatsApp dibuat.
      */
     private function buildDestinationMessage(Spks $spk): string
     {
@@ -207,11 +215,20 @@ class SpkWhatsAppController extends Controller
          * Mengubah HTML menjadi plain text.
          *
          * Contoh:
+         *
          * <p>Pick Up</p>
-         *     => Pick Up
+         *      => Pick Up
+         *
+         * <p>Pick Up</p>
+         * <p>Please wait at the lobby.</p>
+         *      => Pick Up
+         *         Please wait at the lobby.
+         *
+         * <br>
+         *      => line break
          *
          * &lt;p&gt;Pick Up&lt;/p&gt;
-         *     => Pick Up
+         *      => Pick Up
          */
         $cleanText = function ($value): string {
             if (!filled($value)) {
@@ -221,15 +238,16 @@ class SpkWhatsAppController extends Controller
             $value = (string) $value;
 
             /*
-            * Decode HTML entity beberapa kali untuk menangani
-            * kemungkinan data tersimpan encoded.
-            *
-            * Contoh:
-            * &amp;lt;p&amp;gt;Pick Up&amp;lt;/p&amp;gt;
-            *
-            * menjadi:
-            * <p>Pick Up</p>
-            */
+             * Decode HTML entity beberapa kali.
+             *
+             * Ini menangani data seperti:
+             *
+             * &amp;lt;p&amp;gt;Pick Up&amp;lt;/p&amp;gt;
+             *
+             * sampai menjadi:
+             *
+             * <p>Pick Up</p>
+             */
             for ($i = 0; $i < 3; $i++) {
                 $decoded = html_entity_decode(
                     $value,
@@ -245,8 +263,8 @@ class SpkWhatsAppController extends Controller
             }
 
             /*
-            * Pertahankan line break dari <br>.
-            */
+             * <br>, <br/>, <br /> menjadi line break.
+             */
             $value = preg_replace(
                 '/<br\s*\/?>/i',
                 "\n",
@@ -254,8 +272,15 @@ class SpkWhatsAppController extends Controller
             );
 
             /*
-            * Pertahankan pemisah paragraf.
-            */
+             * </p> menjadi line break.
+             *
+             * Contoh:
+             * <p>Pick Up</p><p>Drop Off</p>
+             *
+             * menjadi:
+             * Pick Up
+             * Drop Off
+             */
             $value = preg_replace(
                 '/<\/p\s*>/i',
                 "\n",
@@ -263,17 +288,14 @@ class SpkWhatsAppController extends Controller
             );
 
             /*
-            * Hapus seluruh tag HTML.
-            *
-            * <p>Pick Up</p>
-            * menjadi:
-            * Pick Up
-            */
+             * Hapus seluruh tag HTML yang masih tersisa.
+             */
             $value = strip_tags($value);
 
             /*
-            * Decode entity sekali lagi jika masih ada.
-            */
+             * Decode entity yang mungkin masih tersisa
+             * setelah proses strip_tags().
+             */
             $value = html_entity_decode(
                 $value,
                 ENT_QUOTES | ENT_HTML5,
@@ -281,13 +303,16 @@ class SpkWhatsAppController extends Controller
             );
 
             /*
-            * Bersihkan whitespace pada setiap baris.
-            */
+             * Pecah berdasarkan line break.
+             */
             $lines = preg_split(
                 '/\R/',
                 $value
             );
 
+            /*
+             * Bersihkan whitespace setiap baris.
+             */
             $lines = collect($lines)
                 ->map(function ($line) {
                     return trim(
@@ -299,12 +324,15 @@ class SpkWhatsAppController extends Controller
                 })
                 ->values();
 
+            /*
+             * Gabungkan kembali menggunakan line break.
+             */
             return $lines->implode("\n");
         };
 
         /*
-        * Jika hanya ada satu destination.
-        */
+         * Jika hanya terdapat satu destination.
+         */
         if ($destinations->count() === 1) {
             $destination = $destinations->first();
 
@@ -326,8 +354,8 @@ class SpkWhatsAppController extends Controller
         }
 
         /*
-        * Jika terdapat lebih dari satu destination.
-        */
+         * Jika terdapat lebih dari satu destination.
+         */
         $destinationLines = $destinations
             ->map(function ($destination, $index) use ($cleanText) {
                 $number = $index + 1;
@@ -356,7 +384,9 @@ class SpkWhatsAppController extends Controller
         return $destinationLines ?: '-';
     }
 
-
+    /**
+     * Membuat informasi guest untuk pesan WhatsApp.
+     */
     private function buildGuestMessage(Spks $spk): string
     {
         $guests = $spk->guests
@@ -366,9 +396,8 @@ class SpkWhatsAppController extends Controller
             ->values();
 
         if ($guests->isEmpty()) {
-            return "-";
+            return '-';
         }
-
 
         if ($guests->count() === 1) {
             $guest = $guests->first();
@@ -377,7 +406,6 @@ class SpkWhatsAppController extends Controller
 
             return "{$guestName}";
         }
-
 
         $guestLines = $guests
             ->map(function ($guest, $index) {
@@ -396,7 +424,7 @@ class SpkWhatsAppController extends Controller
             })
             ->implode("\n");
 
-        return "{$guestLines}";
+        return $guestLines;
     }
 
     /**
@@ -425,7 +453,6 @@ class SpkWhatsAppController extends Controller
                 ?? $reservation->reservation_date
                 ?? null
         );
-
 
         $guestName = $this->buildGuestMessage($spk);
 
@@ -468,7 +495,7 @@ class SpkWhatsAppController extends Controller
             ?? '-';
 
         return implode("\n", [
-            "Halo {$customerName},",
+            "Halo {$customerName}",
             '',
             '*Your Order*',
             "Order Number: *{$orderNumber}*",
@@ -502,7 +529,8 @@ class SpkWhatsAppController extends Controller
     /**
      * Membuat isi pesan WhatsApp untuk Driver.
      */
-    private function buildDriverMessage(Spks $spk): string {
+    private function buildDriverMessage(Spks $spk): string
+    {
         $reservation = $spk->reservation;
 
         $driverName = $spk->driver?->name
@@ -513,7 +541,12 @@ class SpkWhatsAppController extends Controller
                 ?? $reservation->reservation_date
                 ?? null
         );
-        $spkLinkDriver = 'https://online.balikamitour.com/spk/' . $spk->id . '/' . $spk->spk_number;
+
+        $spkLinkDriver =
+            'https://online.balikamitour.com/spk/'
+            . $spk->id
+            . '/'
+            . $spk->spk_number;
 
         return implode("\n", [
             "Halo {$driverName},",
@@ -529,8 +562,8 @@ class SpkWhatsAppController extends Controller
             "- Selalu lakukan Check-in di lokasi destinasi sesuai ketentuan yang tertera pada SPK.",
             "- Jaga sikap profesional, ramah, dan menjaga nama baik perusahaan.",
             '',
-            "Terima kasih",
-            "*Bali Kami Tour*"
+            'Terima kasih',
+            '*Bali Kami Tour*',
         ]);
     }
 
@@ -538,9 +571,9 @@ class SpkWhatsAppController extends Controller
      * Mengubah nomor Indonesia menjadi format WhatsApp.
      *
      * Contoh:
-     * 085847357369     => 6285847357369
-     * +6285847357369   => 6285847357369
-     * 6285847357369    => 6285847357369
+     * 085847357369   => 6285847357369
+     * +6285847357369 => 6285847357369
+     * 6285847357369  => 6285847357369
      */
     private function normalizeWhatsAppNumber(
         ?string $phone
@@ -549,7 +582,11 @@ class SpkWhatsAppController extends Controller
             return null;
         }
 
-        $phone = preg_replace('/[^0-9]/', '', $phone);
+        $phone = preg_replace(
+            '/[^0-9]/',
+            '',
+            $phone
+        );
 
         if (!$phone) {
             return null;
