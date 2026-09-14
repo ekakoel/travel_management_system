@@ -190,8 +190,8 @@ class SpkWhatsAppController extends Controller
     }
 
     /**
-    * Membuat informasi destination untuk pesan WhatsApp.
-    */
+     * Membuat informasi destination untuk pesan WhatsApp.
+     */
     private function buildDestinationMessage(Spks $spk): string
     {
         $destinations = $spk->destinations
@@ -204,9 +204,16 @@ class SpkWhatsAppController extends Controller
             return '-';
         }
 
-        /*
-        * Membersihkan HTML dari sebuah nilai text.
-        */
+        /**
+         * Mengubah HTML menjadi plain text.
+         *
+         * Contoh:
+         * <p>Pick Up</p>
+         *     => Pick Up
+         *
+         * &lt;p&gt;Pick Up&lt;/p&gt;
+         *     => Pick Up
+         */
         $cleanText = function ($value): string {
             if (!filled($value)) {
                 return '';
@@ -215,33 +222,58 @@ class SpkWhatsAppController extends Controller
             $value = (string) $value;
 
             /*
-            * HTML seperti:
+            * Decode HTML entity beberapa kali untuk menangani
+            * kemungkinan data tersimpan encoded.
             *
+            * Contoh:
+            * &amp;lt;p&amp;gt;Pick Up&amp;lt;/p&amp;gt;
+            *
+            * menjadi:
             * <p>Pick Up</p>
-            *
-            * diubah menjadi:
-            *
-            * Pick Up
+            */
+            for ($i = 0; $i < 3; $i++) {
+                $decoded = html_entity_decode(
+                    $value,
+                    ENT_QUOTES | ENT_HTML5,
+                    'UTF-8'
+                );
+
+                if ($decoded === $value) {
+                    break;
+                }
+
+                $value = $decoded;
+            }
+
+            /*
+            * Pertahankan line break dari <br>.
             */
             $value = preg_replace(
-                '/<p\b[^>]*>/i',
-                '',
-                $value
-            );
-
-            $value = preg_replace(
-                '/<\/p>/i',
-                '',
+                '/<br\s*\/?>/i',
+                "\n",
                 $value
             );
 
             /*
-            * Hapus tag HTML lainnya.
+            * Pertahankan pemisah paragraf.
+            */
+            $value = preg_replace(
+                '/<\/p\s*>/i',
+                "\n",
+                $value
+            );
+
+            /*
+            * Hapus seluruh tag HTML.
+            *
+            * <p>Pick Up</p>
+            * menjadi:
+            * Pick Up
             */
             $value = strip_tags($value);
 
             /*
-            * Decode HTML entity.
+            * Decode entity sekali lagi jika masih ada.
             */
             $value = html_entity_decode(
                 $value,
@@ -249,7 +281,26 @@ class SpkWhatsAppController extends Controller
                 'UTF-8'
             );
 
-            return trim($value);
+            /*
+            * Bersihkan whitespace pada setiap baris.
+            */
+            $lines = preg_split(
+                '/\R/',
+                $value
+            );
+
+            $lines = collect($lines)
+                ->map(function ($line) {
+                    return trim(
+                        preg_replace('/[ \t]+/', ' ', $line)
+                    );
+                })
+                ->filter(function ($line) {
+                    return $line !== '';
+                })
+                ->values();
+
+            return $lines->implode("\n");
         };
 
         /*
@@ -278,7 +329,7 @@ class SpkWhatsAppController extends Controller
         /*
         * Jika terdapat lebih dari satu destination.
         */
-        return $destinations
+        $destinationLines = $destinations
             ->map(function ($destination, $index) use ($cleanText) {
                 $number = $index + 1;
 
@@ -298,7 +349,12 @@ class SpkWhatsAppController extends Controller
 
                 return "{$number}. {$destinationName}";
             })
+            ->filter(function ($line) {
+                return filled($line);
+            })
             ->implode("\n");
+
+        return $destinationLines ?: '-';
     }
 
 
