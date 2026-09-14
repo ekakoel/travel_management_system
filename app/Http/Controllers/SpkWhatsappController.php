@@ -306,9 +306,17 @@ class SpkWhatsAppController extends Controller
 
         $flightNumber = $this->buildFlightMessage($spk);
 
-        $destinationMessage = trim(
-            strip_tags($this->buildDestinationMessage($spk))
+        $destinationMessage = $this->buildDestinationMessage($spk);
+
+        $destinationMessage = preg_replace(
+            '/<\/p>\s*<p[^>]*>/i',
+            "\n",
+            $destinationMessage
         );
+
+        $destinationMessage = strip_tags($destinationMessage);
+
+        $destinationMessage = trim($destinationMessage);
 
         $driverName = $spk->driver?->name
             ?? $spk->driver_name
