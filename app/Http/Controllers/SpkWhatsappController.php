@@ -201,53 +201,89 @@ class SpkWhatsAppController extends Controller
             ->values();
 
         if ($destinations->isEmpty()) {
-            return "-";
+            return '-';
         }
 
-        /*
-        * Membersihkan HTML dari text.
-        *
-        * Contoh:
-        * <p>Drop-off</p>
-        * menjadi:
-        * Drop-off
-        */
+        /**
+         * Membersihkan HTML / HTML encoded dari text.
+         *
+         * Contoh:
+         * <p>Pick Up</p>
+         * menjadi:
+         * Pick Up
+         *
+         * Dan:
+         * &lt;p&gt;Pick Up&lt;/p&gt;
+         * menjadi:
+         * Pick Up
+         */
         $cleanText = function ($value): string {
             if (!filled($value)) {
                 return '';
             }
 
-            // Ubah <br>, <br/>, <br /> menjadi line break.
-            $value = preg_replace(
-                '/<br\s*\/?>/i',
-                "\n",
-                $value
-            );
+            $value = (string) $value;
 
-            // Ubah penutup paragraf menjadi line break.
-            $value = preg_replace(
-                '/<\/p>/i',
-                "\n",
-                $value
-            );
-
-            // Hapus seluruh HTML tag lainnya.
-            $value = strip_tags($value);
-
-            // Decode HTML entities seperti &nbsp;, &amp;, dll.
+            /*
+            * Decode HTML entities TERLEBIH DAHULU.
+            *
+            * Contoh:
+            * &lt;p&gt;Pick Up&lt;/p&gt;
+            *
+            * menjadi:
+            * <p>Pick Up</p>
+            */
             $value = html_entity_decode(
                 $value,
                 ENT_QUOTES | ENT_HTML5,
                 'UTF-8'
             );
 
-            // Ubah beberapa whitespace/newline menjadi format yang rapi.
+            /*
+            * Ubah <br>, <br/>, dan <br /> menjadi line break.
+            */
+            $value = preg_replace(
+                '/<br\s*\/?>/i',
+                "\n",
+                $value
+            );
+
+            /*
+            * Ubah penutup paragraph menjadi line break.
+            */
+            $value = preg_replace(
+                '/<\/p\s*>/i',
+                "\n",
+                $value
+            );
+
+            /*
+            * Hapus seluruh HTML tag.
+            */
+            $value = strip_tags($value);
+
+            /*
+            * Decode sekali lagi untuk menangani kemungkinan
+            * HTML entity yang nested / double encoded.
+            */
+            $value = html_entity_decode(
+                $value,
+                ENT_QUOTES | ENT_HTML5,
+                'UTF-8'
+            );
+
+            /*
+            * Bersihkan whitespace.
+            */
             $value = preg_replace(
                 "/[ \t]+/",
                 " ",
                 $value
             );
 
+            /*
+            * Bersihkan terlalu banyak line break.
+            */
             $value = preg_replace(
                 "/\n{2,}/",
                 "\n",
@@ -258,8 +294,7 @@ class SpkWhatsAppController extends Controller
         };
 
         /*
-        * Jika hanya ada satu destination,
-        * tampilkan tanpa nomor.
+        * Jika hanya ada satu destination.
         */
         if ($destinations->count() === 1) {
             $destination = $destinations->first();
@@ -278,12 +313,11 @@ class SpkWhatsAppController extends Controller
                 return "{$destinationName} ({$description})";
             }
 
-            return $destinationName ?: "-";
+            return $destinationName ?: '-';
         }
 
         /*
-        * Jika terdapat beberapa destination,
-        * tampilkan dengan nomor.
+        * Jika terdapat beberapa destination.
         */
         $destinationLines = $destinations
             ->map(function ($destination, $index) use ($cleanText) {
@@ -308,7 +342,7 @@ class SpkWhatsAppController extends Controller
             ->filter()
             ->implode("\n");
 
-        return $destinationLines ?: "-";
+        return $destinationLines ?: '-';
     }
 
 
