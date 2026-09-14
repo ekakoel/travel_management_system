@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Spks;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\URL;
 
 class SpkWhatsAppController extends Controller
 {

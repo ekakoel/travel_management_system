@@ -25,7 +25,7 @@ Dokumen ini menjelaskan flow SPK public report dan WhatsApp sharing yang sedang 
 - `routes/api.php`
 - `app/Http/Controllers/TransportManagementController.php`
 - `app/Http/Controllers/SpkReportController.php`
-- `app/Http/Controllers/SpkWhatsappController.php`
+- `app/Http/Controllers/SpkWhatsAppController.php`
 - `app/Http/Controllers/WhatsAppController.php`
 - `app/Models/Spks.php`
 - `app/Models/SpkDestinations.php`
