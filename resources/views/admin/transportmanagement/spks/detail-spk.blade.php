@@ -68,7 +68,6 @@
                         </ol>
                     </nav>
                     <div class="transport-spk-detail-toolbar__actions">
-                        {{-- @if($spk->send_report === 1 && $spk->operator?->phone) --}}
                             <a
                                 href="{{ route('admin.spk-send-whatsapp.operator', $spk) }}"
                                 target="_blank"
@@ -87,20 +86,7 @@
                                 <i class="bi bi-whatsapp me-1"></i>
                                 Send to Driver
                             </a>
-                        {{-- @endif
-                        @if($spk->send_report === 0 && $spk->operator?->phone) --}}
-                            {{-- <button
-                                id="btnSendWa"
-                                class="backend-button backend-button-secondary sendWA"
-                                type="button"
-                                data-route="{{ route('admin.whatsapp-both') }}"
-                                data-phone="{{ $spk->driver?->phone }}"
-                                data-spk="{{ $spk->id }}"
-                            >
-                                <i class="fa fa-share" aria-hidden="true"></i>
-                                @lang('transport-management.detail.actions.share_both')
-                            </button> --}}
-                        {{-- @endif --}}
+
                         <a class="backend-button backend-button-secondary" href="{{ route('spks.print', $spk->id) }}" target="_blank" rel="noopener">
                             <i class="fa fa-print" aria-hidden="true"></i>
                             @lang('transport-management.detail.actions.print')

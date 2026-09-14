@@ -11,6 +11,7 @@ class TourPackageLocation extends Model
 
     protected $fillable = [
         'tour_id',
+        'route_type',
         'location_reference_id',
         'day_number',
         'visit_order',

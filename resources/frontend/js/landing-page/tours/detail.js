@@ -21,9 +21,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let routeLocations = [];
     let routeMap = null;
-    let routePolyline = null;
+    let routePolylines = [];
     let routeRequestId = 0;
     let routeRequestController = null;
+
+    const ROUTE_STYLES = {
+        land: {
+            color: '#0f766e',
+            opacity: 0.82,
+            weight: 4,
+        },
+
+        sea: {
+            color: '#0f5fa8',
+            opacity: 0.9,
+            weight: 4,
+        },
+    };
+    
 
     document.querySelectorAll('.tour-gallery-modal').forEach((modal) => {
         if (modal.parentElement !== document.body) {
@@ -190,6 +205,28 @@ document.addEventListener('DOMContentLoaded', () => {
         Number(location.marker_lng ?? location.lng),
     ];
 
+    const getRouteType = (location) => {
+        const value = String(
+            location?.route_type ??
+            location?.transport_type ??
+            location?.segment_type ??
+            ''
+        ).trim().toLowerCase();
+
+        if ([
+            'sea',
+            'boat',
+            'ferry',
+            'fastboat',
+            'fast_boat',
+            'marine',
+        ].includes(value)) {
+            return 'sea';
+        }
+
+        return 'land';
+    };
+
     const applyMarkerOffsets = (locations) => {
         const groups = locations.reduce((accumulator, location) => {
             const key = `${Number(location.lat).toFixed(5)}:${Number(location.lng).toFixed(5)}`;
@@ -337,59 +374,512 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const drawStraightRoute = (locations) => {
+    // const drawStraightRoute = (locations) => {
+    //     if (!routeMap || !window.L || locations.length < 2) {
+    //         return null;
+    //     }
+
+    //     return window.L.polyline(
+    //         locations.map((location) => [
+    //             Number(location.lat),
+    //             Number(location.lng),
+    //         ]),
+    //         {
+    //             color: '#0f766e',
+    //             opacity: 0.82,
+    //             weight: 3,
+    //         }
+    //     ).addTo(routeMap);
+    // };
+
+    const drawStraightRoute = (locations, type = 'land') => {
         if (!routeMap || !window.L || locations.length < 2) {
             return null;
         }
 
-        return window.L.polyline(
-            locations.map((location) => [
-                Number(location.lat),
-                Number(location.lng),
-            ]),
+        const latLngs = locations.map((location) => [
+            Number(location.lat),
+            Number(location.lng),
+        ]);
+
+        const polyline = window.L.polyline(
+            latLngs,
             {
-                color: '#0f766e',
-                opacity: 0.82,
-                weight: 3,
+                ...ROUTE_STYLES[type],
+                lineCap: 'round',
+                lineJoin: 'round',
             }
         ).addTo(routeMap);
+
+        routePolylines.push(polyline);
+
+        return polyline;
     };
 
-    const drawRoadRoute = async (locations, shouldFit, requestId) => {
+    const clearRoutePolylines = () => {
+        routePolylines.forEach((polyline) => {
+            if (routeMap && polyline) {
+                routeMap.removeLayer(polyline);
+            }
+        });
+
+        routePolylines = [];
+    };
+
+    const getSeaRoutePoints = (from, to) => {
+        const start = [
+            Number(from.lat),
+            Number(from.lng),
+        ];
+
+        const end = [
+            Number(to.lat),
+            Number(to.lng),
+        ];
+
+        const latDiff = end[0] - start[0];
+        const lngDiff = end[1] - start[1];
+
+        const distance = Math.sqrt(
+            (latDiff * latDiff) +
+            (lngDiff * lngDiff)
+        );
+
+        if (!distance) {
+            return [start, end];
+        }
+
+        const curveStrength = Math.min(
+            Math.max(distance * 0.22, 0.02),
+            0.12
+        );
+
+        const midLat = (start[0] + end[0]) / 2;
+        const midLng = (start[1] + end[1]) / 2;
+
+        const perpendicularLat = -lngDiff / distance;
+        const perpendicularLng = latDiff / distance;
+
+        const controlPoint = [
+            midLat + (perpendicularLat * curveStrength),
+            midLng + (perpendicularLng * curveStrength),
+        ];
+
+        const points = [];
+        const segments = 24;
+
+        for (let index = 0; index <= segments; index += 1) {
+            const t = index / segments;
+            const inverseT = 1 - t;
+
+            const lat =
+                (inverseT * inverseT * start[0]) +
+                (2 * inverseT * t * controlPoint[0]) +
+                (t * t * end[0]);
+
+            const lng =
+                (inverseT * inverseT * start[1]) +
+                (2 * inverseT * t * controlPoint[1]) +
+                (t * t * end[1]);
+
+            points.push([lat, lng]);
+        }
+
+        return points;
+    };
+
+    const drawSeaRoute = (from, to) => {
+        if (!routeMap || !window.L) {
+            return null;
+        }
+
+        const latLngs = getSeaRoutePoints(from, to);
+
+        const polyline = window.L.polyline(
+            latLngs,
+            {
+                ...ROUTE_STYLES.sea,
+                lineCap: 'round',
+                lineJoin: 'round',
+            }
+        ).addTo(routeMap);
+
+        routePolylines.push(polyline);
+
+        return polyline;
+    };
+
+    const getSeaWaypoints = (from, to) => {
+        const fromLat = Number(from.lat);
+        const fromLng = Number(from.lng);
+        const toLat = Number(to.lat);
+        const toLng = Number(to.lng);
+
+        if (
+            !Number.isFinite(fromLat)
+            || !Number.isFinite(fromLng)
+            || !Number.isFinite(toLat)
+            || !Number.isFinite(toLng)
+        ) {
+            return [];
+        }
+
+        /*
+        * Prefer explicit sea waypoints from backend.
+        *
+        * Example:
+        *
+        * sea_waypoints: [
+        *     { lat: -8.680, lng: 115.300 },
+        *     { lat: -8.684, lng: 115.350 },
+        *     { lat: -8.682, lng: 115.400 }
+        * ]
+        */
+        const configuredWaypoints = [
+            ...(Array.isArray(from.sea_waypoints) ? from.sea_waypoints : []),
+            ...(Array.isArray(to.sea_waypoints) ? to.sea_waypoints : []),
+        ];
+
+        const validWaypoints = configuredWaypoints
+            .map((point) => ({
+                lat: Number(point.lat),
+                lng: Number(point.lng),
+            }))
+            .filter((point) => (
+                Number.isFinite(point.lat)
+                && Number.isFinite(point.lng)
+            ));
+
+        if (validWaypoints.length) {
+            return [
+                [fromLat, fromLng],
+                ...validWaypoints.map((point) => [point.lat, point.lng]),
+                [toLat, toLng],
+            ];
+        }
+
+        /*
+        * Fallback:
+        * create a smooth-looking sea arc when no explicit
+        * waypoints have been configured.
+        */
+        const start = [fromLat, fromLng];
+        const end = [toLat, toLng];
+
+        const distanceLat = toLat - fromLat;
+        const distanceLng = toLng - fromLng;
+
+        const distance = Math.sqrt(
+            (distanceLat * distanceLat)
+            + (distanceLng * distanceLng)
+        );
+
+        if (distance === 0) {
+            return [start, end];
+        }
+
+        /*
+        * Perpendicular offset creates a gentle marine arc.
+        */
+        const offset = Math.min(Math.max(distance * 0.18, 0.015), 0.08);
+
+        const normalLat = -distanceLng / distance;
+        const normalLng = distanceLat / distance;
+
+        const point1 = [
+            fromLat + (distanceLat * 0.25) + (normalLat * offset),
+            fromLng + (distanceLng * 0.25) + (normalLng * offset),
+        ];
+
+        const point2 = [
+            fromLat + (distanceLat * 0.50) + (normalLat * offset * 1.25),
+            fromLng + (distanceLng * 0.50) + (normalLng * offset * 1.25),
+        ];
+
+        const point3 = [
+            fromLat + (distanceLat * 0.75) + (normalLat * offset),
+            fromLng + (distanceLng * 0.75) + (normalLng * offset),
+        ];
+
+        return [
+            start,
+            point1,
+            point2,
+            point3,
+            end,
+        ];
+    };
+
+    // const drawSeaRoute = (from, to) => {
+    //     if (!routeMap || !window.L) {
+    //         return null;
+    //     }
+
+    //     const latLngs = getSeaWaypoints(from, to);
+
+    //     if (latLngs.length < 2) {
+    //         return null;
+    //     }
+
+    //     const polyline = window.L.polyline(latLngs, {
+    //         ...ROUTE_STYLES.sea,
+    //         lineCap: 'round',
+    //         lineJoin: 'round',
+    //     }).addTo(routeMap);
+
+    //     routePolylines.push(polyline);
+
+    //     return polyline;
+    // };
+
+    // const drawRoadRoute = async (locations, shouldFit, requestId) => {
+    //     if (!routeMap || !window.L || locations.length < 2) {
+    //         return;
+    //     }
+
+    //     const route = await fetchRoadRoute(locations, requestId);
+
+    //     if (requestId !== routeRequestId) {
+    //         return;
+    //     }
+
+    //     if (!route) {
+    //         routePolyline = drawStraightRoute(locations);
+
+    //         if (shouldFit && routePolyline) {
+    //             routeMap.fitBounds(routePolyline.getBounds(), {
+    //                 padding: [48, 48],
+    //                 animate: true,
+    //             });
+    //         }
+
+    //         return;
+    //     }
+
+    //     routePolyline = window.L.polyline(route.latLngs, {
+    //         color: '#0f766e',
+    //         opacity: 0.82,
+    //         weight: 3,
+    //     }).addTo(routeMap);
+
+    //     if (shouldFit && routePolyline) {
+    //         routeMap.fitBounds(routePolyline.getBounds(), {
+    //             padding: [48, 48],
+    //             animate: true,
+    //         });
+    //     }
+    // };
+    // const drawRouteSegments = async (locations, shouldFit, requestId) => {
+    //     if (!routeMap || !window.L || locations.length < 2) {
+    //         return;
+    //     }
+
+    //     clearRoutePolylines();
+
+    //     const allBounds = [];
+
+    //     for (let index = 0; index < locations.length - 1; index += 1) {
+    //         if (requestId !== routeRequestId) {
+    //             return;
+    //         }
+
+    //         const from = locations[index];
+    //         const to = locations[index + 1];
+
+    //         /*
+    //         * SEA SEGMENT
+    //         *
+    //         * If either endpoint is marked as a sea/boat route,
+    //         * draw a custom marine route instead of asking OSRM
+    //         * for a driving route.
+    //         */
+    //         if (isSeaRoute(from, to)) {
+    //             const seaPolyline = drawSeaRoute(from, to);
+
+    //             if (seaPolyline) {
+    //                 seaPolyline.getLatLngs().forEach((latLng) => {
+    //                     allBounds.push(latLng);
+    //                 });
+    //             }
+
+    //             continue;
+    //         }
+
+    //         /*
+    //         * LAND SEGMENT
+    //         *
+    //         * Only this segment is sent to OSRM.
+    //         */
+    //         const landRoute = await fetchRoadRoute(
+    //             [from, to],
+    //             requestId
+    //         );
+
+    //         if (requestId !== routeRequestId) {
+    //             return;
+    //         }
+
+    //         if (landRoute?.latLngs?.length >= 2) {
+    //             const polyline = window.L.polyline(
+    //                 landRoute.latLngs,
+    //                 {
+    //                     ...ROUTE_STYLES.land,
+    //                     lineCap: 'round',
+    //                     lineJoin: 'round',
+    //                 }
+    //             ).addTo(routeMap);
+
+    //             routePolylines.push(polyline);
+
+    //             landRoute.latLngs.forEach((latLng) => {
+    //                 allBounds.push(latLng);
+    //             });
+
+    //             continue;
+    //         }
+
+    //         /*
+    //         * OSRM fallback.
+    //         */
+    //         const fallbackPolyline = drawStraightRoute([
+    //             from,
+    //             to,
+    //         ]);
+
+    //         if (fallbackPolyline) {
+    //             fallbackPolyline.getLatLngs().forEach((latLng) => {
+    //                 allBounds.push(latLng);
+    //             });
+
+    //             routePolylines.push(fallbackPolyline);
+    //         }
+    //     }
+
+    //     if (
+    //         shouldFit
+    //         && allBounds.length > 1
+    //         && requestId === routeRequestId
+    //     ) {
+    //         routeMap.fitBounds(allBounds, {
+    //             padding: [48, 48],
+    //             animate: true,
+    //         });
+    //     }
+    // };
+    const drawRouteSegments = async (
+        locations,
+        shouldFit = true,
+        requestId = routeRequestId
+    ) => {
         if (!routeMap || !window.L || locations.length < 2) {
             return;
         }
 
-        const route = await fetchRoadRoute(locations, requestId);
+        const routeBounds = [];
 
-        if (requestId !== routeRequestId) {
-            return;
-        }
-
-        if (!route) {
-            routePolyline = drawStraightRoute(locations);
-
-            if (shouldFit && routePolyline) {
-                routeMap.fitBounds(routePolyline.getBounds(), {
-                    padding: [48, 48],
-                    animate: true,
-                });
+        for (let index = 0; index < locations.length - 1; index += 1) {
+            if (requestId !== routeRequestId) {
+                return;
             }
 
-            return;
+            const from = locations[index];
+            const to = locations[index + 1];
+
+            /*
+            * route_type berada pada lokasi tujuan.
+            *
+            * Contoh:
+            * Sanur Harbour      = land
+            * Lembongan Harbour  = sea
+            * Dream Beach        = land
+            *
+            * Maka:
+            * Sanur → Sanur Harbour = land
+            * Sanur Harbour → Lembongan Harbour = sea
+            * Lembongan Harbour → Dream Beach = land
+            */
+            const routeType = getRouteType(to);
+
+            if (routeType === 'sea') {
+                const seaPoints = getSeaRoutePoints(from, to);
+
+                const polyline = window.L.polyline(
+                    seaPoints,
+                    {
+                        ...ROUTE_STYLES.sea,
+                        lineCap: 'round',
+                        lineJoin: 'round',
+                    }
+                ).addTo(routeMap);
+
+                routePolylines.push(polyline);
+
+                seaPoints.forEach((point) => {
+                    routeBounds.push(point);
+                });
+
+                continue;
+            }
+
+            const roadResult = await fetchRoadRoute(
+                [from, to],
+                requestId
+            );
+
+            if (requestId !== routeRequestId) {
+                return;
+            }
+
+            if (roadResult?.latLngs?.length > 1) {
+                const polyline = window.L.polyline(
+                    roadResult.latLngs,
+                    {
+                        ...ROUTE_STYLES.land,
+                        lineCap: 'round',
+                        lineJoin: 'round',
+                    }
+                ).addTo(routeMap);
+
+                routePolylines.push(polyline);
+
+                roadResult.latLngs.forEach((point) => {
+                    routeBounds.push(point);
+                });
+            } else {
+                const fallback = [
+                    [Number(from.lat), Number(from.lng)],
+                    [Number(to.lat), Number(to.lng)],
+                ];
+
+                const polyline = window.L.polyline(
+                    fallback,
+                    {
+                        ...ROUTE_STYLES.land,
+                        lineCap: 'round',
+                        lineJoin: 'round',
+                    }
+                ).addTo(routeMap);
+
+                routePolylines.push(polyline);
+
+                fallback.forEach((point) => {
+                    routeBounds.push(point);
+                });
+            }
         }
 
-        routePolyline = window.L.polyline(route.latLngs, {
-            color: '#0f766e',
-            opacity: 0.82,
-            weight: 3,
-        }).addTo(routeMap);
-
-        if (shouldFit && routePolyline) {
-            routeMap.fitBounds(routePolyline.getBounds(), {
-                padding: [48, 48],
-                animate: true,
-            });
+        if (
+            shouldFit &&
+            routeBounds.length > 1 &&
+            requestId === routeRequestId
+        ) {
+            routeMap.fitBounds(
+                window.L.latLngBounds(routeBounds),
+                {
+                    padding: [32, 32],
+                    maxZoom: 15,
+                }
+            );
         }
     };
 
@@ -521,11 +1011,11 @@ document.addEventListener('DOMContentLoaded', () => {
             routeRequestController.abort();
             routeRequestController = null;
         }
-
-        if (routePolyline) {
-            routeMap.removeLayer(routePolyline);
-            routePolyline = null;
-        }
+        clearRoutePolylines();
+        // if (routePolyline) {
+        //     routeMap.removeLayer(routePolyline);
+        //     routePolyline = null;
+        // }
 
         if (!activeLocations.length) {
             return;
@@ -549,7 +1039,12 @@ document.addEventListener('DOMContentLoaded', () => {
         * Do NOT use marker_lat / marker_lng here.
         * Those coordinates are only visual offsets for overlapping markers.
         */
-        await drawRoadRoute(
+        // await drawRoadRoute(
+        //     activeLocations,
+        //     shouldFit,
+        //     currentRequestId
+        // );
+        await drawRouteSegments(
             activeLocations,
             shouldFit,
             currentRequestId

@@ -425,6 +425,7 @@ class ToursController extends Controller
                     'visit_time' => $location->visit_time ? Carbon::parse($location->visit_time)->format('H:i') : null,
                     'name' => $location->destination_name,
                     'type' => $location->location_type ?: 'Attraction',
+                    'route_type' => $location->route_type ?: 'land',
                     'icon' => $markerStyle['icon'],
                     'color' => $markerStyle['color'],
                     'label' => $markerStyle['label'],

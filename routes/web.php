@@ -1,6 +1,5 @@
 <?php
 use App\Http\Controllers\AccommodationFinancialFileController;
-use App\Http\Controllers\ActivitiesAdminController;
 use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\ActivityGuestListTemplateController;
 use App\Http\Controllers\ActivityQuoteController;
@@ -37,7 +36,6 @@ use App\Http\Controllers\DriversController;
 use App\Http\Controllers\EmailBlastsController;
 use App\Http\Controllers\ExtraBedController;
 use App\Http\Controllers\FlightsController;
-use App\Http\Controllers\FlyerGeneratorController;
 use App\Http\Controllers\FooterManagerController;
 use App\Http\Controllers\FrontEndController;
 use App\Http\Controllers\GuestsController;
@@ -73,7 +71,6 @@ use App\Http\Controllers\TourPricesController;
 use App\Http\Controllers\ToursController;
 use App\Http\Controllers\TransportBrandController;
 use App\Http\Controllers\TransportManagementController;
-use App\Http\Controllers\TransportsController;
 use App\Http\Controllers\TransportTypeController;
 use App\Http\Controllers\UsdRatesController;
 use App\Http\Controllers\UsersController;
@@ -82,7 +79,6 @@ use App\Http\Controllers\VillasController;
 use App\Http\Controllers\WeddingDinnerVenuesController;
 use App\Http\Controllers\WeddingInvitationsController;
 use App\Http\Controllers\WeddingLunchVenuesController;
-use App\Http\Controllers\WeddingMenuController;
 use App\Http\Controllers\WeddingPlannerController;
 use App\Http\Controllers\WeddingReceptionVenuesController;
 use App\Http\Controllers\WeddingsController;
@@ -159,29 +155,6 @@ use Illuminate\Support\Facades\Route;
     Route::post('/checkin/{id}', [TransportManagementController::class, 'checkin'])->name('spk.checkin');
     Route::get('/spk/{id}/{spkNumber}', [TransportManagementController::class, 'show_spk'])->name('view.spk');
     Route::post('/driver/checkin/{id}', [SpksDestinationsController::class, 'driver_create_destination'])->name('driver.checkin');
-
-    // ---------------------------------------------------
-    //                    WA SERVER
-    // ---------------------------------------------------
-    Route::post('/spk/{id}/send-whatsapp', [WhatsAppController::class, 'send'])->name('spk.send.whatsapp');
-
-    Route::post('/send-whatsapp-both', [WhatsAppController::class, 'send_wa_both'])->name('send.whatsapp-both');
-    Route::post('/send-whatsapp-driver', [WhatsAppController::class, 'send_wa_driver'])->name('send.whatsapp-driver');
-    Route::post('/send-whatsapp-operator', [WhatsAppController::class, 'send_wa_operator'])->name('send.whatsapp-operator');
-
-    // Route::get('/spk-report/{id}', [WhatsAppController::class, 'spk_report'])->name('view.spk-report');
-
-    Route::get('/test-wa', function () {
-        return Http::timeout(5)->get("http://127.0.0.1:3000/status")->json();
-    });
-
-    // |--------------------------------------------------------------------------
-    // | Public SPK Report
-    // |--------------------------------------------------------------------------
-    // Route::get('/spk-report/{spk}', [
-    //     SpkReportController::class,
-    //     'show',
-    // ])->middleware('signed')->name('spks.public-report');
     Route::get('/spk-report/{token}', [
         SpkReportController::class,
         'show',
@@ -190,16 +163,17 @@ use Illuminate\Support\Facades\Route;
     // ---------------------------------------------------
     //                    TEST SYSTEM
     // ---------------------------------------------------
-    Route::get('/email-confirmation/{id}',[OrdersAdminController::class,'test_email_confirmation']);
-    Route::get('/test-order-contract/{id}',[OrdersAdminController::class,'test_contrat']);
-    Route::get('calendar-event', [CalendarController::class, 'index'])->middleware(['auth','adminType']);
-    Route::post('calendar-crud-ajax', [CalendarController::class, 'calendarEvents'])->middleware(['auth','adminType']);
-    Route::get('/keycode', function () {return view('keycode');});
-    // FORM WIZARD
-    Route::get('form-wizard', function () {
-        return view('wizard');
-    });
-    Route::get('/contract-inv', [OrdersAdminController::class, 'confirmation_order']);
+    // Route::get('/email-confirmation/{id}',[OrdersAdminController::class,'test_email_confirmation']);
+    // Route::get('/test-order-contract/{id}',[OrdersAdminController::class,'test_contrat']);
+    // Route::get('calendar-event', [CalendarController::class, 'index'])->middleware(['auth','adminType']);
+    // Route::post('calendar-crud-ajax', [CalendarController::class, 'calendarEvents'])->middleware(['auth','adminType']);
+    // Route::get('/keycode', function () {return view('keycode');});
+
+    // Route::get('form-wizard', function () {
+    //     return view('wizard');
+    // });
+
+    // Route::get('/contract-inv', [OrdersAdminController::class, 'confirmation_order']);
     // ---------------------------------------------------
 
     Route::get('lang/{locale}',[LocalizationController::class,'changeLanguage'])->name('language.switch');

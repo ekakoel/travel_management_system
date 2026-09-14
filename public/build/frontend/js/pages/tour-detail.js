@@ -105,6 +105,9 @@ module.exports = {
   !*** ./resources/frontend/js/landing-page/tours/detail.js ***!
   \************************************************************/
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -139,9 +142,21 @@ document.addEventListener('DOMContentLoaded', function () {
   var roadRouteCache = new Map();
   var routeLocations = [];
   var routeMap = null;
-  var routePolyline = null;
+  var routePolylines = [];
   var routeRequestId = 0;
   var routeRequestController = null;
+  var ROUTE_STYLES = {
+    land: {
+      color: '#0f766e',
+      opacity: 0.82,
+      weight: 4
+    },
+    sea: {
+      color: '#0f5fa8',
+      opacity: 0.9,
+      weight: 4
+    }
+  };
   document.querySelectorAll('.tour-gallery-modal').forEach(function (modal) {
     if (modal.parentElement !== document.body) {
       document.body.appendChild(modal);
@@ -281,6 +296,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var _location$marker_lat, _location$marker_lng;
     return [Number((_location$marker_lat = location.marker_lat) !== null && _location$marker_lat !== void 0 ? _location$marker_lat : location.lat), Number((_location$marker_lng = location.marker_lng) !== null && _location$marker_lng !== void 0 ? _location$marker_lng : location.lng)];
   };
+  var getRouteType = function getRouteType(location) {
+    var _ref, _ref2, _location$route_type;
+    var value = String((_ref = (_ref2 = (_location$route_type = location === null || location === void 0 ? void 0 : location.route_type) !== null && _location$route_type !== void 0 ? _location$route_type : location === null || location === void 0 ? void 0 : location.transport_type) !== null && _ref2 !== void 0 ? _ref2 : location === null || location === void 0 ? void 0 : location.segment_type) !== null && _ref !== void 0 ? _ref : '').trim().toLowerCase();
+    if (['sea', 'boat', 'ferry', 'fastboat', 'fast_boat', 'marine'].includes(value)) {
+      return 'sea';
+    }
+    return 'land';
+  };
   var applyMarkerOffsets = function applyMarkerOffsets(locations) {
     var groups = locations.reduce(function (accumulator, location) {
       var key = "".concat(Number(location.lat).toFixed(5), ":").concat(Number(location.lng).toFixed(5));
@@ -327,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
   var fetchRoadRoute = /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(locations, requestId) {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(locations, requestId) {
       var coordinates, cacheKey, url, response, data, route, latLngs, routeData;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) {
@@ -396,15 +419,15 @@ document.addEventListener('DOMContentLoaded', function () {
               throw new Error('OSRM returned an invalid route response.');
             case 24:
               route = data.routes[0];
-              latLngs = route.geometry.coordinates.map(function (_ref2) {
-                var _ref3 = _slicedToArray(_ref2, 2),
-                  lng = _ref3[0],
-                  lat = _ref3[1];
-                return [Number(lat), Number(lng)];
-              }).filter(function (_ref4) {
+              latLngs = route.geometry.coordinates.map(function (_ref4) {
                 var _ref5 = _slicedToArray(_ref4, 2),
-                  lat = _ref5[0],
-                  lng = _ref5[1];
+                  lng = _ref5[0],
+                  lat = _ref5[1];
+                return [Number(lat), Number(lng)];
+              }).filter(function (_ref6) {
+                var _ref7 = _slicedToArray(_ref6, 2),
+                  lat = _ref7[0],
+                  lng = _ref7[1];
                 return Number.isFinite(lat) && Number.isFinite(lng);
               });
               if (!(latLngs.length < 2)) {
@@ -439,77 +462,429 @@ document.addEventListener('DOMContentLoaded', function () {
       }, _callee, null, [[11, 33]]);
     }));
     return function fetchRoadRoute(_x, _x2) {
-      return _ref.apply(this, arguments);
+      return _ref3.apply(this, arguments);
     };
   }();
+
+  // const drawStraightRoute = (locations) => {
+  //     if (!routeMap || !window.L || locations.length < 2) {
+  //         return null;
+  //     }
+
+  //     return window.L.polyline(
+  //         locations.map((location) => [
+  //             Number(location.lat),
+  //             Number(location.lng),
+  //         ]),
+  //         {
+  //             color: '#0f766e',
+  //             opacity: 0.82,
+  //             weight: 3,
+  //         }
+  //     ).addTo(routeMap);
+  // };
+
   var drawStraightRoute = function drawStraightRoute(locations) {
+    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'land';
     if (!routeMap || !window.L || locations.length < 2) {
       return null;
     }
-    return window.L.polyline(locations.map(function (location) {
+    var latLngs = locations.map(function (location) {
       return [Number(location.lat), Number(location.lng)];
-    }), {
-      color: '#0f766e',
-      opacity: 0.82,
-      weight: 3
-    }).addTo(routeMap);
+    });
+    var polyline = window.L.polyline(latLngs, _objectSpread(_objectSpread({}, ROUTE_STYLES[type]), {}, {
+      lineCap: 'round',
+      lineJoin: 'round'
+    })).addTo(routeMap);
+    routePolylines.push(polyline);
+    return polyline;
   };
-  var drawRoadRoute = /*#__PURE__*/function () {
-    var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(locations, shouldFit, requestId) {
-      var route;
+  var clearRoutePolylines = function clearRoutePolylines() {
+    routePolylines.forEach(function (polyline) {
+      if (routeMap && polyline) {
+        routeMap.removeLayer(polyline);
+      }
+    });
+    routePolylines = [];
+  };
+  var getSeaRoutePoints = function getSeaRoutePoints(from, to) {
+    var start = [Number(from.lat), Number(from.lng)];
+    var end = [Number(to.lat), Number(to.lng)];
+    var latDiff = end[0] - start[0];
+    var lngDiff = end[1] - start[1];
+    var distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
+    if (!distance) {
+      return [start, end];
+    }
+    var curveStrength = Math.min(Math.max(distance * 0.22, 0.02), 0.12);
+    var midLat = (start[0] + end[0]) / 2;
+    var midLng = (start[1] + end[1]) / 2;
+    var perpendicularLat = -lngDiff / distance;
+    var perpendicularLng = latDiff / distance;
+    var controlPoint = [midLat + perpendicularLat * curveStrength, midLng + perpendicularLng * curveStrength];
+    var points = [];
+    var segments = 24;
+    for (var index = 0; index <= segments; index += 1) {
+      var t = index / segments;
+      var inverseT = 1 - t;
+      var lat = inverseT * inverseT * start[0] + 2 * inverseT * t * controlPoint[0] + t * t * end[0];
+      var lng = inverseT * inverseT * start[1] + 2 * inverseT * t * controlPoint[1] + t * t * end[1];
+      points.push([lat, lng]);
+    }
+    return points;
+  };
+  var drawSeaRoute = function drawSeaRoute(from, to) {
+    if (!routeMap || !window.L) {
+      return null;
+    }
+    var latLngs = getSeaRoutePoints(from, to);
+    var polyline = window.L.polyline(latLngs, _objectSpread(_objectSpread({}, ROUTE_STYLES.sea), {}, {
+      lineCap: 'round',
+      lineJoin: 'round'
+    })).addTo(routeMap);
+    routePolylines.push(polyline);
+    return polyline;
+  };
+  var getSeaWaypoints = function getSeaWaypoints(from, to) {
+    var fromLat = Number(from.lat);
+    var fromLng = Number(from.lng);
+    var toLat = Number(to.lat);
+    var toLng = Number(to.lng);
+    if (!Number.isFinite(fromLat) || !Number.isFinite(fromLng) || !Number.isFinite(toLat) || !Number.isFinite(toLng)) {
+      return [];
+    }
+
+    /*
+    * Prefer explicit sea waypoints from backend.
+    *
+    * Example:
+    *
+    * sea_waypoints: [
+    *     { lat: -8.680, lng: 115.300 },
+    *     { lat: -8.684, lng: 115.350 },
+    *     { lat: -8.682, lng: 115.400 }
+    * ]
+    */
+    var configuredWaypoints = [].concat(_toConsumableArray(Array.isArray(from.sea_waypoints) ? from.sea_waypoints : []), _toConsumableArray(Array.isArray(to.sea_waypoints) ? to.sea_waypoints : []));
+    var validWaypoints = configuredWaypoints.map(function (point) {
+      return {
+        lat: Number(point.lat),
+        lng: Number(point.lng)
+      };
+    }).filter(function (point) {
+      return Number.isFinite(point.lat) && Number.isFinite(point.lng);
+    });
+    if (validWaypoints.length) {
+      return [[fromLat, fromLng]].concat(_toConsumableArray(validWaypoints.map(function (point) {
+        return [point.lat, point.lng];
+      })), [[toLat, toLng]]);
+    }
+
+    /*
+    * Fallback:
+    * create a smooth-looking sea arc when no explicit
+    * waypoints have been configured.
+    */
+    var start = [fromLat, fromLng];
+    var end = [toLat, toLng];
+    var distanceLat = toLat - fromLat;
+    var distanceLng = toLng - fromLng;
+    var distance = Math.sqrt(distanceLat * distanceLat + distanceLng * distanceLng);
+    if (distance === 0) {
+      return [start, end];
+    }
+
+    /*
+    * Perpendicular offset creates a gentle marine arc.
+    */
+    var offset = Math.min(Math.max(distance * 0.18, 0.015), 0.08);
+    var normalLat = -distanceLng / distance;
+    var normalLng = distanceLat / distance;
+    var point1 = [fromLat + distanceLat * 0.25 + normalLat * offset, fromLng + distanceLng * 0.25 + normalLng * offset];
+    var point2 = [fromLat + distanceLat * 0.50 + normalLat * offset * 1.25, fromLng + distanceLng * 0.50 + normalLng * offset * 1.25];
+    var point3 = [fromLat + distanceLat * 0.75 + normalLat * offset, fromLng + distanceLng * 0.75 + normalLng * offset];
+    return [start, point1, point2, point3, end];
+  };
+
+  // const drawSeaRoute = (from, to) => {
+  //     if (!routeMap || !window.L) {
+  //         return null;
+  //     }
+
+  //     const latLngs = getSeaWaypoints(from, to);
+
+  //     if (latLngs.length < 2) {
+  //         return null;
+  //     }
+
+  //     const polyline = window.L.polyline(latLngs, {
+  //         ...ROUTE_STYLES.sea,
+  //         lineCap: 'round',
+  //         lineJoin: 'round',
+  //     }).addTo(routeMap);
+
+  //     routePolylines.push(polyline);
+
+  //     return polyline;
+  // };
+
+  // const drawRoadRoute = async (locations, shouldFit, requestId) => {
+  //     if (!routeMap || !window.L || locations.length < 2) {
+  //         return;
+  //     }
+
+  //     const route = await fetchRoadRoute(locations, requestId);
+
+  //     if (requestId !== routeRequestId) {
+  //         return;
+  //     }
+
+  //     if (!route) {
+  //         routePolyline = drawStraightRoute(locations);
+
+  //         if (shouldFit && routePolyline) {
+  //             routeMap.fitBounds(routePolyline.getBounds(), {
+  //                 padding: [48, 48],
+  //                 animate: true,
+  //             });
+  //         }
+
+  //         return;
+  //     }
+
+  //     routePolyline = window.L.polyline(route.latLngs, {
+  //         color: '#0f766e',
+  //         opacity: 0.82,
+  //         weight: 3,
+  //     }).addTo(routeMap);
+
+  //     if (shouldFit && routePolyline) {
+  //         routeMap.fitBounds(routePolyline.getBounds(), {
+  //             padding: [48, 48],
+  //             animate: true,
+  //         });
+  //     }
+  // };
+  // const drawRouteSegments = async (locations, shouldFit, requestId) => {
+  //     if (!routeMap || !window.L || locations.length < 2) {
+  //         return;
+  //     }
+
+  //     clearRoutePolylines();
+
+  //     const allBounds = [];
+
+  //     for (let index = 0; index < locations.length - 1; index += 1) {
+  //         if (requestId !== routeRequestId) {
+  //             return;
+  //         }
+
+  //         const from = locations[index];
+  //         const to = locations[index + 1];
+
+  //         /*
+  //         * SEA SEGMENT
+  //         *
+  //         * If either endpoint is marked as a sea/boat route,
+  //         * draw a custom marine route instead of asking OSRM
+  //         * for a driving route.
+  //         */
+  //         if (isSeaRoute(from, to)) {
+  //             const seaPolyline = drawSeaRoute(from, to);
+
+  //             if (seaPolyline) {
+  //                 seaPolyline.getLatLngs().forEach((latLng) => {
+  //                     allBounds.push(latLng);
+  //                 });
+  //             }
+
+  //             continue;
+  //         }
+
+  //         /*
+  //         * LAND SEGMENT
+  //         *
+  //         * Only this segment is sent to OSRM.
+  //         */
+  //         const landRoute = await fetchRoadRoute(
+  //             [from, to],
+  //             requestId
+  //         );
+
+  //         if (requestId !== routeRequestId) {
+  //             return;
+  //         }
+
+  //         if (landRoute?.latLngs?.length >= 2) {
+  //             const polyline = window.L.polyline(
+  //                 landRoute.latLngs,
+  //                 {
+  //                     ...ROUTE_STYLES.land,
+  //                     lineCap: 'round',
+  //                     lineJoin: 'round',
+  //                 }
+  //             ).addTo(routeMap);
+
+  //             routePolylines.push(polyline);
+
+  //             landRoute.latLngs.forEach((latLng) => {
+  //                 allBounds.push(latLng);
+  //             });
+
+  //             continue;
+  //         }
+
+  //         /*
+  //         * OSRM fallback.
+  //         */
+  //         const fallbackPolyline = drawStraightRoute([
+  //             from,
+  //             to,
+  //         ]);
+
+  //         if (fallbackPolyline) {
+  //             fallbackPolyline.getLatLngs().forEach((latLng) => {
+  //                 allBounds.push(latLng);
+  //             });
+
+  //             routePolylines.push(fallbackPolyline);
+  //         }
+  //     }
+
+  //     if (
+  //         shouldFit
+  //         && allBounds.length > 1
+  //         && requestId === routeRequestId
+  //     ) {
+  //         routeMap.fitBounds(allBounds, {
+  //             padding: [48, 48],
+  //             animate: true,
+  //         });
+  //     }
+  // };
+  var drawRouteSegments = /*#__PURE__*/function () {
+    var _ref8 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(locations) {
+      var shouldFit,
+        requestId,
+        routeBounds,
+        index,
+        _roadResult$latLngs,
+        from,
+        to,
+        routeType,
+        seaPoints,
+        polyline,
+        roadResult,
+        _polyline,
+        fallback,
+        _polyline2,
+        _args2 = arguments;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
+              shouldFit = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : true;
+              requestId = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : routeRequestId;
               if (!(!routeMap || !window.L || locations.length < 2)) {
-                _context2.next = 2;
+                _context2.next = 4;
                 break;
               }
               return _context2.abrupt("return");
-            case 2:
-              _context2.next = 4;
-              return fetchRoadRoute(locations, requestId);
             case 4:
-              route = _context2.sent;
+              routeBounds = [];
+              index = 0;
+            case 6:
+              if (!(index < locations.length - 1)) {
+                _context2.next = 27;
+                break;
+              }
               if (!(requestId !== routeRequestId)) {
-                _context2.next = 7;
+                _context2.next = 9;
                 break;
               }
               return _context2.abrupt("return");
-            case 7:
-              if (route) {
-                _context2.next = 11;
+            case 9:
+              from = locations[index];
+              to = locations[index + 1];
+              /*
+              * route_type berada pada lokasi tujuan.
+              *
+              * Contoh:
+              * Sanur Harbour      = land
+              * Lembongan Harbour  = sea
+              * Dream Beach        = land
+              *
+              * Maka:
+              * Sanur → Sanur Harbour = land
+              * Sanur Harbour → Lembongan Harbour = sea
+              * Lembongan Harbour → Dream Beach = land
+              */
+              routeType = getRouteType(to);
+              if (!(routeType === 'sea')) {
+                _context2.next = 18;
                 break;
               }
-              routePolyline = drawStraightRoute(locations);
-              if (shouldFit && routePolyline) {
-                routeMap.fitBounds(routePolyline.getBounds(), {
-                  padding: [48, 48],
-                  animate: true
-                });
+              seaPoints = getSeaRoutePoints(from, to);
+              polyline = window.L.polyline(seaPoints, _objectSpread(_objectSpread({}, ROUTE_STYLES.sea), {}, {
+                lineCap: 'round',
+                lineJoin: 'round'
+              })).addTo(routeMap);
+              routePolylines.push(polyline);
+              seaPoints.forEach(function (point) {
+                routeBounds.push(point);
+              });
+              return _context2.abrupt("continue", 24);
+            case 18:
+              _context2.next = 20;
+              return fetchRoadRoute([from, to], requestId);
+            case 20:
+              roadResult = _context2.sent;
+              if (!(requestId !== routeRequestId)) {
+                _context2.next = 23;
+                break;
               }
               return _context2.abrupt("return");
-            case 11:
-              routePolyline = window.L.polyline(route.latLngs, {
-                color: '#0f766e',
-                opacity: 0.82,
-                weight: 3
-              }).addTo(routeMap);
-              if (shouldFit && routePolyline) {
-                routeMap.fitBounds(routePolyline.getBounds(), {
-                  padding: [48, 48],
-                  animate: true
+            case 23:
+              if ((roadResult === null || roadResult === void 0 ? void 0 : (_roadResult$latLngs = roadResult.latLngs) === null || _roadResult$latLngs === void 0 ? void 0 : _roadResult$latLngs.length) > 1) {
+                _polyline = window.L.polyline(roadResult.latLngs, _objectSpread(_objectSpread({}, ROUTE_STYLES.land), {}, {
+                  lineCap: 'round',
+                  lineJoin: 'round'
+                })).addTo(routeMap);
+                routePolylines.push(_polyline);
+                roadResult.latLngs.forEach(function (point) {
+                  routeBounds.push(point);
+                });
+              } else {
+                fallback = [[Number(from.lat), Number(from.lng)], [Number(to.lat), Number(to.lng)]];
+                _polyline2 = window.L.polyline(fallback, _objectSpread(_objectSpread({}, ROUTE_STYLES.land), {}, {
+                  lineCap: 'round',
+                  lineJoin: 'round'
+                })).addTo(routeMap);
+                routePolylines.push(_polyline2);
+                fallback.forEach(function (point) {
+                  routeBounds.push(point);
                 });
               }
-            case 13:
+            case 24:
+              index += 1;
+              _context2.next = 6;
+              break;
+            case 27:
+              if (shouldFit && routeBounds.length > 1 && requestId === routeRequestId) {
+                routeMap.fitBounds(window.L.latLngBounds(routeBounds), {
+                  padding: [32, 32],
+                  maxZoom: 15
+                });
+              }
+            case 28:
             case "end":
               return _context2.stop();
           }
         }
       }, _callee2);
     }));
-    return function drawRoadRoute(_x3, _x4, _x5) {
-      return _ref6.apply(this, arguments);
+    return function drawRouteSegments(_x3) {
+      return _ref8.apply(this, arguments);
     };
   }();
 
@@ -573,7 +948,7 @@ document.addEventListener('DOMContentLoaded', function () {
   //     }
   // };
   var syncRouteDay = /*#__PURE__*/function () {
-    var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(day) {
+    var _ref9 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(day) {
       var shouldFit,
         activeDay,
         activeLocations,
@@ -637,10 +1012,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 routeRequestController.abort();
                 routeRequestController = null;
               }
-              if (routePolyline) {
-                routeMap.removeLayer(routePolyline);
-                routePolyline = null;
-              }
+              clearRoutePolylines();
+              // if (routePolyline) {
+              //     routeMap.removeLayer(routePolyline);
+              //     routePolyline = null;
+              // }
               if (activeLocations.length) {
                 _context3.next = 18;
                 break;
@@ -657,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', function () {
               return _context3.abrupt("return");
             case 21:
               _context3.next = 23;
-              return drawRoadRoute(activeLocations, shouldFit, currentRequestId);
+              return drawRouteSegments(activeLocations, shouldFit, currentRequestId);
             case 23:
             case "end":
               return _context3.stop();
@@ -665,8 +1041,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }, _callee3);
     }));
-    return function syncRouteDay(_x6) {
-      return _ref7.apply(this, arguments);
+    return function syncRouteDay(_x4) {
+      return _ref9.apply(this, arguments);
     };
   }();
   var getMarkerHtml = function getMarkerHtml(location) {
@@ -1222,10 +1598,10 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   var fillGuestForm = function fillGuestForm() {
     var guest = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    Object.entries(guestFieldElements).forEach(function (_ref8) {
-      var _ref9 = _slicedToArray(_ref8, 2),
-        key = _ref9[0],
-        field = _ref9[1];
+    Object.entries(guestFieldElements).forEach(function (_ref10) {
+      var _ref11 = _slicedToArray(_ref10, 2),
+        key = _ref11[0],
+        field = _ref11[1];
       if (!field) return;
       field.value = guest[key] || '';
     });
@@ -1470,7 +1846,7 @@ document.addEventListener('DOMContentLoaded', function () {
     syncPriceControls();
   };
   var requestPricePreview = /*#__PURE__*/function () {
-    var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+    var _ref12 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
       var _quoteRequestControll, _orderForm$querySelec4, _orderForm$querySelec5;
       var guestCount, travelDate, requestFingerprint, requestBody, bookingCode, promotionId, response, responsePayload, payload;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
@@ -1567,7 +1943,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }, _callee4, null, [[14, 40]]);
     }));
     return function requestPricePreview() {
-      return _ref10.apply(this, arguments);
+      return _ref12.apply(this, arguments);
     };
   }();
   var updatePricePreview = function updatePricePreview() {
