@@ -88,7 +88,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Notifications\NotifikasiWhatsApp;
-use Google\Service\ShoppingContent\Resource\Promotions;
 
 class OrderController extends Controller
 {
