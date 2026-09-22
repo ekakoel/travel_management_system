@@ -155,11 +155,15 @@
 .about-platform__content h2,
 .about-section-heading h2,
 .about-cta h2 {
-  margin: 1rem 0 0;
+  margin: 1.1rem 0 18px;
   color: #102033;
-  font-size: clamp(1.85rem, 3vw, 3.1rem);
-  font-weight: 850;
-  line-height: 1.12;
+  font-size: 2rem;
+  line-height: 1.02;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  word-spacing: 1px;
+  font-weight: 400;
+  font-family: "Open Sans";
 }
 
 .about-story__content p,

@@ -134,11 +134,15 @@
 .contact-support-copy h2,
 .contact-map-card__info h2,
 .contact-cta h2 {
-  margin: 1rem 0 0;
+  margin: 1.1rem 0 18px;
   color: #102033;
-  font-size: clamp(1.8rem, 3vw, 3rem);
-  font-weight: 850;
-  line-height: 1.12;
+  font-size: 2rem;
+  line-height: 1.02;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  word-spacing: 1px;
+  font-weight: 400;
+  font-family: "Open Sans";
 }
 
 .contact-section-heading p,
