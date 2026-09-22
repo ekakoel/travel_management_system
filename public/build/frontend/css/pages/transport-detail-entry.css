@@ -327,9 +327,9 @@
 .transport-detail-page .transport-similar-card img {
   width: 100%;
   aspect-ratio: 16/10;
-  padding: 0.65rem;
-  -o-object-fit: contain;
-     object-fit: contain;
+  padding: 0;
+  -o-object-fit: cover;
+     object-fit: cover;
   background: #ffffff;
 }
 .transport-detail-page .transport-similar-card div {
