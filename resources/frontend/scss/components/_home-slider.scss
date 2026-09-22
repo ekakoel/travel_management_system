@@ -63,11 +63,11 @@
 
     &__content {
         position: absolute;
-        bottom: 17%;
+        top: 50%;
         left: 0;
         z-index: 2;
         width: 50%;
-        // transform: translate(-50%, 0%);
+        transform: translate(0, -50%);
         color: #fff;
         padding: 0 10%;
         text-align: left;
