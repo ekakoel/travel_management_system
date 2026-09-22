@@ -42,7 +42,7 @@ class Kernel extends HttpKernel
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
             \RealRashid\SweetAlert\ToSweetAlert::class,
             \App\Http\Middleware\UserActivity::class,
-            LogActivityMiddleware::class,
+            // LogActivityMiddleware::class,
             \App\Http\Middleware\TrackWebsiteVisit::class,
             
             \App\Http\Middleware\SetLocale::class,
