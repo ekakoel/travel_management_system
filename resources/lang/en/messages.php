@@ -2057,5 +2057,6 @@ return [
     'Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.' => 'Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.',
     'Helicopter' => 'Helicopter',
     'Helicopter Tour' => 'Helicopter Tour',
+    'No active privacy policy content is available yet.' => 'No active privacy policy content is available yet.',
     "Soar above Bali and enjoy breathtaking aerial views of its stunning coastline, lush landscapes, and iconic landmarks." => "Soar above Bali and enjoy breathtaking aerial views of its stunning coastline, lush landscapes, and iconic landmarks.",
 ];

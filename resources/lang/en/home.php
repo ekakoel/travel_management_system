@@ -127,7 +127,7 @@ return [
         'subtitle' => 'Key questions from professional partners, answered clearly before you move into onboarding or sourcing.',
         'aside' => [
             'eyebrow' => 'Partner Guidance',
-            'title' => 'Less back-and-forth, more booking clarity.',
+            'title' => 'Less back and forth, more booking clarity.',
             'text' => 'Everything here is designed to help travel agents understand onboarding, promotions, support, and platform access before speaking with our team.',
             'points_aria' => 'FAQ highlights',
             'points' => [

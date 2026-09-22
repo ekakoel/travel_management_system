@@ -50,9 +50,9 @@
             </p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-2">
             @foreach ($services as $service)
-                <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
+                <div class="col-xl-6 col-lg-6 col-md-12 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
                     <article class="home-service-card service-item h-100">
                         <a class="home-service-card__link" href="{{ $service['href'] }}">
                             <div class="home-service-card__media icon-container">
@@ -83,7 +83,7 @@
                     </article>
                 </div>
                 @endforeach
-                <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
+                <div class="col-xl-6 col-lg-6 col-md-12 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
                     <article class="home-service-card service-item h-100">
                         <a class="home-service-card__link" target="_blank" href="https://balikami.helicopter.services/">
                             <div class="home-service-card__media icon-container">

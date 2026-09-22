@@ -2019,5 +2019,6 @@ return[
     'Discover carefully selected activities and authentic Bali experiences, from thrilling adventures and cultural encounters to relaxing escapes, thoughtfully arranged to create memorable moments for every guest.' => '探索精心甄选的活动与地道的巴厘岛体验，从刺激的冒险、文化探索到悠闲惬意的度假时光，每一项体验都经过用心安排，为每位宾客创造难忘的美好回忆。',
     'Helicopter' => '直升机',
     'Helicopter Tour' => '直升机观光之旅',
+    'No active privacy policy content is available yet.' => '目前没有生效的隐私政策。',
     "Soar above Bali and enjoy breathtaking aerial views of its stunning coastline, lush landscapes, and iconic landmarks." => "飞越巴厘岛，欣赏壮丽海岸线、葱郁自然景观和标志性地标的震撼空中美景。",
 ];

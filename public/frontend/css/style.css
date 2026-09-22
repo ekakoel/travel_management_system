@@ -585,12 +585,12 @@ p{
     height: 100%; */
 }
 .service-item .icon-container{
-    width: 100%;
+    width: 50%;
     text-align: center;
 }
 .service-item .icon-container img{
     opacity: 1;
-    max-width: 70%;
+    height: 100% !important;
     object-position: center;
     object-fit: cover;
 }
