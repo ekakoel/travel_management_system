@@ -158,7 +158,7 @@
             <div class="container">
                 <div class="about-story">
                     <div class="about-story__media">
-                        <img src="{{ asset('landing-page/img/bali-kami-office.avif') }}" alt="@lang('messages.Bali Kami Tour office and partner support team')">
+                        <img src="{{ asset('landing-page/img/bali_kami_office.jpeg') }}" alt="@lang('messages.Bali Kami Tour office and partner support team')">
                     </div>
                     <div class="about-story__content">
                         <span class="about-section__eyebrow">@lang('messages.Who We Are')</span>
