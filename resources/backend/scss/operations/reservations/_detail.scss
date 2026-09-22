@@ -424,7 +424,7 @@
 
   .reservation-detail-print-header {
     align-items: end;
-    border-bottom: 2px solid #0f766e;
+    border-bottom: 2px solid #008ab5;
     display: grid;
     gap: 18px;
     grid-template-columns: minmax(0, 1fr) minmax(320px, auto);
@@ -434,7 +434,7 @@
 
   .reservation-detail-print-header span,
   .reservation-detail-print-header dt {
-    color: #0f766e;
+    color: #008ab5;
     display: block;
     font-size: 9px;
     font-weight: 800;

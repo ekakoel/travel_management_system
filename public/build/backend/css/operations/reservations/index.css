@@ -99,7 +99,7 @@
 }
 
 .reservations-admin-calendar-dot--in-service {
-  background: #0f766e;
+  background: #008ab5;
 }
 
 .reservations-admin-calendar-dot--overdue {
@@ -200,7 +200,7 @@
 }
 
 .reservations-admin-calendar-wrap .reservations-admin-calendar-event--in-service {
-  background: #0f766e;
+  background: #008ab5;
   color: #fff;
 }
 

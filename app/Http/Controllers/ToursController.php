@@ -460,7 +460,7 @@ class ToursController extends Controller
             ],
             default => [
                 'icon' => 'fa-landmark',
-                'color' => '#0f766e',
+                'color' => '#008ab5',
                 'label' => __('tour-map.location_type_attraction'),
             ],
         };

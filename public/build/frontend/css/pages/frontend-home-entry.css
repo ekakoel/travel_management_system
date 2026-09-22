@@ -21,7 +21,7 @@
   margin-bottom: 1rem;
   border-radius: 999px;
   background: rgba(13, 148, 136, 0.12);
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -36,7 +36,7 @@
   margin-bottom: 1rem;
   border-radius: 999px;
   background: rgba(13, 148, 136, 0.12);
-  color: #5eead4;
+  color: #00b6ff;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -104,7 +104,7 @@
   border: 1px solid rgba(15, 118, 110, 0.14);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -163,7 +163,7 @@
 .home-hero__secondary:hover {
   transform: translateY(-1px);
   border-color: rgba(15, 118, 110, 0.28);
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-hero__meta {
@@ -244,7 +244,7 @@
 .home-hero__signal-label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -276,7 +276,7 @@
   margin-bottom: 1rem;
   border-radius: 999px;
   background: rgba(20, 184, 166, 0.12);
-  color: #0f766e;
+  color: #008ab5;
   font-weight: 800;
 }
 
@@ -344,7 +344,7 @@
   border: 1px solid rgba(15, 118, 110, 0.12);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -361,7 +361,7 @@
 }
 
 .home-promo-section__link:hover {
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .hotel-promo-swiper {
@@ -455,7 +455,7 @@
 }
 
 .home-promo-card__region i {
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-promo-card__title {
@@ -474,7 +474,7 @@
 
 .home-promo-card__meta i {
   margin-right: 0.45rem;
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-promo-card__summary {
@@ -489,7 +489,7 @@
   gap: 0.55rem;
   margin-top: auto;
   padding-top: 1rem;
-  color: #0f766e;
+  color: #008ab5;
   font-weight: 700;
 }
 
@@ -530,7 +530,7 @@
 
 .home-platform__highlight i {
   margin-top: 0.2rem;
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-platform__highlight span {
@@ -549,7 +549,7 @@
 }
 
 .home-platform__link:hover {
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-benefits-section {
@@ -610,7 +610,7 @@
   border: 1px solid rgba(15, 118, 110, 0.14);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.9);
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.82rem;
   font-weight: 600;
 }
@@ -626,7 +626,7 @@
 }
 
 .home-faq-aside__link:hover {
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-faq-accordion .accordion-item {
@@ -657,7 +657,7 @@
 
 .home-faq-accordion .accordion-button:not(.collapsed) {
   background: #f4fbfa;
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-faq-accordion__index {
@@ -676,7 +676,7 @@
 
 .home-faq-accordion .accordion-button:not(.collapsed) .home-faq-accordion__index {
   background: rgba(15, 118, 110, 0.12);
-  color: #0f766e;
+  color: #008ab5;
 }
 
 .home-faq-accordion__question {
@@ -724,9 +724,14 @@
 
 .home-cta-surface__title {
   margin: 0.8rem 0 0;
-  color: #fff;
-  font-size: clamp(2rem, 3.2vw, 3rem);
-  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.91);
+  font-size: 2rem;
+  line-height: 1.4;
+  padding: 18px 0;
+  letter-spacing: 3px;
+  word-spacing: 1px;
+  font-weight: 400;
+  font-family: "Open Sans";
 }
 
 .home-cta-surface__text {
@@ -750,13 +755,14 @@
 }
 
 .home-cta-surface__secondary {
-  color: rgba(226, 232, 240, 0.9);
-  font-weight: 700;
+  color: rgba(226, 232, 240, 0.51);
+  font-weight: 200;
   text-decoration: none;
+  align-self: center;
 }
 
 .home-cta-surface__secondary:hover {
-  color: #5eead4;
+  color: #00b6ff;
 }
 
 @media (max-width: 1199.98px) {
@@ -881,7 +887,7 @@
   margin-bottom: 1rem;
   border-radius: 999px;
   background: rgba(13, 148, 136, 0.12);
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -1005,7 +1011,7 @@
   padding: 0.6rem 1rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1063,7 +1069,7 @@
 
 .home-service-card:hover .home-service-card__action {
   transform: translateX(4px);
-  background: #0f766e;
+  background: #008ab5;
 }
 
 @media (max-width: 991.98px) {

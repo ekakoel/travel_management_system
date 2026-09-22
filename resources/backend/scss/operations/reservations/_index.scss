@@ -95,7 +95,7 @@
 }
 
 .reservations-admin-calendar-dot--active { background: #2563eb; }
-.reservations-admin-calendar-dot--in-service { background: #0f766e; }
+.reservations-admin-calendar-dot--in-service { background: #008ab5; }
 .reservations-admin-calendar-dot--overdue { background: var(--backend-danger); }
 
 .reservations-admin-calendar-wrap {
@@ -192,7 +192,7 @@
 }
 
 .reservations-admin-calendar-wrap .reservations-admin-calendar-event--in-service {
-  background: #0f766e;
+  background: #008ab5;
   color: #fff;
 }
 

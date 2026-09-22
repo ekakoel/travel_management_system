@@ -116,7 +116,7 @@
 }
 
 .availability-badge--package {
-  background: #0f766e;
+  background: #008ab5;
 }
 
 .availability-badge--standard {
@@ -147,7 +147,7 @@
 
 .availability-rate-card__eyebrow {
   margin-bottom: 0.35rem;
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -289,7 +289,7 @@
 }
 
 .availability-detail-trigger__eyebrow {
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.07em;
@@ -343,7 +343,7 @@
 
 .availability-modal__eyebrow {
   margin-bottom: 0.35rem;
-  color: #0f766e;
+  color: #008ab5;
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.08em;

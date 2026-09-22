@@ -1646,7 +1646,7 @@ body {
   .tour-review-print-header span,
 .tour-review-print-meta dt,
 .tour-review-print-team dt {
-    color: #0f766e !important;
+    color: #008ab5 !important;
     display: block;
     font-size: 9px;
     font-weight: 800;
@@ -1714,7 +1714,7 @@ body {
     grid-template-columns: 138px minmax(0, 1fr);
   }
   .tour-review-print-ratings strong {
-    color: #0f766e !important;
+    color: #008ab5 !important;
     font-size: 11px;
     text-transform: uppercase;
   }

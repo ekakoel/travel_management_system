@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
             'html,body{background:#fff;color:#111827;font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;width:100%;}' +
             '.tour-review-print-sheet{display:block!important;width:100%;max-width:none;margin:0;padding:0;font-size:12px;line-height:1.4;}' +
             '.tour-review-print-header{align-items:start;border-bottom:2px solid #111827;display:grid;gap:12px;grid-template-columns:minmax(0,1fr) 104px;padding-bottom:8px;}' +
-            '.tour-review-print-header span,.tour-review-print-meta dt,.tour-review-print-team dt{color:#0f766e;display:block;font-size:9px;font-weight:800;text-transform:uppercase;}' +
+            '.tour-review-print-header span,.tour-review-print-meta dt,.tour-review-print-team dt{color:#008ab5;display:block;font-size:9px;font-weight:800;text-transform:uppercase;}' +
             '.tour-review-print-header h1{color:#111827;font-size:26px;font-weight:800;line-height:1;margin:3px 0 4px;}' +
             '.tour-review-print-header p{color:#475569;font-size:11px;margin:0;}' +
             '.tour-review-print-header div:last-child{text-align:right;}' +
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
             '.tour-review-print-section h2{color:#111827;font-size:15px;font-weight:800;margin:0 0 7px;}' +
             '.tour-review-print-ratings{display:grid;gap:6px;}' +
             '.tour-review-print-ratings div{align-items:start;display:grid;gap:12px;grid-template-columns:138px minmax(0,1fr);}' +
-            '.tour-review-print-ratings strong{color:#0f766e;font-size:11px;text-transform:uppercase;}' +
+            '.tour-review-print-ratings strong{color:#008ab5;font-size:11px;text-transform:uppercase;}' +
             '.tour-review-print-ratings p{display:flex;flex-wrap:wrap;gap:5px 14px;margin:0;}' +
             '.tour-review-print-ratings span{color:#111827;font-size:11px;white-space:nowrap;}' +
             '.tour-review-print-team dl{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));margin:0;}' +

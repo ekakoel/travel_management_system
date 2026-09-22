@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const ROUTE_STYLES = {
         land: {
-            color: '#0f766e',
+            color: '#008ab5',
             opacity: 0.82,
             weight: 4,
         },
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //             Number(location.lng),
     //         ]),
     //         {
-    //             color: '#0f766e',
+    //             color: '#008ab5',
     //             opacity: 0.82,
     //             weight: 3,
     //         }
@@ -657,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //     }
 
     //     routePolyline = window.L.polyline(route.latLngs, {
-    //         color: '#0f766e',
+    //         color: '#008ab5',
     //         opacity: 0.82,
     //         weight: 3,
     //     }).addTo(routeMap);
@@ -931,7 +931,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //     if (activeLocations.length > 1 && window.L) {
     //         routePolyline = window.L.polyline(activeLocations.map((location) => [location.lat, location.lng]), {
-    //             color: '#0f766e',
+    //             color: '#008ab5',
     //             opacity: 0.82,
     //             weight: 4,
     //             dashArray: '8 10',
@@ -1052,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getMarkerHtml = (location) => {
-        const color = location.color || '#0f766e';
+        const color = location.color || '#008ab5';
         const displayOrder = location.display_order || location.visit_order || location.order;
 
         return `<span class="tour-route-map__pin tour-route-map__pin--number" style="--tour-marker-color:${color}"><strong>${displayOrder}</strong></span>`;
@@ -1063,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const icon = document.createElement('span');
         icon.className = 'tour-route-map__popup-icon';
-        icon.style.setProperty('--tour-marker-color', location.color || '#0f766e');
+        icon.style.setProperty('--tour-marker-color', location.color || '#008ab5');
         icon.innerHTML = `<i class="fa ${location.icon || 'fa-landmark'}" aria-hidden="true"></i>`;
 
         const title = document.createElement('div');
@@ -1203,7 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     meta.textContent = `${mapElement.dataset.dayLabel || ''} ${location.day} - ${mapElement.dataset.stopLabel || ''} ${location.visit_order}`;
 
                     avatar.classList.add('tour-route-map__pin--number');
-                    avatar.style.setProperty('--tour-marker-color', location.color || '#0f766e');
+                    avatar.style.setProperty('--tour-marker-color', location.color || '#008ab5');
                     avatar.appendChild(number);
                     body.appendChild(title);
                     body.appendChild(meta);
