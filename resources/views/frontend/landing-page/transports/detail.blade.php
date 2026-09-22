@@ -218,7 +218,7 @@
                             @endif
                         </div>
                     </section>
-
+                    
                     <section class="transport-detail-section frontend-surface-card" id="transport-rates">
                         <div class="transport-detail-section__header">
                             <div>
@@ -252,12 +252,16 @@
                                                             <span>{{ $routeLabel }}</span>
                                                             <small>{{ __("messages.$type") === "messages.$type" ? $type : __("messages.$type") }}</small>
                                                         </div>
-                                                        <strong>{{ !is_null($price->final_price) ? currencyFormatUsd($price->final_price) : __('messages.Request') }}</strong>
+                                                        @auth
+                                                            <strong>{{ !is_null($price->final_price) ? currencyFormatUsd($price->final_price) : __('messages.Request') }}</strong>
+                                                        @endauth
                                                     </div>
-                                                    <div class="transport-rate-card__price">
-                                                        <span>@lang('messages.Estimated transport price')</span>
-                                                        <strong>{{ !is_null($price->final_price) ? currencyFormatUsd($price->final_price) : __('messages.Request') }}</strong>
-                                                    </div>
+                                                    @auth
+                                                        <div class="transport-rate-card__price">
+                                                            <span>@lang('messages.Estimated transport price')</span>
+                                                            <strong>{{ !is_null($price->final_price) ? currencyFormatUsd($price->final_price) : __('messages.Request') }}</strong>
+                                                        </div>
+                                                    @endauth
                                                     <div class="transport-rate-card__facts">
                                                         <div>
                                                             <span>{{ $price->type === 'Daily Rent' ? __('transports.detail.order.estimated_use_time_per_rental') : __('messages.Estimated travel duration') }}</span>
@@ -269,12 +273,14 @@
                                                                 @endif
                                                             </strong>
                                                         </div>
-                                                        @if ($price->extra_time)
-                                                            <div>
-                                                                <span>@lang('messages.Extra time')</span>
-                                                                <strong>{{ currencyFormatUsd($price->extra_time) }}/@lang('messages.Hours')</strong>
-                                                            </div>
-                                                        @endif
+                                                        @auth
+                                                            @if ($price->extra_time)
+                                                                <div>
+                                                                    <span>@lang('messages.Extra time')</span>
+                                                                    <strong>{{ currencyFormatUsd($price->extra_time) }}/@lang('messages.Hours')</strong>
+                                                                </div>
+                                                            @endif
+                                                        @endauth
                                                     </div>
                                                     @if ($price->additional_info)
                                                         <div class="transport-rate-card__note">{!! $price->additional_info !!}</div>
@@ -293,6 +299,7 @@
                             </div>
                         @endif
                     </section>
+
 
                     @if ($similarTransports->count() > 0)
                         <section class="transport-detail-section frontend-surface-card">
@@ -358,21 +365,21 @@
                                     <label for="transportPriceDestination">@lang('messages.Destination / Source')</label>
                                     <select id="transportPriceDestination" class="form-control" data-transport-price-destination></select>
                                 </div>
-                                <div class="transport-selected-rate" data-transport-selected-rate>
-                                    <span>@lang('messages.Selected rate')</span>
-                                    <strong data-selected-rate-price>{{ !is_null($defaultRate->final_price) ? currencyFormatUsd($defaultRate->final_price) : __('messages.Request') }}</strong>
-                                    <small data-selected-rate-route>
-                                        {{ $defaultRate->type === 'Daily Rent' ? ($defaultRate->src ?: __('messages.Destination')) : trim(($defaultRate->src ?: '-') . ' - ' . ($defaultRate->dst ?: '-')) }}
-                                    </small>
-                                    <em data-selected-rate-duration>
-                                        @if ($defaultRate->type === 'Daily Rent')
-                                            {{ ($defaultRate->duration ?: '-') . ' ' . __('messages.Hours') . ' / ' . __('transports.detail.order.rental_suffix') }}
-                                        @else
-                                            {{ $defaultRate->duration ?: '-' }} @lang('messages.Hours')
-                                        @endif
-                                    </em>
-                                </div>
                                 @auth
+                                    <div class="transport-selected-rate" data-transport-selected-rate>
+                                        <span>@lang('messages.Selected rate')</span>
+                                        <strong data-selected-rate-price>{{ !is_null($defaultRate->final_price) ? currencyFormatUsd($defaultRate->final_price) : __('messages.Request') }}</strong>
+                                        <small data-selected-rate-route>
+                                            {{ $defaultRate->type === 'Daily Rent' ? ($defaultRate->src ?: __('messages.Destination')) : trim(($defaultRate->src ?: '-') . ' - ' . ($defaultRate->dst ?: '-')) }}
+                                        </small>
+                                        <em data-selected-rate-duration>
+                                            @if ($defaultRate->type === 'Daily Rent')
+                                                {{ ($defaultRate->duration ?: '-') . ' ' . __('messages.Hours') . ' / ' . __('transports.detail.order.rental_suffix') }}
+                                            @else
+                                                {{ $defaultRate->duration ?: '-' }} @lang('messages.Hours')
+                                            @endif
+                                        </em>
+                                    </div>
                                     <button type="button" class="btn btn-primary transport-detail-cta__button" data-open-transport-reservation>
                                         @lang('messages.Reserve this service')
                                     </button>
