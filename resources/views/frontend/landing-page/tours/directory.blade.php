@@ -47,27 +47,6 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- <article class="tour-packages-hero-card">
-                    <div class="tour-packages-hero-card__media">
-                        <img src="{{ $heroImage }}" alt="@lang('tour-packages.hero.image_alt')" loading="eager">
-                    </div>
-                    <div class="tour-packages-hero-card__body">
-                        <span>@lang('tour-packages.hero.card_eyebrow')</span>
-                        <h2>@lang('tour-packages.hero.card_title')</h2>
-                        <p>@lang('tour-packages.hero.card_text')</p>
-                        <div class="tour-packages-hero-facts">
-                            <div class="tour-packages-hero-facts__item">
-                                <span>@lang('tour-packages.hero.top_area')</span>
-                                <strong>{{ $directoryStats['top_area_name'] ?? __('tour-packages.fallback.area') }}</strong>
-                            </div>
-                            <div class="tour-packages-hero-facts__item">
-                                <span>@lang('tour-packages.hero.visible_now')</span>
-                                <strong>{{ $tours->count() }} @lang('tour-packages.hero.visible_suffix')</strong>
-                            </div>
-                        </div>
-                    </div>
-                </article> --}}
             </div>
         </section>
 
@@ -185,7 +164,7 @@
                                                 <div>
                                                     <span class="tour-package-card__type">{{ $tour->display_type }}</span>
                                                     <h3 class="tour-package-card__title">{{ $tour->display_name }}</h3>
-                                                    <p class="tour-package-card__price">{{ $tour->display_starting_price }}</p>
+                                                    {{-- <p class="tour-package-card__price">{{ $tour->display_starting_price }}</p> --}}
                                                 </div>
                                                 <div class="tour-package-card__facts">
                                                     <div class="tour-package-card__fact">
