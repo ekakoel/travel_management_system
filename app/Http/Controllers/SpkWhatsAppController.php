@@ -380,9 +380,9 @@ class SpkWhatsAppController extends Controller
     ): string {
         $reservation = $spk->reservation;
 
-        $customerName = $reservation->customer_name
-            ?? $reservation->agent?->name
-            ?? 'Customer';
+        $operatorName = $spk->operator?->name
+            ?? $spk->operator?->name
+            ?? 'Operator';
 
         $orderNumber = $reservation->reservation_code
             ?? $reservation->rsv_no
@@ -439,7 +439,7 @@ class SpkWhatsAppController extends Controller
             ?? '-';
 
         return implode("\n", [
-            "Halo {$customerName}",
+            "Halo {$operatorName}",
             '',
             '*Your Order*',
             "Order Number: *{$orderNumber}*",
