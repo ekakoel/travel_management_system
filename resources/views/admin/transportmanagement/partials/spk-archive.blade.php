@@ -18,6 +18,9 @@
                     </td>
                     <td>
                         <strong>{{ $spk->order_number ?? '-' }}</strong>
+                        @if ($spk->operator != null)
+                            <span>{{ $spk->operator?->name.' ('.$spk->operator?->code.')' }}</span>
+                        @endif
                         <span>{{ $spk->type ?? '-' }} / {{ trans_choice('transport-management.table.pax', (int) $spk->number_of_guests, ['count' => (int) $spk->number_of_guests]) }}</span>
                     </td>
                     <td>
