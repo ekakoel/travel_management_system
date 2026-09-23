@@ -12,6 +12,7 @@ class SpkWhatsAppController extends Controller
     {
         $spk->loadMissing([
             'reservation',
+            'operator',
             'driver',
             'vehicle',
         ]);
@@ -26,8 +27,8 @@ class SpkWhatsAppController extends Controller
             );
         }
 
-        $recipientPhone = $reservation->customer_phone
-            ?? $reservation->agent?->phone
+        $recipientPhone = $spk->operator?->whatsapp
+            ?? $spk->operator?->phone
             ?? null;
 
         if (!$recipientPhone) {
