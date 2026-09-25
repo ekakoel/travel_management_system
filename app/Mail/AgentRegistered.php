@@ -12,11 +12,11 @@ class AgentRegistered extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    protected $agent_id;
+    protected $agent;
 
-    public function __construct($agent_id)
+    public function __construct(Agent $agent)
     {
-        $this->agent_id = $agent_id;
+        $this->agent = $agent;
     }
 
 
@@ -25,10 +25,9 @@ class AgentRegistered extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        $agent = Agent::find($this->agent_id);
-        return $this->subject('New Agent Registration - Bali Kami Tour')
+        return $this->subject(__('agent-registration.mail.admin_subject'))
         ->view('emails.agents.registered',[
-            'agent' => $agent,
+            'agent' => $this->agent,
         ]);
     }
 }

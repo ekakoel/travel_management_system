@@ -71,6 +71,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'contact_channels' => 'array',
+        'approved_at' => 'datetime',
     ];
 
     public static function supportedContactChannelPlatforms(): array

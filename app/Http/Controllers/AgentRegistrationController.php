@@ -2,22 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Agent;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Mail\AgentRegistered;
+use App\Http\Controllers\Concerns\InteractsWithFormSubmissions;
+use App\Http\Requests\StoreAgentApplicationRequest;
 use App\Mail\AgentConfirmation;
+use App\Mail\AgentRegistered;
+use App\Models\Agent;
+use App\Models\User;
+use App\Notifications\NewAgentRegistered;
+use App\Services\AgentRegistrationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
-use App\Notifications\NewAgentRegistered;
+use Illuminate\Support\Facades\Notification;
 
 class AgentRegistrationController extends Controller
 {
+    use InteractsWithFormSubmissions;
+
     public function __construct()
     {
-        $this->middleware('registration.open')->only(['showForm', 'submitForm']);
+        $this->middleware('registration.open')->only(['showForm', 'submitForm', 'pending']);
     }
 
     public function showForm()
@@ -28,69 +32,44 @@ class AgentRegistrationController extends Controller
     public function test_view_email(Request $request)
     {
         $agent = Agent::find(30);
+
         return view('emails.agents.registered', compact('agent'));
     }
 
-    public function submitForm(Request $request)
+    public function submitForm(StoreAgentApplicationRequest $request, AgentRegistrationService $registrationService)
     {
-        $validated = $request->validate([
-            'company_name' => 'required|string|max:255',
-            'pic_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:agents,email',
-            'phone' => 'required|string|max:20',
-            'country' => 'required|string',
-            'company_address' => 'required|string|max:500',
-            'website' => 'nullable|url',
-            'agree_terms' => 'accepted',
+        $token = $request->validated('submission_token');
 
-            'business_license' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'tax_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'company_letter' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'translation_documents.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
-
-        $folder = 'agents/' . Str::slug($request->company_name) . '-' . time();
-
-        $fileFields = [
-            'business_license' => 'business_license',
-            'tax_document' => 'tax_document',
-            'company_letter' => 'company_letter',
-        ];
-
-        foreach ($fileFields as $field => $filename) {
-            $validated[$field] = $request->hasFile($field)
-                ? $request->file($field)->storeAs($folder, $filename . '.' . $request->file($field)->getClientOriginalExtension())
-                : null;
+        if ($this->findProcessedFormSubmission('agent-application', $token)) {
+            return redirect()->route('partner.application.pending');
         }
 
-        // Handle translation documents
-        $translationPaths = [];
-        if ($request->hasFile('translation_documents')) {
-            foreach ($request->file('translation_documents') as $i => $file) {
-                $name = 'translation_' . ($i + 1) . '.' . $file->getClientOriginalExtension();
-                $translationPaths[] = $file->storeAs($folder . '/translations', $name);
-            }
-        }
-
-        $validated['translation_documents'] = $translationPaths;
-        $status = 'pending';
+        $agent = $registrationService->register($request->validated());
+        $this->rememberProcessedFormSubmission('agent-application', $token, $agent->id);
 
         try {
-            $agent = Agent::create($validated);
-            $admins = User::where('position','developer')->get();
-            $agent_id = $agent->id;
+            $admins = User::query()
+                ->whereIn('position', ['developer', 'administrator', 'author'])
+                ->get();
 
-            Mail::to(config('app.administrator_mail'))->send(new AgentConfirmation($agent_id));
-            Mail::to(config('app.administrator_mail'))->send(new AgentRegistered($agent_id));
-            foreach ($admins as $admin) {
-                $admin->notify(new NewAgentRegistered($agent_id));
+            Notification::send($admins, new NewAgentRegistered($agent));
+            Mail::to($agent->contact_email)->send(new AgentConfirmation($agent));
+
+            if (filled(config('app.administrator_mail'))) {
+                Mail::to(config('app.administrator_mail'))->send(new AgentRegistered($agent));
             }
-            return redirect()->route('agent.register')->with('success', __('messages.Thank you for registering. Your documents are under review.'));
-        } catch (\Exception $e) {
-            Log::error('Agent registration failed: ' . $e->getMessage());
-
-            return redirect()->route('agent.register')->with('error', 'There was a problem processing your request. Please try again.');
+        } catch (\Throwable $exception) {
+            Log::error('Agent registration follow-up failed.', [
+                'agent_id' => $agent->id,
+                'exception' => $exception,
+            ]);
         }
+
+        return redirect()->route('partner.application.pending');
     }
 
+    public function pending()
+    {
+        return view('frontend.home.agents.pending');
+    }
 }

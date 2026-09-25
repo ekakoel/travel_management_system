@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\Agent;
 
 class ProfileController extends Controller
 {
@@ -26,6 +27,9 @@ class ProfileController extends Controller
 
     protected function renderProfileView(User $user, string $title)
     {
+        $agent = Agent::query()
+            ->where('user_id', $user->id)
+            ->first();
         $coreRequiredFields = [
             'email' => __('messages.Email'),
         ];
@@ -117,6 +121,76 @@ class ProfileController extends Controller
 
         $displayTimezone = $user->timezone ?: __('messages.Pending Update');
         $displayWebsite = $user->website ?: __('messages.Pending Update');
+        $agentItems = [];
+
+        if ($agent) {
+            $agentItems = [
+                [
+                    'label' => __('messages.Legal Company Name'),
+                    'value' => $agent->company_name ?: '-',
+                ],
+                [
+                    'label' => __('messages.Company Type'),
+                    'value' => $agent->company_type ?: '-',
+                ],
+                [
+                    'label' => __('messages.PIC Name'),
+                    'value' => $agent->pic_name ?: ($agent->contact_name ?: '-'),
+                ],
+                [
+                    'label' => __('messages.Contact Email'),
+                    'value' => $agent->contact_email ?: '-',
+                ],
+                [
+                    'label' => __('messages.Position'),
+                    'value' => $agent->position ?: '-',
+                ],
+                [
+                    'label' => __('messages.Phone'),
+                    'value' => $agent->phone ?: '-',
+                ],
+                [
+                    'label' => __('messages.Preferred Contact'),
+                    'value' => $agent->preferred_contact ?: '-',
+                ],
+                [
+                    'label' => __('messages.Main Market'),
+                    'value' => $agent->main_market ?: '-',
+                ],
+                [
+                    'label' => __('messages.Monthly Bali Clients'),
+                    'value' => $agent->monthly_bali_clients ?: '-',
+                ],
+                [
+                    'label' => __('messages.Company Address'),
+                    'value' => $agent->company_address ?: '-',
+                ],
+                [
+                    'label' => __('messages.Website'),
+                    'value' => $agent->website ?: '-',
+                ],
+                [
+                    'label' => __('messages.Business License Number'),
+                    'value' => $agent->business_license_number ?: '-',
+                ],
+                [
+                    'label' => __('messages.Interested Services'),
+                    'value' => is_array($agent->interested_services)
+                        ? implode(', ', $agent->interested_services)
+                        : ($agent->interested_services ?: '-'),
+                ],
+                [
+                    'label' => __('messages.Agent Status'),
+                    'value' => $agent->status ?: '-',
+                ],
+                [
+                    'label' => __('messages.Approved At'),
+                    'value' => $agent->approved_at
+                        ? $agent->approved_at->format('Y-m-d H:i')
+                        : '-',
+                ],
+            ];
+        }
 
         $heroStats = [
             [
@@ -204,6 +278,8 @@ class ProfileController extends Controller
             'companyItems' => $companyItems,
             'locationItems' => $locationItems,
             'preferenceItems' => $preferenceItems,
+            'agent' => $agent,
+            'agentItems' => $agentItems,
         ]);
     }
 

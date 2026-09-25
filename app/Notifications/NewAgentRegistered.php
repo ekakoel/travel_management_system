@@ -12,11 +12,11 @@ class NewAgentRegistered extends Notification
 {
     use Queueable;
 
-    protected $agent_id;
+    protected $agent;
 
-    public function __construct($agent_id)
+    public function __construct(Agent $agent)
     {
-        $this->agent_id = $agent_id;
+        $this->agent = $agent;
     }
 
     public function via($notifiable)
@@ -26,13 +26,11 @@ class NewAgentRegistered extends Notification
 
     public function toDatabase($notifiable)
     {
-        $agent = Agent::find($this->agent_id);
-        $agent_id = $this->agent_id;
         return [
-            'title' => 'New agent registration',
-            'message' => 'Agent "' . $agent->company_name . '" has submitted registration.',
-            'agent_id' => $agent->id,
-            'url' => route('admin.agents.show', $agent->id), // sesuaikan URL
+            'title' => __('agent-registration.notification.title'),
+            'message' => __('agent-registration.notification.message', ['company' => $this->agent->company_name]),
+            'agent_id' => $this->agent->id,
+            'url' => route('admin.agents.show', $this->agent->id),
         ];
     }
 }

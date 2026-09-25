@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\AgentDocumentController;
 use App\Http\Controllers\AgentRegistrationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Backend\Operations\Activities\ActivityAdminController;
@@ -138,8 +139,13 @@ use Illuminate\Support\Facades\Route;
     // ---------------------------------------------------
     //                   AGENT PRE REGISTER
     // ---------------------------------------------------
+    Route::get('/become-partner', [AgentRegistrationController::class, 'showForm'])->name('partner.become');
+    Route::post('/become-partner', [AgentRegistrationController::class, 'submitForm'])->name('partner.application.submit');
+    Route::get('/become-partner/pending', [AgentRegistrationController::class, 'pending'])->name('partner.application.pending');
+
     Route::get('/agent/register', [AgentRegistrationController::class, 'showForm'])->name('agent.register');
     Route::post('/agent-register', [AgentRegistrationController::class, 'submitForm'])->name('agent.register.submit');
+    Route::get('/agent-registration/pending', fn () => redirect()->route('partner.application.pending'))->name('agent.registration.pending');
     Route::get('/registration-mail', [AgentRegistrationController::class, 'test_view_email']);
 
     // ---------------------------------------------------
@@ -219,6 +225,33 @@ use Illuminate\Support\Facades\Route;
             Route::post('/footer-manager/links', [FooterManagerController::class, 'storeLink'])->name('footer-manager.links.store');
             Route::put('/footer-manager/links/{footerLink}', [FooterManagerController::class, 'updateLink'])->name('footer-manager.links.update');
             Route::delete('/footer-manager/links/{footerLink}', [FooterManagerController::class, 'destroyLink'])->name('footer-manager.links.destroy');
+
+            // ---------------------------------------------------
+            //                    REGISTER NOTIFICATION
+            // ---------------------------------------------------
+            Route::get('/notifications', [AdminNotificationController::class, 'index'])
+                ->name('notifications.index');
+
+            Route::get('/agents', [AgentController::class, 'index'])
+                ->name('agents.index');
+
+            Route::get('/agents/{id}/verification', [AgentController::class, 'verification'])
+                ->name('agents.verification');
+
+            Route::get('/agents/{agent}/documents/{agentDocument}/download', [AgentDocumentController::class, 'download'])
+                ->name('agents.documents.download');
+
+            Route::get('/agents/{id}', [AgentController::class, 'show'])
+                ->name('agents.show');
+
+            Route::patch('/agents/{id}/verify', [AgentController::class, 'verify'])
+                ->name('agents.verify');
+
+            Route::patch('/agents/{id}/reject', [AgentController::class, 'reject'])
+                ->name('agents.reject');
+
+            Route::get('/agents/{id}/document/{type}/{index?}', [AgentController::class, 'document'])->name('agents.document');
+            Route::get('/agents/documents/{document}', [AgentController::class, 'document'])->name('agents.documents.show');
         });
 
         // DEVELOPER | ADMINISTRATOR | AUTHOR ================================================================================================
@@ -418,13 +451,6 @@ use Illuminate\Support\Facades\Route;
             Route::get('/dashboard/hotel-price-chart', [DashboardController::class, 'hotelPriceChart']);
 
 
-            // ---------------------------------------------------
-            //                    REGISTER NOTIFICATION
-            // ---------------------------------------------------
-            Route::get('/admin/notifications', [AdminNotificationController::class, 'index'])->name('admin.notifications.index');
-            Route::get('/admin/agents', [AgentController::class, 'index'])->name('admin.agents.index');
-            Route::get('/admin/agents/{id}', [AgentController::class, 'show'])->name('admin.agents.show');
-            Route::patch('/admin/agents/{id}/verify', [AgentController::class, 'verify'])->name('admin.agents.verify');
 
             // ---------------------------------------------------
             //                   BANK ACCOUNT

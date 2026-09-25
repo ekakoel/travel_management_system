@@ -82,7 +82,7 @@
                 <div class="dropdown-menu shadow-sm m-0">
                     <a class="dropdown-item" href="{{ route('view.hotels-service') }}"><i class="fas fa-hotel"></i> @lang('messages.Accommodations')</a>
                     <a class="dropdown-item" href="{{ route('view.transports-service') }}"><i class="fas fa-car"></i> @lang('messages.Transports')</a>
-                    <a class="dropdown-item" href="{{ route('tour-packages-service') }}"><i class="fas fa-suitcase-rolling"></i> @lang('messages.Tour Packages')</a>
+                    {{-- <a class="dropdown-item" href="{{ route('tour-packages-service') }}"><i class="fas fa-suitcase-rolling"></i> @lang('messages.Tour Packages')</a> --}}
                     <a class="dropdown-item" href="{{ route('view.activities-service') }}"><i class="fas fa-hiking"></i> @lang('messages.Activities')</a>
                 </div>
             </div>

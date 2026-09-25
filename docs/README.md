@@ -34,6 +34,9 @@ Codex must use this file to locate the documentation relevant to each task.
 
 ## Public Service Modules
 
+* `modules/agent-registration.md`
+  Public Become Partner submission, private documents, review, and notification flow.
+
 * `modules/accommodation.md`
   Public Accommodation booking, pricing, inventory, reservation, payment, and completion flow.
 

@@ -275,6 +275,31 @@
                         </div>
                     </div>
                 </article>
+                {{-- @if ($agent)
+                    <article class="profile-single-card profile-agent-card">
+                        <div class="profile-single-card__identity">
+                            <div class="profile-identity">
+                                <h2>@lang('messages.Partner Business Profile')</h2>
+                                <p>@lang('messages.Business information registered with Bali Kami')</p>
+                            </div>
+
+                            <span class="profile-status {{ $agent->status === 'verified' ? 'is-success' : 'is-warning' }}">
+                                {{ ucfirst($agent->status) }}
+                            </span>
+                        </div>
+
+                        <div class="profile-single-card__content">
+                            <div class="profile-data-grid">
+                                @foreach ($agentItems as $item)
+                                    <div class="profile-data-row">
+                                        <span>{{ $item['label'] }}</span>
+                                        <strong>{{ $item['value'] }}</strong>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </article>
+                @endif --}}
             </div>
         </section>
     </main>

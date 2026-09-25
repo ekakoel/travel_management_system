@@ -271,3 +271,10 @@ Gunakan `docs/decisions/frontend-roadmap-entry-template.md` untuk entry berikutn
   input pengguna tidak diterjemahkan.
 - Verification: focused feature tests, PHP lint, Blade cache, production asset
   build, translation/source audit, dan `git diff --check`.
+
+## 2026-09-25 - Become Partner Submission Contract
+
+- Status: implemented backend contract; enhanced wizard interaction remains a frontend follow-up.
+- Scope: public partner form, pending confirmation, locale keys, and protected admin document links.
+- Summary: the legacy Agent registration form now posts the canonical partner application payload with a one-time token; the public pending page does not expose application data.
+- Verification: PHP lint and static route/security inspection; no database command or migration was run.

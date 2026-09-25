@@ -140,6 +140,11 @@
                                                 <i class="fas fa-user-tie"></i> @lang("messages.Driver")
                                             </a>
                                         </li>
+                                        <li>
+                                            <a href="{{ route('admin.agents.index') }}" {{ request()->routeIs('admin.agents.index') ? 'active' : '' }}>
+                                                <i class="fa fa-user-circle" aria-hidden="true"></i> @lang("messages.Agent")
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                                 {{-- OPERATIONS ------------------------------------- --}}

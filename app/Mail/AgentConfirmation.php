@@ -12,11 +12,11 @@ class AgentConfirmation extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    protected $agent_id;
+    protected $agent;
 
-    public function __construct($agent_id)
+    public function __construct(Agent $agent)
     {
-        $this->agent_id = $agent_id;
+        $this->agent = $agent;
     }
 
     /**
@@ -24,10 +24,9 @@ class AgentConfirmation extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        $agent = Agent::find($this->agent_id);
-        return $this->subject('Thank You for Registering with Bali Kami Tour')
+        return $this->subject(__('agent-registration.mail.receipt_subject'))
         ->view('emails.agents.confirmation',[
-            'agent' => $agent,
+            'agent' => $this->agent,
         ]);
     }
 }

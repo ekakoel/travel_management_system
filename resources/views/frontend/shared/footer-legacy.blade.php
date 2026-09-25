@@ -29,7 +29,7 @@
                 <h5 class="mb-4">@lang('messages.Our Services')</h5>
                 <a class="btn btn-link" href="{{ route('view.hotels-service') }}">@lang('messages.Accommodations')</a>
                 <a class="btn btn-link" href="{{ route('view.transports-service') }}">@lang('messages.Transports')</a>
-                <a class="btn btn-link" href="{{ route('tour-packages-service') }}">@lang('messages.Tour Packages')</a>
+                {{-- <a class="btn btn-link" href="{{ route('tour-packages-service') }}">@lang('messages.Tour Packages')</a> --}}
                 <a class="btn btn-link" href="{{ route('view.activities-service') }}">@lang('messages.Activities')</a>
             </div>
             <div class="col-lg-3 col-md-6">
