@@ -153,9 +153,9 @@
                                                     <strong>
                                                         {{ $agent->company_name ?: $agent->name ?: '-' }}
                                                     </strong>
-
+                                                    <br>
                                                     <span>
-                                                        {{ $agent->company_type ?: '-' }}
+                                                        {{ $agent->company_type_label ?: '-' }}
                                                     </span>
 
                                                 </div>
@@ -173,7 +173,7 @@
                                                 </strong>
 
                                                 @if ($agent->position)
-
+                                                    <br>
                                                     <span>
                                                         {{ $agent->position }}
                                                     </span>
@@ -185,7 +185,7 @@
                                         </td>
 
                                         <td>
-                                            {{ $agent->contact_email ?: ($agent->user?->email ?? '-') }}
+                                            <i>{{ $agent->contact_email ?: ($agent->user?->email ?? '-') }}</i>
                                         </td>
 
                                         <td>

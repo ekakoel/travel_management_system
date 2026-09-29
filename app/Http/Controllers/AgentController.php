@@ -24,8 +24,18 @@ class AgentController extends Controller
         $agents = Agent::query()
             ->with('user')
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($agent) {
+                $agent->company_type_label = match ($agent->company_type) {
+                    'travel_agency' => 'Travel Agent',
+                    'tour_operator', 'wholesaler' => 'Tour Operator',
+                    'corporate_travel' => 'Corporate Travel',
+                    default => null,
+                };
 
+                return $agent;
+            });
+            
         $totalAgents = $agents->count();
 
         $pendingAgents = $agents
@@ -66,7 +76,6 @@ class AgentController extends Controller
             default => null,
         };
 
-        
         return view('admin.agents.show', compact('agent','now','companyType'));
     }
 

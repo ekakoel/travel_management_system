@@ -212,7 +212,7 @@
 
                             <div class="profile-data-row">
                                 <span>@lang('messages.Company / Office')</span>
-                                <strong>{{ $user->office ?: '-' }}</strong>
+                                <strong>{{ $agent->company_name ?: '-' }}</strong>
                             </div>
                             <div class="profile-data-row">
                                 <span>@lang('messages.Legal Company Name')</span>
@@ -494,7 +494,7 @@
                                 <div class="profile-form-grid">
                                     <label>
                                         <span>@lang('messages.Company / Office') <i>*</i></span>
-                                        <input name="office" type="text" value="{{ old('office', $user->office) }}" class="@error('office', 'profileUpdate') is-invalid @enderror" required>
+                                        <input name="office" type="text" value="{{ old('office', $user->company_name) }}" class="@error('office', 'profileUpdate') is-invalid @enderror" required>
                                         @error('office', 'profileUpdate')
                                             <span class="profile-field-error">{{ $message }}</span>
                                         @enderror

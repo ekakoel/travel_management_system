@@ -227,7 +227,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/footer-manager/links/{footerLink}', [FooterManagerController::class, 'destroyLink'])->name('footer-manager.links.destroy');
 
             // ---------------------------------------------------
-            //                    REGISTER NOTIFICATION
+            //             AGENT REGISTER NOTIFICATION
             // ---------------------------------------------------
             Route::get('/notifications', [AdminNotificationController::class, 'index'])
                 ->name('notifications.index');

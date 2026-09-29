@@ -29,9 +29,9 @@
             };
 
             $statusTone = match ($status) {
-                'verified' => 'active',
-                'rejected' => 'inactive',
-                default => 'warning',
+                'verified' => 'green',
+                'rejected' => 'tail',
+                default => 'red',
             };
 
             $interestedServices = $agent->interested_services;
@@ -211,7 +211,7 @@
 
                     <article class="backend-kpi-card backend-kpi-card--{{ $statusTone }}">
                         <div class="backend-kpi-card__icon">
-                            <i class="fa fa-user-check"></i>
+                            <i class="fa fa-check-circle" aria-hidden="true"></i>
                         </div>
 
                         <div>
@@ -222,7 +222,7 @@
                     </article>
 
 
-                    <article class="backend-kpi-card backend-kpi-card--info">
+                    <article class="backend-kpi-card backend-kpi-card--blue">
                         <div class="backend-kpi-card__icon">
                             <i class="fa fa-file-alt"></i>
                         </div>
@@ -235,7 +235,7 @@
                     </article>
 
 
-                    <article class="backend-kpi-card backend-kpi-card--success">
+                    <article class="backend-kpi-card backend-kpi-card--amber">
                         <div class="backend-kpi-card__icon">
                             <i class="fa fa-id-card"></i>
                         </div>
@@ -252,7 +252,7 @@
                     </article>
 
 
-                    <article class="backend-kpi-card backend-kpi-card--warning">
+                    <article class="backend-kpi-card backend-kpi-card--teal">
                         <div class="backend-kpi-card__icon">
                             <i class="fa fa-calendar-check"></i>
                         </div>
