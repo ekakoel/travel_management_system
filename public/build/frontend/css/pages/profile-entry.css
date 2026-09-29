@@ -539,6 +539,25 @@
   gap: 16px;
 }
 
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.profile-form-grid .profile-checkbox {
+  display: flex;
+  gap: 30px;
+  justify-content: flex-start;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.profile-form-grid .profile-checkbox input {
+  width: 18px !important;
+}
+.profile-form-grid .profile-checkbox span {
+  align-content: center !important;
+}
+
 .profile-form-grid label {
   display: grid;
   gap: 8px;

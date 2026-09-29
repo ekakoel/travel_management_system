@@ -18,7 +18,7 @@
                         </p>
 
                         <div class="home-hero__actions">
-                            <a href="{{ route('contact-us') }}" class="btn btn-primary home-hero__primary">
+                            <a href="{{ route('partner.become') }}" class="btn btn-primary home-hero__primary">
                                 {{ __('home.hero.primary_cta') }}
                             </a>
                             <a href="{{ route('about-us') }}" class="home-hero__secondary">

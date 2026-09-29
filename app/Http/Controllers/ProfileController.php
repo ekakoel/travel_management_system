@@ -27,9 +27,8 @@ class ProfileController extends Controller
 
     protected function renderProfileView(User $user, string $title)
     {
-        $agent = Agent::query()
-            ->where('user_id', $user->id)
-            ->first();
+        $agent = $user->agent;
+        $isAgentOwner = $agent && (int) $agent->user_id === (int) $user->id;
         $coreRequiredFields = [
             'email' => __('messages.Email'),
         ];
@@ -280,6 +279,7 @@ class ProfileController extends Controller
             'preferenceItems' => $preferenceItems,
             'agent' => $agent,
             'agentItems' => $agentItems,
+            'isAgentOwner' => $isAgentOwner,
         ]);
     }
 

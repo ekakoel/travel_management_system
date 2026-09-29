@@ -1,4 +1,5 @@
 <?php
+// SIMPLIFIED
 return[
     'Age' => '年龄',
     'No' => '不',
@@ -2021,4 +2022,26 @@ return[
     'Helicopter Tour' => '直升机观光之旅',
     'No active privacy policy content is available yet.' => '目前没有生效的隐私政策。',
     "Soar above Bali and enjoy breathtaking aerial views of its stunning coastline, lush landscapes, and iconic landmarks." => "飞越巴厘岛，欣赏壮丽海岸线、葱郁自然景观和标志性地标的震撼空中美景。",
+    'Edit Business Detail' => '編輯商家詳情',
+    'Edit Business Profile' => '编辑商家资料',
+    'Update your Business information. Only the Business owner can make these changes.' => '更新您的商家信息。只有商家所有者才能进行这些更改。',
+    'Company Information' => '公司信息',
+    'Company Type' => '公司类型',
+    'Company Address' => '公司地址',
+    'Business License Number' => '营业执照号码',
+    'Business Contact' => '业务联系人',
+    'Contact Name' => '联系人姓名',
+    'Contact Email' => '联系人邮箱',
+    'Position' => '职位',
+    'Preferred Contact' => '首选联系方式',
+    'Business Details' => '业务详情',
+    'Main Market' => '主要市场',
+    'Monthly Bali Clients' => '每月巴厘岛客户量',
+    'Interested services' => '感兴趣的服务',
+    'Save Changes' => '保存更改',
+    'Company profile has been updated successfully.' => '公司简介已成功更新。',
+    'Agent Profile' => '代理人资料',
+    'Your registered profile information.' => '您已注册的资料信息。',
+    'Account Identity' => '账户身份',
+    'Monthly Clients' => '月度客户',
 ];

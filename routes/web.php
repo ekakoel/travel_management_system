@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\AgentDocumentController;
+use App\Http\Controllers\AgentProfileController;
 use App\Http\Controllers\AgentRegistrationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Backend\Operations\Activities\ActivityAdminController;
@@ -202,6 +203,11 @@ use Illuminate\Support\Facades\Route;
         Route::put('/fupdate-profile/{id}',[UsersController::class,'func_update_profile']);
         Route::put('/fupdate-profileimg/{id}',[UsersController::class,'func_update_profileimg']);
         Route::put('/fupdate-password',[UsersController::class,'updatePassword'])->name('update-password');
+        // AGENCY UPDATE
+        // Route::get('/profile/agency', [AgentProfileController::class, 'edit'])->name('profile.agent.edit');
+        // Route::put('/profile/agency', [AgentProfileController::class, 'update'])->name('profile.agent.update');
+        Route::get('/profile/agent/edit', [AgentProfileController::class, 'edit'])->name('profile.agent.edit');
+        Route::put('/profile/agent', [AgentProfileController::class, 'update'])->name('profile.agent.update');
     });
     Route::middleware(['auth','profile.complete','approve'])->group(function () {
         Route::post('/activity/{code}/quote', ActivityQuoteController::class)->name('activity.quote');

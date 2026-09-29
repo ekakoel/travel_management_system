@@ -67,7 +67,7 @@ class AgentController extends Controller
     {
         $now = Carbon::now();
         $agent = Agent::query()
-            ->with('user')
+            ->with('users')
             ->findOrFail($id);
         $companyType = match ($agent->company_type) {
             'travel_agency' => 'Travel Agent',

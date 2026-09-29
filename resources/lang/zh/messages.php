@@ -1,4 +1,5 @@
 <?php
+// TRADITIONAL
 return[
     'Age' => '年齡',
     'No' => '不',
@@ -2021,4 +2022,26 @@ return[
     'Helicopter Tour' => '直升機觀光之旅',
     'No active privacy policy content is available yet.' => '目前沒有生效的隱私權政策。',
     "Soar above Bali and enjoy breathtaking aerial views of its stunning coastline, lush landscapes, and iconic landmarks." => "飛越峇里島，欣賞壯麗海岸線、翠綠自然景觀與標誌性地標的壯闊空中美景。",
+    'Edit Business Detail' => '编辑商家详情',
+    'Edit Business Profile' => '編輯商家資料',
+    'Update your Business information. Only the Business owner can make these changes.' => '更新您的商家資訊。只有商家所有者才能進行這些變更。',
+    'Company Information' => '公司資訊',
+    'Company Type' => '公司類型',
+    'Company Address' => '公司地址',
+    'Business License Number' => '營業執照號碼',
+    'Business Contact' => '業務聯絡人',
+    'Contact Name' => '聯絡人姓名',
+    'Contact Email' => '聯絡人信箱',
+    'Position' => '職位',
+    'Preferred Contact' => '首選聯絡方式',
+    'Business Details' => '業務詳情',
+    'Main Market' => '主要市場',
+    'Monthly Bali Clients' => '每月峇裡島客戶量',
+    'Interested services' => '有興趣的服務',
+    'Save Changes' => '儲存更改',
+    'Company profile has been updated successfully.' => '公司簡介已成功更新。',
+    'Agent Profile' => '代理人資料',
+    'Your registered profile information.' => '您已註冊的資料資訊。',
+    'Account Identity' => '帳戶身份',
+    'Monthly Clients' => '每月客戶',
 ];
