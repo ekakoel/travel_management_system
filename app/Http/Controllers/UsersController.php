@@ -90,7 +90,6 @@ class UsersController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:50'],
             'job_title' => ['required', 'string', 'max:120'],
-            'office' => ['required', 'string', 'max:255'],
             'company_legal_name' => ['nullable', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:500'],
             'city' => ['required', 'string', 'max:120'],
@@ -105,6 +104,8 @@ class UsersController extends Controller
             'contact_channels.*.platform' => ['nullable', Rule::in(User::supportedContactChannelPlatforms())],
             'contact_channels.*.value' => ['nullable', 'string', 'max:180'],
         ]);
+
+        // dd($validator);
 
         $validator->after(function ($validator) use ($request) {
             foreach ((array) $request->input('contact_channels', []) as $index => $channel) {
