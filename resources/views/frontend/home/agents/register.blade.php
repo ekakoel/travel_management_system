@@ -3,132 +3,175 @@
 @section('title', __('agent-registration.title'))
 
 @section('content')
-    <main class="container py-5">
-        <header class="mb-4">
-            <h1>@lang('agent-registration.title')</h1>
-            <p>@lang('agent-registration.introduction')</p>
-        </header>
+    <main class="frontend-page-shell about-page">
+        <section class="container-fluid frontend-page-topband about-topband py-5">
+            <div class="container">
+                @include('partials.breadcrumbs', [
+                    'breadcrumbs' => [
+                        ['url' => route('home'), 'label' => __('messages.Home')],
+                        ['label' => __('messages.Become a Partner')],
+                    ],
+                    'variant' => 'dark',
+                ])
 
-        @if ($errors->any())
-            <div class="alert alert-danger" role="alert">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('partner.application.submit') }}" enctype="multipart/form-data">
-            @csrf
-            @include('partials.form-submission-token')
-
-            <fieldset class="mb-4">
-                <legend>@lang('agent-registration.sections.company')</legend>
-                <div class="mb-3">
-                    <label class="form-label" for="company_name">@lang('agent-registration.fields.company_name')</label>
-                    <input class="form-control @error('company_name') is-invalid @enderror" id="company_name" name="company_name" value="{{ old('company_name') }}" required>
-                    @error('company_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="company_type">@lang('agent-registration.fields.company_type')</label>
-                    <select class="form-select @error('company_type') is-invalid @enderror" id="company_type" name="company_type" required>
-                        <option value="">@lang('agent-registration.select')</option>
-                        @foreach (['travel_agency', 'tour_operator', 'wholesaler', 'corporate_travel'] as $type)
-                            <option value="{{ $type }}" @selected(old('company_type') === $type)>@lang('agent-registration.company_types.'.$type)</option>
-                        @endforeach
-                    </select>
-                    @error('company_type')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="country">@lang('agent-registration.fields.country')</label>
-                    <input class="form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required>
-                    @error('country')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="company_address">@lang('agent-registration.fields.company_address')</label>
-                    <textarea class="form-control @error('company_address') is-invalid @enderror" id="company_address" name="company_address" rows="3" required>{{ old('company_address') }}</textarea>
-                    @error('company_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="website">@lang('agent-registration.fields.website')</label>
-                    <input class="form-control @error('website') is-invalid @enderror" id="website" type="url" name="website" value="{{ old('website') }}">
-                    @error('website')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="business_license_number">@lang('agent-registration.fields.business_license_number')</label>
-                    <input class="form-control @error('business_license_number') is-invalid @enderror" id="business_license_number" name="business_license_number" value="{{ old('business_license_number') }}">
-                    @error('business_license_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-            </fieldset>
-
-            <fieldset class="mb-4">
-                <legend>@lang('agent-registration.sections.contact')</legend>
-                @foreach (['contact_name' => 'text', 'contact_email' => 'email', 'phone' => 'text', 'position' => 'text', 'preferred_contact' => 'text'] as $field => $inputType)
-                    <div class="mb-3">
-                        <label class="form-label" for="{{ $field }}">@lang('agent-registration.fields.'.$field)</label>
-                        <input class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" type="{{ $inputType }}" name="{{ $field }}" value="{{ old($field) }}" @if (in_array($field, ['contact_name', 'contact_email', 'phone'], true)) required @endif>
-                        @error($field)<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div class="frontend-page-intro about-hero">
+                    <div class="frontend-page-intro__copy">
+                        <h1 class="frontend-page-intro__title">@lang('messages.Become our Partner')</h1>
+                        <p class="frontend-page-intro__text">
+                            @lang('messages.Join Bali Kami Tour’s B2B network and unlock exclusive travel experiences, competitive rates, and dedicated support to grow your business. Let’s create exceptional journeys across Indonesia together.')
+                        </p>
                     </div>
-                @endforeach
-            </fieldset>
 
-            <fieldset class="mb-4">
-                <legend>@lang('agent-registration.sections.business')</legend>
-                <div class="mb-3">
-                    <label class="form-label" for="main_market">@lang('agent-registration.fields.main_market')</label>
-                    <input class="form-control @error('main_market') is-invalid @enderror" id="main_market" name="main_market" value="{{ old('main_market') }}">
-                    @error('main_market')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="monthly_bali_clients">@lang('agent-registration.fields.monthly_bali_clients')</label>
-                    <input class="form-control @error('monthly_bali_clients') is-invalid @enderror" id="monthly_bali_clients" type="number" min="0" name="monthly_bali_clients" value="{{ old('monthly_bali_clients') }}">
-                    @error('monthly_bali_clients')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="mb-3">
-                    <span class="form-label d-block">@lang('agent-registration.fields.interested_services')</span>
-                    @foreach (['accommodation', 'transport', 'tour_packages', 'activities'] as $service)
-                        <div class="form-check">
-                            <input class="form-check-input" id="service_{{ $service }}" type="checkbox" name="interested_services[]" value="{{ $service }}" @checked(in_array($service, old('interested_services', []), true))>
-                            <label class="form-check-label" for="service_{{ $service }}">@lang('agent-registration.services.'.$service)</label>
+                    <div class="frontend-page-summary about-hero__summary">
+                        <div class="frontend-page-summary__item">
+                            <span>@lang('messages.Accommodations')</span>
+                            <strong>@lang('messages.Exceptional Stays, Unforgettable Experiences.')</strong>
                         </div>
-                    @endforeach
-                    @error('interested_services')<div class="text-danger">{{ $message }}</div>@enderror
-                </div>
-            </fieldset>
-
-            <fieldset class="mb-4">
-                <legend>@lang('agent-registration.sections.documents')</legend>
-                @foreach (['business_license' => true, 'company_letter' => true, 'tax_document' => false] as $field => $required)
-                    <div class="mb-3">
-                        <label class="form-label" for="{{ $field }}">@lang('agent-registration.fields.'.$field)</label>
-                        <input class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" type="file" name="{{ $field }}" accept=".pdf,.jpg,.jpeg,.png" @if ($required) required @endif>
-                        @error($field)<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="frontend-page-summary__item">
+                            <span>@lang('messages.Transports')</span>
+                            <strong>@lang('messages.Seamless Journeys, Comfort at Every Turn.')</strong>
+                        </div>
+                        <div class="frontend-page-summary__item">
+                            <span>@lang('messages.Tour Packages')</span>
+                            <strong>@lang('messages.Curated Journeys, Extraordinary Discoveries.')</strong>
+                        </div>
+                        <div class="frontend-page-summary__item">
+                            <span>@lang('messages.Activities')</span>
+                            <strong>@lang('messages.Unique Experiences, Lasting Memories.')</strong>
+                        </div>
                     </div>
-                @endforeach
-                <div class="mb-3">
-                    <label class="form-label" for="supporting_documents">@lang('agent-registration.fields.supporting_documents')</label>
-                    <input class="form-control @error('supporting_documents') is-invalid @enderror" id="supporting_documents" type="file" name="supporting_documents[]" accept=".pdf,.jpg,.jpeg,.png" multiple>
-                    @error('supporting_documents')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-            </fieldset>
-
-            <fieldset class="mb-4">
-                <legend>@lang('agent-registration.sections.agreement')</legend>
-                <div class="form-check mb-2">
-                    <input class="form-check-input @error('agree_to_terms') is-invalid @enderror" id="agree_to_terms" type="checkbox" name="agree_to_terms" value="1" @checked(old('agree_to_terms')) required>
-                    <label class="form-check-label" for="agree_to_terms">@lang('agent-registration.fields.agree_to_terms')</label>
-                    @error('agree_to_terms')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input @error('agree_to_contact') is-invalid @enderror" id="agree_to_contact" type="checkbox" name="agree_to_contact" value="1" @checked(old('agree_to_contact'))>
-                    <label class="form-check-label" for="agree_to_contact">@lang('agent-registration.fields.agree_to_contact')</label>
-                    @error('agree_to_contact')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-            </fieldset>
-
-            <button class="btn btn-primary" type="submit">@lang('agent-registration.submit')</button>
-        </form>
+            </div>
+        </section>
+        <section class="become-partner-form">
+            <div class="container">
+                <header class="mb-4">
+                    <h1>@lang('agent-registration.title')</h1>
+                    <p>@lang('agent-registration.introduction')</p>
+                </header>
+        
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+        
+                <form method="POST" action="{{ route('partner.application.submit') }}" enctype="multipart/form-data">
+                    @csrf
+                    @include('partials.form-submission-token')
+        
+                    <fieldset class="mb-4">
+                        <legend>@lang('agent-registration.sections.company')</legend>
+                        <div class="mb-3">
+                            <label class="form-label" for="company_name">@lang('agent-registration.fields.company_name') <span>*</span></label>
+                            <input class="form-control @error('company_name') is-invalid @enderror" id="company_name" name="company_name" value="{{ old('company_name') }}" required>
+                            @error('company_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="company_type">@lang('agent-registration.fields.company_type')  <span>*</span></label>
+                            <select class="form-select @error('company_type') is-invalid @enderror" id="company_type" name="company_type" required>
+                                <option value="">@lang('agent-registration.select')</option>
+                                @foreach (['travel_agency', 'tour_operator', 'wholesaler', 'corporate_travel'] as $type)
+                                    <option value="{{ $type }}" @selected(old('company_type') === $type)>@lang('agent-registration.company_types.'.$type)</option>
+                                @endforeach
+                            </select>
+                            @error('company_type')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="country">@lang('agent-registration.fields.country')  <span>*</span></label>
+                            <input class="form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required>
+                            @error('country')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="company_address">@lang('agent-registration.fields.company_address') <span>*</span></label>
+                            <textarea class="form-control @error('company_address') is-invalid @enderror" id="company_address" name="company_address" rows="3" required>{{ old('company_address') }}</textarea>
+                            @error('company_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="website">@lang('agent-registration.fields.website')</label>
+                            <input class="form-control @error('website') is-invalid @enderror" id="website" type="url" name="website" value="{{ old('website') }}">
+                            @error('website')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="business_license_number">@lang('agent-registration.fields.business_license_number')</label>
+                            <input class="form-control @error('business_license_number') is-invalid @enderror" id="business_license_number" name="business_license_number" value="{{ old('business_license_number') }}">
+                            @error('business_license_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </fieldset>
+        
+                    <fieldset class="mb-4">
+                        <legend>@lang('agent-registration.sections.contact')</legend>
+                        @foreach (['contact_name' => 'text', 'contact_email' => 'email', 'phone' => 'text', 'position' => 'text', 'preferred_contact' => 'text'] as $field => $inputType)
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ $field }}">@lang('agent-registration.fields.'.$field)  <span>*</span></label>
+                                <input class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" type="{{ $inputType }}" name="{{ $field }}" value="{{ old($field) }}" @if (in_array($field, ['contact_name', 'contact_email', 'phone'], true)) required @endif>
+                                @error($field)<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        @endforeach
+                    </fieldset>
+        
+                    <fieldset class="mb-4">
+                        <legend>@lang('agent-registration.sections.business')</legend>
+                        <div class="mb-3">
+                            <label class="form-label" for="main_market">@lang('agent-registration.fields.main_market')</label>
+                            <input class="form-control @error('main_market') is-invalid @enderror" id="main_market" name="main_market" value="{{ old('main_market') }}">
+                            @error('main_market')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="monthly_bali_clients">@lang('agent-registration.fields.monthly_bali_clients')</label>
+                            <input class="form-control @error('monthly_bali_clients') is-invalid @enderror" id="monthly_bali_clients" type="number" min="0" name="monthly_bali_clients" value="{{ old('monthly_bali_clients') }}">
+                            @error('monthly_bali_clients')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <span class="form-label d-block">@lang('agent-registration.fields.interested_services')</span>
+                            @foreach (['accommodation', 'transport', 'tour_packages', 'activities'] as $service)
+                                <div class="form-check">
+                                    <input class="form-check-input" id="service_{{ $service }}" type="checkbox" name="interested_services[]" value="{{ $service }}" @checked(in_array($service, old('interested_services', []), true))>
+                                    <label class="form-check-label" for="service_{{ $service }}">@lang('agent-registration.services.'.$service)</label>
+                                </div>
+                            @endforeach
+                            @error('interested_services')<div class="text-danger">{{ $message }}</div>@enderror
+                        </div>
+                    </fieldset>
+        
+                    <fieldset class="mb-4">
+                        <legend>@lang('agent-registration.sections.documents')  <span>*</span></legend>
+                        @foreach (['business_license' => true, 'company_letter' => true, 'tax_document' => false] as $field => $required)
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ $field }}">@lang('agent-registration.fields.'.$field)  <span>*</span></label>
+                                <input class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" type="file" name="{{ $field }}" accept=".pdf,.jpg,.jpeg,.png" @if ($required) required @endif>
+                                @error($field)<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        @endforeach
+                        <div class="mb-3">
+                            <label class="form-label" for="supporting_documents">@lang('agent-registration.fields.supporting_documents')</label>
+                            <input class="form-control @error('supporting_documents') is-invalid @enderror" id="supporting_documents" type="file" name="supporting_documents[]" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                            @error('supporting_documents')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </fieldset>
+        
+                    <fieldset class="mb-4">
+                        <legend>@lang('agent-registration.sections.agreement') <span>*</span></legend>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input @error('agree_to_terms') is-invalid @enderror" id="agree_to_terms" type="checkbox" name="agree_to_terms" value="1" @checked(old('agree_to_terms')) required>
+                            <label class="form-check-label" for="agree_to_terms">@lang('agent-registration.fields.agree_to_terms')</label>
+                            @error('agree_to_terms')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input @error('agree_to_contact') is-invalid @enderror" id="agree_to_contact" type="checkbox" name="agree_to_contact" value="1" @checked(old('agree_to_contact'))>
+                            <label class="form-check-label" for="agree_to_contact">@lang('agent-registration.fields.agree_to_contact')</label>
+                            @error('agree_to_contact')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </fieldset>
+        
+                    <button class="btn btn-primary" type="submit">@lang('agent-registration.submit')</button>
+                </form>
+            </div>
+        </section>
     </main>
 @endsection
 

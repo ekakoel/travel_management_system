@@ -15,7 +15,6 @@
     @stack('styles')
 </head>
 <body>
-    {{-- @include('layouts.home.navbar') --}}
     @include('frontend.layouts.navbar')
     <div class="main-container">
         <div id="app">

@@ -175,7 +175,6 @@
                     <span class="about-section__eyebrow">@lang('messages.Our Services')</span>
                     <h2>@lang('messages.International standard booking support for professional travel partners with clear service access and trusted local expertise.')</h2>
                 </div>
-
                 <div class="about-pillar-grid">
                     @foreach ($servicePillars as $pillar)
                         <article class="about-pillar-card">

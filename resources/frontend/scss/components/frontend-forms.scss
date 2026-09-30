@@ -1,3 +1,29 @@
+.become-partner-form{
+    padding-bottom: var(--frontend-shell-padding-xxl);
+    margin-top: var(--frontend-shell-padding-xl);
+    .container{
+        padding: 18px !important;
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: -4px 5px 7px 0px #80808042;
+        .form-control{
+            position: relative;
+            align-content: center;
+            padding: 0 8px !important;
+        }
+        .form-label span {
+            color: red !important;
+        }
+        .form-select {
+            min-height: var(--frontend-shell-form-height) !important;
+            border-radius: 13px;
+        }
+        .form-select:focus {
+            border-color: var(--frontend-shell-primary) !important;
+        }
+    }
+    
+}
 .booking-wizard {
     display: flex;
     flex-direction: column;
@@ -281,6 +307,7 @@
     padding-left: 2.7rem;
     font-weight: 600;
 }
+
 
 .hotel-check-warning {
     margin: 0.8rem 0 0;

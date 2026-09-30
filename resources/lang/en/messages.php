@@ -2081,4 +2081,11 @@ return [
     'Your registered profile information.' => 'Your registered profile information.',
     'Account Identity' => 'Account Identity',
     'Monthly Clients' => 'Monthly Clients',
+    'Become a Partner' => 'Become a Partner',
+    'Become our Partner' => 'Become our Partner',
+    'Join Bali Kami Tour’s B2B network and unlock exclusive travel experiences, competitive rates, and dedicated support to grow your business. Let’s create exceptional journeys across Indonesia together.' => 'Join Bali Kami Tour’s B2B network and unlock exclusive travel experiences, competitive rates, and dedicated support to grow your business. Let’s create exceptional journeys across Indonesia together.',
+    'Exceptional Stays, Unforgettable Experiences.' => 'Exceptional Stays, Unforgettable Experiences.',
+    'Seamless Journeys, Comfort at Every Turn.' => 'Seamless Journeys, Comfort at Every Turn.',
+    'Curated Journeys, Extraordinary Discoveries.' => 'Curated Journeys, Extraordinary Discoveries.',
+    'Unique Experiences, Lasting Memories.' => 'Unique Experiences, Lasting Memories.',
 ];

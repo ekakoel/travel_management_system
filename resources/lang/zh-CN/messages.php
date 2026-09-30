@@ -2044,4 +2044,11 @@ return[
     'Your registered profile information.' => '您已注册的资料信息。',
     'Account Identity' => '账户身份',
     'Monthly Clients' => '月度客户',
+    'Become a Partner' => '成为合作伙伴',
+    'Become our Partner' => '成为我们的合作伙伴',
+    'Join Bali Kami Tour’s B2B network and unlock exclusive travel experiences, competitive rates, and dedicated support to grow your business. Let’s create exceptional journeys across Indonesia together.' => '加入 Bali Kami Tour 的 B2B 合作网络，尊享专属旅游体验、极具竞争力的优惠价格及专业专属支持，助力您的业务发展。让我们携手合作，共同打造印尼非凡难忘的旅程。',
+    'Exceptional Stays, Unforgettable Experiences.' => '卓越住宿，难忘体验。',
+    'Seamless Journeys, Comfort at Every Turn.' => '畅享顺畅旅程，舒适相伴每一程。',
+    'Curated Journeys, Extraordinary Discoveries.' => '精心策划，探索非凡。',
+    'Unique Experiences, Lasting Memories.' => '独特体验，珍藏美好回忆。',
 ];

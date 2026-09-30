@@ -75,6 +75,10 @@
   --frontend-shell-topband-start: var(--ui-primary, #0f5fa8);
   --frontend-shell-topband-mid: var(--ui-secondary, #0d7b8f);
   --frontend-shell-topband-end: var(--ui-accent, #21a179);
+  --frontend-shell-padding-sm: 3rem;
+  --frontend-shell-padding-md: 4rem;
+  --frontend-shell-padding-xl: 5rem;
+  --frontend-shell-padding-xxl: 6rem;
 }
 
 .frontend-page-shell {
@@ -1371,6 +1375,32 @@ a.is-processing,
     grid-column: auto;
   }
 }
+.become-partner-form {
+  padding-bottom: var(--frontend-shell-padding-xxl);
+  margin-top: var(--frontend-shell-padding-xl);
+}
+.become-partner-form .container {
+  padding: 18px !important;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: -4px 5px 7px 0px rgba(128, 128, 128, 0.2588235294);
+}
+.become-partner-form .container .form-control {
+  position: relative;
+  align-content: center;
+  padding: 0 8px !important;
+}
+.become-partner-form .container .form-label span {
+  color: red !important;
+}
+.become-partner-form .container .form-select {
+  min-height: var(--frontend-shell-form-height) !important;
+  border-radius: 13px;
+}
+.become-partner-form .container .form-select:focus {
+  border-color: var(--frontend-shell-primary) !important;
+}
+
 .booking-wizard {
   display: flex;
   flex-direction: column;

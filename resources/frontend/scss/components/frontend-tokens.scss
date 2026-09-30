@@ -117,4 +117,8 @@ $ui-button-focus-ring-default: rgba(15, 95, 168, 0.24) !default;
     --frontend-shell-topband-start: var(--ui-primary, #{$ui-primary-default});
     --frontend-shell-topband-mid: var(--ui-secondary, #{$ui-secondary-default});
     --frontend-shell-topband-end: var(--ui-accent, #{$ui-accent-default});
+    --frontend-shell-padding-sm: 3rem;
+    --frontend-shell-padding-md: 4rem;
+    --frontend-shell-padding-xl: 5rem;
+    --frontend-shell-padding-xxl: 6rem;
 }
