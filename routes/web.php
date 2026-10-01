@@ -72,6 +72,7 @@ use App\Http\Controllers\TourPricesController;
 use App\Http\Controllers\ToursController;
 use App\Http\Controllers\TransportBrandController;
 use App\Http\Controllers\TransportManagementController;
+use App\Http\Controllers\TransportsController;
 use App\Http\Controllers\TransportTypeController;
 use App\Http\Controllers\UsdRatesController;
 use App\Http\Controllers\UsersController;

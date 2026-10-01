@@ -86,5 +86,6 @@ class Kernel extends HttpKernel
         'staffPos' => \App\Http\Middleware\StaffPos::class,
         'checkPosition' => \App\Http\Middleware\CheckPosition::class,
         'apikey' => \App\Http\Middleware\ApiKeyMiddleware::class,
+        'ai.service' => \App\Http\Middleware\AIServiceMiddleware::class,
     ];
 }

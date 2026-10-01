@@ -142,7 +142,7 @@
                             <a class="dropdown-item" href="{{ route($item['public_route']) }}"><i class="{{ $item['icon'] }}"></i> {{ $item['label'] }}</a>
                         @endif
                     @endforeach
-                    <a class="dropdown-item" target="_blank" href="https://balikami.helicopter.services/"><i class="fa-solid fa-helicopter-symbol"></i> {{ __('messages.Helicopter Tour') }}</a>
+                    <a class="dropdown-item" target="_blank" href="https://balikamitour.helicopter.services/"><i class="fa-solid fa-helicopter-symbol"></i> {{ __('messages.Helicopter Tour') }}</a>
                 </div>
             </div>
 

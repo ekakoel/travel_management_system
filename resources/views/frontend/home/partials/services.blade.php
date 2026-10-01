@@ -85,7 +85,7 @@
                 @endforeach
                 <div class="col-xl-6 col-lg-6 col-md-12 wow fadeInUp" data-wow-delay="{{ $service['delay'] }}">
                     <article class="home-service-card service-item h-100">
-                        <a class="home-service-card__link" target="_blank" href="https://balikami.helicopter.services/">
+                        <a class="home-service-card__link" target="_blank" href="https://balikamitour.helicopter.services/">
                             <div class="home-service-card__media icon-container">
                                 <img
                                     class="img-fluid hover-effect home-service-card__image"

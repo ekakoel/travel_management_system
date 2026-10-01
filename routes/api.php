@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\HotelsController;
+use App\Http\Controllers\AI\AIHotelController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\WhatsAppController;
 use App\Models\SubmittedReview;
 use App\Models\SubmittedWeddingReview;
 use App\Models\TemporaryReviewLink;
@@ -19,6 +20,13 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::prefix('ai/v1')
+    ->middleware(['ai.service', 'throttle:ai-api'])
+    ->group(function () {
+        Route::get('/hotels', [AIHotelController::class, 'index']);
+        Route::get('/hotels/{code}', [AIHotelController::class, 'show']);
+    });
 
 Route::get('version', function () {
     return response()->json(['version' => config('app.version')]);

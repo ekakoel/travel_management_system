@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class AIServiceMiddleware
+{
+    /**
+     * Authenticate internal AI service requests.
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $expectedKey = (string) config('services.ai.api_key');
+        $providedKey = (string) $request->header('X-AI-API-KEY');
+
+        if (
+            $expectedKey === ''
+            || $providedKey === ''
+            || !hash_equals($expectedKey, $providedKey)
+        ) {
+            return response()->json([
+                'error' => 'Unauthorized',
+            ], 401);
+        }
+
+        return $next($request);
+    }
+}
