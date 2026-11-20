@@ -132,7 +132,7 @@
         <div class="order-detail-section__header">
             <div>
                 <div class="order-detail-eyebrow">@lang('messages.Note')</div>
-                <h2 class="order-detail-section__title">@lang('messages.Travel notes')</h2>
+                <h2 class="order-detail-section__title">@lang('messages.Remark')</h2>
             </div>
         </div>
         <div class="order-detail-section__body">

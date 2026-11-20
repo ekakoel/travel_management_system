@@ -188,10 +188,10 @@
             })
             ->map(fn ($order) => $buildWeddingCard($order, 'history'));
 
-        $draftCards = $draftOrders->concat($weddingDraftOrders)->sortByDesc('updated_at')->values();
-        $attentionCards = $attentionOrders->concat($weddingAttentionOrders)->sortByDesc('updated_at')->values();
-        $currentCards = $currentOrders->concat($weddingCurrentOrders)->sortByDesc('updated_at')->values();
-        $historyCards = $historyOrdersCollection->concat($weddingHistoryOrders)->sortByDesc('updated_at')->values();
+        $draftCards = $draftOrders->concat($weddingDraftOrders)->sortByDesc('checkin')->values();
+        $attentionCards = $attentionOrders->concat($weddingAttentionOrders)->sortByDesc('checkin')->values();
+        $currentCards = $currentOrders->concat($weddingCurrentOrders)->sortByDesc('checkin')->values();
+        $historyCards = $historyOrdersCollection->concat($weddingHistoryOrders)->sortByDesc('checkin')->values();
 
         $allCardsCount = $draftCards->count() + $attentionCards->count() + $currentCards->count() + $historyCards->count();
         $summaryCards = [

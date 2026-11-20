@@ -1067,18 +1067,6 @@ class OrderController extends Controller
         ];
     }
 
-    private function mergeOrderNoteWithAdditionalFlights(?string $note, Request $request): ?string
-    {
-        $baseNote = trim((string) $note);
-        $additionalFlightsSummary = $this->buildAdditionalFlightsSummary($request);
-
-        if (!$additionalFlightsSummary) {
-            return $baseNote !== '' ? $baseNote : null;
-        }
-
-        return trim($baseNote !== '' ? $baseNote . "\n\n" . $additionalFlightsSummary : $additionalFlightsSummary);
-    }
-
     private function localizedJoinedField($items, string $field, string $separator = '<br>'): string
     {
         return collect($items)
@@ -1150,8 +1138,8 @@ class OrderController extends Controller
                 ->whereNotIn('status', ['Removed', 'Archive']),
             $now
         )
-            ->orderBy('updated_at', 'DESC')
-            ->get();
+        ->orderBy('updated_at', 'DESC')
+        ->get();
         $lifecycle = app(AccommodationOrderLifecycleService::class);
         $transportLifecycle = app(TransportOrderLifecycleService::class);
         $hotelorders = $lifecycle->applyAccommodationCurrentScope(
@@ -1160,8 +1148,8 @@ class OrderController extends Controller
                 ->where('sales_agent', $userid),
             $now
         )
-            ->orderBy('updated_at', 'DESC')
-            ->get();
+        ->orderBy('checkin', 'ASC')
+        ->get();
         $accommodationHistoryOrders = $lifecycle->applyAccommodationHistoryScope(
             Orders::with(['reservations'])
                 ->where('sales_agent', $userid)
@@ -1928,15 +1916,15 @@ class OrderController extends Controller
         $departure_time = date('Y-m-d H:i',strtotime($request->departure_time));
         $order->update([
             "status"=>$status,
-            "note"=>$this->mergeOrderNoteWithAdditionalFlights($request->note, $request),
+            "note"=>$request->note, $request,
             "number_of_guests"=>$number_of_guests,
             "airport_shuttle_price" =>$request->airport_shuttle_price,
             "final_price" =>$request->final_price, 
             "arrival_flight" =>$arrival_flight,
             "arrival_time" =>$request->arrival_time,
             "airport_shuttle_in" =>$request->airport_shuttle_in,
-            "departure_flight" =>$request->departure_flight,
-            "departure_time" =>$request->departure_time,
+            "departure_flight" =>$departure_flight,
+            "departure_time" =>$departure_time,
             "airport_shuttle_out" =>$request->airport_shuttle_out,
         ]);
         // GUEST
@@ -2387,7 +2375,7 @@ class OrderController extends Controller
         $request_quotation = $this->resolveHotelQuotationValue($request);
         $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
         $cancellationPolicies = $this->hotelPackageCancellationPolicySnapshot($package, $hotel);
-        $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
+        $compiledNote = $request->note;
 
         $extraBeds = $this->getBookingExtraBeds($hotel->id, $room->id);
         $adultCapacity = $this->getRoomAdultCapacity($room);
@@ -2594,7 +2582,6 @@ class OrderController extends Controller
         $user_id = $user->id;
         $email = $user->email;
         $name = $user->name;
-        $now = Carbon::now();
         $tax = Cache::remember('tax_1', 3600, fn() => Tax::find(1));
         $usdrates = Cache::remember('usd_rate', 3600, fn() => UsdRates::where('name', 'USD')->first());
         $cnyrates = Cache::remember('cny_rate', 3600, fn() => UsdRates::where('name', 'CNY')->first());
@@ -2602,7 +2589,6 @@ class OrderController extends Controller
         $room = HotelRoom::with('hotels.extrabeds')->findOrFail($request->room_id);
         $this->prepareAccommodationBookingData($request, $room);
         $hotel = $room->hotels;
-        $hotel_id = $hotel->id;
         $request_quotation = $this->resolveHotelQuotationValue($request);
         $agent_id = $sales_agent;
         $promo_ids = json_decode($request->promo_id);
@@ -2650,7 +2636,7 @@ class OrderController extends Controller
         $total_room = count($request->number_of_guests);
         $number_of_room = $total_room;
         $cancellation_policy = $room->hotels->cancellation_policy;
-        $remark = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
+        $remark = $request->note;
         $request->merge(['note' => $remark]);
         $usd_rate_sell = $usdrates->sell;
         $usd_rate_buy = $usdrates->buy;
@@ -2831,7 +2817,7 @@ class OrderController extends Controller
         $request_quotation = $this->resolveHotelQuotationValue($request);
         $duration = Carbon::parse($checkin)->diffInDays(Carbon::parse($checkout));
         $cancellation_policy = $hotel->cancellation_policy;
-        $compiledNote = $this->mergeOrderNoteWithAdditionalFlights($request->note, $request);
+        $compiledNote = $request->note;
 
         $extraBeds = $this->getBookingExtraBeds($hotel->id, $room->id);
         $adultCapacity = $this->getRoomAdultCapacity($room);
