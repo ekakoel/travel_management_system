@@ -12,6 +12,7 @@
         $canConfirmOrder = in_array(strtolower((string) $order->status), ['draft', 'pending'], true);
         $isOwner = !$order->handled_by || $order->handled_by == Auth::id();
         $receiptItems = collect($receipts ?? []);
+        $dokuPaymentItems = collect($dokuPayments ?? []);
         $isAccommodationOrder = in_array($order->service, \App\Models\Orders::ACCOMMODATION_SERVICES, true);
         $isTourPackageOrder = $order->service === \App\Models\Orders::PUBLIC_TOUR_SERVICE;
         $canEditManifest = $isTourPackageOrder
@@ -365,7 +366,7 @@
                                                     <tr>
                                                         <td>{{ $receipt->created_at ? dateFormat($receipt->created_at) : '-' }}</td>
                                                         <td>{{ $receipt->kurs?->name ?? '-' }}</td>
-                                                        <td>{{ currencyFormatUsd($receipt->amount) }}</td>
+                                                        <td>{{ $receipt->kurs?->name === 'IDR' ? currencyFormatIdr($receipt->amount) : currencyFormatUsd($receipt->amount) }}</td>
                                                         <td>{{ $receipt->status ?: '-' }}</td>
                                                         <td class="text-right">
                                                             <button type="button" class="backend-icon-action" data-toggle="modal" data-target="#receiptModal{{ $receipt->id }}" aria-label="Receipt detail">
@@ -382,6 +383,33 @@
                                         <i class="fa fa-file-image-o" aria-hidden="true"></i>
                                         <strong>No payment receipt</strong>
                                         <span>Payment proof will appear here after it is uploaded.</span>
+                                    </div>
+                                @endif
+
+                                @if($dokuPaymentItems->count())
+                                    <div class="backend-table-wrap orders-admin-detail-subtable">
+                                        <table class="backend-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Created</th>
+                                                    <th>DOKU Invoice</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    <th>Review reason</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($dokuPaymentItems as $dokuPayment)
+                                                    <tr>
+                                                        <td>{{ $dokuPayment->created_at ? dateFormat($dokuPayment->created_at) : '-' }}</td>
+                                                        <td>{{ $dokuPayment->invoice_number ?: '-' }}</td>
+                                                        <td>{{ currencyFormatIdr($dokuPayment->amount_idr) }}</td>
+                                                        <td>{{ $dokuPayment->status ?: '-' }}</td>
+                                                        <td>{{ $dokuPayment->review_reason ?: '-' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 @endif
                             </section>
@@ -670,20 +698,42 @@
                                     @endif
                                 </div>
                                 <div class="col-md-6">
-                                    <form id="confirmReceipt{{ $receipt->id }}" action="{{ route('admin.confirm.receipt', $receipt->id) }}" method="post">
-                                        @csrf
-                                        <div class="backend-form-field"><label for="receipt_status_{{ $receipt->id }}">Status</label><select id="receipt_status_{{ $receipt->id }}" name="status" class="backend-form-control" required><option value="{{ $receipt->status }}">{{ $receipt->status }}</option><option value="Valid">Valid</option><option value="Invalid">Invalid</option></select></div>
-                                        <div class="backend-form-field"><label for="receipt_currency_{{ $receipt->id }}">Currency</label><select id="receipt_currency_{{ $receipt->id }}" name="kurs_id" class="backend-form-control" required>@foreach($rates as $rate)<option value="{{ $rate->id }}" {{ $receipt->kurs_id == $rate->id ? 'selected' : '' }}>{{ $rate->name }}</option>@endforeach</select></div>
-                                        <div class="backend-form-field"><label for="receipt_amount_{{ $receipt->id }}">Amount</label><input id="receipt_amount_{{ $receipt->id }}" type="text" name="amount" class="backend-form-control" value="{{ $receipt->amount }}" required></div>
-                                        <div class="backend-form-field"><label for="receipt_payment_date_{{ $receipt->id }}">Payment Date</label><input id="receipt_payment_date_{{ $receipt->id }}" type="text" name="payment_date" class="backend-form-control date-picker" value="{{ $receipt->payment_date ? date('d F Y', strtotime($receipt->payment_date)) : date('d F Y') }}" required></div>
-                                        <div class="backend-form-field"><label for="receipt_note_{{ $receipt->id }}">Description</label><textarea id="receipt_note_{{ $receipt->id }}" data-backend-richtext="true" name="note" class="backend-form-control" rows="3">{{ $receipt->note }}</textarea></div>
-                                        <input type="hidden" name="order_id" value="{{ $order->id }}">
-                                    </form>
+                                    @if($receipt->isDoku())
+                                        <div class="backend-form-field">
+                                            <label>Payment Source</label>
+                                            <p class="backend-form-control-plaintext">DOKU Checkout</p>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label>DOKU Reference</label>
+                                            <p class="backend-form-control-plaintext">{{ $receipt->gateway_reference ?: '-' }}</p>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label>Amount</label>
+                                            <p class="backend-form-control-plaintext">{{ currencyFormatIdr($receipt->amount) }}</p>
+                                        </div>
+                                        <div class="backend-form-field">
+                                            <label>Status</label>
+                                            <p class="backend-form-control-plaintext">{{ $receipt->status }}</p>
+                                        </div>
+                                        <div class="notification">DOKU payments are settled automatically and cannot be edited manually.</div>
+                                    @else
+                                        <form id="confirmReceipt{{ $receipt->id }}" action="{{ route('admin.confirm.receipt', $receipt->id) }}" method="post">
+                                            @csrf
+                                            <div class="backend-form-field"><label for="receipt_status_{{ $receipt->id }}">Status</label><select id="receipt_status_{{ $receipt->id }}" name="status" class="backend-form-control" required><option value="{{ $receipt->status }}">{{ $receipt->status }}</option><option value="Valid">Valid</option><option value="Invalid">Invalid</option></select></div>
+                                            <div class="backend-form-field"><label for="receipt_currency_{{ $receipt->id }}">Currency</label><select id="receipt_currency_{{ $receipt->id }}" name="kurs_id" class="backend-form-control" required>@foreach($rates as $rate)<option value="{{ $rate->id }}" {{ $receipt->kurs_id == $rate->id ? 'selected' : '' }}>{{ $rate->name }}</option>@endforeach</select></div>
+                                            <div class="backend-form-field"><label for="receipt_amount_{{ $receipt->id }}">Amount</label><input id="receipt_amount_{{ $receipt->id }}" type="text" name="amount" class="backend-form-control" value="{{ $receipt->amount }}" required></div>
+                                            <div class="backend-form-field"><label for="receipt_payment_date_{{ $receipt->id }}">Payment Date</label><input id="receipt_payment_date_{{ $receipt->id }}" type="text" name="payment_date" class="backend-form-control date-picker" value="{{ $receipt->payment_date ? date('d F Y', strtotime($receipt->payment_date)) : date('d F Y') }}" required></div>
+                                            <div class="backend-form-field"><label for="receipt_note_{{ $receipt->id }}">Description</label><textarea id="receipt_note_{{ $receipt->id }}" data-backend-richtext="true" name="note" class="backend-form-control" rows="3">{{ $receipt->note }}</textarea></div>
+                                            <input type="hidden" name="order_id" value="{{ $order->id }}">
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                         <div class="orders-admin-detail-modal__footer">
-                            <button type="submit" form="confirmReceipt{{ $receipt->id }}" class="backend-button backend-button-primary">Save Receipt</button>
+                            @if(!$receipt->isDoku())
+                                <button type="submit" form="confirmReceipt{{ $receipt->id }}" class="backend-button backend-button-primary">Save Receipt</button>
+                            @endif
                             <button type="button" class="backend-button backend-button-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>

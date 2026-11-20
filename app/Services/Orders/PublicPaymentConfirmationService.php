@@ -2,6 +2,7 @@
 
 namespace App\Services\Orders;
 
+use App\Models\DokuPayment;
 use App\Models\InvoiceAdmin;
 use App\Models\Orders;
 use App\Models\PaymentConfirmation;
@@ -77,6 +78,15 @@ class PublicPaymentConfirmationService
             || ($order->status === self::ORDER_STATUS_PAYABLE && $deadline && $deadline->isPast() && !$hasSubmission);
         $latestReceipt = $this->latestReceipt($invoice);
         $hasOpenReview = $this->hasOpenReview($invoice);
+        $activeDoku = $this->activeDokuPayment($invoice);
+        $activeDokuExpired = $activeDoku
+            && $activeDoku->expired_at
+            && $activeDoku->expired_at->isPast();
+        $activeDokuCanContinue = $activeDoku
+            && $activeDoku->checkout_url
+            && (!$activeDoku->expired_at || $activeDoku->expired_at->isFuture());
+        $hasDokuReview = $this->hasDokuReview($invoice);
+        $dokuEnabled = (bool) config('doku.enabled') && $this->supportsDoku($order);
 
         return [
             'deadline' => $deadline,
@@ -84,8 +94,61 @@ class PublicPaymentConfirmationService
             'has_submission' => $hasSubmission,
             'has_open_review' => $hasOpenReview,
             'latest_receipt' => $latestReceipt,
-            'can_submit' => $this->isPayable($order, $invoice) && !$expired && !$hasOpenReview,
+            'active_doku' => $activeDoku,
+            'doku_enabled' => $dokuEnabled,
+            'has_doku_review' => $hasDokuReview,
+            'can_open_payment' => $this->isPayable($order, $invoice) && !$expired && !$hasOpenReview,
+            'can_submit' => $this->isPayable($order, $invoice)
+                && !$expired
+                && !$hasOpenReview
+                && (!$activeDoku || $activeDokuExpired),
+            'can_start_doku' => $dokuEnabled
+                && $this->isPayable($order, $invoice)
+                && !$expired
+                && !$hasOpenReview
+                && !$hasDokuReview
+                && !$activeDokuCanContinue,
         ];
+    }
+
+    public function hasActiveDokuPayment(?InvoiceAdmin $invoice): bool
+    {
+        $payment = $this->activeDokuPayment($invoice);
+
+        return $payment && (!$payment->expired_at || $payment->expired_at->isFuture());
+    }
+
+    public function hasDokuReview(?InvoiceAdmin $invoice): bool
+    {
+        return $invoice
+            ? DokuPayment::query()
+                ->where('invoice_id', $invoice->id)
+                ->where('status', DokuPayment::STATUS_REVIEW)
+                ->exists()
+            : false;
+    }
+
+    public function activeDokuPayment(?InvoiceAdmin $invoice): ?DokuPayment
+    {
+        if (!$invoice) {
+            return null;
+        }
+
+        return DokuPayment::query()
+            ->where('invoice_id', $invoice->id)
+            ->where('status', DokuPayment::STATUS_PENDING)
+            ->latest('id')
+            ->first();
+    }
+
+    private function supportsDoku(Orders $order): bool
+    {
+        return in_array($order->service, Orders::ACCOMMODATION_SERVICES, true)
+            || in_array($order->service, [
+                Orders::PUBLIC_TRANSPORT_SERVICE,
+                Orders::PUBLIC_TOUR_SERVICE,
+                Orders::PUBLIC_ACTIVITY_SERVICE,
+            ], true);
     }
 
     public function detailUrl(Orders $order): string

@@ -105,6 +105,7 @@
     $hasPaymentSubmission = data_get($paymentState ?? [], 'has_submission', $paymentSubmissionExists ?? false);
     $paymentExpired = data_get($paymentState ?? [], 'expired', false);
     $canSubmitPayment = data_get($paymentState ?? [], 'can_submit', false);
+    $canOpenPayment = data_get($paymentState ?? [], 'can_open_payment', $canSubmitPayment);
     $paymentUnderReview = data_get($paymentState ?? [], 'has_open_review', false);
     $invoiceCurrencyCode = optional($invoice?->currency)->name ?: 'USD';
     $invoiceGrandTotal = match ($invoiceCurrencyCode) {
@@ -569,7 +570,7 @@
                                         </a>
                                     @endif
 
-                                    @if ($canSubmitPayment)
+                                    @if ($canOpenPayment)
                                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
                                             <i class="fa-solid fa-upload" aria-hidden="true"></i>
                                             @lang('messages.Payment Confirmation')

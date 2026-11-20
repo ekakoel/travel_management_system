@@ -10,11 +10,16 @@ public orders (Accommodation, Transport, Tour Package, and Activity). Wedding
 payments remain on their dedicated legacy architecture until an explicitly
 approved migration is performed.
 
+DOKU Checkout is the online alternative defined in
+`decisions/doku-payment-standard.md`. It settles a full outstanding balance,
+creates a `Valid` confirmation with `source=doku`, and is mutually exclusive
+with an open manual submission or an active DOKU checkout.
+
 ## Lifecycle
 
 1. A customer may submit payment proof only while the order is `Approved`, an
-   owned invoice exists, the invoice balance is positive, and the payment
-   deadline is open.
+   owned invoice exists, the invoice balance is positive, the payment deadline
+   is open, and no active DOKU checkout exists for the invoice.
 2. A submission creates a `PaymentConfirmation` with status `Pending`.
    Submission never changes the order to `Paid`.
 3. Only the authorized finance/admin validation flow may set a confirmation to

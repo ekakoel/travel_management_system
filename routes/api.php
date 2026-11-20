@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\DokuNotificationController;
 use App\Http\Controllers\HotelsController;
 use App\Http\Controllers\AI\AIHotelController;
 use App\Http\Controllers\ReviewController;
@@ -31,6 +32,8 @@ Route::prefix('ai/v1')
 Route::get('version', function () {
     return response()->json(['version' => config('app.version')]);
 });
+
+Route::post('/doku/notification', [DokuNotificationController::class, 'handle']);
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

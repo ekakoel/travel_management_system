@@ -25,7 +25,10 @@ Service listing/detail
 -> History Order
 ```
 
-Tidak termasuk Transport Management/SPK, Driver management, Wedding, DOKU, dan Private Villa. Service Transports publik tidak boleh disamakan dengan Transport Management internal.
+Tidak termasuk Transport Management/SPK, Driver management, Wedding, dan
+Private Villa. DOKU Checkout mengikuti kontrak pembayaran publik ini; status
+internal DOKU tidak boleh ditulis ke `orders.status`. Service Transports publik
+tidak boleh disamakan dengan Transport Management internal.
 
 ## Kontrak Final
 
@@ -104,6 +107,13 @@ Canceled
   `Unpaid`, `Partially Paid`, atau `Paid`.
 - Payment confirmation, invoice payment state, order status, reservation
   status, dan fulfillment state tidak boleh disamakan.
+- DOKU Checkout yang berhasil membuat `PaymentConfirmation` berstatus `Valid`
+  dengan `source=doku` dan `gateway_reference`; status internal DOKU
+  (`Pending`, `Success`, `Failed`, `Expired`, `Review`) bukan order status.
+- `SUCCESS` DOKU hanya boleh mengubah order `Approved` menjadi `Paid` bila
+  saldo invoice menjadi kurang dari 1. Pembayaran DOKU yang terlambat, nominal
+  tidak cocok, atau order sudah ditutup masuk ke `Review` dan tidak
+  mengaktifkan kembali order.
 
 ## Current dan History
 

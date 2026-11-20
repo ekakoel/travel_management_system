@@ -38,6 +38,10 @@ class Kernel extends ConsoleKernel
             ->everyFifteenMinutes()
             ->withoutOverlapping()
             ->name('orders:auto-cancel-expired-payments');
+        $schedule->command('doku:reconcile-pending')
+            ->everyFifteenMinutes()
+            ->withoutOverlapping()
+            ->name('doku:reconcile-pending');
     }
 
     /**

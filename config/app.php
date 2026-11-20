@@ -73,8 +73,6 @@ return [
     'emergency_contact_name_i'=> env('EMERGENCY_CONTACT_NAME_I',"Mr. Charlie Chen"),
     'emergency_contact_phone_i'=> env('EMERGENCY_CONTACT_PHONE_I',"+62 811-380-967"),
 
-    'DOKU_CLIENT_ID' => env('DOKU_CLIENT_ID'),
-
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

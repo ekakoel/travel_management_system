@@ -24,36 +24,44 @@
                                     <div class="receipt-status">
                                         <i class="icon-copy fa fa-check-circle color-green" aria-hidden="true"></i>
                                         <div class="pmt-status">
-                                            @lang('messages.Paid') ({{ currencyFormatUsd($receipt->amount) }})
+                                            @lang('messages.Paid') ({{ $receipt->kurs?->name === 'IDR' ? currencyFormatIdr($receipt->amount) : currencyFormatUsd($receipt->amount) }})
                                         </div>
                                     </div>
                                     <div class="receipt-description">
                                         <b>{{ $invoice->inv_no }}</b>
                                         <p>@lang('messages.Paid on') : {{ dateFormat($receipt->payment_date) }}<br>
                                     </div>
-                                    <div class="receipt-action">
-                                        <a class="action-btn" href="#" data-toggle="modal" data-target="#{{ $device }}-paid-receipt-{{ $receipt->id }}">
-                                            <i class="icon-copy fa fa-eye" aria-hidden="true"></i>
-                                        </a>
-                                    </div>
+                                    @if($receipt->receipt_img)
+                                        <div class="receipt-action">
+                                            <a class="action-btn" href="#" data-toggle="modal" data-target="#{{ $device }}-paid-receipt-{{ $receipt->id }}">
+                                                <i class="icon-copy fa fa-eye" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    @elseif($receipt->isDoku())
+                                        <div class="receipt-description">
+                                            <b>DOKU</b> {{ $receipt->gateway_reference }}
+                                        </div>
+                                    @endif
                                 </div>
-                                <div class="modal fade" id="{{ $device }}-paid-receipt-{{ $receipt->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                            <div class="card-box">
-                                                <div class="card-box-title">
-                                                    <i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')
-                                                </div>
-                                                <div class="card-box-body text-center">
-                                                    <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
-                                                </div>
-                                                <div class="card-box-footer">
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                @if($receipt->receipt_img)
+                                    <div class="modal fade" id="{{ $device }}-paid-receipt-{{ $receipt->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="card-box">
+                                                    <div class="card-box-title">
+                                                        <i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')
+                                                    </div>
+                                                    <div class="card-box-body text-center">
+                                                        <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                                    </div>
+                                                    <div class="card-box-footer">
+                                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endif
                             @endif
                         @endforeach
                     </div>
@@ -73,34 +81,42 @@
                                 <div class="receipt-status">
                                     <i class="icon-copy fa fa-check-circle color-green" aria-hidden="true"></i>
                                     <div class="pmt-status">
-                                        @lang('messages.Paid') ({{ currencyFormatUsd($receipt->amount) }})
+                                        @lang('messages.Paid') ({{ $receipt->kurs?->name === 'IDR' ? currencyFormatIdr($receipt->amount) : currencyFormatUsd($receipt->amount) }})
                                     </div>
                                 </div>
                                 <div class="receipt-description">
                                     <b>{{ $invoice->inv_no }}</b>
                                     <p>@lang('messages.Paid on') : {{ dateFormat($receipt->payment_date) }}<br>
                                 </div>
-                                <div class="receipt-action">
-                                    <a class="action-btn" href="#" data-toggle="modal" data-target="#{{ $device }}-paid-receipt-{{ $receipt->id }}">
-                                        <i class="icon-copy fa fa-eye" aria-hidden="true"></i>
-                                    </a>
-                                </div>
+                                @if($receipt->receipt_img)
+                                    <div class="receipt-action">
+                                        <a class="action-btn" href="#" data-toggle="modal" data-target="#{{ $device }}-paid-receipt-{{ $receipt->id }}">
+                                            <i class="icon-copy fa fa-eye" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                @elseif($receipt->isDoku())
+                                    <div class="receipt-description">
+                                        <b>DOKU</b> {{ $receipt->gateway_reference }}
+                                    </div>
+                                @endif
                             </div>
-                            <div class="modal fade" id="{{ $device }}-paid-receipt-{{ $receipt->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content modal-receipt">
-                                        <div class="card-box">
-                                            <div class="card-box-title">
-                                                <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
-                                            </div>
-                                            <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
-                                            <div class="card-box-footer">
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                            @if($receipt->receipt_img)
+                                <div class="modal fade" id="{{ $device }}-paid-receipt-{{ $receipt->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content modal-receipt">
+                                            <div class="card-box">
+                                                <div class="card-box-title">
+                                                    <div class="title"><i class="icon-copy fa fa-file-photo-o" aria-hidden="true"></i> @lang('messages.Payment Receipt')</div>
+                                                </div>
+                                                <img src="{{ $receiptRoute ? route($receiptRoute, ['order' => $order->id, 'payment' => $receipt->id]) : asset('storage/receipt/'.$receipt->receipt_img) }}" alt="">
+                                                <div class="card-box-footer">
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                         @elseif($receipt->status == "Pending")
                             <div class="receipt-container">
                                 <div class="receipt-status">

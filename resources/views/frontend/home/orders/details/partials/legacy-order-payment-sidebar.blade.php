@@ -110,7 +110,7 @@
         <div class="order-detail-action-list">
             @include('frontend.home.orders.details.partials.invoice-action-buttons', ['variant' => 'legacy'])
 
-            @if ($invoice && $order->status !== 'Paid')
+            @if ($invoice && $order->status !== 'Paid' && data_get($paymentState ?? [], 'can_open_payment', true))
                 <button type="button" class="order-detail-btn order-detail-btn--primary" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
                     <i class="fa-solid fa-upload" aria-hidden="true"></i>
                     @lang('messages.Payment Confirmation')

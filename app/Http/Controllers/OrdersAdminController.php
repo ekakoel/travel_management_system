@@ -16,6 +16,7 @@ use App\Models\Orders;
 use App\Models\Vendor;
 use App\Models\Villas;
 use App\Models\Wallet;
+use App\Models\DokuPayment;
 use App\Models\Drivers;
 use App\Models\Flights;
 use App\Models\LogData;
@@ -829,6 +830,10 @@ class OrdersAdminController extends Controller
             : null;
         $paymentSummary = $this->paymentSummary($invoice);
         $receipts = $paymentSummary['receipts'];
+        $dokuPayments = DokuPayment::query()
+            ->where('order_id', $order->id)
+            ->latest('id')
+            ->get();
         $agentCommunication = $this->agentCommunicationSummary($order);
 
         $optional_rate_orders = $order->optional_rate_orders;
@@ -920,6 +925,7 @@ class OrdersAdminController extends Controller
             'tourPricing' => $tourPricing,
             'tourOrder' => $tourOrder,
             'receipts' => $receipts,
+            'dokuPayments' => $dokuPayments,
             'agentCommunication' => $agentCommunication,
             'confirmationWasSent' => $confirmationWasSent,
             'banks' => BankAccount::select('id', 'bank', 'currency')->get(),
@@ -4947,6 +4953,10 @@ class OrdersAdminController extends Controller
 
         $reservation = Reservation::where('id',$order->rsv_id)->firstOrFail();
         $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->firstOrFail();
+
+        if (app(\App\Services\Orders\PublicPaymentConfirmationService::class)->hasActiveDokuPayment($invoice)) {
+            return back()->with('error', 'A DOKU online payment is still in progress for this invoice.');
+        }
         $receipt_name = $this->storeStandardReceiptFile($request->file('receipt_name'), $invoice, $order);
 
         try {
@@ -5042,6 +5052,11 @@ class OrdersAdminController extends Controller
         ]);
 
         $receipt = PaymentConfirmation::findOrFail($id);
+
+        if ($receipt->isDoku()) {
+            return back()->with('error', 'DOKU payments are settled automatically and cannot be edited manually.');
+        }
+
         $invoice = InvoiceAdmin::findOrFail($receipt->inv_id);
         $reservation = Reservation::findOrFail($invoice->rsv_id);
         $order = Orders::where("rsv_id",$reservation->id)->firstOrFail();

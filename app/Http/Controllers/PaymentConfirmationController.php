@@ -134,7 +134,8 @@ class PaymentConfirmationController extends Controller
                     ]);
                 }
 
-                if ($lockedInvoice->payment()->where('status', self::EDITABLE_CUSTOMER_RECEIPT_STATUS)->exists()) {
+                if ($lockedInvoice->payment()->where('status', self::EDITABLE_CUSTOMER_RECEIPT_STATUS)->exists()
+                    || $this->paymentConfirmationService->hasActiveDokuPayment($lockedInvoice)) {
                     throw ValidationException::withMessages([
                         'receipt_file' => __('messages.A payment confirmation is already under review.'),
                     ]);

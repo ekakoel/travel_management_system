@@ -76,6 +76,8 @@ Active frontend decisions:
   idempotency, and PRG contract.
 * `decisions/payment-confirmation-standard.md` — canonical public-order payment
   confirmation data, lifecycle, duplicate protection, security, and UI contract.
+* `decisions/doku-payment-standard.md` — canonical DOKU Checkout integration,
+  notification, settlement, reconciliation, and sandbox verification contract.
 
 Active document decisions:
 
