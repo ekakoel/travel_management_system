@@ -222,16 +222,17 @@ class DokuPaymentService
                 return $this->markReview($lockedPayment, $reason, $notification, $notificationRequestId);
             }
 
-            $idrRate = UsdRates::query()->where('name', 'IDR')->first();
-
-            if (!$idrRate) {
-                return $this->markReview(
-                    $lockedPayment,
-                    'IDR currency reference is not configured.',
-                    $notification,
-                    $notificationRequestId
-                );
-            }
+            $idrRate = UsdRates::query()->firstOrCreate(
+                ['name' => 'IDR'],
+                [
+                    'rate' => 1,
+                    'sell' => 1,
+                    'buy' => 1,
+                    'difference' => 0,
+                    'retrieved_at' => Carbon::now(),
+                    'retrieval_source' => 'system',
+                ]
+            );
 
             $credited = min(
                 (float) $invoice->balance,

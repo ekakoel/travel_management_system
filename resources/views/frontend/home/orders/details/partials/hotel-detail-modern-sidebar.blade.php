@@ -58,6 +58,15 @@
                     @lang('messages.Payment Confirmation')
                 </button>
             @endif
+            @if (data_get($paymentState ?? [], 'can_start_doku', false))
+                <form method="POST" action="{{ route('orders.doku.checkout', ['order' => $order->id]) }}">
+                    @csrf
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+                        @lang('messages.Pay with DOKU')
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('view.orders') }}#orderHotel" class="order-detail-btn order-detail-btn--soft">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                 @lang('messages.Back')

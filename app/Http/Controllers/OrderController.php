@@ -4054,6 +4054,12 @@ class OrderController extends Controller
         $business = Cache::remember('business_profile', 3600, fn() => BusinessProfile::find(1));
         $reservation = Reservation::find($order->rsv_id);
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
+        
+        // Auto-reconcile pending DOKU payments when user visits order detail (e.g., after DOKU callback)
+        if ($invoice) {
+            app(\App\Services\Payments\DokuPaymentService::class)->reconcilePending();
+        }
+        
         $order = $this->autoCancelExpiredApprovedOrder($order, $invoice);
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
         $receipts = $invoice ? $invoice->payment : null;
@@ -4590,6 +4596,12 @@ class OrderController extends Controller
         $optionalServiceTotalPrice = $optional_rate_orders->sum('price_total');
         $reservation = Reservation::find($order->rsv_id);
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
+        
+        // Auto-reconcile pending DOKU payments when user visits order detail (e.g., after DOKU callback)
+        if ($invoice) {
+            app(\App\Services\Payments\DokuPaymentService::class)->reconcilePending();
+        }
+        
         $receipts = $invoice ? $invoice->payment : null;
         $paymentDeadline = $this->getInvoicePaymentDeadline($invoice);
         $paymentSubmissionExists = $this->orderHasPaymentSubmission($invoice);
@@ -6078,6 +6090,12 @@ class OrderController extends Controller
         $filteredDiscounts = array_filter($discounts, fn($value) => !is_null($value));
         $normal_price = $order->final_price + $total_promotion_disc + $order->bookingcode_disc + $order->discounts;
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
+        
+        // Auto-reconcile pending DOKU payments when user visits order detail (e.g., after DOKU callback)
+        if ($invoice) {
+            app(\App\Services\Payments\DokuPaymentService::class)->reconcilePending();
+        }
+        
         $tourPricing = app(OrderPricingSnapshotReader::class)->historicalValues($order, $invoice);
         $order = $this->autoCancelExpiredApprovedOrder($order, $invoice);
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
@@ -6276,6 +6294,12 @@ class OrderController extends Controller
         ];
         $filteredDiscounts = array_filter($discounts, fn($value) => !is_null($value));
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
+        
+        // Auto-reconcile pending DOKU payments when user visits order detail (e.g., after DOKU callback)
+        if ($invoice) {
+            app(\App\Services\Payments\DokuPaymentService::class)->reconcilePending();
+        }
+        
         $activityPricing = app(ActivityOrderPricingReader::class)->historicalValues($order, $invoice);
         $order = $this->autoCancelExpiredApprovedOrder($order, $invoice);
         $invoice = InvoiceAdmin::with(['payment', 'bank', 'currency'])->firstWhere('rsv_id', $order->rsv_id);
