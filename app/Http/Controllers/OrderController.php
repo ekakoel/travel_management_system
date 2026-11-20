@@ -191,7 +191,7 @@ class OrderController extends Controller
     private function redirectToExistingAccommodationOrder(Orders $order)
     {
         $route = in_array(Auth::user()?->position, ['developer', 'reservation', 'author'], true)
-            ? 'view.detail-order-admin'
+            ? 'admin.order.show'
             : 'view.detail-order-hotel';
 
         return redirect()->route($route, ['id' => $order->id])->with('info', __('messages.The order has already been submitted'));
@@ -2983,7 +2983,7 @@ class OrderController extends Controller
             $rquotation = $request_quotation;
             Mail::to(config('app.reservation_mail'))
             ->send(new ReservationMail($order->id,$rquotation));
-            return redirect()->route('view.detail-order-admin', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
+            return redirect()->route('admin.order.show', ['id' => $order->id])->with('success', __('messages.The order has been successfully created'));
         }else{
             $this->submitCreatedHotelOrder($request, $order, $user);
             return redirect()->route('view.detail-order-hotel', ['id' => $order->id])->with('success', __('messages.Your order has been submitted'));
