@@ -258,8 +258,6 @@
                                             {{ __('partner.company_type_tour_operator') }} </option>
                                         <option value="event_organizer" @selected(old('company_type') === 'event_organizer')>
                                             {{ __('partner.company_type_event_organizer') }} </option>
-                                        <option value="wedding_planner" @selected(old('company_type') === 'wedding_planner')>
-                                            {{ __('partner.company_type_wedding_planner') }} </option>
                                         <option value="corporate" @selected(old('company_type') === 'corporate')>
                                             {{ __('partner.company_type_corporate') }} </option>
                                         <option value="other" @selected(old('company_type') === 'other')>
@@ -371,7 +369,7 @@
                             <div class="partner-field partner-services"> <label> {{ __('partner.interested_services') }}
                                 </label>
                                 <div class="partner-checkbox-grid">
-                                    @foreach (['private_tours' => __('partner.service_private_tours'), 'transportation' => __('partner.service_transportation'), 'activities' => __('partner.service_activities'), 'accommodation' => __('partner.service_accommodation'), 'mice_events' => __('partner.service_mice_events'), 'weddings' => __('partner.service_weddings')] as $value => $label)
+                                    @foreach (['private_tours' => __('partner.service_private_tours'), 'transportation' => __('partner.service_transportation'), 'activities' => __('partner.service_activities'), 'accommodation' => __('partner.service_accommodation'), 'mice_events' => __('partner.service_mice_events')] as $value => $label)
                                         <label class="partner-checkbox"> <input type="checkbox"
                                                 name="interested_services[]" value="{{ $value }}"
                                                 @checked(in_array($value, old('interested_services', []), true))> <span>{{ $label }}</span> </label>

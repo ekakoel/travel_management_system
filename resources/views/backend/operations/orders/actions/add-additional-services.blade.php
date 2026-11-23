@@ -32,13 +32,6 @@
                                         <td class="htd-1">Service</td>
                                         <td class="htd-2">{{ $order->service }}</td>
                                     </tr>
-                                    @if ($order->service == "Wedding Package")
-
-                                        <tr>
-                                            <td class="htd-1">Wedding Date</td>
-                                            <td class="htd-2">{{ date('l, m/d/Y (H.i A)',strtotime($order->wedding_date)) }}</td>
-                                        </tr>
-                                    @endif
                                     <tr>
                                         <td class="htd-1">Check In</td>
                                         <td class="htd-2">{{ date('l, m/d/Y',strtotime($order->checkin)) }}</td>
@@ -49,7 +42,7 @@
                                     </tr>
                                     <tr>
                                         <td class="htd-1">Duration</td>
-                                        @if ($order->service == "Wedding Package" or $order->service == "Hotel" or $order->service == "Hotel Promo" or $order->service == "Hotel Package")
+                                        @if ($order->service == "Hotel" or $order->service == "Hotel Promo" or $order->service == "Hotel Package")
                                             @if ($order->duration > 1)
                                                 <td class="htd-2">{{ $order->duration." nights" }}</td>
                                             @else

@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\AirportShuttle;
 use App\Models\TransportPrice;
 use App\Models\TransportsImages;
-use App\Models\WeddingPlannerTransport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -47,9 +46,6 @@ class Transports extends Model
 
     public function prices(){
         return $this->hasMany(TransportPrice::class,'transports_id');
-    }
-    public function wp_transports(){
-        return $this->hasMany(WeddingPlannerTransport::class,'transports_id');
     }
     public function airport_shuttles(){
         return $this->hasMany(AirportShuttle::class,'transport_id');

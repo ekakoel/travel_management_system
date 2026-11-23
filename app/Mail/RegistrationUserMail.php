@@ -4,12 +4,9 @@ namespace App\Mail;
 
 use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Brides;
 use App\Models\Orders;
-use App\Models\Weddings;
 use App\Models\HotelRoom;
 use App\Models\Transports;
-use App\Models\OrderWedding;
 use App\Models\VendorPackage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;

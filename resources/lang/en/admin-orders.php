@@ -3,7 +3,7 @@
 return [
     'title' => 'Orders Admin',
     'eyebrow' => 'Operations',
-    'subtitle' => 'Monitor active tour and wedding orders, prioritize validation work, and open each order detail quickly.',
+    'subtitle' => 'Monitor active tour orders, prioritize validation work, and open each order detail quickly.',
     'window' => 'Showing orders updated after :date',
     'breadcrumb' => [
         'label' => 'Breadcrumb',
@@ -19,7 +19,6 @@ return [
     'summary' => [
         'label' => 'Orders summary',
         'tour' => 'Tour orders',
-        'wedding' => 'Wedding orders',
         'pending' => 'Pending',
         'attention' => 'Attention',
         'active_window' => 'Active window',
@@ -39,7 +38,7 @@ return [
         'eyebrow' => 'Recommended',
         'title' => 'Work Focus',
         'validation' => 'Validate new orders',
-        'validation_help' => 'Start with pending tour and wedding orders.',
+        'validation_help' => 'Start with pending tour orders.',
         'correction' => 'Resolve exceptions',
         'correction_help' => 'Review invalid and rejected orders.',
         'payment' => 'Follow up payment',
@@ -68,11 +67,6 @@ return [
     'tour' => [
         'eyebrow' => 'Tour order queue',
     ],
-    'wedding' => [
-        'eyebrow' => 'Wedding queue',
-        'title' => 'Wedding Orders',
-        'description' => 'Wedding package orders that are still inside the active planning window.',
-    ],
     'table' => [
         'agent' => 'Agent',
         'order' => 'Order',
@@ -81,8 +75,6 @@ return [
         'price' => 'Price',
         'action' => 'Action',
         'quote' => 'Quote requested',
-        'couple' => 'Couple',
-        'invitations' => 'Invitations',
     ],
     'actions' => [
         'detail' => 'Detail',
@@ -135,6 +127,6 @@ return [
     ],
     'empty' => [
         'title' => 'No active orders found',
-        'description' => 'There are no tour or wedding orders in the current operational window.',
+        'description' => 'There are no tour orders in the current operational window.',
     ],
 ];

@@ -5,7 +5,6 @@ return [
     'Hotels' => 'Hotels',
     'Activities' => 'Activities',
     'Transports' =>'Transports',
-    'Wedding Packages' =>'Wedding Packages',
     'Admin Panel' =>'Admin Panel',
     'Currency' =>'Currency',
     'Orders' =>'Orders',

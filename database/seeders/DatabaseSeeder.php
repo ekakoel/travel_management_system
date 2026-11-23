@@ -50,7 +50,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TransportPriceSeeder::class);
         $this->call(TaxSeeder::class);
         $this->call(ServicesSeeder::class);
-        $this->call(WeddingsSeeder::class);
         $this->call(ExtraBedSeeder::class);
         $this->call(ContractSeeder::class);
         $this->call(BookingCodeSeeder::class);

@@ -11,6 +11,5 @@ return [
     'Activities' => 'Activities',
     'Activities' => 'Activities',
     'Transports' =>'Transports',
-    'Wedding Packages' =>'Wedding Packages',
     'All Tour Packages' => 'All Tour Packages'
 ];

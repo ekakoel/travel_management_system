@@ -10,7 +10,6 @@ class OrderLog extends Model
     use HasFactory;
     protected $fillable = [
         'order_id',
-        'order_wedding_id',
         'action',
         'url',
         'method',

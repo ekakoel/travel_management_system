@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\Hotels;
 use App\Models\HotelRoom;
-use App\Models\WeddingAccomodations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -26,9 +25,6 @@ class ExtraBed extends Model
     }
     public function rooms(){
         return $this->belongsTo(HotelRoom::class,'rooms_id');
-    }
-    public function wedding_accommodations(){
-        return $this->hasMany(WeddingAccomodations::class,'extra_bed_id');
     }
     public function calculatePrice($usdrates, $tax)
     {

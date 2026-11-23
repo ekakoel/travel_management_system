@@ -30,7 +30,6 @@
             'Activity' => 'fa-person-hiking',
             'Transport' => 'fa-car-side',
             'Private Villa' => 'fa-house',
-            'Wedding' => 'fa-heart',
         ];
 
         $resolveStandardRoutes = function ($order) {
@@ -120,78 +119,15 @@
             ];
         };
 
-        $buildWeddingCard = function ($order, $scope = 'current') use ($serviceIconMap, $statusToneMap, $brides) {
-            $bride = $brides->firstWhere('id', $order->brides_id);
-            $serviceLabel = __('messages.' . $order->service) !== 'messages.' . $order->service ? __('messages.' . $order->service) : $order->service;
-            $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
-            $eventDate = $order->wedding_date ?: $order->reception_date_start ?: $order->created_at;
-            $headline = trim(collect([$bride->groom ?? null, $bride->bride ?? null])->filter()->implode(' & '));
-            $meta = array_filter([
-                $headline ?: null,
-                $order->number_of_guests ? $order->number_of_guests . ' ' . __('messages.Guests') : null,
-            ]);
-
-            return [
-                'key' => 'wedding-' . $order->id,
-                'scope' => $scope,
-                'orderno' => $order->orderno,
-                'service' => $serviceLabel,
-                'service_name' => __('messages.Wedding Order'),
-                'headline' => $headline ?: $serviceLabel,
-                'status' => $order->status,
-                'status_label' => $statusLabel,
-                'status_tone' => $statusToneMap[$order->status] ?? 'pending',
-                'icon' => $serviceIconMap['Wedding'],
-                'schedule' => $eventDate ? dateFormat($eventDate) : '-',
-                'schedule_label' => __('messages.Date'),
-                'meta' => $meta,
-                'price' => $order->final_price,
-                'original_price' => null,
-                'detail_url' => route('view.detail-order-wedding', ['orderno' => $order->orderno]),
-                'edit_url' => route('view.edit-order-wedding', ['orderno' => $order->orderno]),
-                'delete_url' => '/delete-wedding-order/' . $order->id,
-                'delete_form_id' => 'delete-wedding-order-' . $order->id,
-                'approve_url' => null,
-                'approve_form_id' => null,
-                'can_edit' => in_array($order->status, ['Draft', 'Invalid'], true),
-                'can_delete' => in_array($order->status, ['Draft', 'Invalid', 'Rejected'], true),
-                'can_approve' => false,
-                'search' => strtolower(implode(' ', array_filter([
-                    $order->orderno,
-                    $serviceLabel,
-                    $headline,
-                    $order->status,
-                ]))),
-                'updated_at' => optional($order->updated_at)->timestamp ?? optional($order->created_at)->timestamp ?? 0,
-            ];
-        };
-
         $draftOrders = $orders->filter(fn ($order) => $order->status === 'Draft')->map(fn ($order) => $buildStandardCard($order, 'draft'));
         $attentionOrders = $orders->filter(fn ($order) => in_array($order->status, ['Rejected', 'Invalid'], true))->map(fn ($order) => $buildStandardCard($order, 'attention'));
         $currentOrders = $orders->reject(fn ($order) => in_array($order->status, ['Draft', 'Rejected', 'Invalid'], true))->map(fn ($order) => $buildStandardCard($order, 'current'));
         $historyOrdersCollection = $orderhistories->map(fn ($order) => $buildStandardCard($order, 'history'));
 
-        $weddingDraftOrders = $weddingorders->filter(fn ($order) => $order->status === 'Draft')->map(fn ($order) => $buildWeddingCard($order, 'draft'));
-        $weddingAttentionOrders = $weddingorders->filter(fn ($order) => in_array($order->status, ['Rejected', 'Invalid'], true))->map(fn ($order) => $buildWeddingCard($order, 'attention'));
-        $weddingCurrentOrders = $weddingorders
-            ->reject(fn ($order) => in_array($order->status, ['Draft', 'Rejected', 'Invalid'], true))
-            ->filter(function ($order) use ($now) {
-                $eventDate = $order->wedding_date ?: $order->reception_date_start ?: $order->created_at;
-                return !$eventDate || \Carbon\Carbon::parse($eventDate)->gte($now);
-            })
-            ->map(fn ($order) => $buildWeddingCard($order, 'current'));
-        $weddingHistoryOrders = $weddingorders
-            ->reject(fn ($order) => in_array($order->status, ['Draft', 'Rejected', 'Invalid'], true))
-            ->filter(function ($order) use ($now) {
-                $eventDate = $order->wedding_date ?: $order->reception_date_start ?: $order->created_at;
-                return $eventDate && \Carbon\Carbon::parse($eventDate)->lt($now);
-            })
-            ->map(fn ($order) => $buildWeddingCard($order, 'history'));
-
-        $draftCards = $draftOrders->concat($weddingDraftOrders)->sortByDesc('checkin')->values();
-        $attentionCards = $attentionOrders->concat($weddingAttentionOrders)->sortByDesc('checkin')->values();
-        $currentCards = $currentOrders->concat($weddingCurrentOrders)->sortByDesc('checkin')->values();
-        $historyCards = $historyOrdersCollection->concat($weddingHistoryOrders)->sortByDesc('checkin')->values();
+        $draftCards = $draftOrders->sortByDesc('checkin')->values();
+        $attentionCards = $attentionOrders->sortByDesc('checkin')->values();
+        $currentCards = $currentOrders->sortByDesc('checkin')->values();
+        $historyCards = $historyOrdersCollection->sortByDesc('checkin')->values();
 
         $allCardsCount = $draftCards->count() + $attentionCards->count() + $currentCards->count() + $historyCards->count();
         $summaryCards = [

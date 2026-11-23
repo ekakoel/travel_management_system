@@ -3,7 +3,6 @@
 namespace App\Services\Navigation;
 
 use App\Models\Orders;
-use App\Models\OrderWedding;
 use App\Models\Promotion;
 use App\Models\Services;
 use App\Models\User;
@@ -33,15 +32,10 @@ class BackendNavigationService
         $user = $request->user();
         $now = Carbon::now();
         $orderCounts = $this->orderCounts($user, $now);
-        $weddingOrderCounts = $this->weddingOrderCounts($user, $now);
         $pendingCounts = $this->pendingCounts($now);
 
-        $pendingCounts['all'] = $pendingCounts['tour'] + $pendingCounts['wedding'];
-        $pendingCounts['operations'] = match ($user?->position) {
-            'developer' => $pendingCounts['all'],
-            'weddingRsv' => $pendingCounts['wedding'],
-            default => $pendingCounts['tour'],
-        };
+        $pendingCounts['all'] = $pendingCounts['tour'];
+        $pendingCounts['operations'] = $pendingCounts['tour'];
 
         $ordersActive = $request->routeIs('admin.order.*', 'admin.orders.*')
             || $request->is('orders-admin', 'orders-admin/*');
@@ -56,7 +50,6 @@ class BackendNavigationService
             'canAccessAdminDashboard' => $user?->canAccessAdminDashboard() ?? false,
             'isApprovedUser' => $this->isApprovedUser($user),
             'orderCounts' => $orderCounts,
-            'weddingOrderCounts' => $weddingOrderCounts,
             'pendingCounts' => $pendingCounts,
             'services' => $this->navigationItems(),
             'promotions' => $this->activePromotions($now),
@@ -103,40 +96,13 @@ class BackendNavigationService
         return $defaults;
     }
 
-    private function weddingOrderCounts(?User $user, Carbon $now): array
-    {
-        $defaults = array_fill_keys(['Draft', 'Pending', 'Approved'], 0);
-
-        if (! $user || ! Schema::hasTable('order_weddings')) {
-            return $defaults;
-        }
-
-        $counts = OrderWedding::query()
-            ->where('agent_id', $user->getKey())
-            ->where('checkin', '>=', $now)
-            ->selectRaw('status, COUNT(*) as aggregate')
-            ->groupBy('status')
-            ->pluck('aggregate', 'status');
-
-        foreach ($defaults as $status => $count) {
-            $defaults[$status] = (int) ($counts[$status] ?? 0);
-        }
-
-        return $defaults;
-    }
-
     private function pendingCounts(Carbon $now): array
     {
         $tour = Schema::hasTable('orders')
             ? Orders::query()->where('status', 'Pending')->where('checkin', '>=', $now)->count()
             : 0;
-        $wedding = Schema::hasTable('order_weddings')
-            ? OrderWedding::query()->where('status', 'Pending')->where('wedding_date', '>=', $now)->count()
-            : 0;
-
         return [
             'tour' => $tour,
-            'wedding' => $wedding,
         ];
     }
 

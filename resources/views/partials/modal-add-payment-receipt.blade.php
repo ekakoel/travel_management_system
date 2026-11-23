@@ -6,7 +6,7 @@
                 <div class="card-box-title text-left">
                     <div class="title"><i class="icon-copy fa fa-usd" aria-hidden="true"></i>Upload Receipt</div>
                 </div>
-                <form id="desktop-payment-confirm-wedding-{{ $order->id }}" action="{{ route('func.admin.add.receipt',$order->id) }}" method="post" enctype="multipart/form-data">
+                <form id="desktop-payment-confirm-order-{{ $order->id }}" action="{{ route('func.admin.add.receipt',$order->id) }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="row text-left">
                         <div class="col-md-12">
@@ -49,7 +49,7 @@
                     </div>
                 </form>
                 <div class="card-box-footer">
-                    <button type="submit" form="desktop-payment-confirm-wedding-{{ $order->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
+                    <button type="submit" form="desktop-payment-confirm-order-{{ $order->id }}" class="backend-button backend-button-primary"><i class="icon-copy fa fa-upload" aria-hidden="true"></i> @lang('messages.Send')</button>
                     <button type="button" class="backend-button backend-button-danger" data-dismiss="modal"><i class="icon-copy fa fa-close" aria-hidden="true"></i> @lang('messages.Close')</button>
                 </div>
             </div>

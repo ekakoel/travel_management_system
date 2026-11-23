@@ -7,7 +7,6 @@ use App\Models\Hotels;
 use App\Models\HotelPackage;
 use App\Models\HotelPromo;
 use App\Models\InvoiceAdmin;
-use App\Models\OrderWedding;
 use App\Models\Reservation;
 use App\Models\Tours;
 use App\Models\Transports;

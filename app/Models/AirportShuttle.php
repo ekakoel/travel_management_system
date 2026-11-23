@@ -24,7 +24,6 @@ class AirportShuttle extends Model
         'duration',
         'distance',
         'price',
-        'order_wedding_id',
         'nav',
     ];
     public function transport()

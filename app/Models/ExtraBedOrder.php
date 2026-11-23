@@ -11,7 +11,6 @@ class ExtraBedOrder extends Model
     use HasFactory;
     protected $fillable=[
         'order_id',
-        'order_wedding_id',
         'rooms_id',
         'extra_bed_id',
         'duration',

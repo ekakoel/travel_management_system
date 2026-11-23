@@ -17,7 +17,6 @@ class AccommodationFinancialFileController extends Controller
         'developer',
         'administrator',
         'reservation',
-        'weddingRsv',
     ];
 
     public function __construct(AccommodationFinancialFileService $files)

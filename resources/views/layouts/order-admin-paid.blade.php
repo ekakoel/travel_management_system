@@ -126,10 +126,7 @@
                             @endif
                         </td>
                         <td>
-                            @if ($paidorder->service == "Wedding Package")
-                                {{ $paidorder->groom_name." & ".$paidorder->bride_name }}<br>
-                                {{ $paidorder->number_of_guests." Invitations" }}
-                            @elseif($paidorder->service == "Private Villa")
+                            @if ($paidorder->service == "Private Villa")
                                 {{ $paidorder->number_of_guests." guests" }}
                             @else
                                 @php

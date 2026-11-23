@@ -21,10 +21,6 @@
             return trim(($order->checkin ? dateFormat($order->checkin) : '-') . ' - ' . ($order->checkout ? dateFormat($order->checkout) : '-'));
         };
         $formatGuests = function ($order) {
-            if ($order->service === 'Wedding Package') {
-                return trim(($order->groom_name ?: '-') . ' & ' . ($order->bride_name ?: '-'));
-            }
-
             $guestRecords = $order->relationLoaded('guests') ? $order->guests : collect();
 
             if ($guestRecords->isEmpty() && $order->relationLoaded('reservation_guests')) {
@@ -55,7 +51,6 @@
         };
         $statusClass = fn ($status) => \Illuminate\Support\Str::slug($status ?: 'unknown');
         $tourSections = $tourOrderSections ?? collect();
-        $weddingSections = $weddingOrderSections ?? collect();
         $focusItems = $orderAdminFocus ?? collect();
         $translateWithFallback = fn ($key, $fallback) => __($key) === $key ? $fallback : __($key);
     @endphp
@@ -130,16 +125,6 @@
                             <small>@lang('admin-orders.summary.active_window')</small>
                         </div>
                     </article>
-                    <article class="backend-kpi-card backend-kpi-card--blue">
-                        <div class="backend-kpi-card__icon">
-                            <i class="fa fa-heart" aria-hidden="true"></i>
-                        </div>
-                        <div>
-                            <span>@lang('admin-orders.summary.wedding')</span>
-                            <strong>{{ $orderAdminSummary['wedding_total'] ?? 0 }}</strong>
-                            <small>@lang('admin-orders.summary.active_window')</small>
-                        </div>
-                    </article>
                     <article class="backend-kpi-card backend-kpi-card--amber">
                         <div class="backend-kpi-card__icon">
                             <i class="fa fa-clock-o" aria-hidden="true"></i>
@@ -205,17 +190,6 @@
                                     @if($section['orders']->count())
                                         <a href="#{{ $section['id'] }}">
                                             <span class="orders-admin-status-dot orders-admin-status-dot--{{ $section['status'] }}"></span>
-                                            {{ $section['label'] }}
-                                            <strong>{{ $section['orders']->count() }}</strong>
-                                        </a>
-                                    @endif
-                                @endforeach
-                            @endcanany
-                            @canany(['posDev','weddingSls','weddingRsv','weddingDvl','weddingAuthor'])
-                                @foreach($weddingSections as $section)
-                                    @if($section['orders']->count())
-                                        <a href="#{{ $section['id'] }}">
-                                            <span class="orders-admin-status-dot orders-admin-status-dot--wedding"></span>
                                             {{ $section['label'] }}
                                             <strong>{{ $section['orders']->count() }}</strong>
                                         </a>
@@ -331,99 +305,7 @@
                             @endforeach
                         @endcanany
 
-                        @canany(['posDev','weddingSls','weddingRsv','weddingDvl','weddingAuthor'])
-                            @foreach($weddingSections as $section)
-                                @continue(!$section['orders']->count())
-                                <section id="{{ $section['id'] }}" class="backend-panel orders-admin-panel" data-orders-section>
-                                    <div class="backend-section-header">
-                                        <div>
-                                            <span class="backend-section-header__label">@lang('admin-orders.wedding.eyebrow')</span>
-                                            <h2>{{ $section['label'] }}</h2>
-                                            <p>{{ $section['description'] }}</p>
-                                        </div>
-                                        <span class="orders-admin-count">{{ $section['orders']->count() }}</span>
-                                    </div>
-
-                                    <div class="backend-table-wrap orders-admin-desktop-table">
-                                        <table class="backend-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>@lang('admin-orders.table.agent')</th>
-                                                    <th>@lang('admin-orders.table.order')</th>
-                                                    <th>@lang('admin-orders.table.couple')</th>
-                                                    <th>@lang('admin-orders.table.schedule')</th>
-                                                    <th>@lang('admin-orders.table.price')</th>
-                                                    <th class="text-right">@lang('admin-orders.table.action')</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($section['orders'] as $order)
-                                                    @php
-                                                        $couple = $order->bride ? trim($order->bride->groom . ' & ' . $order->bride->bride) : '-';
-                                                        $searchText = implode(' ', [$order->agent?->name, $order->orderno, $order->service, $couple, $order->status]);
-                                                    @endphp
-                                                    <tr data-order-row data-order-search="{{ \Illuminate\Support\Str::lower($searchText) }}">
-                                                        <td>
-                                                            <strong>{{ $order->agent?->name ?? '-' }}</strong>
-                                                            <small>{{ $order->created_at ? dateFormat($order->created_at) : '-' }}</small>
-                                                        </td>
-                                                        <td>
-                                                            <strong>{{ $order->orderno ?? '-' }}</strong>
-                                                            <small>{{ $order->hotel?->name ?? $order->service }}</small>
-                                                            <span class="backend-status-badge backend-status-badge--{{ $statusClass($order->status) }} orders-admin-status orders-admin-status--{{ $statusClass($order->status) }}">{{ $order->status ?? '-' }}</span>
-                                                        </td>
-                                                        <td>
-                                                            <strong>{{ $couple }}</strong>
-                                                            <small>{{ $order->number_of_invitation ?? 0 }} @lang('admin-orders.table.invitations')</small>
-                                                        </td>
-                                                        <td>{{ $order->checkin ? dateFormat($order->checkin) : '-' }} - {{ $order->checkout ? dateFormat($order->checkout) : '-' }}</td>
-                                                        <td><strong>{{ $formatMoney($order->final_price) }}</strong></td>
-                                                        <td class="text-right">
-                                                            <div class="backend-table-actions">
-                                                                <a class="backend-icon-action" href="{{ url('/validate-orders-wedding-' . $order->id) }}" aria-label="{{ __('admin-orders.actions.detail') }}">
-                                                                    <i class="fa fa-eye" aria-hidden="true"></i>
-                                                                </a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    <div class="backend-table-card-list orders-admin-mobile-list">
-                                        @foreach($section['orders'] as $order)
-                                            @php
-                                                $couple = $order->bride ? trim($order->bride->groom . ' & ' . $order->bride->bride) : '-';
-                                                $searchText = implode(' ', [$order->agent?->name, $order->orderno, $order->service, $couple, $order->status]);
-                                            @endphp
-                                            <article class="backend-table-card orders-admin-card" data-order-row data-order-search="{{ \Illuminate\Support\Str::lower($searchText) }}">
-                                                <div class="backend-table-card__header">
-                                                    <div>
-                                                        <span>{{ $order->agent?->name ?? '-' }}</span>
-                                                        <strong>{{ $order->orderno ?? '-' }}</strong>
-                                                    </div>
-                                                    <span class="backend-status-badge backend-status-badge--{{ $statusClass($order->status) }} orders-admin-status orders-admin-status--{{ $statusClass($order->status) }}">{{ $order->status ?? '-' }}</span>
-                                                </div>
-                                                <dl class="backend-table-card-grid">
-                                                    <div><dt>@lang('admin-orders.table.couple')</dt><dd>{{ $couple }}</dd></div>
-                                                    <div><dt>@lang('admin-orders.table.schedule')</dt><dd>{{ $order->checkin ? dateFormat($order->checkin) : '-' }} - {{ $order->checkout ? dateFormat($order->checkout) : '-' }}</dd></div>
-                                                    <div><dt>@lang('admin-orders.table.price')</dt><dd>{{ $formatMoney($order->final_price) }}</dd></div>
-                                                </dl>
-                                                <div class="backend-table-actions">
-                                                    <a class="backend-button backend-button-secondary" href="{{ url('/validate-orders-wedding-' . $order->id) }}">
-                                                        <i class="fa fa-eye" aria-hidden="true"></i>
-                                                        @lang('admin-orders.actions.detail')
-                                                    </a>
-                                                </div>
-                                            </article>
-                                        @endforeach
-                                    </div>
-                                </section>
-                            @endforeach
-                        @endcanany
-
-                        @if(!$tourSections->sum(fn ($section) => $section['orders']->count()) && !$weddingSections->sum(fn ($section) => $section['orders']->count()))
+                        @if(!$tourSections->sum(fn ($section) => $section['orders']->count()))
                             <section class="backend-panel orders-admin-panel">
                                 <div class="backend-table-empty">
                                     <i class="fa fa-tags" aria-hidden="true"></i>

@@ -51,7 +51,6 @@ class HotelInventoryService
             'optionalrates' => fn ($query) => $query->notExpired($now),
             'contracts' => fn ($query) => $query->where('period_end', '>', $now),
             'extrabeds',
-            'wedding_venue',
         ])->findOrFail($hotelId);
 
         $latestPrice = Hotels::withMax([
@@ -118,7 +117,6 @@ class HotelInventoryService
             'contracts' => $contracts,
             'author' => $author,
             'promos' => $promos,
-            'weddingVenues' => $hotel->wedding_venue,
             'normal_prices' => $normalPrices,
             'inventory_summary' => $this->summary($hotel, $normalPrices, $promos),
             'hotelDetail' => $viewModel,

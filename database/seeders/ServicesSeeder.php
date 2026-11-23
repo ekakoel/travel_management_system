@@ -38,12 +38,6 @@ class ServicesSeeder extends Seeder
                     'icon' => '<i class="icon-copy ion-android-car"></i>',
                     'status' => 'Active',
                 ],
-                [
-                    'name' => 'Weddings',
-                    'nicname' => 'weddings',
-                    'icon' => '<i class="icon-copy fi-torso-business"></i><i class="icon-copy fi-torso-female"></i>',
-                    'status' => 'Active',
-                ],
             ]);
     }
 }

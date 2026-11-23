@@ -13,7 +13,6 @@ class OrderNote extends Model
     use HasFactory;
     protected $fillable = [
         'order_id',
-        'order_wedding_id',
         'note',
         'user_id',
         'status',

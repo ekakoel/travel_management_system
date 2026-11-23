@@ -7,10 +7,9 @@
         : asset('storage/user/profile/default_user_img.png');
     $frontendOnlyPositions = ['agent'];
     $coreOpsPositions = ['developer', 'author', 'reservation'];
-    $weddingOpsPositions = ['weddingRsv', 'weddingDvl', 'weddingAuthor', 'weddingSls'];
-    $canAccessWorkspace = in_array($currentPosition, array_merge($coreOpsPositions, $weddingOpsPositions), true);
+    $canAccessWorkspace = in_array($currentPosition, $coreOpsPositions, true);
     $canAccessAdminDashboard = $currentUser && $currentUser->canAccessAdminDashboard();
-    $canAccessReservations = in_array($currentPosition, ['developer', 'reservation', 'weddingRsv'], true);
+    $canAccessReservations = in_array($currentPosition, ['developer', 'reservation'], true);
 @endphp
 
 <style>

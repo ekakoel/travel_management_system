@@ -50,8 +50,7 @@ Codex must use this file to locate the documentation relevant to each task.
   Public Activity pricing, reservation, payment, lifecycle, and fulfillment.
 
 * `modules/wedding-retirement.md`
-  Retirement boundary for Wedding bookings, preserved historical orders, and
-  the prohibition on deleting Wedding data during service removal.
+  Retired Wedding runtime boundary and preserved historical records/schema.
 
 ## Architecture Decisions
 

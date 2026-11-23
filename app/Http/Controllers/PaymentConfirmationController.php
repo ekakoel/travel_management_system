@@ -9,7 +9,6 @@ use App\Models\Orders;
 use App\Models\OrderLog;
 use App\Models\Reservation;
 use App\Models\InvoiceAdmin;
-use App\Models\OrderWedding;
 use Illuminate\Http\Request;
 use App\Models\PaymentConfirmation;
 use Illuminate\Support\Facades\Auth;
@@ -207,63 +206,6 @@ class PaymentConfirmationController extends Controller
         }
 
         return redirect($this->resolveOrderDetailRedirect($order))->with('success', __('messages.Payment proof has been submitted for verification.'));
-    }
-    // WEDDING
-    public function wedding_payment_confirmation(Request $request,$id)
-    {
-        $now = Carbon::now();
-        $orderWedding = OrderWedding::findOrFail($id);
-        $reservation = Reservation::where('id',$orderWedding->rsv_id)->first();
-        $invoice = InvoiceAdmin::where('rsv_id',$reservation->id)->first();
-        if($request->hasFile("receipt_name")){
-            $file=$request->file("receipt_name");
-            $receipt_name=$invoice->inv_no.'_'.time().'_'.$file->getClientOriginalName();
-            $file->move("storage/receipt/weddings/",$receipt_name);
-            $agent = User::where('id',$orderWedding->agent_id)->first();
-            $status="Pending";
-            $payment =new PaymentConfirmation([
-                "receipt_img"=>$receipt_name,
-                "inv_id"=>$invoice->id,
-                "status"=>$status,
-            ]);
-            $payment->save();
-            
-            $order_log =new OrderLog([
-                "order_id"=>$orderWedding->id,
-                "action"=>"Upload Receipt",
-                "url"=>$request->getClientIp(),
-                "method"=>"Upload",
-                "agent"=>$agent->name,
-                "admin"=>Auth::user()->id,
-            ]);
-            
-            $order_log->save();
-            $title = "Wedding Payment Confirmation ".$reservation->rsv_no;
-            $order_link = 'https://online.balikamitour.com/orders-admin-'.$orderWedding->id;
-            $data = [
-                'now'=>$now,
-                'agent'=>$agent,
-                'title'=>$title,
-                'orderWedding'=>$orderWedding,
-                'reservation'=>$reservation,
-                'invoice'=>$invoice,
-                'order_link'=>$order_link,
-            ];
-            if (config('filesystems.default') == 'public'){
-                $receipt =realpath("storage/receipt/weddings/".$receipt_name);
-            }else {
-                $receipt = storage::url("storage/receipt/weddings/".$receipt_name);
-            }
-            Mail::send('emails.paymentConfirmationWedding', $data, function($message)use($data, $receipt) {
-                $message->to(config('app.reservation_mail'))
-                    ->subject($data["title"])
-                    ->attach($receipt);
-            });
-
-            return redirect("/detail-order-wedding-$orderWedding->orderno")->with('success','Payment proof has been sent.');
-        }else{
-            return redirect("/detail-order-wedding-$orderWedding->orderno")->with('error','Please try again');
-        }
     }
     public function update_payment_confirmation(UpdatePaymentConfirmationRequest $request,$id)
     {

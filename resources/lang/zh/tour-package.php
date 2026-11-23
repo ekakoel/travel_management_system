@@ -11,6 +11,5 @@ return [
     'Activities' => '活动',
     'Activities' => '活动',
     'Transports' =>'交通工具',
-    'Wedding Packages' =>'婚礼套餐',
     'All Tour Packages' =>'所有旅游套餐'
 ];

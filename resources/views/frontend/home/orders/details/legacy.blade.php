@@ -8,7 +8,5 @@
     @include('frontend.home.orders.details.activity')
 @elseif($order->service == "Transport")
     @include('frontend.home.orders.details.transport-modern')
-@elseif($order->service == "Wedding Package")
-    @include('frontend.home.orders.weddings.detail')
 @endif
             

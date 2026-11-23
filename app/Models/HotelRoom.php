@@ -4,9 +4,7 @@ namespace App\Models;
 
 use App\Models\Hotels;
 use App\Models\ExtraBed;
-use App\Models\Weddings;
 use App\Models\HotelPackage;
-use App\Models\OrderWedding;
 use App\Models\RoomFacilities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -57,13 +55,7 @@ class HotelRoom extends Model
     public function facilities(){
         return $this->hasMany(RoomFacilities::class,'rooms_id');
     }
-    public function wedding_order(){
-        return $this->hasMany(OrderWedding::class,'room_bride_id');
-    }
     public function extrabeds(){
         return $this->hasMany(ExtraBed::class,'rooms_id');
-    }
-    public function wedding_packages(){
-        return $this->hasMany(Weddings::class,'suite_and_villas_id');
     }
 }

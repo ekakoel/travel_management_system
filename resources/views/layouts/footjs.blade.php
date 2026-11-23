@@ -92,7 +92,7 @@
         var sevenDaysAfter = moment().add(7, 'days').toDate();
         var nineDaysAfter = moment().add(9, 'days').toDate();
         var defaultDate = moment().add(7, 'days').format('MM-DD-YYYY');
-        $("#checkin, #checkout, #departure-time, #arrival-time, #weddingDate, #arrivalFlightDate, #departureFlightDate, #checkIn, #datein, #dateout")
+        $("#checkin, #checkout, #departure-time, #arrival-time, #arrivalFlightDate, #departureFlightDate, #checkIn, #datein, #dateout")
             .datepicker({
                 minDate: sevenDaysAfter,
                 defaultDate: defaultDate,
@@ -113,14 +113,6 @@
             opens: 'left',
             autoApply: true,
 			format: 'YYYY-MM-DD',
-        });
-
-        $('.wedding-date').each(function () {
-            $(this).datepicker({
-                minDate: sevenDaysAfter,
-                defaultDate: defaultDate,
-				format: 'YYYY-MM-DD',
-            }).datepicker('setDate', defaultDate);
         });
 
 		$('.datetimepicker').each(function () {

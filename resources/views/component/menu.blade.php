@@ -2,7 +2,6 @@
     $currentUser = $backendNavigation['user'];
     $canAccessAdminDashboard = $backendNavigation['canAccessAdminDashboard'];
     $orderCounts = $backendNavigation['orderCounts'];
-    $weddingOrderCounts = $backendNavigation['weddingOrderCounts'];
     $pendingCounts = $backendNavigation['pendingCounts'];
 @endphp
 <div class="d-print-none header">
@@ -34,25 +33,25 @@
             </a>
         @endif
         @can('isUser')
-            @if ($weddingOrderCounts['Draft'] > 0 || $orderCounts['Draft'] > 0 || $orderCounts['Active'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0 || $orderCounts['Confirmed'] > 0 || $orderCounts['Approved'] > 0)
+            @if ($orderCounts['Draft'] > 0 || $orderCounts['Active'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0 || $orderCounts['Confirmed'] > 0 || $orderCounts['Approved'] > 0)
                 <div class="user-notification m-r-18">
                     <div class="dropdown">
                         <a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown">
                             <i class="icon-copy fa fa-tags" aria-hidden="true"></i>
-                            @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0)
-                                <span class="badge notification-active">{{ $orderCounts['Draft'] + $orderCounts['Invalid'] + $orderCounts['Rejected'] + $weddingOrderCounts['Draft'] }}</span>
+                            @if ($orderCounts['Draft'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0)
+                                <span class="badge notification-active">{{ $orderCounts['Draft'] + $orderCounts['Invalid'] + $orderCounts['Rejected'] }}</span>
                             @endif
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <div class="notification-list mx-h-350 customscroll">
                                 <ul>
-                                    @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0)
+                                    @if ($orderCounts['Draft'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }}</span>
+                                                <span>{{ $orderCounts['Draft'] }}</span>
                                                 <i class="draft icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Draft Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }} @lang('messages.unsubmitted orders')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Draft'] }} @lang('messages.unsubmitted orders')</p>
                                             </a>
                                         </li> 
                                     </form>
@@ -129,35 +128,26 @@
                 </a>
             @endif
         @endcanany
-        @canany(['weddingDvl','weddingAuthor','weddingRsv','weddingSls'])
-            @if ($pendingCounts['wedding'] > 0)
-                <a href="/orders-admin#pending-orders">
-                    <div class="notif-order blink_me">
-                        {{ $pendingCounts['wedding'] }}
-                    </div>
-                </a>
-            @endif
-        @endcanany
         @can('isAdmin')
-            @if ($orderCounts['Draft'] > 0 || $orderCounts['Active'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0 || $weddingOrderCounts['Draft'] > 0)
+            @if ($orderCounts['Draft'] > 0 || $orderCounts['Active'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0)
                 <div class="user-notification">
                     <div class="dropdown">
                         <a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown">
                             <i class="icon-copy fa fa-tags" aria-hidden="true"></i>
-                            @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0)
-                                <span class="badge notification-active">{{ $orderCounts['Draft'] + $orderCounts['Invalid'] + $orderCounts['Rejected'] + $weddingOrderCounts['Draft'] }}</span>
+                            @if ($orderCounts['Draft'] > 0 || $orderCounts['Invalid'] > 0 || $orderCounts['Rejected'] > 0)
+                                <span class="badge notification-active">{{ $orderCounts['Draft'] + $orderCounts['Invalid'] + $orderCounts['Rejected'] }}</span>
                             @endif
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <div class="notification-list mx-h-350 customscroll">
                                 <ul>
-                                    @if ($orderCounts['Draft'] > 0 || $weddingOrderCounts['Draft'] > 0)
+                                    @if ($orderCounts['Draft'] > 0)
                                         <li>
                                             <a href="/orders">
-                                                <span>{{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }}</span>
+                                                <span>{{ $orderCounts['Draft'] }}</span>
                                                 <i class="draft icon-copy fa fa-tags" aria-hidden="true"></i>
                                                 <p>@lang('messages.Draft Order')</p>
-                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Draft'] + $weddingOrderCounts['Draft'] }} @lang('messages.unsubmitted order')</p>
+                                                <p class="description-notif">@lang('messages.You have') {{ $orderCounts['Draft'] }} @lang('messages.unsubmitted order')</p>
                                             </a>
                                         </li> 
                                     @endif

@@ -5,7 +5,6 @@ return [
     'paths' => [
         'api/*',
         'submit-review',
-        'submit-wedding-review',
     ],
 
     'allowed_methods' => ['*'],
@@ -13,8 +12,6 @@ return [
     'allowed_origins' => [
         'http://tourreview.site',
         'https://tourreview.site',
-        'http://reviewyourwedding.fwh.is',
-        'https://reviewyourwedding.fwh.is',
     ],
 
     'allowed_origins_patterns' => [],

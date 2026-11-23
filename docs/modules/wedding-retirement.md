@@ -5,22 +5,19 @@ Updated: 2026-11-23
 
 ## Scope
 
-Wedding is retired as a service for new bookings. Public listing, booking entry,
-catalogue administration, wedding planner routes, and wedding service navigation
-are disabled. Wedding review link generation, review submission, and review
-validation endpoints are also disabled.
+Wedding booking, administration, review, and order-specific runtime flows are
+retired. Their routes, controllers, dedicated views, middleware, and frontend
+assets have been removed.
 
 ## Existing Orders and Data
 
 - Existing Wedding order records, service tables, migrations, files, and review
   data are retained.
-- Existing Wedding order detail/edit, payment, confirmation, contract, invoice,
-  and fulfillment paths remain available so already accepted work can be
-  completed and audited.
-- Shared order endpoints reject new `Wedding Package` submissions server-side.
-- Do not drop Wedding tables or delete Wedding records as part of retirement.
-- Remove legacy order handling only after all existing Wedding orders and
-  financial/document obligations have been reconciled.
+- Existing Wedding orders have been reconciled; they are no longer served by
+  Wedding-specific runtime pages.
+- Wedding migrations, tables, stored records, and existing files remain
+  untouched for audit and preservation. Database removal requires a separate
+  reviewed data-retention plan and explicit approval.
 
 ## Other Services
 

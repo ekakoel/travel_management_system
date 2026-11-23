@@ -28,7 +28,6 @@ use App\Models\UserLog;
 use App\Models\ExtraBed;
 use App\Models\OrderLog;
 use App\Models\UsdRates;
-use App\Models\Weddings;
 use App\Models\HotelRoom;
 use App\Models\Promotion;
 use App\Models\HotelPrice;
@@ -43,7 +42,6 @@ use App\Models\Reservation;
 use App\Models\HotelPackage;
 use App\Models\InvoiceAdmin;
 use App\Models\OptionalRate;
-use App\Models\OrderWedding;
 use Illuminate\Http\Request;
 use App\Mail\ReservationMail;
 use App\Models\VendorPackage;
@@ -714,44 +712,6 @@ class OrderController extends Controller
         ];
     }
 
-    private function buildWeddingOrderHistoryItem(OrderWedding $order): array
-    {
-        $serviceLabel = __('messages.Wedding Order');
-        $statusLabel = __('messages.' . $order->status) !== 'messages.' . $order->status ? __('messages.' . $order->status) : $order->status;
-        $eventDate = $order->wedding_date ?: $order->reception_date_start ?: $order->created_at;
-        $coupleName = trim(collect([optional($order->bride)->groom, optional($order->bride)->bride])->filter()->implode(' & '));
-
-        return [
-            'key' => 'wedding-' . $order->id,
-            'type' => 'wedding',
-            'is_quote' => false,
-            'orderno' => $order->orderno,
-            'service' => 'Wedding',
-            'service_label' => $serviceLabel,
-            'status' => $order->status,
-            'status_label' => $statusLabel,
-            'title' => $coupleName ?: $serviceLabel,
-            'subtitle' => optional($order->hotel)->name ?: optional($order->wedding)->name,
-            'location' => optional($order->hotel)->region,
-            'date_start' => $eventDate,
-            'date_end' => null,
-            'date_label' => dateFormat($eventDate),
-            'created_label' => dateTimeFormat($order->created_at),
-            'updated_at' => optional($order->updated_at)->timestamp ?? optional($order->created_at)->timestamp ?? 0,
-            'price' => $order->final_price,
-            'guest_label' => (int) $order->number_of_guests > 0 ? $order->number_of_guests . ' ' . __('messages.Guests') : __('messages.To be advised'),
-            'detail_url' => route('view.detail-order-wedding', ['orderno' => $order->orderno]),
-            'invoice_links' => [],
-            'search' => strtolower(implode(' ', array_filter([
-                $order->orderno,
-                $serviceLabel,
-                $statusLabel,
-                $coupleName,
-                optional($order->hotel)->name,
-            ]))),
-        ];
-    }
-
     private function resolveAirportShuttlePriceForTransport($transport, $hotel)
     {
         $prices = collect($transport->prices ?? [])
@@ -1128,8 +1088,6 @@ class OrderController extends Controller
         $userid = Auth::user()->id;
         $optional_rate_order = OptionalRateOrder::all();
         $optionalrates = OptionalRate::all();
-        $wedding_order = OrderWedding::all();
-        $brides = Brides::all();
         $tourLifecycle = app(TourOrderLifecycleService::class);
         $activityLifecycle = app(ActivityOrderLifecycleService::class);
         $tourorders = $tourLifecycle->applyTourCurrentScope(
@@ -1201,13 +1159,6 @@ class OrderController extends Controller
             ->sortByDesc('updated_at')
             ->values();
 
-        $weddingorders = OrderWedding::where('agent_id', $userid)
-            ->orderBy('updated_at','DESC')
-            ->get();
-        $vendorPackages = VendorPackage::all();
-        $hotelRoo = HotelRoom::all();
-
-
         $standardCurrentOrders = Orders::where('sales_agent','=', $userid)
             ->whereNotIn('service', array_merge(Orders::ACCOMMODATION_SERVICES, [Orders::PUBLIC_TRANSPORT_SERVICE, Orders::PUBLIC_TOUR_SERVICE, Orders::PUBLIC_ACTIVITY_SERVICE]))
             ->whereNotIn('status', ['Removed', 'Archive'])
@@ -1267,8 +1218,6 @@ class OrderController extends Controller
             "checkin"=> $checkin,
             'orders'=> $orders,
             "activeorders"=>$activeorders,
-            'weddingorders'=>$weddingorders,
-            'vendorPackages'=>$vendorPackages,
             'transportorders'=>$transportorders,
             'villaorders'=>$villaorders,
             'orderhistories'=>$orderhistories,
@@ -1276,8 +1225,6 @@ class OrderController extends Controller
             'hotelorders'=>$hotelorders,
             'tourorders'=>$tourorders,
             'reservations'=>$reservations,
-            'wedding_order'=>$wedding_order,
-            'brides'=>$brides,
             'userid'=>$userid,
             'statusMap'=>$statusMap,
         ]);
@@ -1317,9 +1264,7 @@ class OrderController extends Controller
                 });
             });
 
-        if ($service === 'Wedding') {
-            $standardOrdersQuery->whereRaw('1 = 0');
-        } elseif ($service !== 'all') {
+        if ($service !== 'all') {
             $standardOrdersQuery->where('service', $service);
         }
 
@@ -1356,61 +1301,13 @@ class OrderController extends Controller
             });
         }
 
-        $weddingOrdersQuery = OrderWedding::with(['bride', 'hotel', 'wedding'])
-            ->where('agent_id', $userid)
-            ->whereNotIn('status', ['Removed', 'Archive'])
-            ->where(function ($builder) use ($now) {
-                $builder->where('wedding_date', '<', $now)
-                    ->orWhere(function ($inner) use ($now) {
-                        $inner->whereNull('wedding_date')
-                            ->where('reception_date_start', '<', $now);
-                    });
-            });
-
-        if ($service !== 'all' && $service !== 'Wedding') {
-            $weddingOrdersQuery->whereRaw('1 = 0');
-        }
-
-        if ($status !== 'all') {
-            $weddingOrdersQuery->where('status', $status);
-        }
-
-        if ($year !== 'all' && ctype_digit((string) $year)) {
-            $weddingOrdersQuery->where(function ($builder) use ($year) {
-                $builder->whereYear('wedding_date', (int) $year)
-                    ->orWhere(function ($inner) use ($year) {
-                        $inner->whereNull('wedding_date')
-                            ->whereYear('reception_date_start', (int) $year);
-                    });
-            });
-        }
-
-        if ($query !== '') {
-            $weddingOrdersQuery->where(function ($builder) use ($query) {
-                $builder->where('orderno', 'like', "%{$query}%")
-                    ->orWhereHas('bride', function ($brideQuery) use ($query) {
-                        $brideQuery->where('groom', 'like', "%{$query}%")
-                            ->orWhere('bride', 'like', "%{$query}%");
-                    })
-                    ->orWhereHas('hotel', function ($hotelQuery) use ($query) {
-                        $hotelQuery->where('name', 'like', "%{$query}%");
-                    });
-            });
-        }
-
         $standardItems = $standardOrdersQuery
             ->orderByDesc('updated_at')
             ->limit(600)
             ->get()
             ->map(fn ($order) => $this->buildStandardOrderHistoryItem($order));
 
-        $weddingItems = $weddingOrdersQuery
-            ->orderByDesc('updated_at')
-            ->limit(300)
-            ->get()
-            ->map(fn ($order) => $this->buildWeddingOrderHistoryItem($order));
-
-        $historyItems = $standardItems->concat($weddingItems);
+        $historyItems = $standardItems;
 
         $historyItems = match ($sort) {
             'oldest' => $historyItems->sortBy('updated_at'),
@@ -1438,19 +1335,13 @@ class OrderController extends Controller
             ->whereNotIn('status', ['Removed', 'Archive'])
             ->selectRaw('YEAR(checkin) as year')
             ->pluck('year')
-            ->merge(
-                OrderWedding::where('agent_id', $userid)
-                    ->whereNotIn('status', ['Removed', 'Archive'])
-                    ->selectRaw('YEAR(COALESCE(wedding_date, reception_date_start)) as year')
-                    ->pluck('year')
-            )
             ->filter()
             ->unique()
             ->sortDesc()
             ->values();
 
         $statusOptions = collect(['Completed', 'Paid', 'Approved', 'Confirmed', 'Active', 'Canceled', 'Rejected', 'Invalid', 'Pending']);
-        $serviceOptions = collect(['Hotel', 'Hotel Promo', 'Hotel Package', 'Tour Package', 'Activity', 'Transport', 'Private Villa', 'Wedding']);
+        $serviceOptions = collect(['Hotel', 'Hotel Promo', 'Hotel Package', 'Tour Package', 'Activity', 'Transport', 'Private Villa']);
         $summary = [
             'total' => $historyItems->count(),
             'paid' => $historyItems->where('status', 'Paid')->count(),
@@ -4307,7 +4198,6 @@ class OrderController extends Controller
         $date_stay = collect(range(0, $duration - 1))
                 ->map(fn($a) => Carbon::parse($in)->addDays($a)->toDateString());
                 
-        $order_wedding = OrderWedding::where('id',$order->wedding_order_id)->first();
         
         if ($order != "" or $order->status != "Pending" or $order->status != "Active"){
             return view('frontend.home.orders.edit-additional-charge',compact('order'),[
@@ -4319,7 +4209,6 @@ class OrderController extends Controller
                 'optional_rate_orders'=>$optional_rate_orders,
                 'duration'=>$duration,
                 'optional_services'=>$optional_services,
-                'order_wedding'=>$order_wedding,
                 'date_stay'=>$date_stay,
             ]);
         }else{
@@ -4773,7 +4662,6 @@ class OrderController extends Controller
         }
         
         $bcode = BookingCode::where('id',$request->bookingcode_id)->first();
-        $wedding_date = date('Y-m-d',strtotime($request->wedding_date))." ".date('H.i',strtotime($request->wedding_date));
         if (isset($bcode)) {
             if ($bcode->expired_date > $now) {
                 if ($bcode->amount == 0) {
@@ -4834,7 +4722,6 @@ class OrderController extends Controller
             $additional_info = $request->additional_info;
             $cancellation_policy = $request->cancellation_policy;
             $pickup_name = null;
-            $orderWedding_id = "";
         } elseif ($service == "Hotel") {
             $duration = $request->duration;
             $number_of_room = count($request->number_of_guests);
@@ -4890,7 +4777,6 @@ class OrderController extends Controller
             $price_pax = $normal_price / $duration;
             $price_total = ($normal_price * $number_of_room) + $extra_bed_sum - $kick_back ;
             $final_price = $price_total - $bookingcode_disc - $promotion_total_disc;
-            $orderWedding_id = "";
         } elseif ($service == "Hotel Promo") {
             $duration = $request->duration;
             $number_of_room = count($request->number_of_guests);
@@ -4938,7 +4824,6 @@ class OrderController extends Controller
             $price_pax = $normal_price / $duration;
             $price_total = ($normal_price * $number_of_room) + $extra_bed_sum ;
             $final_price = $price_total - $bookingcode_disc - $promotion_total_disc;
-            $orderWedding_id = "";
             if (isset($request->include)) {
                 // $inc = json_decode($request->include);
                 $inc = json_decode($request->include);
@@ -5076,7 +4961,6 @@ class OrderController extends Controller
             $price_pax = $normal_price / $duration;
             $price_total = ($normal_price * $number_of_room) + $extra_bed_sum ;
             $final_price = $price_total - $bookingcode_disc - $promotion_total_disc;
-            $orderWedding_id = "";
         } elseif ($service == "Transport") {
             $checkin = date('Y-m-d H.i', strtotime($request->travel_date));
             if ($service_type == "Daily Rent") {
@@ -5108,351 +4992,7 @@ class OrderController extends Controller
             $benefits = $request->benefits;
             $additional_info = $request->additional_info;
             $cancellation_policy = $request->cancellation_policy;
-            $orderWedding_id = "";
-        } elseif ($service == "Wedding Package") {
-            $brides =new Brides([
-                "bride"=>$request->bride_name,
-                "bride_chinese"=>$request->bride_chinese,
-                "bride_contact"=>$request->bride_contact,
-                "groom"=>$request->groom_name,
-                "groom_chinese"=>$request->groom_chinese,
-                "groom_contact"=>$request->groom_contact,
-            ]);
-            $brides->save();
-            $special_date = $request->special_date;
-            $special_day = $request->special_day;
-            $number_of_guests = $request->number_of_guests;
-            $checkin = date('Y-m-d', strtotime($request->checkin));
-            if ($request->duration == "1D"){
-                $checkout = date('Y-m-d',strtotime($checkin));
-            } elseif ($request->duration == "2D/1N"){
-                $checkout = date('Y-m-d',strtotime('+1 days',strtotime($checkin)));
-            } elseif ($request->duration == "3D/2N"){
-                $checkout = date('Y-m-d',strtotime('+2 days',strtotime($checkin)));
-            } elseif ($request->duration == "4D/3N"){
-                $checkout = date('Y-m-d',strtotime('+3 days',strtotime($checkin)));
-            } elseif ($request->duration == "5D/4N"){
-                $checkout = date('Y-m-d',strtotime('+4 days',strtotime($checkin)));
-            } elseif ($request->duration == "6D/5N"){
-                $checkout = date('Y-m-d',strtotime('+5 days',strtotime($checkin)));
-            } elseif ($request->duration == "7D/6N"){
-                $checkout = date('Y-m-d',strtotime('+6 days',strtotime($checkin)));
-            } elseif ($request->duration == "8D/7N"){
-                $checkout = date('Y-m-d',strtotime('+7 days',strtotime($checkin)));
-            } else {
-                $checkout = date('Y-m-d',strtotime('+8 days',strtotime($checkin)));
-            }
-
-            
-            $number_of_guests_room = $request->number_of_guests_room;
-            $number_of_room = $request->number_of_room;
-            $guest_detail = $request->guest_detail;
-            $extra_bed = $request->extra_bed;
-            $in=Carbon::parse($checkin);
-            $out=Carbon::parse($checkout);
-            $duration = $in->diffInDays($out);
-            $pickup_name = $brides->id;
-            $include = $request->include;
-            $benefits = $request->benefits;
-            $additional_info = $request->additional_info;
-            $cancellation_policy = $request->cancellation_policy;
-            $wedding = Weddings::where('id',$request->wedding_id)->first();
-            $hotel = Hotels::where('id',$wedding->hotel_id)->firstOrFail();
-            if ($wedding->fixed_services_id !== null or $wedding->fixed_services_id) {
-                $wed_fixed_services_id = json_decode($wedding->fixed_services_id);
-                $fixed_services_p = [];
-                if ($wed_fixed_services_id) {
-                    foreach ($wed_fixed_services_id as $w_fixed_service_id) {
-                        $wedding_fixed_services = VendorPackage::where('id',$w_fixed_service_id)->first();
-                        if ($wedding_fixed_services) {
-                            array_push($fixed_services_p,$wedding_fixed_services->publish_rate);
-                        }
-                    }
-                    if ($fixed_services_p) {
-                        $fixed_service_price = array_sum($fixed_services_p);
-                    }else{
-                        $fixed_service_price = 0;
-                    }
-                }else{
-                    $fixed_service_price = 0;
-                }
-            }else{
-                $fixed_service_price = 0;
-            }
-            if ($request->wedding_venue_id !== null or $request->wedding_venue_id) {
-                $wedding_venue_id = json_encode($request->wedding_venue_id);
-                $wed_venue_id = $request->wedding_venue_id;
-                $venue_p = [];
-                if ($wed_venue_id) {
-                    foreach ($wed_venue_id as $w_venue_id) {
-                        $wedding_venue = VendorPackage::where('id',$w_venue_id)->first();
-                        if ($wedding_venue) {
-                            array_push($venue_p,$wedding_venue->publish_rate);
-                        }
-                    }
-                    if ($venue_p) {
-                        $venue_price = array_sum($venue_p);
-                    }else{
-                        $venue_price = 0;
-                    }
-                }else{
-                    $venue_price = 0;
-                }
-            }else{
-                $venue_price = 0;
-                $wedding_venue_id = $request->wedding_venue_id;
-            }
-            // WEDDING MAKEUP
-            if ($request->makeup_id !== null or $request->makeup_id) {
-                $makeup_id = json_encode($request->makeup_id);
-                $wed_makeup_id = $request->makeup_id;
-                if ($wed_makeup_id) {
-                    $makeup_p = [];
-                    foreach ($wed_makeup_id as $w_makeup_id) {
-                        $wedding_makeup = VendorPackage::where('id',$w_makeup_id)->first();
-                        if ($wedding_makeup) {
-                            array_push($makeup_p,$wedding_makeup->publish_rate);
-                        }
-                    }
-                    if ($makeup_p) {
-                        $makeup_price = array_sum($makeup_p);
-                    }else{
-                        $makeup_price = 0;
-                    }
-                }else{
-                    $makeup_price = 0;
-                }
-            }else{
-                $makeup_price = 0;
-                $makeup_id = $request->makeup_id;
-            }
-            // WEDDING SUITES AND VILLAS
-            if ($request->suite_and_villas_id !== null or $request->suite_and_villas_id) {
-                $suite_and_villas_id = json_encode($request->suite_and_villas_id);
-                $wed_room_id = $request->suite_and_villas_id;
-                if ($wed_room_id) {
-                    $room_p = [];
-                    foreach ($wed_room_id as $w_room_id) {
-                        $hotel_room_price = HotelPrice::where('rooms_id',$w_room_id)
-                        ->where('start_date','<',$wedding_date)
-                        ->where('end_date','>',$wedding_date)
-                        ->first();
-                        if ($hotel_room_price) {
-                            $cr_mr_room = ($hotel_room_price->contract_rate / $usdrates->rate) + $hotel_room_price->markup;
-                            $room_tax = $cr_mr_room * ($tax->tax/100);
-                            $hotel_r_p = ceil($cr_mr_room + $room_tax) * $duration;
-                            array_push($room_p,$hotel_r_p);
-                        }
-                    }
-                    if ($room_p) {
-                        $room_price = array_sum($room_p);
-                    }else{
-                        $room_price = 0;
-                    }
-                }else{
-                    $room_price = 0;
-                }
-            }else{
-                $room_price = 0;
-                $suite_and_villas_id = $request->suite_and_villas_id;
-            }
-            // WEDDING DOCUMENTATION
-            if ($request->documentations_id !== null or $request->documentations_id) {
-                $documentations_id = json_encode($request->documentations_id);
-                $wed_documentations_id = $request->documentations_id;
-                if ($wed_documentations_id) {
-                    $documentations_p = [];
-                    foreach ($wed_documentations_id as $w_documentations_id) {
-                        $wedding_documentations = VendorPackage::where('id',$w_documentations_id)->first();
-                        if ($wedding_documentations) {
-                            array_push($documentations_p,$wedding_documentations->publish_rate);
-                        }
-                    }
-                    if ($documentations_p) {
-                        $documentation_price = array_sum($documentations_p);
-                    }else{
-                        $documentation_price = 0;
-                    }
-                }else{
-                    $documentation_price = 0;
-                }
-            }else{
-                $documentation_price = 0;
-                $documentations_id = $request->documentations_id;
-            }
-            // WEDDING DECORATION
-            if ($request->decorations_id !== null or $request->decorations_id) {
-                $decorations_id = json_encode($request->decorations_id);
-                $wed_decorations_id = $request->decorations_id;
-                if ($wed_decorations_id) {
-                    $decorations_p = [];
-                    foreach ($wed_decorations_id as $w_decorations_id) {
-                        $wedding_decorations = VendorPackage::where('id',$w_decorations_id)->first();
-                        if ($wedding_decorations) {
-                            array_push($decorations_p,$wedding_decorations->publish_rate);
-                        }
-                    }
-                    if ($decorations_p) {
-                        $decoration_price = array_sum($decorations_p);
-                    }else{
-                        $decoration_price = 0;
-                    }
-                }else{
-                    $decoration_price = 0;
-                }
-            }else{
-                $decoration_price = 0;
-                $decorations_id = $request->decorations_id;
-            }
-            // WEDDING DINNER VENUE
-            if ($request->dinner_venue_id !== null or $request->dinner_venue_id) {
-                $dinner_venue_id = json_encode($request->dinner_venue_id);
-                $wed_dinner_venue_id = $request->dinner_venue_id;
-                if ($wed_dinner_venue_id) {
-                    $dinner_venue_p = [];
-                    foreach ($wed_dinner_venue_id as $w_dinner_venue_id) {
-                        $wedding_dinner_venue = VendorPackage::where('id',$w_dinner_venue_id)->first();
-                        if ($wedding_dinner_venue) {
-                            array_push($dinner_venue_p,$wedding_dinner_venue->publish_rate);
-                        }
-                    }
-                    if ($dinner_venue_p) {
-                        $dinner_venue_price = array_sum($dinner_venue_p);
-                    }else{
-                        $dinner_venue_price = 0;
-                    }
-                }else{
-                    $dinner_venue_price = 0;
-                }
-            }else{
-                $dinner_venue_price = 0;
-                $dinner_venue_id = $request->dinner_venue_id;
-            }
-            // WEDDING ENTERTAINMENT
-            if ($request->entertainments_id !== null or $request->entertainments_id) {
-                $entertainments_id = json_encode($request->entertainments_id);
-                $wed_entertainment_id = $request->entertainments_id;
-                if ($wed_entertainment_id) {
-                    $entertainment_p = [];
-                    foreach ($wed_entertainment_id as $w_entertainment_id) {
-                        $wedding_entertainment = VendorPackage::where('id',$w_entertainment_id)->first();
-                        if ($wedding_entertainment) {
-                            array_push($entertainment_p,$wedding_entertainment->publish_rate);
-                        }
-                    }
-                    if ($entertainment_p) {
-                        $entertainment_price = array_sum($entertainment_p);
-                    }else{
-                        $entertainment_price = 0;
-                    }
-                }else{
-                    $entertainment_price = 0;
-                }
-            }else{
-                $entertainment_price = 0;
-                $entertainments_id = $request->entertainments_id;
-            }
-
-            // WEDDING TRANSPORT
-            if ($request->transport_id !== null or $request->transport_id) {
-                $transport_id = json_encode($request->transport_id);
-                $wed_transport_id = $request->transport_id;
-                if ($wed_transport_id) {
-                    $transport_p = [];
-                    foreach ($wed_transport_id as $w_transport_id) {
-                        $wedding_transport = TransportPrice::where('transports_id',$w_transport_id)
-                        ->where('type','Airport Shuttle')
-                        ->where('duration',$hotel->airport_duration)
-                        ->first();
-                        if ($wedding_transport) {
-                            $trans_cr_mr = ceil($wedding_transport->contract_rate / $usdrates->rate)+$wedding_transport->markup;
-                            $trans_tax = $trans_cr_mr * ($tax->tax/100);
-                            $transport_p_price = ceil($trans_cr_mr + $trans_tax);
-                            array_push($transport_p,$transport_p_price);
-                        }
-                    }
-                    if ($transport_p) {
-                        $transport_price = array_sum($transport_p);
-                    }else{
-                        $transport_price = 0;
-                    }
-                }else{
-                    $transport_price = 0;
-                }
-            }else{
-                $transport_price = 0;
-                $transport_id = $request->transport_id;
-            }
-
-            // WEDDING OTHER
-            if ($request->other_service_id !== null or $request->other_service_id) {
-                $other_service_id = json_encode($request->other_service_id);
-                $wed_other_id = $request->other_service_id;
-                if ($wed_other_id) {
-                    $other_p = [];
-                    foreach ($wed_other_id as $w_other_id) {
-                        $wedding_other = VendorPackage::where('id',$w_other_id)->first();
-                        if ($wedding_other) {
-                            array_push($other_p,$wedding_other->publish_rate);
-                        }
-                    }
-                    if ($other_p) {
-                        $other_price = array_sum($other_p);
-                    }else{
-                        $other_price = 0;
-                    }
-                }else{
-                    $other_price = 0;
-                }
-            }else{
-                $other_price = 0;
-                $other_service_id = $request->other_service_id;
-            }
-
-            $kick_back_per_pax = $request->kick_back_per_pax;
-            $extra_bed_price = $request->extra_bed_price;
-            $price_pax = $request->price_pax;
-            $kick_back = $request->kick_back;
-            $normal_price = $wedding->markup + $fixed_service_price + $venue_price + $makeup_price + $room_price + $documentation_price  + $decoration_price + $dinner_venue_price + $entertainment_price + $transport_price + $other_price - $bookingcode_disc - $promotion_total_disc;
-            $price_total = $normal_price;
-            $final_price = $normal_price;
-            $markup = $wedding->markup;
-
-            $orderWedding =new OrderWedding([
-                "wedding_id"=>$wedding->id,
-                "hotel_id"=>$wedding->hotel_id,
-                "duration"=>$duration,
-                "wedding_date"=>$wedding_date,
-                "brides_id"=>$brides->id,
-                "number_of_invitation"=>$number_of_guests,
-
-                "wedding_fixed_service_id"=>$wedding->fixed_services_id,
-                "wedding_venue_id"=>$wedding_venue_id,
-                "wedding_makeup_id"=>$makeup_id,
-                "wedding_room_id"=>$suite_and_villas_id,
-                "wedding_documentation_id"=>$documentations_id,
-                "wedding_decoration_id"=>$decorations_id,
-                "wedding_dinner_venue_id"=>$dinner_venue_id,
-                "wedding_entertainment_id"=>$entertainments_id,
-                "wedding_transport_id"=>$transport_id,
-                "wedding_other_id"=>$other_service_id,
-
-                "fixed_service_price"=>$fixed_service_price,
-                "venue_price"=>$venue_price,
-                "makeup_price"=>$makeup_price,
-                "room_price"=>$room_price,
-                "documentation_price"=>$documentation_price,
-                "decoration_price"=>$decoration_price,
-                "dinner_venue_price"=>$dinner_venue_price,
-                "entertainment_price"=>$entertainment_price,
-                "transport_price"=>$transport_price,
-                "other_price"=>$other_price,
-                "markup"=>$markup,
-            ]);
-            $orderWedding->save();
-            $orderWedding_id = $orderWedding->id;
         } else {
-            $special_date = $request->special_date;
             $special_day = $request->special_day;
             $number_of_guests_room = $request->number_of_guests_room;
             $number_of_room = $request->number_of_room;
@@ -5473,7 +5013,6 @@ class OrderController extends Controller
             $benefits = $request->benefits;
             $additional_info = $request->additional_info;
             $cancellation_policy = $request->cancellation_policy;
-            $orderWedding_id = "";
             $order_tax = 0;
         }
         $airport_shuttle_in = $request->airport_shuttle_in;
@@ -5547,8 +5086,6 @@ class OrderController extends Controller
             "kick_back_per_pax" =>$kick_back_per_pax, 
             "status"=>$status,
             "itinerary"=>$request->itinerary,
-            "wedding_order_id"=>$orderWedding_id,
-            "wedding_date"=>$wedding_date,
             "bride_name"=>$request->bride_name,
             "groom_name"=>$request->groom_name,
             
@@ -6556,7 +6093,6 @@ class OrderController extends Controller
             $tax = Tax::where('id',1)->first();
         
             $travel_date = date('Y-m-d H.i',strtotime($request->travel_date));
-            $wedding_date = date('Y-m-d',strtotime($request->wedding_date))." ".date('H.i',strtotime($request->wedding_time));
             if ($order->service == "Hotel" or $order->service == "Hotel Promo" or $order->service == "Hotel Package") {
                 $hotel = Hotels::where('id',$order->service_id)->first();
                 $transport_in = Transports::where('id',$request->airport_shuttle_in)->first();
@@ -6623,28 +6159,6 @@ class OrderController extends Controller
                 $number_of_guests = $order->number_of_guests;
                 $price_pax = $order->price_pax;
                 $final_price = $order->final_price;
-            }elseif($order->service == "Wedding Package"){
-                $order_wedding = OrderWedding::where('id',$order->wedding_order_id)->firstOrFail();
-                $bride = Brides::where('id',$order_wedding->brides_id)->firstOrFail();
-                $number_of_guests = $request->number_of_guests;
-                $final_price = $request->final_price;
-                $price_total = $request->price_total;
-                $normal_price = $request->normal_price;
-                $price_pax = $request->price_pax;
-
-                $order_wedding->update([
-                    "wedding_date"=>$wedding_date,
-                    "number_of_invitation"=>$number_of_guests,
-                ]);
-                $bride->update([
-                    "bride"=>$request->bride_name,
-                    "bride_chinese"=>$request->bride_chinese,
-                    "bride_contact"=>$request->bride_contact,
-                    "groom"=>$request->groom_name,
-                    "groom_chinese"=>$request->groom_chinese,
-                    "groom_contact"=>$request->groom_contact,
-                ]);
-
             }else{
                 $normal_price = $order->normal_price;
                 $price_total = $order->price_total;
@@ -6677,8 +6191,7 @@ class OrderController extends Controller
                 "dropoff_location"=>$request->dropoff_location,
                 "groom_name"=>$request->groom_name,
                 "bride_name"=>$request->bride_name,
-                "wedding_date"=>$wedding_date,
-                
+                    
             ]);
             
             if (isset($request->airport_shuttle_in) or isset($request->airport_shuttle_out)) {

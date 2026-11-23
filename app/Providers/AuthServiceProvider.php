@@ -49,18 +49,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('posStaff', function ($user) {
             return $user->position === 'staff';
         });
-        Gate::define('weddingDvl', function ($user) {
-            return $user->position === 'weddingDvl';
-        });
-        Gate::define('weddingRsv', function ($user) {
-            return $user->position === 'weddingRsv';
-        });
-        Gate::define('weddingSls', function ($user) {
-            return $user->position === 'weddingSls';
-        });
-        Gate::define('weddingAuthor', function ($user) {
-            return $user->position === 'weddingAuthor';
-        });
         Gate::define('devRsv', function ($user) {
             return in_array($user->position, ['developer', 'reservation']);
         });

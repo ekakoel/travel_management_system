@@ -6765,26 +6765,6 @@ var Gate = /*#__PURE__*/function () {
     this.user = user;
   }
   _createClass(Gate, [{
-    key: "isWeddingRsv",
-    value: function isWeddingRsv() {
-      return this.user.position === 'weddingRsv';
-    }
-  }, {
-    key: "isWeddingDvl",
-    value: function isWeddingDvl() {
-      return this.user.position === 'weddingDvl';
-    }
-  }, {
-    key: "isWeddingSls",
-    value: function isWeddingSls() {
-      return this.user.position === 'weddingSls';
-    }
-  }, {
-    key: "isWeddingAuthor",
-    value: function isWeddingAuthor() {
-      return this.user.position === 'weddingAuthor';
-    }
-  }, {
     key: "isAdmin",
     value: function isAdmin() {
       return this.user.type === 'admin';
@@ -6822,7 +6802,7 @@ var Gate = /*#__PURE__*/function () {
   }, {
     key: "isAdminOrUser",
     value: function isAdminOrUser() {
-      if (this.user.type === 'user' || this.user.type === 'admin' || this.user.position === 'developer' || this.user.position === 'administrator' || this.user.position === 'author' || this.user.position === 'reservation' || this.user.position === 'weddingRsv' || this.user.position === 'weddingDvl' || this.user.position === 'weddingSls' || this.user.position === 'weddingAuthor' || this.user.position === 'agent') {
+      if (this.user.type === 'user' || this.user.type === 'admin' || this.user.position === 'developer' || this.user.position === 'administrator' || this.user.position === 'author' || this.user.position === 'reservation' || this.user.position === 'agent') {
         return true;
       }
     }

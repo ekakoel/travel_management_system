@@ -91,8 +91,6 @@ class Orders extends Model
         'extra_bed_id',
         'extra_bed_price',
         'extra_bed_total_price',
-        'wedding_order_id',
-        'wedding_date',
         'bride_name',
         'groom_name',
         'special_day',

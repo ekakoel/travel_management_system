@@ -22,7 +22,6 @@ use App\Models\HotelPackage;
 use App\Models\HotelsImages;
 use App\Models\OptionalRate;
 use Illuminate\Http\Request;
-use App\Models\WeddingVenues;
 use App\Models\RoomFacilities;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -117,7 +116,6 @@ class HotelsAdminController extends Controller
         $user = Auth::user()->all();
         $author = Auth::user()->where('id',$hotel->author_id)->first();
         $action_log = ActionLog::where('service',"Hotel")->get();
-        $weddingVenues = WeddingVenues::where('hotels_id',$id)->get();
         $latest_price = $hotel = Hotels::withMax(['prices as date'], 'end_date')->findOrFail($id);
         $priceokt = HotelPrice::where('hotels_id','=',$id)
             ->where('rooms_id','=', 1)
@@ -141,7 +139,6 @@ class HotelsAdminController extends Controller
                 'contracts'=>$contracts,
                 'author'=>$author,
                 'promos'=>$promos,
-                'weddingVenues'=>$weddingVenues,
                 'normal_prices'=>$normal_prices,
             ]);
         }
@@ -202,20 +199,6 @@ class HotelsAdminController extends Controller
         }
     }
 // View Room Edit =============================================================================================================>
-    public function view_edit_wedding_venue($id)
-    {
-        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
-            $wedding_venue=WeddingVenues::findOrFail($id);
-            $hotel=Hotels::where('id','=', $wedding_venue->hotels_id)->first();
-            return view('backend.operations.weddings.forms.venue-edit',[
-                'hotel'=>$hotel,
-            ])->with('wedding_venue',$wedding_venue);
-        }else{
-            return $this->redirectToHotelsIndexWithError();
-        }
-    }
-
-// View Add Hotels =========================================================================================>
     public function view_add_hotel(){
         if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotels = Hotels::all();
@@ -247,20 +230,6 @@ class HotelsAdminController extends Controller
             return $this->redirectToHotelsIndexWithError();
         }
     }
-// View Add Wedding Venue =========================================================================================>
-    public function view_add_wedding_venue($id){
-        if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
-            $hotels=Hotels::findOrFail($id);
-            $usdrates=UsdRates::where('name','USD')->first();
-            return view('backend.operations.weddings.forms.venue-create',[
-                'usdrates'=>$usdrates,
-            ])->with('hotels',$hotels);
-        }else{
-            return $this->redirectToHotelsIndexWithError();
-        }
-    }
-
-// View Add Promo =============================================================================================================>
     public function view_add_promo($id){
         if (Gate::allows('posDev') or Gate::allows('posAuthor') or Gate::allows('posAdm')) {
             $hotel=Hotels::findOrFail($id);

@@ -121,13 +121,7 @@
                                         $return_date=date('Y-m-d H.i', strtotime('+'.$transport_duration.'hours', strtotime($activeorder->travel_date))); 
                                     ?>
                                     {{dateTimeFormat($return_date) }}</p>
-                            @elseif ($activeorder->service == "Wedding Package")
-                                {{ $activeorder->duration }} Night
-                                <p>In:
-                                    {{ dateFormat($activeorder->checkin) }}</p>
-                                <p>Out:
-                                    {{ dateFormat($activeorder->checkout) }}</p>
-                            @else
+                            @else@else
                                 Not Listed
                             @endif
                         </td>
@@ -135,10 +129,7 @@
                             @if ($activeorder->request_quotation == "Yes")
                                 <p class="m-t-8 m-b-18" style="color:blue;">Requesting a quote for bookings of more than 8 rooms</p>
                             @else
-                                @if ($activeorder->service == "Wedding Package")
-                                    {{ $activeorder->groom_name." & ".$activeorder->bride_name }}<br>
-                                    {{ $activeorder->number_of_guests." Invitations" }}
-                                @elseif($activeorder->service == "Private Villa")
+                                @if ($activeorder->service == "Private Villa")
                                     {{ $activeorder->number_of_guests." guests" }}
                                 @else
                                     @php

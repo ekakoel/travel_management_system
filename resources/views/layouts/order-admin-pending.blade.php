@@ -135,11 +135,7 @@
                                         <p>Flight Date: <i>{{ dateTimeFormat($pendingorder->departure_time) }}</i></p>
                                     @endif
                                 @endif
-                            @elseif ($pendingorder->service == "Wedding Package")
-                                {{ $pendingorder->duration }} Night
-                                <p>In: {{ dateFormat($pendingorder->checkin) }}</p>
-                                <p>Out: {{ dateFormat($pendingorder->checkout) }}</p>
-                            @else
+                            @else@else
                                 Not Listed
                             @endif
                         </td>
@@ -147,10 +143,7 @@
                             @if ($pendingorder->request_quotation == "Yes")
                                 <p class="m-t-8 m-b-18" style="color:blue;">Requesting a quote for bookings of more than 8 rooms</p>
                             @else
-                                @if ($pendingorder->service == "Wedding Package")
-                                    {{ $pendingorder->groom_name." & ".$pendingorder->bride_name }}<br>
-                                    {{ $pendingorder->number_of_guests." Invitations" }}
-                                @elseif($pendingorder->service == "Private Villa")
+                                @if ($pendingorder->service == "Private Villa")
                                     {{ $pendingorder->number_of_guests." guests" }}
                                 @else
                                     @php

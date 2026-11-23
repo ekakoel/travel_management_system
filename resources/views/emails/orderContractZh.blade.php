@@ -946,40 +946,7 @@
                                 {{ dateFormat($order->checkout) }}
                             </td>
                         </tr>
-                    @elseif ($order->service == "Wedding Package")
-                        <tr>
-                            <td style="width: 30%">
-                                婚禮套餐
-                            </td>
-                            <td style="width: 70%">
-                                {{ $order->servicename }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 30%">
-                                抵達
-                            </td>
-                            <td style="width: 70%">
-                                {{ dateFormat($order->checkin) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 30%">
-                                出發
-                            </td>
-                            <td style="width: 70%">
-                                {{ dateFormat($order->checkout) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 30%">
-                                婚禮日期
-                            </td>
-                            <td style="width: 70%">
-                                {{ dateFormat($order->travel_date) }}
-                            </td>
-                        </tr>
-                    @else
+                    @else@else
                         子服務 -<br>
                     @endif
                 </table>

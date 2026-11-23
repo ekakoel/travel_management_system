@@ -37,7 +37,6 @@ use App\Http\Controllers\DownloadDataHotelController;
 use App\Http\Controllers\DriversController;
 use App\Http\Controllers\EmailBlastsController;
 use App\Http\Controllers\ExtraBedController;
-use App\Http\Controllers\FlightsController;
 use App\Http\Controllers\FooterManagerController;
 use App\Http\Controllers\FrontEndController;
 use App\Http\Controllers\GuestsController;
@@ -55,7 +54,6 @@ use App\Http\Controllers\MapController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderNotificationsController;
 use App\Http\Controllers\OrdersAdminController;
-use App\Http\Controllers\OrderWeddingController;
 use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\PaymentConfirmationController;
 use App\Http\Controllers\ProfileController;
@@ -164,7 +162,6 @@ use Illuminate\Support\Facades\Route;
     // ---------------------------------------------------
     //                    TEST SYSTEM
     // ---------------------------------------------------
-    // Route::get('/email-confirmation/{id}',[OrdersAdminController::class,'test_email_confirmation']);
     // Route::get('/test-order-contract/{id}',[OrdersAdminController::class,'test_contrat']);
     // Route::get('calendar-event', [CalendarController::class, 'index'])->middleware(['auth','adminType']);
     // Route::post('calendar-crud-ajax', [CalendarController::class, 'calendarEvents'])->middleware(['auth','adminType']);
@@ -174,7 +171,6 @@ use Illuminate\Support\Facades\Route;
     //     return view('wizard');
     // });
 
-    // Route::get('/contract-inv', [OrdersAdminController::class, 'confirmation_order']);
     // ---------------------------------------------------
 
     Route::get('lang/{locale}',[LocalizationController::class,'changeLanguage'])->name('language.switch');
@@ -630,63 +626,13 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/optional-rate-order/{id}', [OrdersAdminController::class, 'remove_optional_rate_order'])->name('optional-rate-order.destroy');
 
             // ---------------------------------------------------
-            //                    ORDER WEDDING
             // ---------------------------------------------------
-            Route::post('/fadd-order-wedding-note/{id}',[OrdersAdminController::class,'func_add_order_wedding_note']);
-            Route::get('/update-wedding-service/{id}',[OrdersAdminController::class, 'view_update_wedding_service']);
-            Route::put('/fupdate-order-wedding-venue/{id}',[OrdersAdminController::class,'func_update_order_wedding_venue']);
-            Route::put('/fupdate-order-wedding-room/{id}',[OrdersAdminController::class,'func_update_order_wedding_room']);
-            Route::put('/fupdate-order-wedding-makeup/{id}',[OrdersAdminController::class,'func_update_order_wedding_makeup']);
-            Route::put('/fupdate-order-wedding-decoration/{id}',[OrdersAdminController::class,'func_update_order_wedding_decoration']);
-            Route::put('/fupdate-order-wedding-dinner_venue/{id}',[OrdersAdminController::class,'func_update_order_wedding_dinner_venue']);
-            Route::put('/fupdate-order-wedding-entertainment/{id}',[OrdersAdminController::class,'func_update_order_wedding_entertainment']);
-            Route::put('/fupdate-order-wedding-documentation/{id}',[OrdersAdminController::class,'func_update_order_wedding_documentation']);
-            Route::put('/fupdate-order-wedding-transport/{id}',[OrdersAdminController::class,'func_update_order_wedding_transport']);
-            Route::put('/fupdate-order-wedding-other/{id}',[OrdersAdminController::class,'func_update_order_wedding_other']);
-            Route::put('/func-final-order/{id}',[OrdersAdminController::class,'func_final_wedding_order']);
             Route::put('/fremove-order-discounts/{id}',[OrdersAdminController::class,'func_remove_order_discounts']);
             Route::put('/fadmin-update-order-room/{id}',[OrdersAdminController::class,'func_admin_update_order_room'])->name('func.admin-update-order-room');
-            Route::put('/fadmin-update-bridal/{id}',[OrdersAdminController::class,'func_update_bridal']);
             Route::delete('/fremove-airport-shuttle/{id}',[OrdersAdminController::class,'func_remove_airport_shuttle']);
             Route::delete('/admin-delete-opser/{id}',[OrdersAdminController::class,'destroy_opser_order']);
-            Route::get('/contract/{id}',[OrdersAdminController::class,'view_contract_wedding_eng']);
-            Route::put('/confirm-order-wedding/{id}',[OrdersAdminController::class,'func_confirm_order_wedding']);
-            Route::put('/func-add-order-wedding-flight-admin/{id}',[OrdersAdminController::class,'func_add_order_wedding_flight']);
-            Route::delete('/func-delete-order-wedding-flight-admin/{id}',[OrdersAdminController::class,'func_delete_order_wedding_flight_admin']);
-            Route::put('/fadd-invitation-order-wedding/{id}',[OrdersAdminController::class,'func_add_order_wedding_invitation']);
-            Route::put('/fedit-invitation-order-wedding/{id}',[OrdersAdminController::class,'func_edit_order_wedding_invitation']);
-            Route::delete('/func-delete-order-wedding-invitation-admin/{id}',[OrdersAdminController::class,'func_delete_order_wedding_invitation']);
 
-            Route::put('/admin-fadd-additional-charge/{id}',[OrdersAdminController::class,'func_admin_add_request_service']);
-            Route::put('/admin-fupdate-additional-charge/{id}',[OrdersAdminController::class,'func_admin_update_request_service']);
-            Route::put('/admin-fdelete-additional-charge/{id}',[OrdersAdminController::class,'func_admin_delete_request_service']);
 
-            Route::put('/fadmin-add-order-wedding-accommodation/{id}',[OrdersAdminController::class,'func_admin_add_order_wedding_accommodation']);
-            Route::get('/admin-validate-order-wedding-accommodation/{id}',[OrdersAdminController::class,'view_validate_order_wedding_accommodation']);
-            Route::put('/admin-fupdate-accommodation-wedding-order/{id}',[OrdersAdminController::class,'func_update_wedding_order_accommodation']);
-            Route::put('/admin-fupdate-accommodation-brides/{id}',[OrdersAdminController::class,'admin_func_update_accommodation_brides']);
-            Route::put('/admin-fupdate-accommodation-invitation-price/{id}',[OrdersAdminController::class,'admin_func_update_accommodation_invitation']);
-            Route::put('/admin-fupdate-price-accommodation/{id}',[OrdersAdminController::class,'admin_func_update_price_accommodation']);
-            Route::delete('/admin-func-delete-order-wedding-accommodation/{id}',[OrdersAdminController::class,'func_delete_order_wedding_accommodation_invitation']);
-            Route::get('/validate-orders-wedding/{id}',[OrdersAdminController::class,'view_validate_order_wedding']);
-            Route::put('/admin-fupdate-wedding-order-bride/{id}',[OrdersAdminController::class,'func_validate_bride_order_wedding']);
-            Route::put('/admin-fupdate-wedding-order-wedding/{id}',[OrdersAdminController::class,'func_validate_wedding_and_reservation']);
-            Route::put('/admin-fupdate-wedding-order-ceremony-venue/{id}',[OrdersAdminController::class,'func_validate_wedding_order_ceremony_venue']);
-            Route::put('/admin-fupdate-order-wedding-remark/{id}',[OrdersAdminController::class,'func_validate_wedding_order_remark']);
-            Route::put('/admin-fdelete-wedding-order-ceremony-venue/{id}',[OrdersAdminController::class,'func_admin_delete_ceremony_venue']);
-            Route::put('/admin-fupdate-wedding-order-decoration-ceremony-venue/{id}',[OrdersAdminController::class,'func_admin_update_decoration_ceremony_venue']);
-            Route::put('/admin-fdelete-wedding-order-decoration-ceremony-venue/{id}',[OrdersAdminController::class,'func_admin_delete_decoration_ceremony_venue']);
-            Route::put('/admin-fupdate-wedding-order-reception-venue/{id}',[OrdersAdminController::class,'admin_func_update_reception_venue']);
-            Route::put('/admin-fdelete-wedding-order-reception-venue/{id}',[OrdersAdminController::class,'admin_func_delete_reception_venue']);
-            Route::put('/admin-fupdate-wedding-order-decoration-reception-venue/{id}',[OrdersAdminController::class,'admin_func_update_decoration_reception_venue']);
-            Route::put('/admin-fdelete-wedding-order-decoration-reception-venue/{id}',[OrdersAdminController::class,'admin_func_delete_decoration_reception_venue']);
-            Route::put('/admin-fadd-additional-service-to-order-wedding/{id}',[OrdersAdminController::class,'admin_func_add_additional_service_to_wedding_order']);
-            Route::put('/admin-fupdate-confirmation-number/{id}',[OrdersAdminController::class,'admin_func_update_confirmation_numbber']);
-            Route::put('/fvalidate-order-wedding/{id}',[OrdersAdminController::class,'admin_func_validate_order_wedding']);
-            Route::put('/admin-fadd-transport-invitation/{id}',[OrdersAdminController::class,'admin_func_add_transport_invitation_wedding']);
-            Route::put('/admin-fupdate-transport-invitation/{id}',[OrdersAdminController::class,'admin_func_update_transport_invitation']);
-            Route::post('/fadmin-update-lunch-venue-order-wedding/{id}',[OrdersAdminController::class,'admin_func_update_lunch_venue']);
-            Route::post('/fadmin-delete-lunch-venue/{id}',[OrdersAdminController::class,'admin_func_delete_lunch_venue']);
             // ---------------------------------------------------
             //                    RESERVATION (RSV)
             // ---------------------------------------------------
@@ -745,8 +691,6 @@ use Illuminate\Support\Facades\Route;
             Route::get('/orders-admin/{order}/invoice/{locale}/download',[AccommodationFinancialFileController::class,'adminInvoiceDownload'])->where('locale', 'en|zh-CN|zh')->name('admin.orders.accommodation.invoice.download');
             Route::post('/fconfirmation-payment/{id}',[OrdersAdminController::class,'fconfirmation_payment'])->name('admin.confirm.receipt');
             Route::post('/fadmin-add-payment-confirmation/{id}',[OrdersAdminController::class,'admin_add_payment_confirmation'])->name('func.admin-add-payment-confirmation');
-            Route::post('/forder-wedding-confirmation-payment/{id}',[OrdersAdminController::class,'forder_wedding_confirmation_payment']);
-            Route::post('/order-wedding-add-payment-confirmation/{id}',[OrdersAdminController::class,'admin_add_payment_confirmation_to_order_wedding']);
         });
         // ========================================================================================================================================> (ADMIN)
         Route::middleware(['adminType'])->group(function () {
@@ -833,13 +777,9 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             //                      CONTRACT
             // ---------------------------------------------------
-            Route::get('/confirmation-order/{id}', [OrdersAdminController::class, 'confirmation_order']);
             Route::get('/print-contract-order/{id}', [OrdersAdminController::class, 'print_contract_order'])->name('admin.orders.document.print');
-            Route::get('/print-contract-wedding/{id}', [OrdersAdminController::class, 'print_contract_wedding']);
             // ---------------------------------------------------
-            //                       WEDDING
             // ---------------------------------------------------
-            Route::get('/detail-vendor/{id}',[VendorController::class,'view_vendor_detail']);
         });
         // ========================================================================================================================================> (AGENT)
         Route::group([], function () {
@@ -997,48 +937,9 @@ use Illuminate\Support\Facades\Route;
             Route::put('/fsubmit-order-transport/{id}',[OrderController::class,'func_submit_order_transport'])->name('func.submit.order-transport');
             Route::get('/detail-order-transport/{id}',[OrderController::class,'detail_order_transport'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-transport');
             // ---------------------------------------------------
-            //                    ORDER WEDDING
             // ---------------------------------------------------
-            // Wedding order detail/edit routes below remain for servicing existing orders.
-            Route::get('/detail-order-wedding-{orderno}',[OrderWeddingController::class,'detail_order_wedding'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-wedding');
-            Route::get('/edit-order-wedding-{orderno}',[OrderWeddingController::class,'edit_order_wedding'])->name('view.edit-order-wedding');
-            Route::put('/fupdate-wedding-ceremonial-venue/{id}',[OrderWeddingController::class,'func_update_wedding_ceremonial_venue'])->name('func.update-wedding-ceremony-venue');
-            Route::post('/fupdate-wedding-order-ceremony-venue/{id}',[OrderWeddingController::class,'func_update_wedding_order_ceremony_venue'])->name('func.update-order-wedding-ceremony-venue');
-            Route::put('/fdelete-ceremony-venue/{id}',[OrderWeddingController::class,'func_delete_ceremony_venue'])->name('func.delete-order-wedding-ceremony-venue');
-            Route::put('/fupdate-wedding-order-bride/{id}',[OrderWeddingController::class,'func_update_wedding_order_brides'])->name('func.update-order-wedding-brides');
-            Route::put('/fupdate-wedding-order-wedding/{id}',[OrderWeddingController::class,'func_update_wedding_order_wedding'])->name('func.update-order-wedding');
-            Route::put('/fadd-wedding-order-additional-service/{id}',[OrderWeddingController::class,'func_add_wedding_order_addser_decoration'])->name('func.add-order-wedding-additional-service-decoration');
-            Route::post('/fadd-order-wedding-transport/{id}',[OrderWeddingController::class,'func_add_wedding_order_transport'])->name('func.add-order-wedding-transport');
-            Route::put('/fuser-update-order-wedding-transport/{id}',[OrderWeddingController::class,'func_user_update_order_wedding_transport'])->name('func.update-order-wedding-transport');
-            Route::delete('/fremove-order-wedding-transport/{id}',[OrderWeddingController::class,'func_remove_transport_from_order_wedding'])->name('func-remove-order-wedding-transport');
-            Route::delete('/fremove-order-wedding-additional-charge/{id}',[OrderWeddingController::class,'func_remove_request_service_from_order_wedding'])->name('func.remove-request-service-wedding-order');
-            Route::post('/upload-pdf/{id}', [OrderWeddingController::class, 'store_invoice_pdf'])->name('upload.pdf.store');
-            Route::put('/fadd-decoration-to-ceremony-venue/{id}',[OrderWeddingController::class,'func_add_decoration_to_ceremony_venue'])->name('func.add-decoration-to-ceremony-venue');
-            Route::put('/fupdate-decoration-ceremony-venue/{id}',[OrderWeddingController::class,'func_update_decoration_ceremony_venue'])->name('func.update-decoration-ceremony-venue');
-            Route::put('/fdelete-decoration-ceremony-venue/{id}',[OrderWeddingController::class,'func_delete_decoration_ceremony_venue'])->name('func.delete-decoration-ceremony-venue');
-            Route::put('/fupdate-decoration-reception-venue/{id}',[OrderWeddingController::class,'func_update_decoration_reception_venue'])->name('func.update-decoration-reception-venue');
-            Route::put('/fdelete-decoration-reception-venue/{id}',[OrderWeddingController::class,'func_delete_decoration_reception_venue'])->name('func.delete-decoration-reception-venue');
-            Route::put('/fadd-order-wedding-remark/{id}',[OrderWeddingController::class,'func_add_order_wedding_remark'])->name('func.add-order-wedding-remark');
 
-            Route::put('/fdelete-order-wedding-remark/{id}',[OrderWeddingController::class,'func_delete_order_wedding_remark'])->name('func.delete-order-wedding-remark');
-            Route::put('/fadd-order-wedding-accommodation/{id}',[OrderWeddingController::class,'func_add_order_wedding_accommodation'])->name('func.add-order-wedding-accommodation');
-            Route::put('/fupdate-order-wedding-accommodation/{id}',[OrderWeddingController::class,'func_update_order_wedding_accommodation'])->name('func.update-order-wedding-accommodation');
-            Route::delete('/fdelete-order-wedding-accommodation/{id}',[OrderWeddingController::class,'func_delete_order_wedding_accommodation'])->name('func.delete-order-wedding-accommodation');
 
-            Route::put('/fupdate-reception-venue/{id}',[OrderWeddingController::class,'func_update_reception_venue'])->name('func.update-reception-venue');
-            Route::put('/fdelete-reception-venue/{id}',[OrderWeddingController::class,'func_delete_reception_venue'])->name('func.delete-reception-venue');
-            Route::put('/fadd-additional-service-to-order-wedding/{id}',[OrderWeddingController::class,'func_additional_service_to_order_wedding'])->name('func.additional-service-to-order-wedding');
-            Route::put('/fadd-order-wedding-brides-flight/{id}',[OrderWeddingController::class,'func_order_wedding_bride_flight'])->name('func.order-wedding-bride-flight');
-            Route::put('/fadd-order-wedding-additional-service/{id}',[OrderWeddingController::class,'func_add_order_wedding_additional_service'])->name('func.add-order-wedding-additional-service');
-            Route::post('/fadd-order-reception-venue/{id}',[OrderWeddingController::class,'func_add_order_reception_venue'])->name('func.add-order-reception-venue');
-            Route::post('/fadd-order-wedding-package/{id}',[OrderWeddingController::class,'func_add_order_wedding_package'])->name('func.add-order-wedding-package');
-            Route::post('/fadd-order-wedding-flight/{id}',[OrderWeddingController::class,'func_add_order_wedding_flight'])->name('func.add-order-wedding-flight');
-            Route::post('/fupdate-order-wedding-flight/{id}',[OrderWeddingController::class,'func_update_order_wedding_flight'])->name('func.update-order-wedding-flight');
-            Route::delete('/fdelete-order-wedding-flight/{id}',[OrderWeddingController::class,'func_delete_order_wedding_flight'])->name('func.delete-order-wedding-flight');
-            Route::put('/fadd-invitation-to-order-wedding/{id}',[OrderWeddingController::class,'func_add_invitation_to_order_wedding'])->name('func.add-invitation-to-order-wedding');
-            Route::post('/fupdate-invitation-order-wedding/{id}',[OrderWeddingController::class,'func_update_invitation_to_order_wedding'])->name('func.update-invitation-to-orders-wedding');
-            Route::delete('/func-delete-invitation-order-wedding/{id}',[OrderWeddingController::class,'func_delete_invitation_to_order_wedding'])->name('func.delete-invitation-to-order-wedding');
-            Route::delete('/delete-wedding-order/{id}',[OrderWeddingController::class,'func_delete_order_wedding'])->name('func.delete-order-wedding');
             // ---------------------------------------------------
             //               PAYMENT CONFIRMATION
             // ---------------------------------------------------
@@ -1057,13 +958,10 @@ use Illuminate\Support\Facades\Route;
             Route::post('/orders/{order}/doku/checkout', [DokuPaymentController::class, 'checkout'])->whereNumber('order')->name('orders.doku.checkout');
             Route::post('/fpayment-confirmation/{id}',[PaymentConfirmationController::class,'payment_confirmation'])->name('upload.payment-confirmation');
             Route::post('/fpayment-confirmation-{id}',[PaymentConfirmationController::class,'payment_confirmation'])->whereNumber('id')->name('upload.payment-confirmation.legacy');
-            Route::post('/fwedding-payment-confirmation/{id}',[PaymentConfirmationController::class,'wedding_payment_confirmation'])->name('wedding-payment-confirmation');
             Route::put('/fupdate-payment-confirmation/{id}',[PaymentConfirmationController::class,'update_payment_confirmation'])->name('update-payment-confirmation');
             // ---------------------------------------------------
             //                     CONTRACT
             // ---------------------------------------------------
-            Route::get('/zh-print-contract-wedding/{id}', [OrdersAdminController::class, 'zh_print_contract_wedding'])->name('func.print-contract-wedding-zh');
-            Route::get('/en-print-contract-wedding/{id}', [OrdersAdminController::class, 'en_print_contract_wedding'])->name('func.print-contract-wedding-en');
             // ---------------------------------------------------
             //                   DOWNLOAD DATA
             // ---------------------------------------------------
@@ -1080,8 +978,6 @@ use Illuminate\Support\Facades\Route;
             //                        EMAIL
             // ---------------------------------------------------
             Route::get('/email-approval', [MailController::class, 'view_email_approval'])->name('view.email-approval');
-            Route::get('/email-booking', [MailController::class, 'view_email_booking'])->name('view.email-booking');
-            Route::get('/confirmation-mail', [MailController::class, 'view_confirm_email'])->name('view.confirm-email');
             Route::get('/confirmation-payment', [MailController::class, 'view_email_payment_confirmation'])->name('view.email-payment-confirmation');
             Route::get('/manual-book', [ManualBookController::class, 'index'])->name('view.manual-book');
             // ---------------------------------------------------

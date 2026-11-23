@@ -27,7 +27,6 @@
         'Activity' => 'fa-person-hiking',
         'Transport' => 'fa-car-side',
         'Private Villa' => 'fa-house',
-        'Wedding' => 'fa-heart',
     ];
 @endphp
 
