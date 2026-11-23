@@ -574,13 +574,13 @@
                                     @if (data_get($paymentState ?? [], 'can_start_doku', false))
                                         <form method="POST" action="{{ route('orders.doku.checkout', ['order' => $order->id]) }}">
                                             @csrf
-                                            <button type="submit" class="btn btn-primary" data-processing-label="@lang('messages.Processing...')">
+                                            <button type="submit" class="btn btn-primary w-100" data-processing-label="@lang('messages.Processing...')">
                                                 <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
                                                 @lang('messages.Pay with DOKU')
                                             </button>
                                         </form>
                                     @elseif (data_get($paymentState ?? [], 'active_doku.checkout_url'))
-                                        <a href="{{ data_get($paymentState, 'active_doku.checkout_url') }}" class="btn btn-primary">
+                                        <a href="{{ data_get($paymentState, 'active_doku.checkout_url') }}" class="btn btn-primary w-100">
                                             <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
                                             @lang('messages.Pay with DOKU')
                                         </a>

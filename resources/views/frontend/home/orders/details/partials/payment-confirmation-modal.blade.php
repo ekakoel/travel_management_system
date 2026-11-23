@@ -108,7 +108,7 @@
                             @lang('messages.Continue Online Payment')
                         </a>
                     @elseif ($dokuCanStart)
-                        <button type="submit" form="{{ $dokuFormId }}" class="btn btn-primary" data-processing-label="@lang('messages.Processing...')">
+                        <button type="submit" form="{{ $dokuFormId }}" class="btn btn-primary w-100" data-processing-label="@lang('messages.Processing...')">
                             <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
                             @lang('messages.Pay with DOKU')
                         </button>
