@@ -882,7 +882,10 @@ class OrdersAdminController extends Controller
                 'description' => __('admin-orders.detail.recommendations.confirmation_help'),
                 'href' => '#confirmation',
             ] : null,
-            $hotelValidation['isHotelOrder'] && !$hotelValidation['hotelRate'] ? [
+            $hotelValidation['isHotelOrder']
+                && !$hotelValidation['hotelRate']
+                && !$order->hotel_confirmation_number
+                && !$order->confirmation_order ? [
                 'tone' => 'warning',
                 'label' => 'Confirm hotel availability',
                 'description' => 'Check room availability and rate coverage directly with the hotel before confirming.',
