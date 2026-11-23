@@ -160,6 +160,7 @@ class PaymentConfirmationController extends Controller
                     'payment_date' => $request->input('payment_date', Carbon::today()->toDateString()),
                     'amount' => $claimedAmount,
                     'status' => 'Pending',
+                    'source' => PaymentConfirmation::SOURCE_MANUAL,
                 ]);
 
                 OrderLog::create([

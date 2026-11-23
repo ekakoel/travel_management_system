@@ -5168,6 +5168,14 @@ class OrdersAdminController extends Controller
                         'status' => 'Approved',
                     ]);
                 }
+            } elseif ($receipt->status === "Valid" && $status === "Valid") {
+                // Re-saving an already validated receipt must not debit the invoice again.
+                // It can still reconcile an order whose invoice is already fully settled.
+                if ((float) $invoice->balance < 1 && $order->status === 'Approved') {
+                    $order->update([
+                        'status' => 'Paid',
+                    ]);
+                }
             }elseif ($receipt->status == "Valid" && $status == "Invalid") {
                 if ($order->completed_at || $order->status === 'Completed') {
                     throw \Illuminate\Validation\ValidationException::withMessages([
