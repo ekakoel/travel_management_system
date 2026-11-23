@@ -7,6 +7,7 @@
 @endpush
 
 @php
+    $showDokuPayment = false;
     $receiptCollection = collect($receipts ?? []);
     $statusToneMap = [
         'Pending' => 'pending',

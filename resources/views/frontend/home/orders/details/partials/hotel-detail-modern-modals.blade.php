@@ -19,3 +19,8 @@
     @endif
 @endforeach
 
+@include('frontend.home.orders.details.partials.payment-confirmation-modal', [
+    'paymentCanSubmit' => data_get($paymentState ?? [], 'can_submit', false),
+    'showDokuPayment' => $showDokuPayment ?? false,
+])
+

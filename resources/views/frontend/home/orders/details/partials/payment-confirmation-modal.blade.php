@@ -9,9 +9,10 @@
         ? $invoiceGrandTotal
         : currencyFormatUsd($invoice?->total_usd ?: $order->final_price));
     $paymentCanSubmit = $paymentCanSubmit ?? data_get($paymentState ?? [], 'can_submit', $invoice && $order->status !== 'Paid');
-    $dokuCanStart = data_get($paymentState ?? [], 'can_start_doku', false) && $invoice;
+    $showDokuPayment = $showDokuPayment ?? true;
+    $dokuCanStart = $showDokuPayment && data_get($paymentState ?? [], 'can_start_doku', false) && $invoice;
     $dokuActive = data_get($paymentState ?? [], 'active_doku');
-    $dokuActiveLive = $dokuActive
+    $dokuActiveLive = $showDokuPayment && $dokuActive
         && $dokuActive->checkout_url
         && (!$dokuActive->expired_at || $dokuActive->expired_at->isFuture());
     $paymentCurrencyCode = optional($invoice?->currency)->name ?: 'USD';
@@ -108,7 +109,7 @@
                             @lang('messages.Continue Online Payment')
                         </a>
                     @elseif ($dokuCanStart)
-                        <button type="submit" form="{{ $dokuFormId }}" class="btn btn-primary w-100" data-processing-label="@lang('messages.Processing...')">
+                        <button type="submit" form="{{ $dokuFormId }}" class="btn btn-primary" data-processing-label="@lang('messages.Processing...')">
                             <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
                             @lang('messages.Pay with DOKU')
                         </button>
