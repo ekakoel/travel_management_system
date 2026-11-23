@@ -119,6 +119,10 @@
                                         <strong>{{ $order->orderno }}</strong>
                                     </div>
                                     <div class="order-detail-info">
+                                        <span>@lang('messages.Confirmation No')</span>
+                                        <strong>{{ $order->confirmation_order ?: '-' }}</strong>
+                                    </div>
+                                    <div class="order-detail-info">
                                         <span>@lang('messages.Order Date')</span>
                                         <strong>{{ dateTimeFormat($order->created_at) }}</strong>
                                     </div>

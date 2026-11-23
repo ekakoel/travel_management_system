@@ -59,9 +59,9 @@
                                 </div>
                             </div>
 
-                            <div class="order-detail-alert mt-3">
+                            {{-- <div class="order-detail-alert mt-3">
                                 @lang('messages.Complete payment and upload the proof within 2 x 24 hours after approval to keep this booking active.')
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="col-md-6">
                             @if ($paymentCanSubmit)

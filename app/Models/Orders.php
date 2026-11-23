@@ -33,15 +33,28 @@ class Orders extends Model
     protected static function booted()
     {
         static::creating(function ($order) {
-            if ($order->confirmation_order === null) {
+            if (($order->getAttributes()['confirmation_order'] ?? null) === null) {
                 $order->confirmation_order = '';
             }
         });
     }
 
+    public function getConfirmationOrderAttribute($value)
+    {
+        if ($value !== null && $value !== '') {
+            return $value;
+        }
+
+        return $this->attributes['hotel_confirmation_number'] ?? $value;
+    }
+
     protected $fillable = [
         'orderno',
         'confirmation_order',
+        'hotel_confirmation_number',
+        'hotel_availability_confirmed',
+        'hotel_confirmed_at',
+        'hotel_confirmed_by',
         'user_id',
         'name',
         'servicename',

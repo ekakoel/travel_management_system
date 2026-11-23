@@ -1087,7 +1087,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('/orders/{id}/invoice/preview', [OrderController::class, 'preview_order_invoice'])->name('orders.invoice.preview');
             Route::get('/orders/{id}/invoice/download', [OrderController::class, 'download_order_invoice'])->name('orders.invoice.download');
 
-            Route::get('/order/{id}',[OrderController::class,'detail_order'])->name('view.detail-order');
+            Route::get('/order/{id}',[OrderController::class,'detail_order'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order');
             Route::post('/fadd-order',[OrderController::class,'func_add_order'])->name('func.add-order');
             Route::put('/cancel-order/{id}',[OrderController::class,'func_cancel_order'])->name('func.cancel-order');
             Route::put('/freupload-order/{id}',[OrderController::class,'func_reupload_order'])->name('func.reupload-order');
@@ -1099,7 +1099,7 @@ use Illuminate\Support\Facades\Route;
             // ---------------------------------------------------
             Route::get('/edit-order-hotel/{id}',[OrderController::class,'edit_order_hotel'])->name('view.edit-order-hotel');
             Route::put('/fsubmit-order-hotel/{id}',[OrderController::class,'func_submit_order_hotel'])->name('func.submit-order-hotel');
-            Route::get('/detail-order-hotel/{id}',[OrderController::class,'detail_order_hotel'])->name('view.detail-order-hotel');
+            Route::get('/detail-order-hotel/{id}',[OrderController::class,'detail_order_hotel'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-hotel');
             // PROMO
             Route::post('/order-hotel-promo/{id}',[orderController::class,'order_hotel_promo'])->name('view.order-hotel-promo');
             Route::post('/fcreate-order-hotel-promo',[orderController::class,'func_create_order_hotel_promo'])->name('func.create.order-hotel-promo');
@@ -1129,20 +1129,20 @@ use Illuminate\Support\Facades\Route;
             Route::get('/edit-order-villa/{id}',[OrderController::class,'edit_order_villa'])->name('view.edit-order-villa');
             Route::put('/checkout-order-villa/{id}',[OrderController::class,'func_checkout_order_villa'])->name('func.checkout-order-villa');
             Route::delete('/remove-guests/{id}', [GuestsController::class, 'remove'])->name('guests.remove');
-            Route::get('/detail-order-villa/{id}',[OrderController::class,'detail_order_villa'])->name('view.detail-order-villa');
+            Route::get('/detail-order-villa/{id}',[OrderController::class,'detail_order_villa'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-villa');
 
             // ---------------------------------------------------
             //                   ORDER TOUR PACKAGE
             // ---------------------------------------------------
             Route::get('/edit-order-tour/{id}',[OrderController::class,'edit_order_tour'])->name('view.edit-order-tour');
             Route::put('/fupdate-order-tour/{id}',[OrderController::class,'func_update_order_tour'])->name('func.order-tour.update');
-            Route::get('/detail-order-tour/{id}',[OrderController::class,'detail_order_tour'])->name('view.detail-order-tour');
+            Route::get('/detail-order-tour/{id}',[OrderController::class,'detail_order_tour'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-tour');
             // ---------------------------------------------------
             //                   ORDER TOUR ACTIVITY
             // ---------------------------------------------------
             Route::get('/edit-order-activity/{id}',[OrderController::class,'edit_order_activity'])->name('view.edit-order-activity');
             // Route::put('/fupdate-order-activity/{id}',[OrderController::class,'func_update_order_activity'])->name('func.order-activity.update');
-            Route::get('/detail-order-activity/{id}',[OrderController::class,'detail_order_activity'])->name('view.detail-order-activity');
+            Route::get('/detail-order-activity/{id}',[OrderController::class,'detail_order_activity'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-activity');
             // ---------------------------------------------------
             //                   ORDER TRANSPORT
             // ---------------------------------------------------
@@ -1150,13 +1150,13 @@ use Illuminate\Support\Facades\Route;
             Route::post('/fcreate-order-transport/{id}',[OrderController::class,'func_create_order_transport'])->name('func.create.order-transport');
             Route::get('/edit-order-transport/{id}',[OrderController::class,'edit_order_transport'])->name('view.edit-order-transport');
             Route::put('/fsubmit-order-transport/{id}',[OrderController::class,'func_submit_order_transport'])->name('func.submit.order-transport');
-            Route::get('/detail-order-transport/{id}',[OrderController::class,'detail_order_transport'])->name('view.detail-order-transport');
+            Route::get('/detail-order-transport/{id}',[OrderController::class,'detail_order_transport'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-transport');
             // ---------------------------------------------------
             //                    ORDER WEDDING
             // ---------------------------------------------------
             Route::get('/order-wedding',[OrderWeddingController::class,'view_order_wedding'])->name('view.order-wedding');
             Route::put('/fsubmit-order-wedding/{id}',[OrderWeddingController::class,'func_submit_order_wedding'])->name('func.submit-order-wedding');
-            Route::get('/detail-order-wedding-{orderno}',[OrderWeddingController::class,'detail_order_wedding'])->name('view.detail-order-wedding');
+            Route::get('/detail-order-wedding-{orderno}',[OrderWeddingController::class,'detail_order_wedding'])->middleware('cache.headers:private;no_store;no_cache;must_revalidate;max_age=0')->name('view.detail-order-wedding');
             Route::get('/edit-order-wedding-{orderno}',[OrderWeddingController::class,'edit_order_wedding'])->name('view.edit-order-wedding');
             Route::post('/forder-wedding-venue/{id}',[OrderWeddingController::class,'func_create_order_wedding_venue'])->name('func.create-order-weding');
             Route::put('/fupdate-wedding-ceremonial-venue/{id}',[OrderWeddingController::class,'func_update_wedding_ceremonial_venue'])->name('func.update-wedding-ceremony-venue');

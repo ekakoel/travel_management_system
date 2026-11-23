@@ -107,6 +107,11 @@ module.exports = {
 (function () {
   'use strict';
 
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+      window.location.reload();
+    }
+  });
   var createFormSubmissionGuard = (__webpack_require__(/*! ../../components/form-submission-guard */ "./resources/frontend/js/components/form-submission-guard.js").createFormSubmissionGuard);
   var pageRoot = document.querySelector('.order-detail-page');
   var countdownExpiredText = pageRoot ? pageRoot.getAttribute('data-countdown-expired') || 'Payment window expired' : 'Payment window expired';

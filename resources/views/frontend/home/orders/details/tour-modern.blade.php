@@ -70,6 +70,7 @@
     ];
     $bookingInfo = [
         ['label' => __('messages.Order No'), 'value' => $order->orderno],
+        ['label' => __('messages.Confirmation No'), 'value' => $order->confirmation_order],
         ['label' => __('messages.Order Date'), 'value' => dateTimeFormat($order->created_at)],
         ['label' => __('messages.Tour Package'), 'value' => $packageName ?: '-'],
         ['label' => __('messages.Type'), 'value' => $packageType ?: '-'],
@@ -570,11 +571,19 @@
                                         </a>
                                     @endif
 
-                                    @if ($canOpenPayment)
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payment-confirmation-{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
-                                            <i class="fa-solid fa-upload" aria-hidden="true"></i>
-                                            @lang('messages.Payment Confirmation')
-                                        </button>
+                                    @if (data_get($paymentState ?? [], 'can_start_doku', false))
+                                        <form method="POST" action="{{ route('orders.doku.checkout', ['order' => $order->id]) }}">
+                                            @csrf
+                                            <button type="submit" class="btn btn-primary" data-processing-label="@lang('messages.Processing...')">
+                                                <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+                                                @lang('messages.Pay with DOKU')
+                                            </button>
+                                        </form>
+                                    @elseif (data_get($paymentState ?? [], 'active_doku.checkout_url'))
+                                        <a href="{{ data_get($paymentState, 'active_doku.checkout_url') }}" class="btn btn-primary">
+                                            <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+                                            @lang('messages.Pay with DOKU')
+                                        </a>
                                     @endif
 
                                     @if ($paymentUnderReview)
@@ -606,9 +615,5 @@
             </div>
         </main>
 
-        @include('frontend.home.orders.details.partials.payment-confirmation-modal', [
-            'paymentCanSubmit' => $canSubmitPayment,
-            'paymentAmountDisplay' => $invoiceGrandTotal,
-        ])
     </div>
 @endsection

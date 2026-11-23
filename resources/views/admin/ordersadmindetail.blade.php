@@ -184,7 +184,7 @@
                             @if($isHotelOrder)
                                 <div id="hotel-validation" class="orders-admin-detail-section">
                                     <div class="orders-admin-detail-section__header">
-                                        <span class="backend-page-eyebrow">Hotel validation</span>
+                                        <span class="backend-section-header__label">Hotel validation</span>
                                         <h3>Availability & Rate Check</h3>
                                     </div>
                                     <dl class="orders-admin-detail-data-grid">
@@ -236,17 +236,28 @@
                                         <h2>Confirmation Reference</h2>
                                     </div>
                                 </div>
+                                @if($isHotelOrder && $order->hotel_availability_confirmed)
+                                    <div class="orders-admin-detail-checklist m-b-18">
+                                        <div class="orders-admin-detail-checklist__item orders-admin-detail-checklist__item--success">
+                                            <strong>Hotel Availability Confirmed</strong>
+                                            <span>Confirmed at: {{ $order->hotel_confirmed_at ? dateFormat($order->hotel_confirmed_at) : '-' }} | By: {{ $order->hotel_confirmed_by ? (\App\Models\User::find($order->hotel_confirmed_by)?->name ?? '-') : '-' }}</span>
+                                        </div>
+                                    </div>
+                                @endif
                                 <form id="updateConfirmationNumber" action="{{ route('admin.orders.confirmation-number.update', ['id' => $order->id]) }}" method="post">
                                     @csrf
                                     @method('PUT')
                                     <div class="orders-admin-detail-form-grid">
                                         <div class="backend-form-field">
-                                                <label for="confirmation_order">{{ $isTourPackageOrder ? 'Tour supplier confirmation number' : 'Hotel / supplier confirmation number' }}</label>
-                                            <input id="confirmation_order" name="confirmation_order" type="text" value="{{ old('confirmation_order', $order->confirmation_order) }}" class="backend-form-control @error('confirmation_order') is-invalid @enderror" placeholder="Confirmation number" required>
+                                                <label for="confirmation_order">{{ $isTourPackageOrder ? 'Tour supplier confirmation number' : ($isHotelOrder ? 'Hotel confirmation number' : 'Hotel / supplier confirmation number') }}</label>
+                                            <input id="confirmation_order" name="confirmation_order" type="text" value="{{ old('confirmation_order', $order->confirmation_order) }}" class="backend-form-control @error('confirmation_order') is-invalid @enderror" placeholder="Confirmation number" required maxlength="255">
+                                            @error('confirmation_order')
+                                                <span class="invalid-feedback" role="alert">{{ $message }}</span>
+                                            @enderror
                                         </div>
-                                        <div class="orders-admin-detail-form-action m-b-18">
+                                        <div class="orders-admin-detail-form-action">
                                             <button type="submit" class="backend-button backend-button-primary">
-                                                <i class="icon-copy fa fa-check" aria-hidden="true"></i> Save
+                                                <i class="icon-copy fa fa-check" aria-hidden="true"></i> {{ $isHotelOrder && !$order->hotel_availability_confirmed ? 'Save & Confirm Availability' : 'Save' }}
                                             </button>
                                         </div>
                                     </div>

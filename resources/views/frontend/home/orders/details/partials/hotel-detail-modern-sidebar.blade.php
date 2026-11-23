@@ -52,20 +52,19 @@
         <div class="order-detail-action-list">
             @include('frontend.home.orders.details.partials.invoice-action-buttons', ['variant' => 'modern'])
 
-            @if (data_get($paymentState ?? [], 'can_open_payment', data_get($paymentState ?? [], 'can_submit', $invoice && $order->status !== 'Paid')))
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#payment-confirmation-{{ $order->id }}">
-                    <i class="fa-solid fa-upload" aria-hidden="true"></i>
-                    @lang('messages.Payment Confirmation')
-                </button>
-            @endif
             @if (data_get($paymentState ?? [], 'can_start_doku', false))
                 <form method="POST" action="{{ route('orders.doku.checkout', ['order' => $order->id]) }}">
                     @csrf
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-primary" data-processing-label="@lang('messages.Processing...')">
                         <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
                         @lang('messages.Pay with DOKU')
                     </button>
                 </form>
+            @elseif (data_get($paymentState ?? [], 'active_doku.checkout_url'))
+                <a href="{{ data_get($paymentState, 'active_doku.checkout_url') }}" class="btn btn-primary">
+                    <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+                    @lang('messages.Pay with DOKU')
+                </a>
             @endif
             <a href="{{ route('view.orders') }}#orderHotel" class="order-detail-btn order-detail-btn--soft">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>

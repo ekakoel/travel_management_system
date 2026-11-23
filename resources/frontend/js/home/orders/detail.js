@@ -1,6 +1,12 @@
 (function () {
     'use strict';
 
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
     var createFormSubmissionGuard = require('../../components/form-submission-guard').createFormSubmissionGuard;
 
     var pageRoot = document.querySelector('.order-detail-page');

@@ -4333,21 +4333,32 @@ class OrdersAdminController extends Controller
         }else{
             $handled_by = $order->handled_by;
         }
-        $order->update([
+        $updateData = [
             "confirmation_order"=>$validated['confirmation_order'],
             "handled_by"=>$handled_by,
             "handled_date"=>$now,
-        ]);
+        ];
+        $isHotelOrder = in_array($order->service, Orders::ACCOMMODATION_SERVICES, true);
+        $wasHotelAvailabilityConfirmed = $order->hotel_availability_confirmed;
+        if ($isHotelOrder && !$wasHotelAvailabilityConfirmed) {
+            $updateData['hotel_availability_confirmed'] = true;
+            $updateData['hotel_confirmed_at'] = $now;
+            $updateData['hotel_confirmed_by'] = Auth::id();
+        }
+        $order->update($updateData);
         $order_log =new OrderLog([
             "order_id"=> $id,
-            "action"=>"Add Confirmation Number",
+            "action"=>"Update Confirmation Number",
             "url"=>$request->getClientIp(),
-            "method"=>"Add",
+            "method"=>"Update",
             "agent"=>Auth::user()->name,
             "admin"=>Auth::user()->id,
         ]);
         $order_log->save();
-        return redirect()->back()->with('success','Confirmation Order has been Update');
+        $message = $isHotelOrder && !$wasHotelAvailabilityConfirmed
+            ? 'Confirmation number saved and hotel availability marked as confirmed.'
+            : 'Confirmation Order has been Update';
+        return redirect()->back()->with('success', $message);
     }
 // Function Updated Rejected =============================================================================================================>
     public function func_update_order_rejected(Request $request,$id){
