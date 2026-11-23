@@ -234,16 +234,6 @@
                                                     <i class="fas fa-star"></i> @lang('messages.Tour Review Links')
                                                 </a>
                                             </li>
-                                            {{-- <li>
-                                                <a href="{{ route('admin.wedding-reviews.index') }}" class="{{ request()->routeIs('admin.wedding-reviews.index') ? 'active' : '' }}">
-                                                    <i class="fas fa-star"></i> @lang('messages.Wedding Reviews')
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="{{ route('view.generate-wedding-review-link') }}" class="{{ request()->routeIs('view.generate-wedding-review-link') ? 'active' : '' }}">
-                                                    <i class="fas fa-star"></i> @lang('messages.Wedding Review Links')
-                                                </a>
-                                            </li> --}}
                                         </ul>
                                     </li>
                                 @endcan

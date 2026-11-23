@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use App\Models\Tours;
 use App\Models\Hotels;
 use App\Models\Services;
-use App\Models\Weddings;
 use App\Models\Dashboard;
 use App\Models\HotelRoom;
 use App\Models\Promotion;
@@ -30,11 +29,10 @@ class DashboardController extends Controller
         $now = Carbon::now();
         $menus = Cache::remember('services_menus', 3600, function () {
             return Services::where('status', 'Active')
-                ->whereIn('name', ['Tours','Weddings', 'Hotels', 'Transports'])
+                ->whereIn('name', ['Tours', 'Hotels', 'Transports'])
                 ->get()
                 ->keyBy('name');
         });
-        $menu_wedding = $menus->get('Weddings');
         $menu_hotel = $menus->get('Hotels');
         $menu_transport = $menus->get('Transports');
         $menu_tour = $menus->get('Tours');
@@ -76,24 +74,12 @@ class DashboardController extends Controller
             ->limit(8)
             ->get();
 
-        $weddings = Weddings::with(['hotels' => function ($query) {
-                $query->select('id', 'name', 'region', 'map','code');
-            }])
-            ->select('code', 'hotel_id', 'cover', 'name')
-            ->where('status', 'Active')
-            ->latest()
-            ->limit(4)
-            ->get();
-        
-
         return view('frontend.dashboards.index', compact(
             'now',
             'hotels',
-            'weddings',
             'transports',
             'tours',
             'promotions',
-            'menu_wedding',
             'menu_hotel',
             'menu_transport',
             'menu_tour',

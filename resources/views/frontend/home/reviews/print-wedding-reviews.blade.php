@@ -161,11 +161,6 @@
                                     <button onclick="window.print()" class="btn btn-primary me-2">
                                         <i class="bi bi-printer"></i> @lang('messages.Print')
                                     </button>
-                                    <a href="{{ route('admin.wedding-reviews.index') }}">
-                                        <button class="btn btn-secondary">
-                                            <i class="bi bi-arrow-left"></i> @lang('messages.Cancel')
-                                        </button>
-                                    </a>
                                 </div>
                             </div>
                         @endif

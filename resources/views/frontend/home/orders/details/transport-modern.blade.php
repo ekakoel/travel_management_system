@@ -83,13 +83,18 @@
     ];
     $bookingInfo = [
         ['label' => __('messages.Order No'), 'value' => $order->orderno],
-        ['label' => __('messages.Confirmation No'), 'value' => $order->confirmation_order],
         ['label' => __('messages.Order Date'), 'value' => dateTimeFormat($order->created_at)],
         ['label' => __('messages.Transport'), 'value' => $transportName],
         ['label' => __('messages.Type'), 'value' => $transportTypeLabel],
         ['label' => __('messages.Capacity'), 'value' => ($order->capacity ?: 0) . ' ' . $paxLabel],
         ['label' => __('messages.Location'), 'value' => $routeLabel],
     ];
+    if (filled($order->confirmation_order)) {
+        array_splice($bookingInfo, 1, 0, [[
+            'label' => __('messages.Confirmation No'),
+            'value' => $order->confirmation_order,
+        ]]);
+    }
     $tripInfo = [
         ['label' => __('messages.Service Date'), 'value' => $serviceDateLabel],
         ['label' => __('messages.Dropoff Date'), 'value' => $completionDateLabel],

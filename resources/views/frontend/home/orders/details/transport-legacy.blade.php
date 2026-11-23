@@ -232,7 +232,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <table class="table tb-list">
-                        @if (isset($order->confirmation_order))
+                        @if (filled($order->confirmation_order))
                             <tr>
                                 <td class="htd-1">
                                     @lang('messages.Confirmation No')

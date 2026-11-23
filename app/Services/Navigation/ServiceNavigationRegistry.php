@@ -45,13 +45,6 @@ class ServiceNavigationRegistry
             'admin_active' => ['admin.villas.*'],
             'content_key' => 'Villas',
         ],
-        'weddings' => [
-            'aliases' => ['weddings', 'wedding'],
-            'public_route' => 'view.weddings',
-            'admin_route' => 'weddings-admin.index',
-            'admin_active' => ['weddings-admin.*'],
-            'content_key' => 'Weddings',
-        ],
     ];
 
     public function items(Collection $services): Collection

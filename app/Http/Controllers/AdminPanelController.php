@@ -9,7 +9,6 @@ use App\Models\Villas;
 use App\Models\UserLog;
 use App\Models\Services;
 use App\Models\UsdRates;
-use App\Models\Weddings;
 use App\Models\Activities;
 use App\Models\AdminPanel;
 use App\Models\HotelPrice;
@@ -77,13 +76,13 @@ class AdminPanelController extends Controller
             'Activities' => $this->activeDraftCounts(Activities::query()),
             'Transports' => $this->activeDraftCounts(Transports::query()),
             'Villas' => $this->activeDraftCounts(Villas::query()),
-            'Weddings' => [
-                'active' => Weddings::query()->where('status', 'Active')->count(),
-                'draft' => Weddings::query()->where('status', '!=', 'Active')->count(),
-            ],
         ];
 
         $services = Services::query()
+            ->where(function ($query) {
+                $query->whereNull('nicname')
+                    ->orWhereRaw('LOWER(nicname) NOT IN (?, ?, ?, ?)', ['wedding', 'weddings', 'wedding-package', 'wedding-packages']);
+            })
             ->orderByRaw("status = 'Active' desc")
             ->orderBy('name')
             ->get()

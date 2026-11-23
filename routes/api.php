@@ -5,9 +5,7 @@ use App\Http\Controllers\HotelsController;
 use App\Http\Controllers\AI\AIHotelController;
 use App\Http\Controllers\ReviewController;
 use App\Models\SubmittedReview;
-use App\Models\SubmittedWeddingReview;
 use App\Models\TemporaryReviewLink;
-use App\Models\TemporaryWeddingReviewLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -59,10 +57,7 @@ Route::namespace('App\\Http\\Controllers\\API\V1')->group(function () {
 });
 
 Route::post('/submit-review', [ReviewController::class, 'store']);
-Route::post('/submit-wedding-review', [ReviewController::class, 'store_wedding_review']);
-
 Route::get('/validate-review-link/{booking_code}/{jumlah_review}', [ReviewController::class, 'validateLink']);
-Route::get('/validate-wedding-review-link/{booking_code}/{jumlah_review}', [ReviewController::class, 'validate_wedding_review_link']);
 
 Route::get('/validate-review-link', function (Request $request) {
     $booking_code = $request->booking_code;
@@ -86,26 +81,4 @@ Route::get('/validate-review-link', function (Request $request) {
     return response()->json(['valid' => true]);
 });
 
-Route::get('/validate-wedding-review-link', function (Request $request) {
-    $booking_code = $request->booking_code;
-    $jumlah_review = $request->jumlah_review;
-
-    $link = TemporaryWeddingReviewLink::where('booking_code', $booking_code)
-        ->where('jumlah_review', $jumlah_review)
-        ->where('expires_at', '>', now())
-        ->first();
-
-    if (!$link) {
-        return response()->json(['valid' => false, 'reason' => 'expired_or_not_found']);
-    }
-
-    $review_count = SubmittedWeddingReview::where('booking_code', $booking_code)->count();
-
-    if ($review_count >= $link->jumlah_review) {
-        return response()->json(['valid' => false, 'reason' => 'quota_reached']);
-    }
-
-    return response()->json(['valid' => true]);
-});
 Route::post('/generate-review-link', [ReviewController::class, 'generateReviewLink']);
-Route::post('/generate-wedding-review-link', [ReviewController::class, 'generateWeddingReviewLink']);

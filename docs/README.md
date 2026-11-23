@@ -49,6 +49,10 @@ Codex must use this file to locate the documentation relevant to each task.
 * `modules/activity.md`
   Public Activity pricing, reservation, payment, lifecycle, and fulfillment.
 
+* `modules/wedding-retirement.md`
+  Retirement boundary for Wedding bookings, preserved historical orders, and
+  the prohibition on deleting Wedding data during service removal.
+
 ## Architecture Decisions
 
 * `decisions/`
@@ -86,6 +90,10 @@ Active document decisions:
 * `decisions/order-confirmation-email-standard.md` — canonical transactional
   order-confirmation content, email-client layout, security, and verification
   contract.
+* `decisions/order-lifecycle-notification-standard.md` — account notifications
+  for shared public order and payment lifecycle events.
+* `decisions/order-confirmation-number-display.md` — conditional display of a
+  service confirmation number on an agent's order detail page.
 
 Active backend operations decisions:
 

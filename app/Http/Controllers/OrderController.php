@@ -4722,6 +4722,12 @@ class OrderController extends Controller
             ]);
         }
 
+        if ($request->input('service') === 'Wedding Package') {
+            throw ValidationException::withMessages([
+                'service' => 'Wedding Package bookings are no longer available.',
+            ]);
+        }
+
         if (Auth::user()->position == "developer" || Auth::user()->position == "reservation" || Auth::user()->position == "author") {
             $sales_agent = $request->user_id;
             $user_id = Auth::user()->id;

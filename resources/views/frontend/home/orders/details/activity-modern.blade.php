@@ -66,12 +66,17 @@
     ];
     $bookingInfo = [
         ['label' => __('messages.Order No'), 'value' => $order->orderno],
-        ['label' => __('messages.Confirmation No'), 'value' => $order->confirmation_order],
         ['label' => __('messages.Order Date'), 'value' => dateTimeFormat($order->created_at)],
         ['label' => __('messages.Activity'), 'value' => $packageName ?: '-'],
         ['label' => __('messages.Type'), 'value' => $packageType ?: '-'],
         ['label' => __('messages.Duration'), 'value' => $durationLabel ?: '-'],
     ];
+    if (filled($order->confirmation_order)) {
+        array_splice($bookingInfo, 1, 0, [[
+            'label' => __('messages.Confirmation No'),
+            'value' => $order->confirmation_order,
+        ]]);
+    }
     $logisticsInfo = [
         ['label' => __('messages.Activity Start'), 'value' => $order->checkin ? dateTimeFormat($order->checkin) : '-'],
         ['label' => __('messages.Activity End'), 'value' => $order->checkout ? dateTimeFormat($order->checkout) : '-'],

@@ -82,26 +82,6 @@
                         </div>
                     </div>
                 @endif
-                {{-- Wedding Section --}}
-                @if (isset($menu_wedding) && $weddings->isNotEmpty())
-                    <div class="trans-box m-b-18">
-                        <div class="trans-box-title">
-                            <i class="icon-copy fi-torso-business"></i><i
-                                class="icon-copy fi-torso-female"></i>@lang('messages.Weddings')
-                        </div>
-                        <div class="trans-box-content">
-                            @foreach ($weddings as $wedding)
-                                @include('partials.wedding-card', compact('wedding'))
-                            @endforeach
-                        </div>
-                        <div class="trans-box-footer">
-                            <a href="/weddings">
-                                <button class="btn btn-primary text-white">@lang('messages.Weddings') <i
-                                        class="icon-copy fa fa-arrow-circle-right" aria-hidden="true"></i></button>
-                            </a>
-                        </div>
-                    </div>
-                @endif
             @endif
         </div>
     </div>

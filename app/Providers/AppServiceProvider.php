@@ -6,6 +6,10 @@ use App\Services\BusinessProfileService;
 use App\Services\FooterContentService;
 use App\Services\Navigation\BackendNavigationService;
 use App\Services\RegistrationAccessService;
+use App\Models\Orders;
+use App\Models\PaymentConfirmation;
+use App\Observers\OrdersLifecycleObserver;
+use App\Observers\PaymentConfirmationLifecycleObserver;
 use App\View\Composers\BackendNavigationComposer;
 use Illuminate\Support\Carbon;
 use Illuminate\Pagination\Paginator;
@@ -21,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
     }
     public function boot()
     {
+        Orders::observe(OrdersLifecycleObserver::class);
+        PaymentConfirmation::observe(PaymentConfirmationLifecycleObserver::class);
+
         Paginator::useBootstrap();
         Carbon::setLocale(config('app.locale'));
 

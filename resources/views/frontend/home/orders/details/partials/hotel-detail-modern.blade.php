@@ -119,10 +119,12 @@
                                         <span>@lang('messages.Order No')</span>
                                         <strong>{{ $order->orderno }}</strong>
                                     </div>
-                                    <div class="order-detail-info">
-                                        <span>@lang('messages.Confirmation No')</span>
-                                        <strong>{{ $order->confirmation_order ?: '-' }}</strong>
-                                    </div>
+                                    @if (filled($order->confirmation_order))
+                                        <div class="order-detail-info">
+                                            <span>@lang('messages.Confirmation No')</span>
+                                            <strong>{{ $order->confirmation_order }}</strong>
+                                        </div>
+                                    @endif
                                     <div class="order-detail-info">
                                         <span>@lang('messages.Order Date')</span>
                                         <strong>{{ dateTimeFormat($order->created_at) }}</strong>

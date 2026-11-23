@@ -191,6 +191,12 @@
 
                         <div class="dropdown-header">@lang('messages.Account')</div>
                         <a class="dropdown-item" href="{{ route('profile') }}"><i class="fa fa-id-card me-2" aria-hidden="true"></i>@lang('messages.Profile')</a>
+                        <a class="dropdown-item" href="{{ route('order-notifications.index') }}">
+                            <i class="fa fa-bell me-2" aria-hidden="true"></i>{{ __('Order updates') }}
+                            @if ($unreadOrderNotifications > 0)
+                                <span class="badge rounded-pill bg-danger ms-1">{{ $unreadOrderNotifications }}</span>
+                            @endif
+                        </a>
                         <a class="dropdown-item" href="{{ route('view.orders') }}"><i class="icon-copy fa fa-tags me-2" aria-hidden="true"></i>@lang('messages.Order')</a>
                         <a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fa fa-history me-2" aria-hidden="true"></i>@lang('messages.Order History')</a>
                         <a class="dropdown-item" href="{{ url('/manual-book') }}"><i class="icon-copy fa fa-book me-2" aria-hidden="true"></i>@lang('messages.Manual Book')</a>
