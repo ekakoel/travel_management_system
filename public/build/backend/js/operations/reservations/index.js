@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setCalendarDetail('service', event.service);
         setCalendarDetail('agent', event.agent);
         setCalendarDetail('period', event.period);
-        setCalendarDetail('manifest', "".concat(event.guestCount, " / ").concat(event.spkCount));
+        setCalendarDetail('manifest', event.guestCount);
         setCalendarDetail('invoice', "".concat(event.invoice, " / ").concat(event.dueDate));
         setCalendarDetail('note', event.note);
         var detailLink = calendarModal === null || calendarModal === void 0 ? void 0 : calendarModal.querySelector('[data-calendar-detail="url"]');

@@ -207,11 +207,6 @@
   color: #b91c1c;
 }
 
-.orders-admin-status-dot--wedding {
-  background: rgba(124, 58, 237, 0.12);
-  color: #6d28d9;
-}
-
 .orders-admin-status-dot {
   display: inline-block;
 }

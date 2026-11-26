@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Spks;
 use App\Models\Orders;
 use App\Models\Transports;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +14,6 @@ class AirportShuttle extends Model
         'date',
         'flight_number',
         'number_of_guests',
-        'spk_id',
         'order_id',
         'transport_id',
         'price_id',
@@ -34,9 +32,4 @@ class AirportShuttle extends Model
     {
         return $this->belongsTo(Orders::class,'order_id');
     }
-    public function spk()
-    {
-        return $this->belongsTo(Spks::class,'spk_id');
-    }
-
 }

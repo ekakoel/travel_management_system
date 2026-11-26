@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\Agent;
 use App\Models\Role;
-use App\Models\Spks;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -177,9 +176,6 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return in_array($platform, self::supportedContactChannelPlatforms(), true) ? $platform : null;
-    }
-    public function spks(){
-        return $this->hasMany(Spks::class,'operator_id'); //good
     }
 
     public function getPhotoAttribute()

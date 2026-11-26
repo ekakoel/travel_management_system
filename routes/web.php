@@ -50,7 +50,6 @@ use App\Http\Controllers\InvoiceAdminController;
 use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\ManualBookController;
-use App\Http\Controllers\MapController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderNotificationsController;
 use App\Http\Controllers\OrdersAdminController;
@@ -61,17 +60,12 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RoomViewController;
-use App\Http\Controllers\SpkReportController;
-use App\Http\Controllers\SpksController;
-use App\Http\Controllers\SpksDestinationsController;
-use App\Http\Controllers\SpkWhatsAppController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TermAndConditionController;
 use App\Http\Controllers\TourPackageQuoteController;
 use App\Http\Controllers\TourPricesController;
 use App\Http\Controllers\ToursController;
 use App\Http\Controllers\TransportBrandController;
-use App\Http\Controllers\TransportManagementController;
 use App\Http\Controllers\TransportsController;
 use App\Http\Controllers\TransportTypeController;
 use App\Http\Controllers\UsdRatesController;
@@ -142,22 +136,6 @@ use Illuminate\Support\Facades\Route;
     Route::post('/agent-register', [AgentRegistrationController::class, 'submitForm'])->name('agent.register.submit');
     Route::get('/agent-registration/pending', fn () => redirect()->route('partner.application.pending'))->name('agent.registration.pending');
     Route::get('/registration-mail', [AgentRegistrationController::class, 'test_view_email']);
-
-    // ---------------------------------------------------
-    //                    TRANSPORT MANAJEMEN
-    // ---------------------------------------------------
-    // Halaman checkin driver
-    Route::get('/spks/checkin/{spkDestination}', [TransportManagementController::class, 'checkinPage'])->name('spks.checkin.page');
-    // Proses checkin
-    Route::post('/spks/checkin/{spkDestination}', [TransportManagementController::class, 'checkin'])->name('spks.checkin');
-    Route::get('/checkin/{spkDestination}', [TransportManagementController::class, 'checkinPage'])->name('spk.checkin.page');
-    Route::post('/checkin/{id}', [TransportManagementController::class, 'checkin'])->name('spk.checkin');
-    Route::get('/spk/{id}/{spkNumber}', [TransportManagementController::class, 'show_spk'])->name('view.spk');
-    Route::post('/driver/checkin/{id}', [SpksDestinationsController::class, 'driver_create_destination'])->name('driver.checkin');
-    Route::get('/spk-report/{token}', [
-        SpkReportController::class,
-        'show',
-    ])->name('spks.public-report');
 
     // ---------------------------------------------------
     //                    TEST SYSTEM
@@ -354,28 +332,6 @@ use Illuminate\Support\Facades\Route;
             Route::get('/autocomplete/room-view', [RoomViewController::class, 'autocomplete'])->name('autocomplate.hotels.room_view');
             Route::get('/autocomplete/bed-type', [BedTypeController::class, 'autocomplete'])->name('autocomplate.hotels.room.bed_type');
 
-            // ---------------------------------------------------
-            //                 TRANSPORT MANAGEMENT
-            // ---------------------------------------------------
-            Route::get('/distance/{lat1}/{lng1}/{lat2}/{lng2}', [MapController::class, 'getDistance']);
-            Route::get('/transport-management', [SpksController::class, 'index'])->name('transport-management.index');
-            Route::get('/spks/{id}', [SpksController::class, 'show'])->name('detail-spk');
-            Route::post('/spks/store', [SpksController::class, 'store'])->name('spks.store');
-            Route::post('/fadd-transport-reservation', [ReservationController::class, 'addReservation'])->name('transport-reservation.add');
-            Route::post('/spks/generate', [SpksController::class, 'generate'])->name('spks.generate');
-            Route::delete('/spks/destroy/{id}', [SpksController::class, 'destroy'])->name('spks.destroy');
-            Route::post('/spks/{spk}/destinations', [SpksController::class, 'store'])->name('spks.destinations.store');
-            Route::post('/spks/fupdate-spk/{id}', [SpksController::class, 'func_update_spk'])->name('spk.update');
-            Route::post('/reservation/fupdate-reservation/{id}', [ReservationController::class, 'func_update_transport_management_reservation'])->name('transport-management-reservation.update');
-            Route::post('/spks/fadd-spk-destination/{id}', [SpksController::class, 'func_add_spk_destination'])->name('spk-destinations.add');
-            Route::post('/spks/fupdate-spk-destination/{id}', [SpksController::class, 'func_update_spk_destination'])->name('spk-destinations.update');
-            Route::delete('/spks/fdelete-spk-destination/{id}', [SpksController::class, 'func_delete_spk_destination'])->name('spk-destination.delete');
-
-            // ---------------------------------------------------
-            //                   SPK Web WhatsApp
-            // ---------------------------------------------------
-            Route::get('/spks/{spk}/send-whatsapp', [SpkWhatsAppController::class,'send',])->name('spk-send-whatsapp.operator');
-            Route::get('/spks/{spk}/send-whatsapp-driver', [SpkWhatsAppController::class,'send_to_driver',])->name('spk-send-whatsapp.driver');
         });
 
         // DEVELOPER | ADMINISTRATOR | RESERVATION | AUTHOR ==================================================================================
@@ -745,15 +701,6 @@ use Illuminate\Support\Facades\Route;
 
             
 
-            // Print SPK (PDF atau langsung view untuk print)
-            Route::get('/spks/{id}/print', [SpksController::class, 'print'])->name('spks.print');
-            Route::post('/spk/{id}/guest/add', [SpksController::class, 'func_add_guest'])->name('func.spk-guest.add');
-            Route::post('/spk/guest-update/{id}', [SpksController::class, 'func_update_spk_guest'])->name('func.spk-guest.update');
-            Route::delete('/spk/guest/{id}', [SpksController::class, 'func_delete_guest'])->name('func.spk-guest.delete');
-            Route::post('/spk/{id}/airport-shuttle/add', [SpksController::class, 'func_add_airport_shuttle'])->name('func.spk-airport-shuttle.add');
-            Route::delete('/spk/airport-shuttle-delete/{id}', [SpksController::class, 'func_delete_airport_shuttle'])->name('func.spk-airport-shuttle.delete');
-            Route::post('/spk/airport-shuttle-update/{id}', [SpksController::class, 'func_update_airport_shuttle'])->name('func.spk-airport-shuttle.update');
-            Route::get('/spks/{id}/detail', [SpksController::class, 'spk_detail'])->name('spks.detail.partials');
 
             // |--------------------------------------------------------------------------
             // | RESERVATION
@@ -761,8 +708,6 @@ use Illuminate\Support\Facades\Route;
             Route::get('/reservation/{no}', [ReservationController::class, 'detail_reservation'])->name('view.detail-reservation');
             Route::get('/reservation-archive', [ReservationController::class, 'reservationArchive'])->name('reservation.archive');
             Route::resource('reservations', ReservationController::class);
-            Route::post('reservations/{reservation}/generate-spk', [ReservationController::class, 'generateSpks'])->name('reservations.generateSpks');
-            Route::resource('spks', SpksController::class)->only(['show']);
 
 
 

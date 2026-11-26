@@ -39,7 +39,7 @@ class BackendNavigationService
 
         $ordersActive = $request->routeIs('admin.order.*', 'admin.orders.*')
             || $request->is('orders-admin', 'orders-admin/*');
-        $reservationsActive = $request->routeIs('view.reservation*', 'admin.reservations.*', 'spks.show')
+        $reservationsActive = $request->routeIs('view.reservation*', 'admin.reservations.*')
             || $request->is('reservation', 'reservation/*', 'order-rsv/*');
         $invoicesActive = $request->routeIs('admin.invoices.*')
             || $request->is('invoice', 'invoice/*');

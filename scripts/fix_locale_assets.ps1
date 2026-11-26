@@ -84,8 +84,7 @@ foreach ($path in $languageFiles) {
 
 $reviewFiles = @(
     'resources/views/home/reviews/create.blade.php',
-    'resources/views/home/reviews/create-review.blade.php',
-    'resources/views/home/reviews/create-wedding-review.blade.php'
+    'resources/views/home/reviews/create-review.blade.php'
 )
 
 foreach ($path in $reviewFiles) {

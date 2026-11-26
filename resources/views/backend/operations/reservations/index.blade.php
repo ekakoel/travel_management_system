@@ -139,7 +139,7 @@
                                     <tr data-reservation-row data-reservation-search="{{ $row['search'] }}" data-reservation-service="{{ strtolower($row['service']) }}">
                                         <td data-label="{{ __('reservations.reference') }}">
                                             <strong>{{ $row['number'] }}</strong>
-                                            <small>{{ trans_choice('reservations.guest_count', $row['guest_count'], ['count' => $row['guest_count']]) }} · {{ trans_choice('reservations.spk_count', $row['spk_count'], ['count' => $row['spk_count']]) }}</small>
+                                            <small>{{ trans_choice('reservations.guest_count', $row['guest_count'], ['count' => $row['guest_count']]) }}</small>
                                         </td>
                                         <td data-label="{{ __('reservations.agent') }}">
                                             <strong>{{ $row['agent'] }}</strong>
@@ -208,7 +208,7 @@
                             <div><dt>{{ __('reservations.service') }}</dt><dd data-calendar-detail="service">-</dd></div>
                             <div><dt>{{ __('reservations.agent') }}</dt><dd data-calendar-detail="agent">-</dd></div>
                             <div><dt>{{ __('reservations.service_period') }}</dt><dd data-calendar-detail="period">-</dd></div>
-                            <div><dt>{{ __('reservations.calendar_guests_spk') }}</dt><dd data-calendar-detail="manifest">-</dd></div>
+                            <div><dt>{{ __('reservations.guests') }}</dt><dd data-calendar-detail="manifest">-</dd></div>
                             <div><dt>{{ __('reservations.invoice_due') }}</dt><dd data-calendar-detail="invoice">-</dd></div>
                             <div class="reservations-admin-calendar-detail__note"><dt>{{ __('reservations.calendar_note') }}</dt><dd data-calendar-detail="note">-</dd></div>
                         </dl>

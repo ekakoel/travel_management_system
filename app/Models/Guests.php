@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Spks;
 use App\Models\Orders;
 use App\Models\Flights;
 use App\Models\Reservation;
@@ -15,7 +14,6 @@ class Guests extends Model
     protected $fillable = [
         'id_passport_img',
         'name',
-        'spk_id',
         'identification_type',
         'identification_no',
         'rsv_id',
@@ -35,8 +33,5 @@ class Guests extends Model
     }
     public function flights(){
         return $this->hasMany(Flights::class,'guests_id');
-    }
-    public function spk(){
-        return $this->belongsTo(Spks::class,'spk_id');
     }
 }

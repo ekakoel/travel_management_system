@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Spks;
 use App\Models\Guide;
 use App\Models\Guests;
 use App\Models\Orders;
@@ -94,8 +93,5 @@ class Reservation extends Model
     }
     public function guide(){
         return $this->belongsTo(Guide::class,'guide_id'); // good
-    }
-    public function spks(){
-        return $this->hasMany(Spks::class,'reservation_id');
     }
 }

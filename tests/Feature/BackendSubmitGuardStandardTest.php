@@ -41,9 +41,6 @@ class BackendSubmitGuardStandardTest extends TestCase
         foreach ([
             resource_path('backend/js/admin/footer-manager/index.js'),
             resource_path('backend/js/admin/reviews/index.js'),
-            resource_path('backend/js/operations/transport-management/index.js'),
-            resource_path('backend/js/operations/transport-management/detail.js'),
-            resource_path('views/admin/transportmanagement/detail-spk.blade.php'),
         ] as $file) {
             $contents = file_get_contents($file);
 

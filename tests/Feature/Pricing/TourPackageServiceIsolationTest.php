@@ -9,19 +9,12 @@ use Tests\TestCase;
 
 class TourPackageServiceIsolationTest extends TestCase
 {
-    public function test_tour_pricing_service_is_not_imported_by_other_service_or_spk_domains(): void
+    public function test_tour_pricing_service_is_not_imported_by_other_service_domains(): void
     {
         $paths = array_merge(
             glob(app_path('Services/Hotels/*.php')) ?: [],
             glob(app_path('Services/Transports/*.php')) ?: [],
-            glob(app_path('Services/Activities/*.php')) ?: [],
-            glob(app_path('Services/*Wedding*.php')) ?: [],
-            glob(app_path('Services/*Spk*.php')) ?: [],
-            [
-                app_path('Http/Controllers/OrderWeddingController.php'),
-                app_path('Http/Controllers/TransportManagementController.php'),
-                app_path('Http/Controllers/SpksController.php'),
-            ]
+            glob(app_path('Services/Activities/*.php')) ?: []
         );
 
         foreach (array_filter($paths, 'is_file') as $path) {

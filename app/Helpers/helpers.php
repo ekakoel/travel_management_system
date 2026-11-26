@@ -3,7 +3,6 @@ use Carbon\Carbon;
 use Intervention\Image\ImageManager;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\MapController;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 
@@ -200,16 +199,3 @@ if (!function_exists('getThumbnails')) {
     }
 }
 
-if (!function_exists('distance_google')) {
-    function distance_google($lat1, $lng1, $lat2, $lng2)
-    {
-        return app(MapController::class)->getDistance($lat1, $lng1, $lat2, $lng2);
-    }
-}
-
-if (!function_exists('distance_haversine')) {
-    function distance_haversine($lat1, $lng1, $lat2, $lng2)
-    {
-        return app(MapController::class)->haversine($lat1, $lng1, $lat2, $lng2);
-    }
-}

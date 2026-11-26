@@ -255,14 +255,6 @@
                                         </li>
                                     </ul>
                                 </li> --}}
-                                @canany(['posDev', 'posRsv' ,'posAdm'])
-                                    <li>
-                                        <a href="{{ route('admin.transport-management.index') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('admin.transport-management.index') ? 'active' : '' }}">
-                                            <i class="fas fa-car"></i> @lang("messages.Transport Management")
-                                        </a>
-                                    </li>
-                                @endcan
-                                
                             @endcanany
                         @endif
                     </ul>

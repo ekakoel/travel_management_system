@@ -59,20 +59,6 @@ class BackendNavigationServiceTest extends TestCase
             ['user_id' => 8, 'status' => 'Pending', 'checkin' => '2026-08-22 00:00:00'],
             ['user_id' => 8, 'status' => 'Pending', 'checkin' => '2026-08-01 00:00:00'],
         ]);
-        DB::table('order_weddings')->insert([
-            [
-                'agent_id' => 7,
-                'status' => 'Draft',
-                'checkin' => '2026-08-20 00:00:00',
-                'wedding_date' => '2026-08-25 00:00:00',
-            ],
-            [
-                'agent_id' => 8,
-                'status' => 'Pending',
-                'checkin' => '2026-08-20 00:00:00',
-                'wedding_date' => '2026-08-26 00:00:00',
-            ],
-        ]);
 
         $user = new User();
         $user->forceFill([
@@ -95,10 +81,8 @@ class BackendNavigationServiceTest extends TestCase
 
         $this->assertSame(1, $first['orderCounts']['Draft']);
         $this->assertSame(1, $first['orderCounts']['Approved']);
-        $this->assertSame(1, $first['weddingOrderCounts']['Draft']);
         $this->assertSame(1, $first['pendingCounts']['tour']);
-        $this->assertSame(1, $first['pendingCounts']['wedding']);
-        $this->assertSame(2, $first['pendingCounts']['operations']);
+        $this->assertSame(1, $first['pendingCounts']['operations']);
         $this->assertCount(1, $first['services']);
         $this->assertSame($globalServices, $first['services']);
         $this->assertSame('tour-packages', $first['services']->first()['canonical_slug']);
@@ -135,13 +119,6 @@ class BackendNavigationServiceTest extends TestCase
             $table->unsignedBigInteger('user_id');
             $table->string('status');
             $table->dateTime('checkin');
-        });
-        Schema::create('order_weddings', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('agent_id');
-            $table->string('status');
-            $table->dateTime('checkin');
-            $table->dateTime('wedding_date');
         });
         Schema::create('services', function (Blueprint $table) {
             $table->id();

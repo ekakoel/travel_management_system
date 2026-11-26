@@ -1313,7 +1313,6 @@ return[
     "Other Transportation"=> "其他交通",
     "Other transportation"=> "其他交通",
     "Reservations"=> "預訂",
-    "Transport Management"=> "交通管理",
     'hotel_terms_title' => '酒店房價資訊與條款',
     'rates_usd' => '基於每日美元匯率的價格',
     'rates_usd_desc' => '所顯示的房價是根據預訂當天的美元匯率計算的。最終金額可能因適用匯率的波動而有所不同。',

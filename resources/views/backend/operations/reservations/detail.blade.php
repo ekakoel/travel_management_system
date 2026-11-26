@@ -76,7 +76,7 @@
                     </section>
                 @endif
 
-                <section class="backend-kpi-grid backend-kpi-grid--4" aria-label="{{ __('reservations.detail_summary') }}">
+                <section class="backend-kpi-grid backend-kpi-grid--3" aria-label="{{ __('reservations.detail_summary') }}">
                     @foreach ($reservationStats as $stat)
                         <article class="backend-kpi-card backend-kpi-card--{{ $stat['tone'] }}">
                             <div class="backend-kpi-card__icon" aria-hidden="true"><i class="{{ $stat['icon'] }}"></i></div>

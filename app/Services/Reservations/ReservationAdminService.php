@@ -20,7 +20,7 @@ class ReservationAdminService
                 'agent:id,name,office,code',
                 'invoice:id,rsv_id,inv_no,due_date',
             ])
-            ->withCount(['guests', 'orders', 'spks'])
+            ->withCount(['guests', 'orders'])
             ->whereNull('deleted_at')
             ->where('adm_id', $admin->id)
             ->where('status', 'Active')
@@ -52,7 +52,6 @@ class ReservationAdminService
                 'status' => $status,
                 'status_tone' => $this->statusTone($status),
                 'guest_count' => (int) $reservation->guests_count,
-                'spk_count' => (int) $reservation->spks_count,
                 'calendar_note' => $this->calendarNote($reservation, $dueDate?->lt($today) ?? false, $startDate, $endDate, $today),
                 'can_delete' => strtolower($status) === 'draft'
                     && ! $invoice
@@ -88,7 +87,6 @@ class ReservationAdminService
                     'service' => $row['service'],
                     'period' => $row['period'],
                     'guestCount' => $row['guest_count'],
-                    'spkCount' => $row['spk_count'],
                     'invoice' => $row['invoice'] ?: __('reservations.not_generated'),
                     'dueDate' => $row['due_date'] ?: __('reservations.not_generated'),
                     'note' => $row['calendar_note'],

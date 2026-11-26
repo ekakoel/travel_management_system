@@ -7,8 +7,9 @@ Updated: 2026-08-10
 
 Dokumen ini mengatur halaman backend `/reservation` untuk posisi `developer`,
 `reservation`, dan `weddingRsv`. Dokumen ini tidak mengubah lifecycle order,
-payment, invoice, fulfillment, SPK, atau status Reservation yang sudah dibuat
-oleh flow masing-masing public service.
+payment, invoice, fulfillment, atau status Reservation yang sudah dibuat oleh
+flow masing-masing public service. Transport Management/SPK telah dipensiunkan
+dari runtime.
 
 ## Work Queue Contract
 
@@ -17,7 +18,7 @@ oleh flow masing-masing public service.
   dan belum dihapus. Pending, Draft, Canceled, serta status non-Active lain
   tidak boleh masuk ke projection operasional ini.
 - Query index memakai eager loading `agent` dan `invoice`, serta relation count
-  untuk guest, order, dan SPK. Blade tidak melakukan query atau memuat seluruh
+  untuk guest dan order. Blade tidak melakukan query atau memuat seluruh
   tabel pendukung ke memori.
 - KPI dan overdue indicator hanya merupakan operational projection. Keduanya
   tidak menulis atau menormalisasi status.
@@ -37,7 +38,7 @@ oleh flow masing-masing public service.
   lalu dikirim ke FullCalendar sebagai exclusive end `checkout + 1 day` sesuai
   kontrak all-day calendar internasional.
 - Event menampilkan reference dan service. Detail event menampilkan agent,
-  service period, guest/SPK count, invoice/due date, dan operational note tanpa
+  service period, guest count, invoice/due date, dan operational note tanpa
   nilai finansial atau data pribadi guest.
 - Note memakai `reservations.additional_info` yang sudah di-strip dari HTML dan
   dibatasi panjangnya. Jika kosong, sistem menampilkan note operasional
@@ -108,8 +109,8 @@ operasional tidak boleh dihapus melalui action ini.
   Projection mengambil satu collection order milik reservation, eager-load
   relation yang digunakan, dan tidak boleh memuat seluruh tabel Orders, Users,
   Optional Rates, Guide, atau Driver.
-- KPI detail bersifat read-only: durasi layanan, manifest guest, linked order,
-  dan SPK tidak menulis status atau nilai finansial.
+- KPI detail bersifat read-only: durasi layanan, manifest guest, dan linked
+  order tidak menulis status atau nilai finansial.
 - Detail menampilkan seluruh linked order non-Deleted, termasuk service lampau
   dan mendatang. Detail finansial/service-specific tetap dikelola melalui named
   route `admin.order.show`; halaman agregat tidak menduplikasi kalkulasi JSON,

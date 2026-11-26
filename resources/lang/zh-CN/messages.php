@@ -1312,7 +1312,6 @@ return[
     "Other Transportation"=> "其他交通",
     "Other transportation"=> "其他交通",
     "Reservations"=> "预订",
-    "Transport Management"=> "交通管理",
     'hotel_terms_title' => '酒店房价信息与条款',
     'rates_usd' => '基于每日美元汇率的价格',
     'rates_usd_desc' => '所显示的房价是根据预订当天的美元汇率计算的。最终金额可能因适用汇率的波动而有所不同。',

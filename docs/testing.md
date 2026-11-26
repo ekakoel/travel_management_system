@@ -33,7 +33,10 @@ Butuh audit database dan persetujuan eksplisit jika berpotensi menyentuh databas
 4. Jika memakai SQLite, pakai konfigurasi eksplisit `DB_CONNECTION=sqlite` dan `DB_DATABASE=:memory:`.
 5. Jika memakai MySQL/MariaDB, nama database test harus berbeda, misalnya `online_bali_kami_26_testing`.
 
-Catatan saat ini: `phpunit.xml` menetapkan `APP_ENV=testing`, tetapi DB testing belum eksplisit karena SQLite masih dikomentari. Audit dulu sebelum menjalankan test yang menyentuh database.
+`phpunit.xml` mengunci `APP_ENV=testing`, `DB_CONNECTION=sqlite`, dan
+`DB_DATABASE=:memory:` dengan environment override paksa. Setiap proses PHPUnit
+mendapat database SQLite in-memory yang terpisah dan tidak memakai `.env` untuk
+koneksi database.
 
 ## Audit Read-Only Yang Boleh
 

@@ -37,7 +37,7 @@ Referensi lifecycle dan keamanan:
 - Completion harus atomic dan idempotent.
 - Status SPK/Transport Management bukan fulfillment marker public Transport.
 
-Standar nomor order berikut menjaga identitas order dan SPK mudah dilacak.
+Standar nomor berikut menjaga identitas order Transport publik.
 
 ## Order Number Format
 
@@ -57,11 +57,14 @@ TRP-YYYYMMDD-XXX
 
 - Jangan generate nomor manual di controller atau Blade.
 - Sequence harian harus konsisten dan aman dari duplikasi.
-- Jika nomor dipakai untuk SPK/report/WhatsApp, gunakan nilai dari model/order yang sudah tersimpan.
-- Jangan mengubah format tanpa audit invoice, SPK, report, WhatsApp message, search/filter, dan test.
+- Gunakan nomor dari model/order yang sudah tersimpan untuk tampilan, pencarian,
+  dan dokumen layanan Transports.
+- Jangan mengubah format tanpa audit invoice, order confirmation, search/filter,
+  dan test.
 
 ## Implementasi
 
 - Service: `app/Services/TransportOrderNumberService.php`.
 - Test guard: `tests/Feature/TransportOrderNumberTest.php`.
-- Domain terkait: `OrderController`, `TransportManagementController`, `Spks`, `SpkDestinations`.
+- Domain terkait: `OrderController` dan `HomeController`. Transport Management/SPK
+  sudah dipensiunkan dan tidak menjadi dependensi layanan publik.

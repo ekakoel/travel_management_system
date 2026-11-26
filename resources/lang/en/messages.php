@@ -1344,7 +1344,6 @@ return [
     "Other Transportation"=> "Other Transportation",
     "Other transportation"=> "Other transportation",
     "Reservations"=> "Reservations",
-    "Transport Management"=> "Transport Management",
     'hotel_terms_title' => 'Hotel Room Price Information and Terms',
     'rates_usd' => 'Rates Based on Daily USD Exchange Rate',
     'rates_usd_desc' => 'Room rates displayed are calculated based on the USD exchange rate on the day of booking. The final amount may vary depending on fluctuations in the applicable rate.',

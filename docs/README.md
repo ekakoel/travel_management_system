@@ -41,7 +41,7 @@ Codex must use this file to locate the documentation relevant to each task.
   Public Accommodation booking, pricing, inventory, reservation, payment, and completion flow.
 
 * `modules/transport.md`
-  Public Airport Shuttle, Daily Rent, and Transfer service flow. This excludes internal SPK Transport Management unless explicitly stated.
+  Public Airport Shuttle, Daily Rent, and Transfer service flow. Internal SPK Transport Management is retired and excluded.
 
 * `modules/tour-package.md`
   Public Tour Package pricing, reservation, payment, lifecycle, and fulfillment.

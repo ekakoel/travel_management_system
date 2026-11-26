@@ -63,11 +63,6 @@ class BackendReservationWorkspaceTest extends TestCase
             $table->unsignedBigInteger('rsv_id')->nullable();
             $table->timestamps();
         });
-        Schema::create('spks', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('reservation_id')->nullable();
-            $table->timestamps();
-        });
         Schema::create('log_data', function (Blueprint $table) {
             $table->id();
             $table->string('service')->nullable();

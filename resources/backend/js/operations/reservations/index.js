@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setCalendarDetail('service', event.service);
         setCalendarDetail('agent', event.agent);
         setCalendarDetail('period', event.period);
-        setCalendarDetail('manifest', `${event.guestCount} / ${event.spkCount}`);
+        setCalendarDetail('manifest', event.guestCount);
         setCalendarDetail('invoice', `${event.invoice} / ${event.dueDate}`);
         setCalendarDetail('note', event.note);
 

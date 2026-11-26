@@ -1069,13 +1069,9 @@ class ProjectStructureStandardTest extends TestCase
             resource_path('views/backend/operations/guides'),
             resource_path('views/backend/operations/drivers'),
             resource_path('views/backend/operations/partners/forms'),
-            resource_path('views/backend/operations/weddings/forms'),
             resource_path('views/backend/operations/orders/actions'),
             resource_path('views/backend/operations/reservations/actions'),
-            resource_path('views/admin/transportmanagement'),
             resource_path('views/admin/villas'),
-            resource_path('views/admin/weddingsadmin.blade.php'),
-            resource_path('views/admin/weddingsadmindetail.blade.php'),
             resource_path('views/admin/vendorsadmin.blade.php'),
             resource_path('views/admin/vendorsadmindetail.blade.php'),
             resource_path('views/admin/promotion.blade.php'),
@@ -1141,8 +1137,6 @@ class ProjectStructureStandardTest extends TestCase
             resource_path('backend/scss/operations/guides/_index.scss'),
             resource_path('backend/scss/operations/drivers/_index.scss'),
             resource_path('backend/scss/operations/orders-admin/_detail.scss'),
-            resource_path('backend/scss/operations/transport-management/_index.scss'),
-            resource_path('backend/scss/operations/transport-management/_detail.scss'),
         ] as $domainScss) {
             $this->assertFileExists($domainScss);
 
@@ -1173,7 +1167,7 @@ class ProjectStructureStandardTest extends TestCase
         $formRoadmap = file_get_contents(base_path('docs/decisions/backend-form-standardization-roadmap.md'));
 
         foreach ([
-            '- [x] Refactor Guides, Drivers, Partners, Weddings, Orders Admin, Reservations, Transport Management, Villas, Vendors, Promotions.',
+            '- [x] Refactor Guides, Drivers, Partners, Orders Admin, Reservations, Transport Management, Villas, Vendors, Promotions.',
             '- [x] Audit `resources/views/admin` yang masih aktif agar tetap kompatibel dengan shared form.',
             '- [x] Hapus style form domain yang sudah digantikan oleh shared component.',
         ] as $checkedItem) {
@@ -1457,7 +1451,6 @@ class ProjectStructureStandardTest extends TestCase
             'guides' => 1,
             'drivers' => 1,
             'partners' => 11,
-            'weddings' => 31,
         ];
 
         foreach ($domains as $domain => $expectedTextareaCount) {
@@ -1627,7 +1620,7 @@ class ProjectStructureStandardTest extends TestCase
 
     public function test_transport_directory_route_renders_landing_page_view(): void
     {
-        $response = $this->get(route('view.transport-services'));
+        $response = $this->get(route('view.transports-service'));
 
         $response->assertOk();
         $response->assertViewIs('frontend.landing-page.transports.index');
@@ -1931,9 +1924,7 @@ class ProjectStructureStandardTest extends TestCase
             'description' => 'Route test hotel description.',
             'facility' => 'Pool',
             'additional_info' => 'Route test additional information.',
-            'wedding_info' => 'Route test wedding information.',
             'entrance_fee' => '0',
-            'wedding_cancellation_policy' => 'Route test wedding cancellation policy.',
             'status' => 'Active',
             'cover' => 'default.webp',
             'author_id' => 1,
@@ -2004,9 +1995,7 @@ class ProjectStructureStandardTest extends TestCase
             'description' => 'Route availability hotel description.',
             'facility' => 'Pool',
             'additional_info' => 'Route availability additional information.',
-            'wedding_info' => 'Route availability wedding information.',
             'entrance_fee' => '0',
-            'wedding_cancellation_policy' => 'Route availability wedding cancellation policy.',
             'status' => 'Active',
             'cover' => 'default.webp',
             'author_id' => 1,
@@ -2988,47 +2977,11 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringNotContainsString("@include('order.edit-order-optional-service')", $views);
     }
 
-    public function test_wedding_order_views_are_routed_to_frontend_home_structure(): void
+    public function test_wedding_runtime_files_and_routes_are_retired(): void
     {
-        $controller = file_get_contents(app_path('Http/Controllers/OrderWeddingController.php'));
-        $legacyDetailWrapper = file_get_contents(resource_path('views/frontend/home/orders/details/legacy.blade.php'));
-
-        $this->assertFileExists(resource_path('views/frontend/home/orders/weddings/edit.blade.php'));
-        $this->assertFileExists(resource_path('views/frontend/home/orders/weddings/detail.blade.php'));
-        $this->assertFileDoesNotExist(resource_path('views/order/edit-order-wedding.blade.php'));
-        $this->assertFileDoesNotExist(resource_path('views/order/detail-order-wedding.blade.php'));
-        $this->assertFileDoesNotExist(resource_path('views/order/edit-order-wedding.blade copy.php'));
-        $this->assertFileDoesNotExist(resource_path('views/order/order-wedding-detail.blade.php'));
-        $this->assertStringContainsString("view('frontend.home.orders.weddings.edit'", $controller);
-        $this->assertStringContainsString("view('frontend.home.orders.weddings.detail'", $controller);
-        $this->assertStringContainsString("@include('frontend.home.orders.weddings.detail')", $legacyDetailWrapper);
-        $this->assertStringNotContainsString("view('order.edit-order-wedding'", $controller);
-        $this->assertStringNotContainsString("view('order.detail-order-wedding'", $controller);
-        $this->assertStringNotContainsString("@include('order.detail-order-wedding')", $legacyDetailWrapper);
-    }
-
-    public function test_wedding_order_legacy_partials_are_sourced_from_frontend_home_structure(): void
-    {
-        $backupForm = file_get_contents(resource_path('views/frontend/home/orders/weddings/legacy/order-weddings-backup.blade.php'));
-        $partials = [
-            'order_wedding_decoration',
-            'order_wedding_dinner_venue',
-            'order_wedding_documentation',
-            'order_wedding_entertainment',
-            'order_wedding_fixed_service',
-            'order_wedding_makeup',
-            'order_wedding_other',
-            'order_wedding_room',
-            'order_wedding_transport',
-            'order_wedding_venues',
-        ];
-
-        foreach ($partials as $partial) {
-            $this->assertFileExists(resource_path("views/frontend/home/orders/weddings/partials/{$partial}.blade.php"));
-            $this->assertFileDoesNotExist(resource_path("views/order/{$partial}.blade.php"));
-            $this->assertStringContainsString("@include('frontend.home.orders.weddings.partials.{$partial}')", $backupForm);
-            $this->assertStringNotContainsString("@include('order.{$partial}')", $backupForm);
-        }
+        $this->assertFileDoesNotExist(app_path('Http/Controllers/OrderWeddingController.php'));
+        $this->assertDirectoryDoesNotExist(resource_path('views/frontend/home/orders/weddings'));
+        $this->assertStringNotContainsString('OrderWeddingController', file_get_contents(base_path('routes/web.php')));
     }
 
     public function test_service_order_detail_views_are_sourced_from_frontend_home_structure(): void
@@ -3225,10 +3178,10 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("view('backend.operations.guides.index'", $controller);
         $this->assertStringNotContainsString("view('guides.guides-admin'", $controller);
         $this->assertStringContainsString("@include('backend.operations.guides.index')", $legacyWrapper);
-        $this->assertStringContainsString("Route::get('/guides-admin'", $routes);
-        $this->assertStringContainsString("->name('guides-admin.index')", $routes);
-        $this->assertStringContainsString("->name('destroy-guide')", $routes);
-        $this->assertStringContainsString("route('guides-admin.index')", $controller);
+        $this->assertStringContainsString("Route::get('/guides'", $routes);
+        $this->assertStringContainsString("->name('guides.index')", $routes);
+        $this->assertStringContainsString("->name('guide.destroy')", $routes);
+        $this->assertStringContainsString("route('admin.guides.index')", $controller);
         $this->assertStringContainsString('<x-backend.page-hero', $view);
         $this->assertStringContainsString('backend-page-primary-action', $view);
         $this->assertStringContainsString('backend-page-toolbar guides-admin-toolbar', $view);
@@ -3249,9 +3202,9 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('backend-modal__header', $view);
         $this->assertStringContainsString('backend-modal__body', $view);
         $this->assertStringContainsString('backend-modal__footer', $view);
-        $this->assertStringContainsString("route('create-guide')", $view);
-        $this->assertStringContainsString("route('edit-guide'", $view);
-        $this->assertStringContainsString("route('destroy-guide'", $view);
+        $this->assertStringContainsString("route('admin.guide.create')", $view);
+        $this->assertStringContainsString("route('admin.guide.edit'", $view);
+        $this->assertStringContainsString("route('admin.guide.destroy'", $view);
         $this->assertStringContainsString("backend.operations.guides.partials.form", $view);
         $this->assertStringContainsString('guides-admin-form-grid', $formPartial);
         $this->assertStringContainsString('data-guide-filter="name"', $view);
@@ -3291,10 +3244,10 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("view('backend.operations.drivers.index'", $controller);
         $this->assertStringNotContainsString("view('drivers.drivers-admin'", $controller);
         $this->assertStringContainsString("@include('backend.operations.drivers.index')", $legacyWrapper);
-        $this->assertStringContainsString("Route::get('/drivers-admin'", $routes);
-        $this->assertStringContainsString("->name('drivers-admin.index')", $routes);
-        $this->assertStringContainsString("->name('admin.driver.destroy')", $routes);
-        $this->assertStringContainsString("route('drivers-admin.index')", $controller);
+        $this->assertStringContainsString("Route::get('/drivers'", $routes);
+        $this->assertStringContainsString("->name('drivers.index')", $routes);
+        $this->assertStringContainsString("->name('driver.destroy')", $routes);
+        $this->assertStringContainsString("route('admin.drivers.index')", $controller);
         $this->assertStringContainsString('<x-backend.page-hero', $view);
         $this->assertStringContainsString('backend-page-primary-action', $view);
         $this->assertStringContainsString('backend-page-toolbar drivers-admin-toolbar', $view);
@@ -3323,8 +3276,8 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString('data-driver-filter="name"', $view);
         $this->assertStringContainsString('data-driver-row', $view);
         $this->assertStringContainsString('data-driver-delete', $view);
-        $this->assertStringContainsString('data-driver-filter="name"', $js);
-        $this->assertStringContainsString('data-driver-delete', $js);
+        $this->assertStringContainsString("document.querySelector('.agents-admin-page')", $js);
+        $this->assertStringContainsString("page.querySelectorAll('[data-agent-row]')", $js);
         $this->assertStringNotContainsString('<script>', $view);
         $this->assertStringNotContainsString('card-box', $view);
         $this->assertStringNotContainsString('card-box', $formPartial);
@@ -3338,89 +3291,36 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("resources/backend/scss/operations/drivers/index-entry.scss", $mix);
     }
 
-    public function test_transport_management_index_uses_backend_shared_structure_and_kpi(): void
+    public function test_transport_management_runtime_is_retired_and_independent_operations_remain(): void
     {
-        $controller = file_get_contents(app_path('Http/Controllers/SpksController.php'));
         $routeFile = file_get_contents(base_path('routes/web.php'));
-        $view = file_get_contents(resource_path('views/admin/transportmanagement/spks/index.blade.php'));
-        $detailView = file_get_contents(resource_path('views/admin/transportmanagement/spks/detail-spk.blade.php'));
-        $archivePartial = file_get_contents(resource_path('views/admin/transportmanagement/partials/spk-archive.blade.php'));
-        $detailModalsPartial = file_get_contents(resource_path('views/admin/transportmanagement/spks/partials/detail-modals.blade.php'));
-        $scss = file_get_contents(resource_path('backend/scss/operations/transport-management/_index.scss'));
-        $detailScss = file_get_contents(resource_path('backend/scss/operations/transport-management/_detail.scss'));
-        $mix = file_get_contents(base_path('webpack.mix.js'));
 
-        $this->assertFileExists(resource_path('views/admin/transportmanagement/spks/index.blade.php'));
-        $this->assertFileExists(resource_path('views/admin/transportmanagement/partials/spk-archive.blade.php'));
-        $this->assertFileExists(resource_path('backend/js/operations/transport-management/index.js'));
-        $this->assertFileExists(resource_path('backend/scss/operations/transport-management/index-entry.scss'));
-        $this->assertFileExists(resource_path('backend/scss/operations/transport-management/_index.scss'));
-        $this->assertStringContainsString("view('admin.transportmanagement.spks.index'", $controller);
-        $this->assertStringContainsString('statusSummary', $controller);
-        $this->assertStringContainsString("Route::get('/transport-management'", $routeFile);
-        $this->assertStringContainsString("->name('admin.transport-management.index')", $routeFile);
-        $this->assertStringContainsString('<x-backend.page-hero', $view);
-        $this->assertStringContainsString('backend-page-primary-action', $view);
-        $this->assertStringContainsString('backend-page-toolbar transport-management-toolbar', $view);
-        $this->assertStringContainsString('backend-feedback', $view);
-        $this->assertStringContainsString('backend-alert backend-alert--', $view);
-        $this->assertStringContainsString('backend-status-badge', $view);
-        $this->assertStringContainsString('backend-feedback', $detailView);
-        $this->assertStringContainsString('backend-alert backend-alert--', $detailView);
-        $this->assertStringContainsString('backend-status-badge', $detailView);
-        $this->assertStringContainsString('backend-modal transport-spk-detail-modal', $detailView);
-        $this->assertStringContainsString('backend-modal transport-management-modal', $archivePartial);
-        $this->assertStringContainsString('backend-modal__header transport-management-modal__header', $archivePartial);
-        $this->assertStringContainsString('backend-modal__body transport-management-modal__body', $archivePartial);
-        $this->assertStringContainsString('backend-modal__footer transport-management-modal__footer', $archivePartial);
-        $this->assertStringContainsString('backend-modal transport-spk-detail-modal', $detailModalsPartial);
-        $this->assertStringContainsString('backend-modal__header transport-spk-detail-modal__header', $detailModalsPartial);
-        $this->assertStringContainsString('backend-modal__body transport-spk-detail-modal__body', $detailModalsPartial);
-        $this->assertStringContainsString('backend-modal__footer transport-spk-detail-modal__footer', $detailModalsPartial);
-        $this->assertStringContainsString("route('admin.panel-main.view')", $view);
-        $this->assertStringContainsString("mix('build/backend/css/operations/transport-management/index.css')", $view);
-        $this->assertStringContainsString("mix('build/backend/js/operations/transport-management/index.js')", $view);
-        $this->assertStringContainsString('backend-kpi-grid backend-kpi-grid--4', $view);
-        $this->assertStringContainsString('backend-kpi-card backend-kpi-card--', $view);
-        $this->assertStringContainsString('backend-kpi-card__icon', $view);
-        $this->assertStringNotContainsString('transport-management-stats', $view);
-        $this->assertStringNotContainsString('class="transport-management-stat"', $view);
-        $this->assertStringContainsString('backend-panel transport-management-panel', $view);
-        $this->assertStringContainsString('backend-section-header transport-management-panel__heading', $view);
-        $this->assertStringContainsString('backend-section-header__label', $view);
-        $this->assertStringNotContainsString('transport-management-panel__header', $view);
-        $this->assertStringNotContainsString('transport-management-eyebrow', $view);
-        $this->assertStringContainsString('backend-panel transport-spk-detail-panel', $detailView);
-        $this->assertStringContainsString('backend-section-header transport-spk-detail-panel__heading', $detailView);
-        $this->assertStringContainsString('backend-section-header transport-spk-detail-section__heading', $detailView);
-        $this->assertStringContainsString('backend-section-header__label', $detailView);
-        $this->assertStringNotContainsString('transport-spk-detail-panel__header', $detailView);
-        $this->assertStringNotContainsString('transport-spk-detail-section__header', $detailView);
-        $this->assertStringContainsString('backend-table transport-management-table', $view);
-        $this->assertStringContainsString('backend-table-card transport-management-card', $view);
-        $this->assertStringContainsString('spkArchiveResults', $view);
-        $this->assertStringContainsString('admin.transportmanagement.partials.spk-archive', $view);
-        $this->assertStringContainsString('transport-management-archive-table', $archivePartial);
-        $this->assertStringContainsString('modalContainer', $archivePartial);
-        $this->assertStringContainsString('minmax(0, 1fr)', $scss);
-        $this->assertStringContainsString('.transport-management-grid', $scss);
-        $this->assertStringNotContainsString('.transport-management-stats', $scss);
-        $this->assertStringNotContainsString('.transport-management-alert', $scss);
-        $this->assertStringNotContainsString('.transport-management-status', $scss);
-        $this->assertStringNotContainsString('.transport-management-modal .modal-content', $scss);
-        $this->assertStringNotContainsString("background: #f8fbff;\n  padding: 18px;", $scss);
-        $this->assertStringNotContainsString('.transport-management-panel__header', $scss);
-        $this->assertStringNotContainsString('.transport-management-eyebrow', $scss);
-        $this->assertStringNotContainsString('.transport-spk-detail-alert', $detailScss);
-        $this->assertStringNotContainsString('.transport-spk-detail-status', $detailScss);
-        $this->assertStringNotContainsString('.transport-spk-detail-modal .modal-content', $detailScss);
-        $this->assertStringNotContainsString("background: #f8fbff;\n  padding: 18px;", $detailScss);
-        $this->assertStringNotContainsString('.transport-spk-detail-panel__header', $detailScss);
-        $this->assertStringNotContainsString('.transport-spk-detail-section__header', $detailScss);
-        $this->assertStringContainsString("resources/backend/js/operations/transport-management/index.js", $mix);
-        $this->assertStringContainsString("resources/backend/scss/operations/transport-management/index-entry.scss", $mix);
+        $this->assertFileDoesNotExist(app_path('Http/Controllers/SpksController.php'));
+        $this->assertFileDoesNotExist(app_path('Http/Controllers/TransportManagementController.php'));
+        $this->assertFileDoesNotExist(app_path('Http/Controllers/SpkReportController.php'));
+        $this->assertDirectoryDoesNotExist(resource_path('views/admin/transportmanagement'));
+        $this->assertDirectoryDoesNotExist(resource_path('backend/js/operations/transport-management'));
+        $this->assertDirectoryDoesNotExist(resource_path('backend/scss/operations/transport-management'));
+        $this->assertStringNotContainsString('SpksController', $routeFile);
+        $this->assertStringNotContainsString('TransportManagementController', $routeFile);
+        $this->assertStringNotContainsString('/spk-report/', $routeFile);
+
+        foreach ([
+            app_path('Http/Controllers/GuideController.php'),
+            app_path('Http/Controllers/DriversController.php'),
+            app_path('Http/Controllers/Backend/Operations/Transports/TransportAdminController.php'),
+            resource_path('views/backend/operations/guides/index.blade.php'),
+            resource_path('views/backend/operations/drivers/index.blade.php'),
+            resource_path('views/frontend/landing-page/transports/index.blade.php'),
+        ] as $preservedPath) {
+            $this->assertFileExists($preservedPath);
+        }
+
+        $this->assertStringContainsString("->name('guides.index')", $routeFile);
+        $this->assertStringContainsString("->name('drivers.index')", $routeFile);
+        $this->assertStringContainsString("->name('transports.index')", $routeFile);
+        $this->assertStringContainsString("->name('view.transports-service')", $routeFile);
     }
-
     public function test_activity_admin_forms_are_sourced_from_backend_operations_structure(): void
     {
         $adminController = file_get_contents(app_path('Http/Controllers/ActivitiesAdminController.php'));
@@ -5877,60 +5777,6 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringNotContainsString('action="/fadd-hotel-contract"', $detailContent);
     }
 
-    public function test_wedding_admin_forms_are_sourced_from_backend_operations_structure(): void
-    {
-        $controllers = collect([
-            app_path('Http/Controllers/WeddingsController.php'),
-            app_path('Http/Controllers/HotelsAdminController.php'),
-            app_path('Http/Controllers/WeddingReceptionVenuesController.php'),
-            app_path('Http/Controllers/WeddingLunchVenuesController.php'),
-            app_path('Http/Controllers/WeddingDinnerVenuesController.php'),
-            app_path('Http/Controllers/WeddingMenuController.php'),
-        ])->map(fn ($path) => file_get_contents($path))->implode("\n");
-
-        $forms = [
-            'create' => 'weddingadd',
-            'edit' => 'weddingedit',
-            'venue-create' => 'wedding-venue-add',
-            'venue-edit' => 'wedding-venue-edit',
-            'reception-venue-edit' => 'wedding-reception-venue-edit',
-            'lunch-venue-edit' => 'wedding-lunch-venue-edit',
-            'dinner-venue-create' => 'wedding-dinner-venue-add',
-            'dinner-venue-edit' => 'wedding-dinner-venue-edit',
-            'dinner-package-create' => 'wedding-dinner-package-add',
-            'dinner-package-edit' => 'wedding-dinner-package-edit',
-            'food-and-beverage-create' => 'wedding-add-food-and-beverage',
-        ];
-
-        foreach ($forms as $target => $legacy) {
-            $this->assertFileExists(resource_path("views/backend/operations/weddings/forms/{$target}.blade.php"));
-            $this->assertFileDoesNotExist(resource_path("views/form/{$legacy}.blade.php"));
-        }
-
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.create'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.edit'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.venue-create'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.venue-edit'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.reception-venue-edit'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.lunch-venue-edit'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.dinner-venue-create'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.dinner-venue-edit'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.dinner-package-create'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.dinner-package-edit'", $controllers);
-        $this->assertStringContainsString("view('backend.operations.weddings.forms.food-and-beverage-create'", $controllers);
-        $this->assertStringNotContainsString("view('form.weddingadd'", $controllers);
-        $this->assertStringNotContainsString("view('form.weddingedit'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-venue-add'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-venue-edit'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-reception-venue-edit'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-lunch-venue-edit'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-dinner-venue-add'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-dinner-venue-edit'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-dinner-package-add'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-dinner-package-edit'", $controllers);
-        $this->assertStringNotContainsString("view('form.wedding-add-food-and-beverage'", $controllers);
-    }
-
     public function test_partner_crud_uses_backend_index_modal_flow(): void
     {
         $controller = file_get_contents(app_path('Http/Controllers/PartnersController.php'));
@@ -5994,8 +5840,8 @@ class ProjectStructureStandardTest extends TestCase
             }
         }
 
-        $this->assertFileExists(resource_path('views/frontend/home/orders/weddings/legacy/order-weddings.blade.php'));
-        $this->assertFileExists(resource_path('views/frontend/home/orders/weddings/legacy/order-weddings-backup.blade.php'));
+        $this->assertFileDoesNotExist(resource_path('views/frontend/home/orders/weddings/legacy/order-weddings.blade.php'));
+        $this->assertFileDoesNotExist(resource_path('views/frontend/home/orders/weddings/legacy/order-weddings-backup.blade.php'));
         $this->assertSame([], $legacyFiles);
     }
 
@@ -6006,12 +5852,8 @@ class ProjectStructureStandardTest extends TestCase
         $reviewJs = file_get_contents(resource_path('backend/js/admin/reviews/index.js'));
         $reviewScss = file_get_contents(resource_path('backend/scss/admin/reviews/_index.scss'));
         $frontendReviewFiles = [
-            'wedding-index',
-            'print-wedding-reviews',
             'create',
             'create-review',
-            'create-wedding-review',
-            'wedding_review_link_form',
             'layouts/app',
             'partials/review_card',
             'partials/review_modal',
@@ -6037,10 +5879,8 @@ class ProjectStructureStandardTest extends TestCase
 
         $this->assertStringContainsString("view('backend.admin.reviews.index'", $controller);
         $this->assertStringContainsString("view('backend.admin.reviews.link-form'", $controller);
-        $this->assertStringContainsString("view('frontend.home.reviews.wedding-index'", $controller);
-        $this->assertStringContainsString("view('frontend.home.reviews.print-wedding-reviews'", $controller);
         $this->assertStringContainsString("view('frontend.home.reviews.create'", $controller);
-        $this->assertStringContainsString("view('frontend.home.reviews.wedding_review_link_form'", $controller);
+        $this->assertStringNotContainsString('wedding', strtolower($controller));
         $this->assertStringNotContainsString("print_reviews", $controller);
         $this->assertStringNotContainsString("/reviews/print/{bookingCode}", $routeFile);
         $this->assertStringNotContainsString("view('home.reviews.", $controller);
@@ -6123,9 +5963,9 @@ class ProjectStructureStandardTest extends TestCase
         $reviewFormTemplates = collect([
             resource_path('views/frontend/home/reviews/create.blade.php'),
             resource_path('views/frontend/home/reviews/create-review.blade.php'),
-            resource_path('views/frontend/home/reviews/create-wedding-review.blade.php'),
         ])->map(fn ($path) => file_get_contents($path))->implode("\n");
 
+        $this->assertFileDoesNotExist(resource_path('views/frontend/home/reviews/create-wedding-review.blade.php'));
         $this->assertStringContainsString("@extends('frontend.home.reviews.layouts.app')", $reviewFormTemplates);
         $this->assertStringNotContainsString("@extends('home.reviews.layouts.app')", $reviewFormTemplates);
     }
@@ -6707,38 +6547,6 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         $this->assertSame([], $legacyFiles);
-    }
-
-    public function test_wedding_order_package_sections_are_sourced_from_frontend_home_structure(): void
-    {
-        $weddingEdit = file_get_contents(resource_path('views/frontend/home/orders/weddings/edit.blade.php'));
-        $sections = [
-            'accommodation',
-            'additional-services',
-            'bride',
-            'ceremony-and-decoration-venue',
-            'flight',
-            'include-services',
-            'invitations',
-            'reception-and-decoration-venue',
-            'suite-and-villa-brides',
-            'suite-and-villa-invitations',
-            'transports',
-            'wedding-detail',
-            'wedding-dinner-venue',
-            'wedding-lunch-venue',
-            'wedding-venue',
-        ];
-
-        foreach ($sections as $section) {
-            $this->assertFileExists(resource_path("views/frontend/home/orders/weddings/sections/{$section}.blade.php"));
-            $this->assertFileDoesNotExist(resource_path("views/order-wedding-package/{$section}.blade.php"));
-        }
-
-        $this->assertStringContainsString("@include('frontend.home.orders.weddings.sections.bride')", $weddingEdit);
-        $this->assertStringContainsString("@include('frontend.home.orders.weddings.sections.accommodation')", $weddingEdit);
-        $this->assertStringContainsString("@include('frontend.home.orders.weddings.sections.transports')", $weddingEdit);
-        $this->assertStringNotContainsString("@include('order-wedding-package.", $weddingEdit);
     }
 
     public function test_admin_panel_view_is_sourced_from_backend_structure(): void
@@ -7887,7 +7695,7 @@ class ProjectStructureStandardTest extends TestCase
         $routes = file_get_contents(base_path('routes/web.php'));
         $mix = file_get_contents(base_path('webpack.mix.js'));
         $roadmap = file_get_contents(base_path('docs/decisions/backend-ui-standardization-roadmap.md'));
-        $controller = file_get_contents(app_path('Http/Controllers/TransportsAdminController.php'));
+        $controller = file_get_contents(app_path('Http/Controllers/Backend/Operations/Transports/TransportAdminController.php'));
         $legacyIndexWrapper = file_get_contents(resource_path('views/admin/transportsadmin.blade.php'));
         $legacyDetailWrapper = file_get_contents(resource_path('views/admin/transportsadmindetail.blade.php'));
         $indexView = file_get_contents(resource_path('views/backend/operations/transports/index.blade.php'));
@@ -7904,18 +7712,18 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("view('backend.operations.transports.detail'", $controller);
 
         foreach ([
-            "->name('admin.transports.index')",
-            "->name('admin.transports.create')",
-            "->name('admin.transports.store')",
-            "->name('admin.transports.show')",
-            "->name('admin.transports.edit')",
-            "->name('admin.transports.update')",
-            "->name('admin.transports.destroy')",
-            "->name('admin.transports.gallery.edit')",
-            "->name('admin.transports.cover.destroy')",
-            "->name('admin.transports.prices.store')",
-            "->name('admin.transports.prices.update')",
-            "->name('admin.transports.prices.destroy')",
+            "->name('transports.index')",
+            "->name('transports.create')",
+            "->name('transports.store')",
+            "->name('transports.show')",
+            "->name('transports.edit')",
+            "->name('transports.update')",
+            "->name('transports.destroy')",
+            "->name('transports.gallery.edit')",
+            "->name('transports.cover.destroy')",
+            "->name('transports.prices.store')",
+            "->name('transports.prices.update')",
+            "->name('transports.prices.destroy')",
         ] as $routeName) {
             $this->assertStringContainsString($routeName, $routes);
         }
@@ -7963,10 +7771,10 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         foreach ([
-            '- [x] Audit batas domain Transports master data dan pisahkan dari Transport Management/SPK.',
-            '- [x] Pindahkan source view index/detail Transports ke `resources/views/backend/operations/transports`.',
-            '- [x] Beri route name final untuk Transports profile, price, gallery, dan cover.',
-            '- [x] Tambahkan guard test struktur Phase 1 agar fondasi route/view/asset tidak regress.',
+            '- [x] Operations Transports memakai namespace/backend UI modern, Form Request, service, dan view model.',
+            '- [x] Create Transport memakai canonical two-column backend layout, semantic form panels, contextual sidebar, dan server-authoritative Draft flow.',
+            '- [x] Edit Transport memakai canonical two-column layout, status/context sidebar, master-data validation, targeted loading, dan transactional cover/gallery replacement.',
+            '- [x] Drivers dan Guides memakai shared backend components.',
         ] as $checkedItem) {
             $this->assertStringContainsString($checkedItem, $roadmap);
         }
@@ -7994,8 +7802,8 @@ class ProjectStructureStandardTest extends TestCase
             'backend-status-badge',
             'backend-table-empty',
             'backend-icon-action',
-            'backend-primary-action',
-            'backend-secondary-action',
+            'backend-page-primary-action',
+            'backend-detail-side-actions',
         ] as $sharedClass) {
             $this->assertStringContainsString($sharedClass, $surface);
         }
@@ -8060,11 +7868,11 @@ class ProjectStructureStandardTest extends TestCase
         $this->assertStringContainsString("route('admin.transports.prices.destroy'", $detailView);
 
         foreach ([
-            '- [x] Refactor index Transports agar memakai shared hero, toolbar, feedback, KPI, panel, table, status badge, empty state, dan button standard.',
-            '- [x] Refactor detail Transports agar memakai shared hero, toolbar, feedback, KPI/summary, panel, section header, table, status badge, modal, dan button standard.',
-            '- [x] Hilangkan `card-box`, `btn-view`, `btn-edit`, `btn-delete`, inline `style`, inline `onclick`, inline `onkeyup`, dan `<script>` legacy dari index/detail.',
-            '- [x] Pindahkan behavior search/delete confirmation index/detail ke JS domain Transports.',
-            '- [x] Pastikan route/action detail pricing tetap memakai route name final.',
+            '- [x] Operations Transports memakai namespace/backend UI modern, Form Request, service, dan view model.',
+            '- [x] Create Transport memakai canonical two-column backend layout, semantic form panels, contextual sidebar, dan server-authoritative Draft flow.',
+            '- [x] Edit Transport memakai canonical two-column layout, status/context sidebar, master-data validation, targeted loading, dan transactional cover/gallery replacement.',
+            '- [x] Transport Type dan Transport Brand memakai shared master-data CRUD, usage-aware deletion, canonical forms, dan Operations navigation.',
+            '- [x] Drivers dan Guides memakai shared backend components.',
         ] as $checkedItem) {
             $this->assertStringContainsString($checkedItem, $roadmap);
         }
@@ -8168,15 +7976,15 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         foreach ([
-            "route('admin.transports.store')",
-            "route('admin.transports.update'",
-            "route('admin.transports.show'",
-            "route('admin.transports.index')",
+            "route('transports.store')",
+            "route('transports.update'",
+            "route('transports.show'",
+            "route('transports.index')",
         ] as $routeHelper) {
             $this->assertStringContainsString($routeHelper, $createForm . $editForm . $galleryForm);
         }
 
-        $this->assertStringContainsString("->name('admin.transports.images.destroy')", $routes);
+        $this->assertStringContainsString("->name('transports.images.destroy')", $routes);
         $this->assertStringContainsString('TransportsImages::create', $adminController);
         $this->assertStringContainsString('storage/transports/transports-gallery/', $adminController);
         $this->assertStringContainsString('storage/transports/transports-gallery/', $publicController);
@@ -8465,35 +8273,35 @@ class ProjectStructureStandardTest extends TestCase
         }
 
         foreach ([
-            "->name('admin.transports.index')",
-            "->name('admin.transports.create')",
-            "->name('admin.transports.store')",
-            "->name('admin.transports.show')",
-            "->name('admin.transports.edit')",
-            "->name('admin.transports.update')",
-            "->name('admin.transports.destroy')",
-            "->name('admin.transports.gallery.edit')",
-            "->name('admin.transports.cover.destroy')",
-            "->name('admin.transports.images.destroy')",
-            "->name('admin.transports.prices.store')",
-            "->name('admin.transports.prices.update')",
-            "->name('admin.transports.prices.destroy')",
+            "->name('transports.index')",
+            "->name('transports.create')",
+            "->name('transports.store')",
+            "->name('transports.show')",
+            "->name('transports.edit')",
+            "->name('transports.update')",
+            "->name('transports.destroy')",
+            "->name('transports.gallery.edit')",
+            "->name('transports.cover.destroy')",
+            "->name('transports.images.destroy')",
+            "->name('transports.prices.store')",
+            "->name('transports.prices.update')",
+            "->name('transports.prices.destroy')",
         ] as $routeName) {
             $this->assertStringContainsString($routeName, $routes);
         }
 
         foreach ([
-            "route('admin.transports.create')",
-            "route('admin.transports.store')",
-            "route('admin.transports.show'",
-            "route('admin.transports.edit'",
-            "route('admin.transports.update'",
-            "route('admin.transports.destroy'",
-            "route('admin.transports.images.destroy'",
-            "route('admin.transports.prices.store')",
-            "route('admin.transports.prices.update'",
-            "route('admin.transports.prices.destroy'",
-            "route('admin.transports.index')",
+            "route('transports.create')",
+            "route('transports.store')",
+            "route('transports.show'",
+            "route('transports.edit'",
+            "route('transports.update'",
+            "route('transports.destroy'",
+            "route('transports.images.destroy'",
+            "route('transports.prices.store')",
+            "route('transports.prices.update'",
+            "route('transports.prices.destroy'",
+            "route('transports.index')",
         ] as $routeHelper) {
             $this->assertStringContainsString($routeHelper, $surface);
         }
@@ -8524,8 +8332,8 @@ class ProjectStructureStandardTest extends TestCase
             'backend-table',
             'backend-status-badge',
             'backend-empty-state',
-            'backend-primary-action',
-            'backend-secondary-action',
+            'backend-page-primary-action',
+            'backend-page-secondary-action',
             'backend-icon-action',
             'backend-modal',
             'backend-form-field',
@@ -8606,7 +8414,6 @@ class ProjectStructureStandardTest extends TestCase
             resource_path('views/partials/admin-order-status-sidebar.blade.php'),
             resource_path('views/partials/admin-order-receipt-report-sidebar.blade.php'),
             resource_path('views/partials/modal-add-payment-receipt.blade.php'),
-            resource_path('views/partials/modal-detail-spk.blade.php'),
             resource_path('views/partials/modal-tour-package-admin.blade.php'),
         ];
 

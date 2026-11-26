@@ -137,17 +137,6 @@
             locale: 'de',
             format: 'YYYY-MM-DD',
         });
-        $('input[name="spk_date"]').daterangepicker({
-            singleDatePicker: true,
-			autoApply: true,
-			autoUpdateInput: true,
-			showDropdowns: true,
-			 minDate: today,
-			language: 'en',
-			locale: {
-				format: 'YYYY-MM-DD',
-			}
-        });
         $('input[name="flight_date"]').daterangepicker({
             singleDatePicker: true,
 			autoApply: true,

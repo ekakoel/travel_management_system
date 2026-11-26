@@ -27,7 +27,6 @@ class ReservationDetailService
             'includes',
             'excludes',
             'remarks',
-            'spks',
         ]);
 
         $orders = Orders::query()
@@ -89,13 +88,6 @@ class ReservationDetailService
                 'meta' => __('reservations.service_orders'),
                 'icon' => 'fa fa-shopping-cart',
                 'tone' => 'amber',
-            ],
-            [
-                'label' => __('reservations.spk'),
-                'value' => $reservation->spks->count(),
-                'meta' => __('reservations.operational_documents'),
-                'icon' => 'fa fa-file-alt',
-                'tone' => 'green',
             ],
         ];
     }

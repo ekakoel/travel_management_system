@@ -13,7 +13,7 @@ Project mendukung locale aktif:
 
 - Semua teks user-facing di Blade, controller, service, notification, validation, dan JavaScript harus berasal dari language key.
 - Key baru wajib ditambahkan ke semua locale aktif.
-- Gunakan file domain untuk copy spesifik modul, misalnya `tour-detail.php`, `transport-management.php`, atau `admin-orders.php`.
+- Gunakan file domain untuk copy spesifik modul, misalnya `tour-detail.php`, `transports.php`, atau `admin-orders.php`.
 - Gunakan `messages.php` hanya untuk frasa global yang benar-benar lintas domain.
 - JavaScript membaca copy dari `data-*` attribute atau payload JSON dari Blade, bukan string hardcoded.
 - Backend/internal UI juga wajib multi-language.

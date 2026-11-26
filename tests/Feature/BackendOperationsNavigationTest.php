@@ -11,11 +11,12 @@ class BackendOperationsNavigationTest extends TestCase
         $sidebar = file_get_contents(resource_path('views/backend/partials/left-navbar.blade.php'));
         $navigationService = file_get_contents(app_path('Services/Navigation/BackendNavigationService.php'));
 
-        $this->assertStringContainsString("@canany(['posDev','posRsv','weddingRsv'])", $sidebar);
+        $this->assertStringContainsString("@canany(['posDev','posAdm','posRsv'])", $sidebar);
         $this->assertStringContainsString("@lang('messages.Operations')", $sidebar);
         $this->assertStringContainsString("route('admin.order.index')", $sidebar);
         $this->assertStringContainsString("route('view.reservation')", $sidebar);
         $this->assertStringContainsString("route('admin.invoices.index')", $sidebar);
+        $this->assertStringNotContainsString('transport-management.index', $sidebar);
         $this->assertStringContainsString('id="operations-submenu"', $sidebar);
         $this->assertStringContainsString("\$operationsNavigationActive ? 'show' : ''", $sidebar);
         $this->assertStringContainsString("request->routeIs('admin.invoices.*')", $navigationService);
